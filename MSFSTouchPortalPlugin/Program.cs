@@ -66,28 +66,6 @@ namespace MSFSTouchPortalPlugin {
 
             // Put into collection
             eventDict.TryAdd($"{rootName}.{catName}.Action.{actionName}:{actionValue}", result);
-
-            // Register action event
-            //actionService.RegisterActionEvent($"{rootName}.{catName}.Action.{actionName}", (obj) => {
-            //  var actionId = actionName;
-
-            //  // Get actions that match the mapping attribute
-            //  //var events = actionType.GetMembers().Where(c => c.GetCustomAttributes<TouchPortalActionMappingAttribute>() != null)
-
-            //  // Get the proper enum
-            //  if (obj.Count > 0) {
-            //    foreach (var o in obj) {
-            //      // Console.WriteLine($"Id: {o.Id} Value: {o.Value}");
-            //      eventDict.TryGetValue($"{rootName}.{catName}.Action.{actionName}:{actionValue}", out var eventResult);
-            //      Console.WriteLine($"{DateTime.Now} {eventResult} - Firing Event");
-            //      simConnect.TransmitClientEvent(group, eventResult, 0);
-            //    }
-            //  } else {
-            //    // No data with it.
-            //    Console.WriteLine($"{DateTime.Now} {result} - Firing Event");
-            //    simConnect.TransmitClientEvent(group, result, 0);
-            //  }
-            //});
           });
         });
         
@@ -120,13 +98,21 @@ namespace MSFSTouchPortalPlugin {
     }
 
     private static void messageProcessor_OnActionEvent(string actionId, List<ActionData> dataList) {
-      dataList.ForEach(a => {
-        if (eventDict.TryGetValue($"{actionId}:{a.Value}", out var eventResult)) {
-          Console.WriteLine($"{DateTime.Now} {eventResult} - Firing Event");
-          var group = eventResult.GetType().GetCustomAttribute<SimNotificationGroupAttribute>().Group;
-          simConnect.TransmitClientEvent(group, eventResult, 0);
-        }
-      });
+      if (dataList.Count > 0) {
+        dataList.ForEach(a => {
+          ProcessEvent(actionId, a.Value);
+        });
+      } else {
+        ProcessEvent(actionId);
+      }
+    }
+
+    private static void ProcessEvent(string actionId, string value = default) {
+      if (eventDict.TryGetValue($"{actionId}:{value}", out var eventResult)) {
+        Console.WriteLine($"{DateTime.Now} {eventResult} - Firing Event");
+        var group = eventResult.GetType().GetCustomAttribute<SimNotificationGroupAttribute>().Group;
+        simConnect.TransmitClientEvent(group, eventResult, 0);
+      }
     }
   }
 }
