@@ -1,6 +1,7 @@
 ﻿using System;
 
 namespace MSFSTouchPortalPlugin.Attributes {
-  class SimActionEventAttribute : Attribute {
+  [AttributeUsage(AttributeTargets.Field)]
+  public class SimActionEventAttribute : Attribute {
   }
 }

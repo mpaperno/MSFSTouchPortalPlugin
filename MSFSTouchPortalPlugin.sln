@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSFSTouchPortalPlugin", "MS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSFSTouchPortalPlugin-Generator", "MSFSTouchPortalPlugin-Generator\MSFSTouchPortalPlugin-Generator.csproj", "{53A38611-6486-4FF5-8637-1C6BC38A6A18}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TouchPortalExtension", "TouchPortalExtension\TouchPortalExtension.csproj", "{C217E7C3-4A14-457E-ABC8-180546369646}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C217E7C3-4A14-457E-ABC8-180546369646}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C217E7C3-4A14-457E-ABC8-180546369646}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C217E7C3-4A14-457E-ABC8-180546369646}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C217E7C3-4A14-457E-ABC8-180546369646}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

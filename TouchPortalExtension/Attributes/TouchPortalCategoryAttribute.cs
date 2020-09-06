@@ -1,7 +1,8 @@
 ﻿using System;
 
-namespace MSFSTouchPortalPlugin.Attributes {
-  class TouchPortalCategoryAttribute : Attribute {
+namespace TouchPortalExtension.Attributes {
+  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Enum)]
+  public class TouchPortalCategoryAttribute : Attribute {
     public string Id;
     public string Name;
     public string ImagePath;

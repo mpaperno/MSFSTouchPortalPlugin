@@ -1,10 +1,33 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
+using TouchPortalExtension.Attributes;
 
-namespace MSFSTouchPortalPlugin.InstrumentsSystems {
+namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
+
   [TouchPortalCategory("InstrumentsSystems.Fuel", "MSFS - Fuel")]
+  internal class FuelMapping {
+    
+    [TouchPortalAction("AddFuel", "Add Fuel", "MSFS", "Adds X amount of Fuel", "Add {0}% amount of fuel")]
+    public object ADD_FUEL { get; }
+
+    [TouchPortalAction("FuelSelectorLeft", "Select Left Fuel Tank", "MSFS", "Selects the left fuel tank", "")]
+    public object FUEL_SELECTOR_LEFT { get; }
+
+    [TouchPortalAction("FuelSelectorRight", "Select Right Fuel Tank", "MSFS", "Selects the right fuel tank", "")]
+    public object FUEL_SELECTOR_RIGHT { get; }
+
+    [TouchPortalAction("FuelDump", "Fuel Dump - Toggle", "MSFS", "Toggles the Fuel Dump", "Toggle Fuel Dump")]
+    public object FUEL_DUMP { get; }
+  }
+
+  [SimNotificationGroup(SimConnectWrapper.Groups.Fuel)]
+  [TouchPortalCategoryMapping("InstrumentsSystems.Fuel")]
   internal enum Fuel {
+    // Placeholder to offset each enum for SimConnect
+    Init = 2000,
+
+    // Add Fuel
     [SimActionEvent]
-    [TouchPortalAction("AddFuel", "Add Fuel", "MSFS", "Adds 25% Fuel", "")]
+    [TouchPortalActionMapping("AddFuel")]
     ADD_FUEL_QUANTITY,
 
     CROSS_FEED_OFF,
@@ -20,12 +43,14 @@ namespace MSFSTouchPortalPlugin.InstrumentsSystems {
     FUEL_SELECTOR_OFF,
     FUEL_SELECTOR_ALL,
 
+    // Fuel Selector Left
     [SimActionEvent]
-    [TouchPortalAction("FuelSelectorLeft", "Select Left Fuel Tank", "MSFS", "Selects the left fuel tank", "")]
+    [TouchPortalActionMapping("FuelSelectorLeft")]
     FUEL_SELECTOR_LEFT,
 
-    [SimActionEvent] // Broken?
-    [TouchPortalAction("FuelSelectorRight", "Select Right Fuel Tank", "MSFS", "Selects the right fuel tank", "")]
+    // Fuel Selector Right
+    [SimActionEvent]
+    [TouchPortalActionMapping("FuelSelectorRight")]
     FUEL_SELECTOR_RIGHT,
 
     FUEL_SELECTOR_LEFT_AUX,
@@ -66,8 +91,9 @@ namespace MSFSTouchPortalPlugin.InstrumentsSystems {
     TOGGLE_PRIMER3,
     TOGGLE_PRIMER4,
 
+    // Fuel Dump
     [SimActionEvent]
-    [TouchPortalAction("FuelDumpToggle", "Fuel Dump - Toggle", "MSFS", "Toggles the Fuel Dump", "")]
+    [TouchPortalActionMapping("FuelDump")]
     FUEL_DUMP_TOGGLE
   }
 }
