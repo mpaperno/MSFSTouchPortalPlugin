@@ -15,7 +15,11 @@ namespace MSFSTouchPortalPlugin {
     public enum Groups {
       System = 0,
       AutoPilot = 1,
-      Fuel = 2
+      Fuel = 2,
+      Menu = 3,
+      Engine = 4,
+      Environment = 5,
+      Electrical = 6
     }
 
     public enum Events {
