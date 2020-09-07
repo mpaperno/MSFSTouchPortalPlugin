@@ -229,6 +229,102 @@
               ]
             }
           ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.StrobeLights",
+          "name": "Toggle/On/Off/Set Strobe Lights",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off/Set Strobe Lights",
+          "tryInline": true,
+          "format": "Strobe Lights - {$MSFSTouchPortalPlugin.Electrical.Action.StrobeLights.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Electrical.Action.StrobeLights.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off",
+                "Set"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.PanelLights",
+          "name": "Toggle/On/Off/Set Panel Lights",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off/Set Panel Lights",
+          "tryInline": true,
+          "format": "Panel Lights - {$MSFSTouchPortalPlugin.Electrical.Action.PanelLights.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Electrical.Action.PanelLights.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off",
+                "Set"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.LandingLights",
+          "name": "Toggle/On/Off/Set Landing Lights",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off/Set Landing Lights",
+          "tryInline": true,
+          "format": "Landing Lights - {$MSFSTouchPortalPlugin.Electrical.Action.LandingLights.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Electrical.Action.LandingLights.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off",
+                "Set"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.ToggleLights",
+          "name": "Toggle All/Specific Lights",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle All/Specific Lights",
+          "tryInline": true,
+          "format": "Toggle Lights - {$MSFSTouchPortalPlugin.Electrical.Action.ToggleLights.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Electrical.Action.ToggleLights.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "All",
+              "valueChoices": [
+                "All",
+                "Beacon",
+                "Taxi",
+                "Logo",
+                "Recognition",
+                "Wing",
+                "Nav",
+                "Cabin"
+              ]
+            }
+          ]
         }
       ],
       "events": [],
@@ -266,6 +362,160 @@
               "valueChoices": [
                 "Start",
                 "Shutdown"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Engine.Action.AllMagenetos",
+          "name": "Toggle All Magnetos",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle All Magnetos",
+          "tryInline": true,
+          "format": "Toggle All Magnetos - {$MSFSTouchPortalPlugin.Engine.Action.AllMagenetos.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Engine.Action.AllMagenetos.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Start",
+              "valueChoices": [
+                "Start",
+                "Off",
+                "Right",
+                "Left",
+                "Both",
+                "Decrease",
+                "Increase"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Engine.Action.Magneto_1",
+          "name": "Toggle Magneto 1",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Magneto 1",
+          "tryInline": true,
+          "format": "Toggle Magneto 1 - {$MSFSTouchPortalPlugin.Engine.Action.Magneto_1.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Engine.Action.Magneto_1.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Start",
+              "valueChoices": [
+                "Start",
+                "Off",
+                "Right",
+                "Left",
+                "Both",
+                "Decrease",
+                "Increase"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Engine.Action.Magneto_2",
+          "name": "Toggle Magneto 2",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Magneto 2",
+          "tryInline": true,
+          "format": "Toggle Magneto 2 - {$MSFSTouchPortalPlugin.Engine.Action.Magneto_2.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Engine.Action.Magneto_2.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Start",
+              "valueChoices": [
+                "Start",
+                "Off",
+                "Right",
+                "Left",
+                "Both",
+                "Decrease",
+                "Increase"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Engine.Action.Magneto_3",
+          "name": "Toggle Magneto 3",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Magneto 3",
+          "tryInline": true,
+          "format": "Toggle Magneto 3 - {$MSFSTouchPortalPlugin.Engine.Action.Magneto_3.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Engine.Action.Magneto_3.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Start",
+              "valueChoices": [
+                "Start",
+                "Off",
+                "Right",
+                "Left",
+                "Both",
+                "Decrease",
+                "Increase"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Engine.Action.Magneto_4",
+          "name": "Toggle Magneto 4",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Magneto 4",
+          "tryInline": true,
+          "format": "Toggle Magneto 4 - {$MSFSTouchPortalPlugin.Engine.Action.Magneto_4.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Engine.Action.Magneto_4.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Start",
+              "valueChoices": [
+                "Start",
+                "Off",
+                "Right",
+                "Left",
+                "Both",
+                "Decrease",
+                "Increase"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Engine.Action.Starters",
+          "name": "Toggle Starters",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Starters",
+          "tryInline": true,
+          "format": "Toggle Starter - {$MSFSTouchPortalPlugin.Engine.Action.Starters.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Engine.Action.Starters.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "All",
+              "valueChoices": [
+                "All",
+                "1",
+                "2",
+                "3",
+                "4"
               ]
             }
           ]
@@ -434,6 +684,46 @@
       "states": []
     },
     {
+      "id": "MSFSTouchPortalPlugin.Failures",
+      "name": "MSFS - Failures",
+      "imagepath": "",
+      "actions": [
+        {
+          "id": "MSFSTouchPortalPlugin.Failures.Action.Failures",
+          "name": "Failures",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Failures",
+          "tryInline": true,
+          "format": "Toggle Failures - {$MSFSTouchPortalPlugin.Failures.Action.Failures.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Failures.Action.Failures.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Electrical",
+              "valueChoices": [
+                "Electrical",
+                "Vacuum",
+                "Pitot",
+                "Static Port",
+                "Hydraulic",
+                "Total Brake",
+                "Left Brake",
+                "Right Brake",
+                "Engine 1",
+                "Engine 2",
+                "Engine 3",
+                "Engine 4"
+              ]
+            }
+          ]
+        }
+      ],
+      "events": [],
+      "states": []
+    },
+    {
       "id": "MSFSTouchPortalPlugin.FlightInstruments",
       "name": "MSFS - Flight Instruments",
       "imagepath": "",
@@ -459,30 +749,142 @@
           "name": "Add Fuel",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Adds X amount of Fuel",
+          "description": "Adds 25% amount of Fuel",
           "tryInline": true,
-          "format": "Add {0}% amount of fuel",
+          "format": "Add 25% amount of fuel",
           "data": []
         },
         {
-          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelectorLeft",
-          "name": "Select Left Fuel Tank",
+          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_1",
+          "name": "Fuel Selector 1",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Selects the left fuel tank",
+          "description": "Fuel Selector 1",
           "tryInline": true,
-          "format": "",
-          "data": []
+          "format": "Fuel Selector 1 - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_1.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_1.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "All",
+              "valueChoices": [
+                "All",
+                "Off",
+                "Left",
+                "Right",
+                "Left - Aux",
+                "Right - Aux",
+                "Center",
+                "Set"
+              ]
+            }
+          ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelectorRight",
-          "name": "Select Right Fuel Tank",
+          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_2",
+          "name": "Fuel Selector 2",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Selects the right fuel tank",
+          "description": "Fuel Selector 2",
           "tryInline": true,
-          "format": "",
-          "data": []
+          "format": "Fuel Selector 2 - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_2.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_2.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "All",
+              "valueChoices": [
+                "All",
+                "Off",
+                "Left",
+                "Right",
+                "Left - Aux",
+                "Right - Aux",
+                "Center",
+                "Set"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_3",
+          "name": "Fuel Selector 3",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Fuel Selector 3",
+          "tryInline": true,
+          "format": "Fuel Selector 3 - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_3.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_3.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "All",
+              "valueChoices": [
+                "All",
+                "Off",
+                "Left",
+                "Right",
+                "Left - Aux",
+                "Right - Aux",
+                "Center",
+                "Set"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_4",
+          "name": "Fuel Selector 4",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Fuel Selector 4",
+          "tryInline": true,
+          "format": "Fuel Selector 4 - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_4.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_4.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "All",
+              "valueChoices": [
+                "All",
+                "Off",
+                "Left",
+                "Right",
+                "Left - Aux",
+                "Right - Aux",
+                "Center",
+                "Set"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.Primers",
+          "name": "Toggle All/Specific Primers",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle All/Specific Primers",
+          "tryInline": true,
+          "format": "Toggle Primers - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.Primers.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.Primers.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "All",
+              "valueChoices": [
+                "All",
+                "1",
+                "2",
+                "3",
+                "4"
+              ]
+            }
+          ]
         },
         {
           "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelDump",
@@ -493,6 +895,52 @@
           "tryInline": true,
           "format": "Toggle Fuel Dump",
           "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.CrossFeed",
+          "name": "Toggle/Open/Off Cross Feed",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/Open/Off Cross Feed",
+          "tryInline": true,
+          "format": "Cross Feed - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.CrossFeed.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.CrossFeed.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Open",
+              "valueChoices": [
+                "Toggle",
+                "Open",
+                "Off"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelValve",
+          "name": "Toggle All/Specific Fuel Valve",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle All/Specific Fuel Valve",
+          "tryInline": true,
+          "format": "Toggle Fuel Valve - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelValve.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelValve.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "All",
+              "valueChoices": [
+                "All",
+                "1",
+                "2",
+                "3",
+                "4"
+              ]
+            }
+          ]
         }
       ],
       "events": [],

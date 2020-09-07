@@ -42,6 +42,8 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
     // Placeholder to offset each enum for SimConnect
     Init = 1000,
 
+    // TODO: Heading/Alt Settings
+
     // Auto Pilot
     [SimActionEvent]
     [TouchPortalActionMapping("AutoPilotMaster", "Toggle")]

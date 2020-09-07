@@ -14,6 +14,8 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 [MSFS - Environment](#msfs-environment)
 
+[MSFS - Failures](#msfs-failures)
+
 [MSFS - Flight Instruments](#msfs-flightinstruments)
 
 [MSFS - Flight Systems](#msfs-flightsystems)
@@ -53,6 +55,10 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | Master Battery | Toggle Master Battery | communicate | Toggle Master Battery |  |
 | Master Battery & Alternator | Toggle Master Battery & Alternator | communicate | Toggle Master Battery & Alternator |  |
 | Alternator - Specific | Toggle Specific Alternator | communicate | Toggle Altenator - {0} | **1**,2,3,4 |
+| Toggle/On/Off/Set Strobe Lights | Toggle/On/Off/Set Strobe Lights | communicate | Strobe Lights - {0} | **Toggle**,On,Off,Set |
+| Toggle/On/Off/Set Panel Lights | Toggle/On/Off/Set Panel Lights | communicate | Panel Lights - {0} | **Toggle**,On,Off,Set |
+| Toggle/On/Off/Set Landing Lights | Toggle/On/Off/Set Landing Lights | communicate | Landing Lights - {0} | **Toggle**,On,Off,Set |
+| Toggle All/Specific Lights | Toggle All/Specific Lights | communicate | Toggle Lights - {0} | **All**,Beacon,Taxi,Logo,Recognition,Wing,Nav,Cabin |
 
 
 ---
@@ -65,6 +71,12 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | --- | --- | --- | --- | --- |
 | Master Ignition Switch | Toggle Master Ignition Switch | communicate | Toggle Master Ignition Switch |  |
 | Engine Auto Start/Shutdown | Start/Shutdown Engine | communicate | Engine - {0} | **Start**,Shutdown |
+| Toggle All Magnetos | Toggle All Magnetos | communicate | Toggle All Magnetos - {0} | **Start**,Off,Right,Left,Both,Decrease,Increase |
+| Toggle Magneto 1 | Toggle Magneto 1 | communicate | Toggle Magneto 1 - {0} | **Start**,Off,Right,Left,Both,Decrease,Increase |
+| Toggle Magneto 2 | Toggle Magneto 2 | communicate | Toggle Magneto 2 - {0} | **Start**,Off,Right,Left,Both,Decrease,Increase |
+| Toggle Magneto 3 | Toggle Magneto 3 | communicate | Toggle Magneto 3 - {0} | **Start**,Off,Right,Left,Both,Decrease,Increase |
+| Toggle Magneto 4 | Toggle Magneto 4 | communicate | Toggle Magneto 4 - {0} | **Start**,Off,Right,Left,Both,Decrease,Increase |
+| Toggle Starters | Toggle Starters | communicate | Toggle Starter - {0} | **All**,1,2,3,4 |
 
 
 ---
@@ -87,6 +99,17 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 ---
 
+## MSFS - Failures
+
+### Actions
+
+| Name | Description | Type | Format | Data (Default in bold) |
+| --- | --- | --- | --- | --- |
+| Failures | Toggle Failures | communicate | Toggle Failures - {0} | **Electrical**,Vacuum,Pitot,Static Port,Hydraulic,Total Brake,Left Brake,Right Brake,Engine 1,Engine 2,Engine 3,Engine 4 |
+
+
+---
+
 ## MSFS - Flight Instruments
 
 ---
@@ -101,10 +124,15 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 | Name | Description | Type | Format | Data (Default in bold) |
 | --- | --- | --- | --- | --- |
-| Add Fuel | Adds X amount of Fuel | communicate | Add {0}% amount of fuel |  |
-| Select Left Fuel Tank | Selects the left fuel tank | communicate |  |  |
-| Select Right Fuel Tank | Selects the right fuel tank | communicate |  |  |
+| Add Fuel | Adds 25% amount of Fuel | communicate | Add 25% amount of fuel |  |
+| Fuel Selector 1 | Fuel Selector 1 | communicate | Fuel Selector 1 - {0} | **All**,Off,Left,Right,Left - Aux,Right - Aux,Center,Set |
+| Fuel Selector 2 | Fuel Selector 2 | communicate | Fuel Selector 2 - {0} | **All**,Off,Left,Right,Left - Aux,Right - Aux,Center,Set |
+| Fuel Selector 3 | Fuel Selector 3 | communicate | Fuel Selector 3 - {0} | **All**,Off,Left,Right,Left - Aux,Right - Aux,Center,Set |
+| Fuel Selector 4 | Fuel Selector 4 | communicate | Fuel Selector 4 - {0} | **All**,Off,Left,Right,Left - Aux,Right - Aux,Center,Set |
+| Toggle All/Specific Primers | Toggle All/Specific Primers | communicate | Toggle Primers - {0} | **All**,1,2,3,4 |
 | Fuel Dump - Toggle | Toggles the Fuel Dump | communicate | Toggle Fuel Dump |  |
+| Toggle/Open/Off Cross Feed | Toggle/Open/Off Cross Feed | communicate | Cross Feed - {0} | Toggle,**Open**,Off |
+| Toggle All/Specific Fuel Valve | Toggle All/Specific Fuel Valve | communicate | Toggle Fuel Valve - {0} | **All**,1,2,3,4 |
 
 
 ---
