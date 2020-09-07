@@ -11,9 +11,11 @@ using TouchPortalExtension.Attributes;
 namespace MSFSTouchPortalPlugin_Generator {
   public class GenerateEntry {
     private readonly string _PLUGIN_NAME = "";
+    private readonly string _TARGET_PATH = "";
 
-    public GenerateEntry(string pluginName) {
+    public GenerateEntry(string pluginName, string targetPath) {
       _PLUGIN_NAME = pluginName;
+      _TARGET_PATH = targetPath;
     }
 
     public void Generate() {
@@ -123,7 +125,7 @@ namespace MSFSTouchPortalPlugin_Generator {
       }
 
       var result = JsonConvert.SerializeObject(model, Formatting.Indented);
-      File.WriteAllText("..\\..\\..\\..\\entry.tp", result);
+      File.WriteAllText(Path.Combine(_TARGET_PATH, "entry.tp"), result);
       Console.WriteLine("entry.tp generated.");
     }
   }

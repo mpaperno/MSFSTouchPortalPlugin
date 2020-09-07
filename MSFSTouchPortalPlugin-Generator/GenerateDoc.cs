@@ -9,9 +9,11 @@ using TouchPortalExtension.Attributes;
 namespace MSFSTouchPortalPlugin_Generator {
   public class GenerateDoc {
     private readonly string _PLUGIN_NAME = "";
+    private readonly string _TARGET_PATH = "";
 
-    public GenerateDoc(string pluginName) {
+    public GenerateDoc(string pluginName, string targetPath) {
       _PLUGIN_NAME = pluginName;
+      _TARGET_PATH = targetPath;
     }
 
     public void Generate() {
@@ -21,7 +23,7 @@ namespace MSFSTouchPortalPlugin_Generator {
       // Create Markdown
       var result = CreateMarkdown(model);
 
-      File.WriteAllText("..\\..\\..\\..\\DOCUMENTATION.MD", result);
+      File.WriteAllText(Path.Combine(_TARGET_PATH, "DOCUMENTATION.MD"), result);
       Console.WriteLine("DOCUMENTATION.MD generated.");
     }
 
