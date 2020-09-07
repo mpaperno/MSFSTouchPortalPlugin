@@ -1,4 +1,5 @@
 ﻿using Microsoft.FlightSimulator.SimConnect;
+using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Objects.AutoPilot;
 using MSFSTouchPortalPlugin.Objects.InstrumentsSystems;
 using System;
@@ -18,7 +19,8 @@ namespace MSFSTouchPortalPlugin {
     }
 
     public enum Events {
-      StartupMessage = 0
+      StartupMessage = 0,
+      SimVars = 1
     }
 
     [DllImport("kernel32.dll")]
@@ -91,22 +93,49 @@ namespace MSFSTouchPortalPlugin {
       }
     }
 
-    public void MapClientEventToSimEvent(Enum eventId, string eventName) {
+    public bool MapClientEventToSimEvent(Enum eventId, string eventName) {
       if (Connected) {
         _simConnect.MapClientEventToSimEvent(eventId, eventName);
+        return true;
       }
+
+      return false;
     }
 
-    public void TransmitClientEvent(Groups group, Enum eventId, uint data) {
+    public bool TransmitClientEvent(Groups group, Enum eventId, uint data) {
       if (Connected) {
         _simConnect.TransmitClientEvent((uint)SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, data, group, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+        return true;
       }
+
+      return false;
     }
 
-    public void AddNotification(Enum group, Enum eventId) {
+    public bool AddNotification(Enum group, Enum eventId) {
       if (Connected) {
         _simConnect.AddClientEventToNotificationGroup(group, eventId, false);
+        return true;
       }
+
+      return false;
+    }
+
+    public bool RegisterToSimConnect(SimVarItem simVar) {
+      if (Connected) {
+        _simConnect.AddToDataDefinition(simVar.def, simVar.SimVarName, simVar.Unit, SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+        _simConnect.RegisterDataDefineStruct<double>(simVar.def);
+        return true;
+      }
+
+      return false;
+    }
+
+    public bool RequestDataOnSimObjectType(SimVarItem simVar) {
+      if (Connected) {
+        _simConnect.RequestDataOnSimObjectType(simVar.req, simVar.def, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
+      }
+
+      return false;
     }
 
     private void simconnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data) {

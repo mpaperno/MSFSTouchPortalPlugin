@@ -34,7 +34,7 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string imagepath { get; set; } = string.Empty;
     public List<TouchPortalAction> actions { get; set; } = new List<TouchPortalAction>();
     public List<object> events { get; set; } = new List<object>();
-    public List<object> states { get; set; } = new List<object>();
+    public List<TouchPortalState> states { get; set; } = new List<TouchPortalState>();
   }
 
   class TouchPortalAction {
@@ -65,6 +65,17 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string defaultValue { get; set; }
     [Required]
     public string[] valueChoices { get; set; }
+  }
+
+  class TouchPortalState {
+    [Required, MinLength(5)]
+    public string id { get; set; }
+    [Required]
+    public string type { get; set; }
+    [Required, JsonProperty("desc")]
+    public string description { get; set; }
+    [Required, JsonProperty("default")]
+    public string defaultValue { get; set; }
   }
 
   public class ValidateObjectAttribute : ValidationAttribute {
