@@ -8,6 +8,8 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 [MSFS - AutoPilot](#msfs-autopilot)
 
+[MSFS - Communication](#msfs-communication)
+
 [MSFS - Electrical](#msfs-electrical)
 
 [MSFS - Engine](#msfs-engine)
@@ -38,10 +40,24 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | Attitude Hold | Toggle/On/Off the attitude hold for auto pilot | communicate | Attitude Hold - {0} | **Toggle**,On,Off |
 | Approach Mode | Toggle/On/Off the approach mode for auto pilot | communicate | Approach Mode - {0} | **Toggle**,On,Off |
 | Heading Hold | Toggle/On/Off the heading hold for auto pilot | communicate | Heading Hold - {0} | **Toggle**,On,Off |
+| Heading Hold Value | Sets the heading hold value | communicate | Heading Hold Value - {0} | **Select**,Increase,Decrease,Set |
 | Altitude Hold | Toggle/On/Off the altitude hold for auto pilot | communicate | Altitude Hold - {0} | **Toggle**,On,Off |
+| Altitude Hold Value | Sets the altitude hold value | communicate | Altitude Hold Value - {0} | **Select**,Increase,Decrease |
 | Back Course Mode | Toggle/On/Off the back course mode for auto pilot | communicate | Back Course Mode - {0} | **Toggle**,On,Off |
 | Nav1 Mode | Toggle/On/Off the Nav1 mode for auto pilot | communicate | Nav1 Mode - {0} | **Toggle**,On,Off |
+| Vertical Speed Value | Sets the vertical speed value | communicate | Vertical Speed Value - {0} | **Select**,Increase,Decrease,Set |
+| Airspeed Hold | Toggle/On/Off/Set the airspeed hold for auto pilot | communicate | Airspeed Hold - {0} | **Toggle**,On,Off,Set |
+| Airspeed Hold Value | Sets the airspeed hold value | communicate | Airspeed Hold Value - {0} | **Select**,Increase,Decrease,Set |
+| Mach Hold | Toggle/On/Off/Set the mach hold for auto pilot | communicate | Mach Hold - {0} | **Toggle**,On,Off,Set |
+| Mach Hold Value | Sets the mach hold value | communicate | Mach Hold Value - {0} | Select,**Increase**,Decrease |
+| Flight Director | Toggle the Flight Director for auto pilot | communicate | Flight Director - {0} | **Toggle** |
+| Wing Leveler | Toggle/On/Off the Wing Leveler for auto pilot | communicate | Wing Leveler - {0} | **Toggle**,On,Off |
+| Localizer | Toggle/On/Off the localizer for auto pilot | communicate | Localizer - {0} | **Toggle**,On,Off |
 
+
+---
+
+## MSFS - Communication
 
 ---
 
@@ -116,6 +132,28 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 ## MSFS - Flight Systems
 
+### Actions
+
+| Name | Description | Type | Format | Data (Default in bold) |
+| --- | --- | --- | --- | --- |
+| Ailerons | Ailerons | communicate | Ailerons - {0} | **Center**,Left,Right,Set |
+| Brakes | Brakes | communicate | Brakes - {0} | **All**,Left,Right |
+| Toggle Parking Brake | Toggle Parking Brake | communicate | Toggle Parking Brake |  |
+| Flaps | Flaps | communicate | Flaps - {0} | **Up**,Down,Increase,Decrease,1,2,3,Set |
+| Cowl Flaps All | Cowl Flaps All | communicate | Cowl Flaps All - {0} | **Increase**,Decrease |
+| Cowl Flaps 1 | Cowl Flaps 1 | communicate | Cowl Flaps 1 - {0} | **Increase**,Decrease |
+| Cowl Flaps 2 | Cowl Flaps 2 | communicate | Cowl Flaps 2 - {0} | **Increase**,Decrease |
+| Cowl Flaps 3 | Cowl Flaps 3 | communicate | Cowl Flaps 3 - {0} | **Increase**,Decrease |
+| Cowl Flaps 4 | Cowl Flaps 4 | communicate | Cowl Flaps 4 - {0} | **Increase**,Decrease |
+| Gear Manipulation | Gear Manipulation | communicate | Gear - {0} | **Toggle**,Up,Down,Set,Pump |
+| Rudder | Rudder | communicate | Rudder - {0} | **Center**,Left,Right,Set |
+| Spoilers | Spoilers | communicate | Spoilers - {0} | **Toggle**,On,Off,Set |
+| Spoilers Arm | Spoilers Arm | communicate | Spoilers Arm - {0} | **Toggle**,On,Off,Set |
+| Aileron Trim | Aileron Trim | communicate | Aileron Trim - {0} | **Left**,Right |
+| Elevator Trim | Elevator Trim | communicate | Elevator Trim - {0} | **Up**,Down |
+| Rudder Trim | Rudder Trim | communicate | Rudder Trim - {0} | **Left**,Right |
+
+
 ---
 
 ## MSFS - Fuel
@@ -133,6 +171,8 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | Fuel Dump - Toggle | Toggles the Fuel Dump | communicate | Toggle Fuel Dump |  |
 | Toggle/Open/Off Cross Feed | Toggle/Open/Off Cross Feed | communicate | Cross Feed - {0} | Toggle,**Open**,Off |
 | Toggle All/Specific Fuel Valve | Toggle All/Specific Fuel Valve | communicate | Toggle Fuel Valve - {0} | **All**,1,2,3,4 |
+| Fuel Pump - Toggle | Toggles the Fuel Pump | communicate | Toggle Fuel Pump |  |
+| Electric Fuel Pump - Toggle | Toggles the Electric Fuel Pump | communicate | Toggle Electric Fuel Pump - {0} | **All**,1,2,3,4 |
 
 
 ---

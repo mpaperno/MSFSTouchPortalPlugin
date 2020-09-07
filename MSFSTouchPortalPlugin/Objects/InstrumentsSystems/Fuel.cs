@@ -40,6 +40,17 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     [TouchPortalAction("FuelValve", "Toggle All/Specific Fuel Valve", "MSFS", "Toggle All/Specific Fuel Valve", "Toggle Fuel Valve - {0}")]
     [TouchPortalActionChoice(new string[] { "All", "1", "2", "3", "4" }, "All")]
     public object FUEL_VALVE { get; }
+
+    #region Fuel Pump
+
+    [TouchPortalAction("FuelPump", "Fuel Pump - Toggle", "MSFS", "Toggles the Fuel Pump", "Toggle Fuel Pump")]
+    public object FUEL_PUMP { get; }
+
+    [TouchPortalAction("ElectricFuelPump", "Electric Fuel Pump - Toggle", "MSFS", "Toggles the Electric Fuel Pump", "Toggle Electric Fuel Pump - {0}")]
+    [TouchPortalActionChoice(new string[] { "All", "1", "2", "3", "4" }, "All")]
+    public object ELECTRIC_FUEL_PUMP { get; }
+
+    #endregion
   }
 
   [SimNotificationGroup(SimConnectWrapper.Groups.Fuel)]
@@ -198,6 +209,29 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     // Fuel Dump
     [SimActionEvent]
     [TouchPortalActionMapping("FuelDump")]
-    FUEL_DUMP_TOGGLE
+    FUEL_DUMP_TOGGLE,
+
+    #region Fuel Pump
+
+    [SimActionEvent]
+    [TouchPortalActionMapping("FuelPump")]
+    FUEL_PUMP,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ElectricFuelPump", "All")]
+    TOGGLE_ELECT_FUEL_PUMP,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ElectricFuelPump", "1")]
+    TOGGLE_ELECT_FUEL_PUMP1,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ElectricFuelPump", "2")]
+    TOGGLE_ELECT_FUEL_PUMP2,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ElectricFuelPump", "3")]
+    TOGGLE_ELECT_FUEL_PUMP3,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ElectricFuelPump", "4")]
+    TOGGLE_ELECT_FUEL_PUMP4
+
+    #endregion
   }
 }
