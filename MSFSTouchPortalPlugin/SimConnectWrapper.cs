@@ -19,7 +19,9 @@ namespace MSFSTouchPortalPlugin {
       Menu = 3,
       Engine = 4,
       Environment = 5,
-      Electrical = 6
+      Electrical = 6,
+      FlightSystems = 7,
+      FlightInstruments = 8
     }
 
     public enum Events {

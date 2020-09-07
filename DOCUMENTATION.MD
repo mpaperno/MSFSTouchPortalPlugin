@@ -6,45 +6,44 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 ## Table of Contents
 
-[MSFS - Plugin](#msfs-plugin)
+[MSFS - AutoPilot](#msfs-autopilot)
 
-[MFS - Menu](#mfs-menu)
+[MSFS - Electrical](#msfs-electrical)
 
-[MFS - Electrical](#mfs-electrical)
+[MSFS - Engine](#msfs-engine)
 
-[MFS - Engine](#mfs-engine)
+[MSFS - Environment](#msfs-environment)
 
-[MFS - Environment](#mfs-environment)
+[MSFS - Flight Instruments](#msfs-flightinstruments)
+
+[MSFS - Flight Systems](#msfs-flightsystems)
 
 [MSFS - Fuel](#msfs-fuel)
 
-[MSFS - AutoPilot](#msfs-autopilot)
+[MSFS - Menu](#msfs-menu)
+
+[MSFS - Plugin](#msfs-plugin)
 
 ---
 
-## MSFS - Plugin
+## MSFS - AutoPilot
 
 ### Actions
 
 | Name | Description | Type | Format | Data (Default in bold) |
 | --- | --- | --- | --- | --- |
-| Connection | Toggle/On/Off SimConnect Connection | communicate | SimConnect Connection - {0} | **Toggle**,On,Off |
-
-
-### States
-
-| Id | Type | Description | DefaultValue |
-| --- | --- | --- | --- |
-| MSFSTouchPortalPlugin.Plugin.State.Connected | text | The status of SimConnect | false |
+| AutoPilot | Toggle/On/Off Auto Pilot | communicate | Auto Pilot Master - {0} | **Toggle**,On,Off |
+| Attitude Hold | Toggle/On/Off the attitude hold for auto pilot | communicate | Attitude Hold - {0} | **Toggle**,On,Off |
+| Approach Mode | Toggle/On/Off the approach mode for auto pilot | communicate | Approach Mode - {0} | **Toggle**,On,Off |
+| Heading Hold | Toggle/On/Off the heading hold for auto pilot | communicate | Heading Hold - {0} | **Toggle**,On,Off |
+| Altitude Hold | Toggle/On/Off the altitude hold for auto pilot | communicate | Altitude Hold - {0} | **Toggle**,On,Off |
+| Back Course Mode | Toggle/On/Off the back course mode for auto pilot | communicate | Back Course Mode - {0} | **Toggle**,On,Off |
+| Nav1 Mode | Toggle/On/Off the Nav1 mode for auto pilot | communicate | Nav1 Mode - {0} | **Toggle**,On,Off |
 
 
 ---
 
-## MFS - Menu
-
----
-
-## MFS - Electrical
+## MSFS - Electrical
 
 ### Actions
 
@@ -58,18 +57,19 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 ---
 
-## MFS - Engine
+## MSFS - Engine
 
 ### Actions
 
 | Name | Description | Type | Format | Data (Default in bold) |
 | --- | --- | --- | --- | --- |
 | Master Ignition Switch | Toggle Master Ignition Switch | communicate | Toggle Master Ignition Switch |  |
+| Engine Auto Start/Shutdown | Start/Shutdown Engine | communicate | Engine - {0} | **Start**,Shutdown |
 
 
 ---
 
-## MFS - Environment
+## MSFS - Environment
 
 ### Actions
 
@@ -87,6 +87,14 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 ---
 
+## MSFS - Flight Instruments
+
+---
+
+## MSFS - Flight Systems
+
+---
+
 ## MSFS - Fuel
 
 ### Actions
@@ -101,19 +109,24 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 ---
 
-## MSFS - AutoPilot
+## MSFS - Menu
+
+---
+
+## MSFS - Plugin
 
 ### Actions
 
 | Name | Description | Type | Format | Data (Default in bold) |
 | --- | --- | --- | --- | --- |
-| AutoPilot | Toggle/On/Off Auto Pilot | communicate | Auto Pilot Master - {0} | **Toggle**,On,Off |
-| Attitude Hold | Toggle/On/Off the attitude hold for auto pilot | communicate | Attitude Hold - {0} | **Toggle**,On,Off |
-| Approach Mode | Toggle/On/Off the approach mode for auto pilot | communicate | Approach Mode - {0} | **Toggle**,On,Off |
-| Heading Hold | Toggle/On/Off the heading hold for auto pilot | communicate | Heading Hold - {0} | **Toggle**,On,Off |
-| Altitude Hold | Toggle/On/Off the altitude hold for auto pilot | communicate | Altitude Hold - {0} | **Toggle**,On,Off |
-| Back Course Mode | Toggle/On/Off the back course mode for auto pilot | communicate | Back Course Mode - {0} | **Toggle**,On,Off |
-| Nav1 Mode | Toggle/On/Off the Nav1 mode for auto pilot | communicate | Nav1 Mode - {0} | **Toggle**,On,Off |
+| Connection | Toggle/On/Off SimConnect Connection | communicate | SimConnect Connection - {0} | **Toggle**,On,Off |
+
+
+### States
+
+| Id | Type | Description | DefaultValue |
+| --- | --- | --- | --- |
+| MSFSTouchPortalPlugin.Plugin.State.Connected | text | The status of SimConnect | false |
 
 
 ---

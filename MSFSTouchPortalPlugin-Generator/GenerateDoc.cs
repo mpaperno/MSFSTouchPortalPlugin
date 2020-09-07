@@ -21,7 +21,7 @@ namespace MSFSTouchPortalPlugin_Generator {
       // Create Markdown
       var result = CreateMarkdown(model);
 
-      File.WriteAllText("DOCUMENTATION.MD", result);
+      File.WriteAllText("..\\..\\..\\..\\DOCUMENTATION.MD", result);
       Console.WriteLine("DOCUMENTATION.MD generated.");
     }
 
@@ -45,7 +45,7 @@ namespace MSFSTouchPortalPlugin_Generator {
       var assemblyList = assembly.GetTypes().ToList();
 
       // Get all classes with the TouchPortalCategory
-      var classList = assemblyList.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalCategoryAttribute))).ToList();
+      var classList = assemblyList.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalCategoryAttribute))).OrderBy(o => o.Name).ToList();
 
       // Loop through categories
       classList.ForEach(cat => {

@@ -2,7 +2,7 @@
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
-  [TouchPortalCategory("Electrical", "MFS - Electrical")]
+  [TouchPortalCategory("Electrical", "MSFS - Electrical")]
   internal class ElectricalMapping {
     #region Alternator & Battery
 
@@ -28,6 +28,8 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
   internal enum Electrical {
     // Placeholder to offset each enum for SimConnect
     Init = 6000,
+
+    // TODO: Exterior Lights, Interior Lights
 
     #region Alternator & Battery
 

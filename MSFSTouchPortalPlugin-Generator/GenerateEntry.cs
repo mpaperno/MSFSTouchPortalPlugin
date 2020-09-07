@@ -43,7 +43,7 @@ namespace MSFSTouchPortalPlugin_Generator {
       var q = assembly.GetTypes().ToList();
 
       // Get all classes with the TouchPortalCategory
-      var s = q.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalCategoryAttribute))).ToList();
+      var s = q.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalCategoryAttribute))).OrderBy(o => o.Name).ToList();
 
       // For each category, add to model
       s.ForEach(cat => {
@@ -123,7 +123,7 @@ namespace MSFSTouchPortalPlugin_Generator {
       }
 
       var result = JsonConvert.SerializeObject(model, Formatting.Indented);
-      File.WriteAllText("entry.tp", result);
+      File.WriteAllText("..\\..\\..\\..\\entry.tp", result);
       Console.WriteLine("entry.tp generated.");
     }
   }

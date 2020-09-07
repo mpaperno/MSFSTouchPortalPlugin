@@ -1,0 +1,548 @@
+{
+  "sdk": 2,
+  "version": 1,
+  "name": "MSFSTouchPortalPlugin",
+  "id": "MSFSTouchPortalPlugin",
+  "configuration": {
+    "colorDark": "#000000",
+    "colorLight": "#23CF5F"
+  },
+  "plugin_start_cmd": ".\\dist\\MSFSTouchPortalPlugin.exe",
+  "categories": [
+    {
+      "id": "MSFSTouchPortalPlugin.AutoPilot",
+      "name": "MSFS - AutoPilot",
+      "imagepath": "",
+      "actions": [
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaster",
+          "name": "AutoPilot",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off Auto Pilot",
+          "tryInline": true,
+          "format": "Auto Pilot Master - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaster.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaster.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitude",
+          "name": "Attitude Hold",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off the attitude hold for auto pilot",
+          "tryInline": true,
+          "format": "Attitude Hold - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitude.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitude.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotApproach",
+          "name": "Approach Mode",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off the approach mode for auto pilot",
+          "tryInline": true,
+          "format": "Approach Mode - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotApproach.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotApproach.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeading",
+          "name": "Heading Hold",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off the heading hold for auto pilot",
+          "tryInline": true,
+          "format": "Heading Hold - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeading.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeading.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAltitude",
+          "name": "Altitude Hold",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off the altitude hold for auto pilot",
+          "tryInline": true,
+          "format": "Altitude Hold - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAltitude.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAltitude.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotBackCourse",
+          "name": "Back Course Mode",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off the back course mode for auto pilot",
+          "tryInline": true,
+          "format": "Back Course Mode - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotBackCourse.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotBackCourse.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNav1",
+          "name": "Nav1 Mode",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off the Nav1 mode for auto pilot",
+          "tryInline": true,
+          "format": "Nav1 Mode - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNav1.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNav1.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off"
+              ]
+            }
+          ]
+        }
+      ],
+      "events": [],
+      "states": []
+    },
+    {
+      "id": "MSFSTouchPortalPlugin.Electrical",
+      "name": "MSFS - Electrical",
+      "imagepath": "",
+      "actions": [
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterAlternator",
+          "name": "Master Alternator",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Master Alternator",
+          "tryInline": true,
+          "format": "Toggle Master Alternator",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterBattery",
+          "name": "Master Battery",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Master Battery",
+          "tryInline": true,
+          "format": "Toggle Master Battery",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterBatteryAlternator",
+          "name": "Master Battery & Alternator",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Master Battery & Alternator",
+          "tryInline": true,
+          "format": "Toggle Master Battery & Alternator",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.AlternatorIndex",
+          "name": "Alternator - Specific",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Specific Alternator",
+          "tryInline": true,
+          "format": "Toggle Altenator - {$MSFSTouchPortalPlugin.Electrical.Action.AlternatorIndex.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Electrical.Action.AlternatorIndex.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "1",
+              "valueChoices": [
+                "1",
+                "2",
+                "3",
+                "4"
+              ]
+            }
+          ]
+        }
+      ],
+      "events": [],
+      "states": []
+    },
+    {
+      "id": "MSFSTouchPortalPlugin.Engine",
+      "name": "MSFS - Engine",
+      "imagepath": "",
+      "actions": [
+        {
+          "id": "MSFSTouchPortalPlugin.Engine.Action.MasterIgnition",
+          "name": "Master Ignition Switch",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Master Ignition Switch",
+          "tryInline": true,
+          "format": "Toggle Master Ignition Switch",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Engine.Action.EngineAuto",
+          "name": "Engine Auto Start/Shutdown",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Start/Shutdown Engine",
+          "tryInline": true,
+          "format": "Engine - {$MSFSTouchPortalPlugin.Engine.Action.EngineAuto.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Engine.Action.EngineAuto.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Start",
+              "valueChoices": [
+                "Start",
+                "Shutdown"
+              ]
+            }
+          ]
+        }
+      ],
+      "events": [],
+      "states": []
+    },
+    {
+      "id": "MSFSTouchPortalPlugin.Environment",
+      "name": "MSFS - Environment",
+      "imagepath": "",
+      "actions": [
+        {
+          "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIce",
+          "name": "Anti-Ice",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off Anti Ice",
+          "tryInline": true,
+          "format": "Anti Ice - {$MSFSTouchPortalPlugin.Environment.Action.AntiIce.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIce.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off",
+                "Set"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceEng1",
+          "name": "Anti-Ice Engine 1",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off Anti Ice Engine 1",
+          "tryInline": true,
+          "format": "Anti Ice Engine 1 - {$MSFSTouchPortalPlugin.Environment.Action.AntiIceEng1.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceEng1.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "Set"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceEng2",
+          "name": "Anti-Ice Engine 2",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off Anti Ice Engine 2",
+          "tryInline": true,
+          "format": "Anti Ice Engine 2 - {$MSFSTouchPortalPlugin.Environment.Action.AntiIceEng2.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceEng2.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "Set"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceEng3",
+          "name": "Anti-Ice Engine 3",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off Anti Ice Engine 3",
+          "tryInline": true,
+          "format": "Anti Ice Engine 3 - {$MSFSTouchPortalPlugin.Environment.Action.AntiIceEng3.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceEng3.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "Set"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceEng4",
+          "name": "Anti-Ice Engine 4",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off Anti Ice Engine 4",
+          "tryInline": true,
+          "format": "Anti Ice Engine 4 - {$MSFSTouchPortalPlugin.Environment.Action.AntiIceEng4.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceEng4.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "Set"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Environment.Action.StructuralDeIce",
+          "name": "Structural De-ice",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Structural DeIce",
+          "tryInline": true,
+          "format": "Toggle Structural DeIce",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Environment.Action.PropellerDeIce",
+          "name": "Propeller De-ice",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Propeller DeIce",
+          "tryInline": true,
+          "format": "Toggle Propeller DeIce",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Environment.Action.PitotHeat",
+          "name": "Pitot Heat",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off Pitot Heat",
+          "tryInline": true,
+          "format": "Pitot Heat - {$MSFSTouchPortalPlugin.Environment.Action.PitotHeat.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Environment.Action.PitotHeat.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off",
+                "Set"
+              ]
+            }
+          ]
+        }
+      ],
+      "events": [],
+      "states": []
+    },
+    {
+      "id": "MSFSTouchPortalPlugin.FlightInstruments",
+      "name": "MSFS - Flight Instruments",
+      "imagepath": "",
+      "actions": [],
+      "events": [],
+      "states": []
+    },
+    {
+      "id": "MSFSTouchPortalPlugin.FlightSystems",
+      "name": "MSFS - Flight Systems",
+      "imagepath": "",
+      "actions": [],
+      "events": [],
+      "states": []
+    },
+    {
+      "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel",
+      "name": "MSFS - Fuel",
+      "imagepath": "",
+      "actions": [
+        {
+          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.AddFuel",
+          "name": "Add Fuel",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Adds X amount of Fuel",
+          "tryInline": true,
+          "format": "Add {0}% amount of fuel",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelectorLeft",
+          "name": "Select Left Fuel Tank",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Selects the left fuel tank",
+          "tryInline": true,
+          "format": "",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelectorRight",
+          "name": "Select Right Fuel Tank",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Selects the right fuel tank",
+          "tryInline": true,
+          "format": "",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelDump",
+          "name": "Fuel Dump - Toggle",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggles the Fuel Dump",
+          "tryInline": true,
+          "format": "Toggle Fuel Dump",
+          "data": []
+        }
+      ],
+      "events": [],
+      "states": []
+    },
+    {
+      "id": "MSFSTouchPortalPlugin.Menu",
+      "name": "MSFS - Menu",
+      "imagepath": "",
+      "actions": [],
+      "events": [],
+      "states": []
+    },
+    {
+      "id": "MSFSTouchPortalPlugin.Plugin",
+      "name": "MSFS - Plugin",
+      "imagepath": "",
+      "actions": [
+        {
+          "id": "MSFSTouchPortalPlugin.Plugin.Action.Connection",
+          "name": "Connection",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off SimConnect Connection",
+          "tryInline": true,
+          "format": "SimConnect Connection - {$MSFSTouchPortalPlugin.Plugin.Action.Connection.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.Connection.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off"
+              ]
+            }
+          ]
+        }
+      ],
+      "events": [],
+      "states": [
+        {
+          "id": "MSFSTouchPortalPlugin.Plugin.State.Connected",
+          "type": "text",
+          "desc": "The status of SimConnect",
+          "default": "false"
+        }
+      ]
+    }
+  ]
+}

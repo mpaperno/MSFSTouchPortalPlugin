@@ -2,7 +2,7 @@
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.Menu {
-  [TouchPortalCategory("Menu", "MFS - Menu")]
+  [TouchPortalCategory("Menu", "MSFS - Menu")]
   internal class MenuMapping {
     //[TouchPortalAction("Pause", "Pause", "MSFS", "Toggle/On/Off Pause", "Pause - {0}")]
     //[TouchPortalActionChoice(new string[] { "Toggle", "On", "Off" }, "Toggle")]

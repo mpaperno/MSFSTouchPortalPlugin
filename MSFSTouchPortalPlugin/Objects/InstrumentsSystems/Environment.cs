@@ -2,7 +2,7 @@
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
-  [TouchPortalCategory("Environment", "MFS - Environment")]
+  [TouchPortalCategory("Environment", "MSFS - Environment")]
   internal class EnvironmentMapping {
     #region Anti-Ice
 
