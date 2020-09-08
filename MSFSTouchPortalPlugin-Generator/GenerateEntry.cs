@@ -102,7 +102,7 @@ namespace MSFSTouchPortalPlugin_Generator {
             var newState = new TouchPortalState() {
               id = $"{category.id}.State.{stateAttribute.Id}",
               type = stateAttribute.Type,
-              description = stateAttribute.Description,
+              description = $"{category.name} - {stateAttribute.Description}",
               defaultValue = stateAttribute.Default
             };
 

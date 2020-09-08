@@ -56,6 +56,13 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | Yaw Dampener | Toggle/On/Off/Set the Yaw Dampener | communicate | Yaw Dampener - {0} | **Toggle**,On,Off,Set |
 
 
+### States
+
+| Id | Type | Description | DefaultValue |
+| --- | --- | --- | --- |
+| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotPitchHold | text | The status of Auto Pilot Pitch Hold button |  |
+
+
 ---
 
 ## MSFS - Communication
@@ -76,6 +83,13 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | Toggle/On/Off/Set Panel Lights | Toggle/On/Off/Set Panel Lights | communicate | Panel Lights - {0} | **Toggle**,On,Off,Set |
 | Toggle/On/Off/Set Landing Lights | Toggle/On/Off/Set Landing Lights | communicate | Landing Lights - {0} | **Toggle**,On,Off,Set |
 | Toggle All/Specific Lights | Toggle All/Specific Lights | communicate | Toggle Lights - {0} | **All**,Beacon,Taxi,Logo,Recognition,Wing,Nav,Cabin |
+
+
+### States
+
+| Id | Type | Description | DefaultValue |
+| --- | --- | --- | --- |
+| MSFSTouchPortalPlugin.Electrical.State.LightBeaconOn | text | Light Beacon Status |  |
 
 
 ---

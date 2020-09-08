@@ -1,7 +1,9 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Constants;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
+  [SimVarDataRequestGroup]
   [TouchPortalCategory("Electrical", "MSFS - Electrical")]
   internal class ElectricalMapping {
     #region Alternator & Battery
@@ -38,6 +40,10 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     [TouchPortalAction("ToggleLights", "Toggle All/Specific Lights", "MSFS", "Toggle All/Specific Lights", "Toggle Lights - {0}")]
     [TouchPortalActionChoice(new string[] { "All", "Beacon", "Taxi", "Logo", "Recognition", "Wing", "Nav", "Cabin" }, "All")]
     public object ALL_LIGHTS { get; }
+
+    [SimVarDataRequest]
+    [TouchPortalState("LightBeaconOn", "text", "Light Beacon Status", "")]
+    public static SimVarItem LightBeaconOn = new SimVarItem() { def = Definition.LightBeaconOn, req = Request.LightBeaconOn, SimVarName = "LIGHT BEACON ON", Unit = Units.Bool, CanSet = false };
 
     #endregion
 
