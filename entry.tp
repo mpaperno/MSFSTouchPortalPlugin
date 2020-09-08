@@ -390,6 +390,29 @@
               ]
             }
           ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotYawDampener",
+          "name": "Yaw Dampener",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off/Set the Yaw Dampener",
+          "tryInline": true,
+          "format": "Yaw Dampener - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotYawDampener.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotYawDampener.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off",
+                "Set"
+              ]
+            }
+          ]
         }
       ],
       "events": [],

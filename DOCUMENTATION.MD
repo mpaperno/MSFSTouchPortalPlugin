@@ -53,6 +53,7 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | Flight Director | Toggle the Flight Director for auto pilot | communicate | Flight Director - {0} | **Toggle** |
 | Wing Leveler | Toggle/On/Off the Wing Leveler for auto pilot | communicate | Wing Leveler - {0} | **Toggle**,On,Off |
 | Localizer | Toggle/On/Off the localizer for auto pilot | communicate | Localizer - {0} | **Toggle**,On,Off |
+| Yaw Dampener | Toggle/On/Off/Set the Yaw Dampener | communicate | Yaw Dampener - {0} | **Toggle**,On,Off,Set |
 
 
 ---

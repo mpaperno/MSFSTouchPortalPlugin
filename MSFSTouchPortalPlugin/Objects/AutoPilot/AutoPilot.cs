@@ -125,6 +125,14 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
     public object AP_LOCALIZER { get; }
 
     #endregion
+
+    #region Yaw Dampener
+
+    [TouchPortalAction("AutoPilotYawDampener", "Yaw Dampener", "MSFS", "Toggle/On/Off/Set the Yaw Dampener", "Yaw Dampener - {0}")]
+    [TouchPortalActionChoice(new string[] { "Toggle", "On", "Off", "Set" }, "Toggle")]
+    public object AP_YAWDAMPENER { get; }
+
+    #endregion
   }
 
   [SimNotificationGroup(SimConnectWrapper.Groups.AutoPilot)]
@@ -376,6 +384,23 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
     [SimActionEvent]
     [TouchPortalActionMapping("AutoPilotLocalizer", "Off")]
     AP_LOC_HOLD_OFF,
+
+    #endregion
+
+    #region Yaw Dampener
+
+    [SimActionEvent]
+    [TouchPortalActionMapping("AutoPilotYawDampener", "Toggle")]
+    YAW_DAMPER_TOGGLE,
+    [SimActionEvent]
+    [TouchPortalActionMapping("AutoPilotYawDampener", "On")]
+    YAW_DAMPER_ON,
+    [SimActionEvent]
+    [TouchPortalActionMapping("AutoPilotYawDampener", "Off")]
+    YAW_DAMPER_OFF,
+    [SimActionEvent]
+    [TouchPortalActionMapping("AutoPilotYawDampener", "Set")]
+    YAW_DAMPER_SET,
 
     #endregion
   }
