@@ -2,6 +2,7 @@
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
+  [SimVarDataRequestGroup]
   [TouchPortalCategory("Communication", "MSFS - Communication")]
   internal class CommunicationMapping {
   }

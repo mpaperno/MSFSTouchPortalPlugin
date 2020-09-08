@@ -107,7 +107,8 @@ namespace MSFSTouchPortalPlugin {
             var item = (SimVarItem)s.GetValue(null);
             item.TouchPortalStateId = $"{rootName}.{catId}.State.{s.Name}";
 
-            simVarsDict.TryAdd((Definition)Enum.Parse(typeof(Definition), s.Name), (SimVarItem)s.GetValue(null));
+            //simVarsDict.TryAdd((Definition)Enum.Parse(typeof(Definition), s.Name), (SimVarItem)s.GetValue(null));
+            simVarsDict.TryAdd(item.def, item);
           });
         });
 
@@ -118,10 +119,17 @@ namespace MSFSTouchPortalPlugin {
 
             if (value.Value != stringVal) {
               value.Value = stringVal;
+              object valObj = stringVal;
+
+              switch (value.Unit) {
+                case Units.degrees:
+                  valObj = float.Parse(stringVal);
+                  break;
+              }
 
               // Update if known id.
               if (!string.IsNullOrWhiteSpace(value.TouchPortalStateId)) {
-                stateService.UpdateState(new StateUpdate() { Id = value.TouchPortalStateId, Value = stringVal });
+                stateService.UpdateState(new StateUpdate() { Id = value.TouchPortalStateId, Value = string.Format(value.StringFormat, valObj) });
               }
             }
 

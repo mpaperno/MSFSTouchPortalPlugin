@@ -2,7 +2,7 @@
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
-
+  [SimVarDataRequestGroup]
   [TouchPortalCategory("InstrumentsSystems.Fuel", "MSFS - Fuel")]
   internal class FuelMapping {
 
