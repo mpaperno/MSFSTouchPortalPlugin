@@ -7,7 +7,7 @@
     "colorDark": "#000000",
     "colorLight": "#23CF5F"
   },
-  "plugin_start_cmd": ".\\dist\\MSFSTouchPortalPlugin.exe",
+  "plugin_start_cmd": "%TP_PLUGIN_FOLDER%\\MSFS-TouchPortal-Plugin\\dist\\MSFSTouchPortalPlugin.exe",
   "categories": [
     {
       "id": "MSFSTouchPortalPlugin.AutoPilot",
