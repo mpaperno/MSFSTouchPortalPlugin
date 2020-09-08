@@ -1,8 +1,10 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Constants;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
 
+  [SimVarDataRequestGroup]
   [TouchPortalCategory("AutoPilot", "MSFS - AutoPilot")]
   internal class AutoPilotMapping {
 
@@ -11,6 +13,11 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
     [TouchPortalAction("AutoPilotMaster", "AutoPilot", "MSFS", "Toggle/On/Off Auto Pilot", "Auto Pilot Master - {0}")]
     [TouchPortalActionChoice(new string[] {"Toggle", "On", "Off"}, "Toggle")]
     public object AP_MASTER { get; }
+
+    [SimVarDataRequest]
+    [TouchPortalState("AutoPilotPitchHold", "text", "The status of Auto Pilot Pitch Hold button", "")]
+    public static SimVarItem AutoPilotPitchHold =
+      new SimVarItem() { def = Definition.AutoPilotPitchHold, req = Request.AutoPilotPitchHold, SimVarName = "AUTOPILOT PITCH HOLD", Unit = Units.Bool, CanSet = false };
 
     #endregion
 

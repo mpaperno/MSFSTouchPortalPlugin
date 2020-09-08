@@ -4,6 +4,7 @@ using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Objects.Plugin;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -13,6 +14,7 @@ using System.Timers;
 using TouchPortalApi;
 using TouchPortalApi.Interfaces;
 using TouchPortalApi.Models;
+using TouchPortalExtension.Attributes;
 using static MSFSTouchPortalPlugin.SimConnectWrapper;
 
 [assembly: InternalsVisibleTo("MSFSTouchPortalPlugin-Generator")]
@@ -93,18 +95,46 @@ namespace MSFSTouchPortalPlugin {
           });
         });
 
-        // Get All SimVars to register and create dictionary
-        simVarsDict = typeof(SimVars).GetFields().Where(
-          m => m.CustomAttributes.Any(
-            att => att.AttributeType == typeof(SimVarDataRequestAttribute)))
-          .ToDictionary(f => (Definition)Enum.Parse(typeof(Definition), f.Name), f => (SimVarItem)f.GetValue(null));
+        var stateFieldList = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass && t.GetCustomAttribute<SimVarDataRequestGroupAttribute>() != null).ToList();
+        stateFieldList.ForEach(stateFieldClass => {
+          string catName = stateFieldClass.GetCustomAttribute<TouchPortalCategoryAttribute>().Name;
+
+          // Get all States and register to SimConnect
+          var states = stateFieldClass.GetFields().Where(m => m.CustomAttributes.Any(att => att.AttributeType == typeof(SimVarDataRequestAttribute))).ToList();
+          states.ForEach(s => {
+            // Evaluate and setup the Touch Portal State ID
+            string catId = stateFieldClass.GetCustomAttribute<TouchPortalCategoryAttribute>().Id;
+            var item = (SimVarItem)s.GetValue(null);
+            item.TouchPortalStateId = $"{rootName}.{catId}.State.{s.Name}";
+
+            simVarsDict.TryAdd((Definition)Enum.Parse(typeof(Definition), s.Name), (SimVarItem)s.GetValue(null));
+          });
+        });
+
+        // On Data Update
+        simConnect.OnDataUpdateEvent += ((Definition def, Request req, object data) => {
+          if (simVarsDict.TryGetValue(def, out var value)) {
+            var stringVal = data.ToString();
+
+            if (value.Value != stringVal) {
+              value.Value = stringVal;
+
+              // Update if known id.
+              if (!string.IsNullOrWhiteSpace(value.TouchPortalStateId)) {
+                stateService.UpdateState(new StateUpdate() { Id = value.TouchPortalStateId, Value = stringVal });
+              }
+            }
+
+            value.SetPending(false);
+          }
+        });
 
         // Register SimVars
         foreach (var s in simVarsDict) {
           simConnect.RegisterToSimConnect(s.Value);
         }
 
-        var timer = new Timer(1000) { AutoReset = false };
+        var timer = new Timer(250) { AutoReset = false };
 
         timer.Elapsed += (obj, args) => {
           foreach (var s in simVarsDict) {

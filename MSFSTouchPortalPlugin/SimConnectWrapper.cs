@@ -40,6 +40,9 @@ namespace MSFSTouchPortalPlugin {
     EventWaitHandle _scReady = new EventWaitHandle(false, EventResetMode.AutoReset);
     public bool Connected = false;
 
+    public delegate void DataUpdateEventHandler(Definition def, Request req, object data);
+    public event DataUpdateEventHandler OnDataUpdateEvent;
+
     public SimConnectWrapper() { }
 
     public void Connect() {
@@ -152,6 +155,10 @@ namespace MSFSTouchPortalPlugin {
 
     private void simconnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data) {
       Console.WriteLine("ReceivedObjectDataByType");
+      if (data.dwData.Length > 0) {
+        OnDataUpdateEvent((Definition)data.dwDefineID, (Request)data.dwRequestID, data.dwData[0]);
+      }
+      
     }
 
     private void simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data) {

@@ -416,7 +416,14 @@
         }
       ],
       "events": [],
-      "states": []
+      "states": [
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotPitchHold",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - The status of Auto Pilot Pitch Hold button",
+          "default": ""
+        }
+      ]
     },
     {
       "id": "MSFSTouchPortalPlugin.Communication",
@@ -582,7 +589,14 @@
         }
       ],
       "events": [],
-      "states": []
+      "states": [
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.LightBeaconOn",
+          "type": "text",
+          "desc": "MSFS - Electrical - Light Beacon Status",
+          "default": ""
+        }
+      ]
     },
     {
       "id": "MSFSTouchPortalPlugin.Engine",
@@ -1619,7 +1633,7 @@
         {
           "id": "MSFSTouchPortalPlugin.Plugin.State.Connected",
           "type": "text",
-          "desc": "The status of SimConnect",
+          "desc": "MSFS - Plugin - The status of SimConnect",
           "default": "false"
         }
       ]

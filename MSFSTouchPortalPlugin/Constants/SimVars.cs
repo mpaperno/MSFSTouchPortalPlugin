@@ -50,8 +50,8 @@ namespace MSFSTouchPortalPlugin.Constants {
 
     #region AutoPilot
 
-    [SimVarDataRequest]
-    public static SimVarItem AutoPilotPitchHold = new SimVarItem() { def = Definition.AutoPilotPitchHold, req = Request.AutoPilotPitchHold, SimVarName = "AUTOPILOT PITCH HOLD", Unit = Units.Bool, CanSet = false };
+    //[SimVarDataRequest]
+    //public static SimVarItem AutoPilotPitchHold = new SimVarItem() { def = Definition.AutoPilotPitchHold, req = Request.AutoPilotPitchHold, SimVarName = "AUTOPILOT PITCH HOLD", Unit = Units.Bool, CanSet = false };
 
     #endregion
 
@@ -79,8 +79,6 @@ namespace MSFSTouchPortalPlugin.Constants {
 
     #region Lights
 
-    [SimVarDataRequest]
-    public static SimVarItem LightBeaconOn = new SimVarItem() { def = Definition.LightBeaconOn, req = Request.LightBeaconOn, SimVarName = "LIGHT BEACON ON", Unit = Units.Bool, CanSet = false };
     [SimVarDataRequest]
     public static SimVarItem LightBrakeOn = new SimVarItem() { def = Definition.LightBrakeOn, req = Request.LightBrakeOn, SimVarName = "LIGHT BRAKE ON", Unit = Units.Bool, CanSet = false };
     [SimVarDataRequest]
@@ -124,6 +122,9 @@ namespace MSFSTouchPortalPlugin.Constants {
     public bool PendingRequest = false;
     public DateTime LastPending = DateTime.Now;
     public string TouchPortalStateMapping;
+    public string Value = string.Empty;
+    public string StringFormat = "{0}";
+    public string TouchPortalStateId = "";
 
     public void SetPending(bool val) {
       PendingRequest = val;
