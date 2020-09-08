@@ -2,6 +2,7 @@
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.Menu {
+  [SimVarDataRequestGroup]
   [TouchPortalCategory("Menu", "MSFS - Menu")]
   internal class MenuMapping {
     //[TouchPortalAction("Pause", "Pause", "MSFS", "Toggle/On/Off Pause", "Pause - {0}")]

@@ -13,7 +13,9 @@ Documentation can be found here: [link](DOCUMENTATION.MD)
 
 * Connect/Disconnect Re-register services
 * States pushed back to Touch Portal
-  * Done but need more mappings. Also need to update MD with state info. 
+  * Done but need more mappings.
+  * Also need to update MD with state info and possible values. 
+  * Need to force update on first load.
 * Define SimVars
 * Documentation - Events needed and additional rows of data to display. 
 * Automate generation of Entry.tp and Docs on build and put in root. 

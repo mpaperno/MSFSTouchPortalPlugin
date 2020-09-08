@@ -29,7 +29,7 @@ namespace MSFSTouchPortalPlugin_Generator {
 
       // Add Configuration
       // Add Plug Start Comand
-      model.plugin_start_cmd = ".\\dist\\MSFSTouchPortalPlugin.exe";
+      model.plugin_start_cmd = "%TP_PLUGIN_FOLDER%\\dist\\MSFSTouchPortalPlugin.exe";
 
       // Load asembly
       var c = MSFSTouchPortalPlugin.Objects.AutoPilot.AutoPilot.AP_AIRSPEED_HOLD;

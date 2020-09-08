@@ -1,7 +1,9 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Constants;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.FlightSystems {
+  [SimVarDataRequestGroup]
   [TouchPortalCategory("FlightSystems", "MSFS - Flight Systems")]
   internal class FlightSystemsMapping {
     #region Ailerons
@@ -92,6 +94,12 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems {
     [TouchPortalAction("RudderTrim", "Rudder Trim", "MSFS", "Rudder Trim", "Rudder Trim - {0}")]
     [TouchPortalActionChoice(new string[] { "Left", "Right" }, "Left")]
     public object RUDDER_TRIM { get; }
+
+
+    [SimVarDataRequest] // XYZ
+    public static SimVarItem AileronTrimPct = new SimVarItem() { def = Definition.AileronTrimPct, req = Request.AileronTrimPct, SimVarName = "", Unit = Units.number, CanSet = true };
+    [SimVarDataRequest]
+    public static SimVarItem RudderTrimPct = new SimVarItem() { def = Definition.RudderTrimPct, req = Request.RudderTrimPct, SimVarName = "RUDDER TRIM PCT", Unit = Units.percentover100, CanSet = true };
 
     #endregion
   }
