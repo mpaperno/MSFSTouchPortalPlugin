@@ -2,6 +2,7 @@
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.Failures {
+  [SimVarDataRequestGroup]
   [TouchPortalCategory("Failures", "MSFS - Failures")]
   internal class FailuresMapping {
 

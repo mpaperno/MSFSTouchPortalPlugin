@@ -1,7 +1,9 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Constants;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
+  [SimVarDataRequestGroup]
   [TouchPortalCategory("Engine", "MSFS - Engine")]
   internal class EngineMapping {
 
@@ -13,6 +15,10 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     [TouchPortalAction("EngineAuto", "Engine Auto Start/Shutdown", "MSFS", "Start/Shutdown Engine", "Engine - {0}")]
     [TouchPortalActionChoice(new string[] { "Start", "Shutdown" }, "Start")]
     public object ENGINE_AUTO { get; }
+
+    [SimVarDataRequest]
+    [TouchPortalState("MasterIgnitionSwitch", "text", "Master Ignition Switch Status", "")]
+    public static SimVarItem MasterIgnitionSwitch = new SimVarItem() { def = Definition.MasterIgnitionSwitch, req = Request.MasterIgnitionSwitch, SimVarName = "MASTER IGNITION SWITCH", Unit = Units.Bool, CanSet = false };
 
     #endregion
 

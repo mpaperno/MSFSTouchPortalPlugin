@@ -44,6 +44,39 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     [SimVarDataRequest]
     [TouchPortalState("LightBeaconOn", "text", "Light Beacon Status", "")]
     public static SimVarItem LightBeaconOn = new SimVarItem() { def = Definition.LightBeaconOn, req = Request.LightBeaconOn, SimVarName = "LIGHT BEACON ON", Unit = Units.Bool, CanSet = false };
+    [SimVarDataRequest]
+    [TouchPortalState("LightBrakeOn", "text", "Light Brake Status", "")]
+    public static SimVarItem LightBrakeOn = new SimVarItem() { def = Definition.LightBrakeOn, req = Request.LightBrakeOn, SimVarName = "LIGHT BRAKE ON", Unit = Units.Bool, CanSet = false };
+    [SimVarDataRequest]
+    [TouchPortalState("LightCabinOn", "text", "Light Cabin Status", "")]
+    public static SimVarItem LightCabinOn = new SimVarItem() { def = Definition.LightCabinOn, req = Request.LightCabinOn, SimVarName = "LIGHT CABIN ON", Unit = Units.Bool, CanSet = false };
+    [SimVarDataRequest]
+    [TouchPortalState("LightHeadOn", "text", "Light Head Status", "")]
+    public static SimVarItem LightHeadOn = new SimVarItem() { def = Definition.LightHeadOn, req = Request.LightHeadOn, SimVarName = "LIGHT HEAD ON", Unit = Units.Bool, CanSet = false };
+    [SimVarDataRequest]
+    [TouchPortalState("LightLandingOn", "text", "Light Landing Status", "")]
+    public static SimVarItem LightLandingOn = new SimVarItem() { def = Definition.LightLandingOn, req = Request.LightLandingOn, SimVarName = "LIGHT LANDING ON", Unit = Units.Bool, CanSet = false };
+    [SimVarDataRequest]
+    [TouchPortalState("LightLogoOn", "text", "Light Logo Status", "")]
+    public static SimVarItem LightLogoOn = new SimVarItem() { def = Definition.LightLogoOn, req = Request.LightLogoOn, SimVarName = "LIGHT LOGO ON", Unit = Units.Bool, CanSet = false };
+    [SimVarDataRequest]
+    [TouchPortalState("LightNavOn", "text", "Light Nav Status", "")]
+    public static SimVarItem LightNavOn = new SimVarItem() { def = Definition.LightNavOn, req = Request.LightNavOn, SimVarName = "LIGHT NAV ON", Unit = Units.Bool, CanSet = false };
+    [SimVarDataRequest]
+    [TouchPortalState("LightPanelOn", "text", "Light Panel Status", "")]
+    public static SimVarItem LightPanelOn = new SimVarItem() { def = Definition.LightPanelOn, req = Request.LightPanelOn, SimVarName = "LIGHT PANEL ON", Unit = Units.Bool, CanSet = false };
+    [SimVarDataRequest]
+    [TouchPortalState("LightRecognitionOn", "text", "Light Recognition Status", "")]
+    public static SimVarItem LightRecognitionOn = new SimVarItem() { def = Definition.LightRecognitionOn, req = Request.LightRecognitionOn, SimVarName = "LIGHT RECOGNITION ON", Unit = Units.Bool, CanSet = false };
+    [SimVarDataRequest]
+    [TouchPortalState("LightStrobeOn", "text", "Light Strobe Status", "")]
+    public static SimVarItem LightStrobeOn = new SimVarItem() { def = Definition.LightStrobeOn, req = Request.LightStrobeOn, SimVarName = "LIGHT STROBE ON", Unit = Units.Bool, CanSet = false };
+    [SimVarDataRequest]
+    [TouchPortalState("LightTaxiOn", "text", "Light Taxi Status", "")]
+    public static SimVarItem LightTaxiOn = new SimVarItem() { def = Definition.LightTaxiOn, req = Request.LightTaxiOn, SimVarName = "LIGHT TAXI ON", Unit = Units.Bool, CanSet = false };
+    [SimVarDataRequest]
+    [TouchPortalState("LightWingOn", "text", "Light Wing Status", "")]
+    public static SimVarItem LightWingOn = new SimVarItem() { def = Definition.LightWingOn, req = Request.LightWingOn, SimVarName = "LIGHT WING ON", Unit = Units.Bool, CanSet = false };
 
     #endregion
 
