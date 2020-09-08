@@ -21,6 +21,11 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
     public static SimVarItem AutoPilotAvailable =
       new SimVarItem() { def = Definition.AutoPilotAvailable, req = Request.AutoPilotAvailable, SimVarName = "AUTOPILOT AVAILABLE", Unit = Units.Bool, CanSet = false };
 
+    [SimVarDataRequest]
+    [TouchPortalState("AutoPilotPitchHold", "text", "The status of Auto Pilot Pitch Hold button", "")]
+    public static SimVarItem AutoPilotPitchHold =
+      new SimVarItem() { def = Definition.AutoPilotPitchHold, req = Request.AutoPilotPitchHold, SimVarName = "AUTOPILOT PITCH HOLD", Unit = Units.Bool, CanSet = false };
+
     #endregion
 
     #region Attitude
