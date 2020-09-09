@@ -123,7 +123,13 @@ namespace MSFSTouchPortalPlugin {
 
               switch (value.Unit) {
                 case Units.degrees:
+                case Units.knots:
+                case Units.feet:
                   valObj = float.Parse(stringVal);
+                  break;
+                case Units.radians:
+                  // Convert to Degrees
+                  valObj = float.Parse(stringVal) * (180/Math.PI);
                   break;
               }
 

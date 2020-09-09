@@ -1,6 +1,6 @@
 {
   "sdk": 2,
-  "version": 1,
+  "version": 220,
   "name": "MSFSTouchPortalPlugin",
   "id": "MSFSTouchPortalPlugin",
   "configuration": {
@@ -1159,6 +1159,48 @@
           "id": "MSFSTouchPortalPlugin.FlightInstruments.State.GroundVelocity",
           "type": "text",
           "desc": "MSFS - Flight Instruments - Ground Speed in Knots",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneAltitude",
+          "type": "text",
+          "desc": "MSFS - Flight Instruments - Plane Altitude in Feet",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneAltitudeAGL",
+          "type": "text",
+          "desc": "MSFS - Flight Instruments - Plane Altitude AGL in Feet",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.GroundAltitude",
+          "type": "text",
+          "desc": "MSFS - Flight Instruments - Ground level in Feet",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneHeadingTrue",
+          "type": "text",
+          "desc": "MSFS - Flight Instruments - Plane Heading (True North) in Degrees",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneHeadingMagnetic",
+          "type": "text",
+          "desc": "MSFS - Flight Instruments - Plane Heading (Magnetic North) in Degrees",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneBankAngle",
+          "type": "text",
+          "desc": "MSFS - Flight Instruments - Plane Bank Angle in Degrees",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlanePitchAngle",
+          "type": "text",
+          "desc": "MSFS - Flight Instruments - Plane Pitch Angle in Degrees",
           "default": ""
         }
       ]

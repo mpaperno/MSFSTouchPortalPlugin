@@ -180,6 +180,13 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | Id | Type | Description | DefaultValue |
 | --- | --- | --- | --- |
 | MSFSTouchPortalPlugin.FlightInstruments.State.GroundVelocity | text | Ground Speed in Knots |  |
+| MSFSTouchPortalPlugin.FlightInstruments.State.PlaneAltitude | text | Plane Altitude in Feet |  |
+| MSFSTouchPortalPlugin.FlightInstruments.State.PlaneAltitudeAGL | text | Plane Altitude AGL in Feet |  |
+| MSFSTouchPortalPlugin.FlightInstruments.State.GroundAltitude | text | Ground level in Feet |  |
+| MSFSTouchPortalPlugin.FlightInstruments.State.PlaneHeadingTrue | text | Plane Heading (True North) in Degrees |  |
+| MSFSTouchPortalPlugin.FlightInstruments.State.PlaneHeadingMagnetic | text | Plane Heading (Magnetic North) in Degrees |  |
+| MSFSTouchPortalPlugin.FlightInstruments.State.PlaneBankAngle | text | Plane Bank Angle in Degrees |  |
+| MSFSTouchPortalPlugin.FlightInstruments.State.PlanePitchAngle | text | Plane Pitch Angle in Degrees |  |
 
 
 ---
