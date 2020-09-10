@@ -20,6 +20,7 @@ namespace MSFSTouchPortalPlugin.Constants {
     AutoPilotPitchHold,
     AutoPilotVerticalSpeedHold,
     AutoPilotVerticalSpeedVar,
+    GroundAltitude,
     GroundVelocity,
     LightBeaconOn,
     LightBrakeOn,
@@ -34,6 +35,12 @@ namespace MSFSTouchPortalPlugin.Constants {
     LightTaxiOn,
     LightWingOn,
     MasterIgnitionSwitch,
+    PlaneAltitude,
+    PlaneAltitudeAGL,
+    PlaneBankAngle,
+    PlaneHeadingTrue,
+    PlaneHeadingMagnetic,
+    PlanePitchAngle,
     RudderTrimPct
   }
 
@@ -55,6 +62,7 @@ namespace MSFSTouchPortalPlugin.Constants {
     AutoPilotPitchHold,
     AutoPilotVerticalSpeedHold,
     AutoPilotVerticalSpeedVar,
+    GroundAltitude,
     GroundVelocity,
     LightBeaconOn,
     LightBrakeOn,
@@ -69,6 +77,12 @@ namespace MSFSTouchPortalPlugin.Constants {
     LightTaxiOn,
     LightWingOn,
     MasterIgnitionSwitch,
+    PlaneAltitude,
+    PlaneAltitudeAGL,
+    PlaneBankAngle,
+    PlaneHeadingTrue,
+    PlaneHeadingMagnetic,
+    PlanePitchAngle,
     RudderTrimPct
   }
 
