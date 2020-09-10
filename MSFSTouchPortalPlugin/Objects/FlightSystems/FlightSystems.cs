@@ -1,5 +1,6 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Constants;
+using MSFSTouchPortalPlugin.Enums;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.FlightSystems {
@@ -104,7 +105,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems {
     #endregion
   }
 
-  [SimNotificationGroup(SimConnectWrapper.Groups.FlightSystems)]
+  [SimNotificationGroup(Groups.FlightSystems)]
   [TouchPortalCategoryMapping("FlightSystems")]
   internal enum FlightSystems {
     // Placeholder to offset each enum for SimConnect

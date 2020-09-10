@@ -1,9 +1,9 @@
-﻿using System;
-using static MSFSTouchPortalPlugin.SimConnectWrapper;
+﻿using MSFSTouchPortalPlugin.Enums;
+using System;
 
 namespace MSFSTouchPortalPlugin.Attributes {
   [AttributeUsage(AttributeTargets.Enum)]
-  public class SimNotificationGroupAttribute : Attribute {
+  internal class SimNotificationGroupAttribute : Attribute {
     public Groups Group;
 
     public SimNotificationGroupAttribute(Groups group) {

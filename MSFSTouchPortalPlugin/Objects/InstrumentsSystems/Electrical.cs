@@ -1,5 +1,6 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Constants;
+using MSFSTouchPortalPlugin.Enums;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
@@ -82,7 +83,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
 
   }
 
-  [SimNotificationGroup(SimConnectWrapper.Groups.Electrical)]
+  [SimNotificationGroup(Groups.Electrical)]
   [TouchPortalCategoryMapping("Electrical")]
   internal enum Electrical {
     // Placeholder to offset each enum for SimConnect

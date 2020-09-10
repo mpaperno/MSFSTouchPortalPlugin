@@ -1,4 +1,5 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Enums;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.Menu {
@@ -10,7 +11,7 @@ namespace MSFSTouchPortalPlugin.Objects.Menu {
     //public object PAUSE { get; }
   }
 
-  [SimNotificationGroup(SimConnectWrapper.Groups.Menu)]
+  [SimNotificationGroup(Groups.Menu)]
   [TouchPortalCategoryMapping("Menu")]
   internal enum Menu {
     // Placeholder to offset each enum for SimConnect

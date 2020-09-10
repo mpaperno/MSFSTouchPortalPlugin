@@ -1,4 +1,5 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Enums;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
@@ -7,7 +8,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
   internal class CommunicationMapping {
   }
 
-  [SimNotificationGroup(SimConnectWrapper.Groups.Communication)]
+  [SimNotificationGroup(Groups.Communication)]
   [TouchPortalCategoryMapping("Communication")]
   internal enum Communication {
     // Placeholder to offset each enum for SimConnect

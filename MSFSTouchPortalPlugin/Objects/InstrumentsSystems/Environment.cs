@@ -1,4 +1,5 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Enums;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
@@ -44,7 +45,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     #endregion
   }
 
-  [SimNotificationGroup(SimConnectWrapper.Groups.Environment)]
+  [SimNotificationGroup(Groups.Environment)]
   [TouchPortalCategoryMapping("Environment")]
   internal enum Environment {
     // Placeholder to offset each enum for SimConnect

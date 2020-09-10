@@ -1,5 +1,6 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Constants;
+using MSFSTouchPortalPlugin.Enums;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
@@ -214,7 +215,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
     #endregion
   }
 
-  [SimNotificationGroup(SimConnectWrapper.Groups.AutoPilot)]
+  [SimNotificationGroup(Groups.AutoPilot)]
   [TouchPortalCategoryMapping("AutoPilot")]
   internal enum AutoPilot {
     // Placeholder to offset each enum for SimConnect
