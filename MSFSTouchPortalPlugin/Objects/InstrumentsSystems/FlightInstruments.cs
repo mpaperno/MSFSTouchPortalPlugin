@@ -1,5 +1,6 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Constants;
+using MSFSTouchPortalPlugin.Enums;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
@@ -12,7 +13,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     public static SimVarItem GroundVelocity = new SimVarItem() { def = Definition.GroundVelocity, req = Request.GroundVelocity, SimVarName = "GROUND VELOCITY", Unit = Units.knots, CanSet = false };
   }
 
-  [SimNotificationGroup(SimConnectWrapper.Groups.FlightInstruments)]
+  [SimNotificationGroup(Groups.FlightInstruments)]
   [TouchPortalCategoryMapping("FlightInstruments")]
   internal enum FlightInstruments {
     // Placeholder to offset each enum for SimConnect

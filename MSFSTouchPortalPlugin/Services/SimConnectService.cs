@@ -1,5 +1,7 @@
 ﻿using Microsoft.FlightSimulator.SimConnect;
 using MSFSTouchPortalPlugin.Constants;
+using MSFSTouchPortalPlugin.Enums;
+using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Objects.AutoPilot;
 using MSFSTouchPortalPlugin.Objects.InstrumentsSystems;
 using System;
@@ -7,30 +9,11 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MSFSTouchPortalPlugin {
+namespace MSFSTouchPortalPlugin.Services {
   /// <summary>
   /// Wrapper for SimConnect
   /// </summary>
-  public class SimConnectWrapper {
-    public enum Groups {
-      System = 0,
-      AutoPilot = 1,
-      Fuel = 2,
-      Menu = 3,
-      Engine = 4,
-      Environment = 5,
-      Electrical = 6,
-      FlightSystems = 7,
-      FlightInstruments = 8,
-      Failures = 9,
-      Communication = 10
-    }
-
-    public enum Events {
-      StartupMessage = 0,
-      SimVars = 1
-    }
-
+  internal class SimConnectService : ISimConnectService {
     [DllImport("kernel32.dll")]
     static extern IntPtr GetConsoleWindow();
 
@@ -38,12 +21,14 @@ namespace MSFSTouchPortalPlugin {
     const int WM_USER_SIMCONNECT = 0x0402;
     SimConnect _simConnect = null;
     EventWaitHandle _scReady = new EventWaitHandle(false, EventResetMode.AutoReset);
-    public bool Connected = false;
-
-    public delegate void DataUpdateEventHandler(Definition def, Request req, object data);
+    private bool _connected = false;
+    
     public event DataUpdateEventHandler OnDataUpdateEvent;
+    public event ConnectEventHandler OnConnect;
 
-    public SimConnectWrapper() { }
+    public SimConnectService() { }
+
+    public bool IsConnected() => _connected;
 
     public void Connect() {
       Console.WriteLine("Connect SimConnect");
@@ -51,7 +36,7 @@ namespace MSFSTouchPortalPlugin {
       try {
         _simConnect = new SimConnect("Touch Portal Plugin", GetConsoleWindow(), WM_USER_SIMCONNECT, _scReady, 0);
 
-        Connected = true;
+        _connected = true;
 
         // System Events
         _simConnect.OnRecvOpen += new SimConnect.RecvOpenEventHandler(simconnect_OnRecvOpen);
@@ -77,6 +62,9 @@ namespace MSFSTouchPortalPlugin {
         _simConnect.SetNotificationGroupPriority(Groups.Fuel, NOTIFICATION_PRIORITY);
 
         _simConnect.Text(SIMCONNECT_TEXT_TYPE.PRINT_BLACK, 5, Events.StartupMessage, "TouchPortal Connected");
+
+        // Invoke Handler
+        OnConnect();
       } catch (COMException ex) {
         Console.WriteLine("Connection to Sim failed: " + ex.Message);
       }
@@ -91,7 +79,7 @@ namespace MSFSTouchPortalPlugin {
         _simConnect = null;
       }
 
-      Connected = false;
+      _connected = false;
     }
 
     public Task WaitForMessage() {
@@ -99,13 +87,13 @@ namespace MSFSTouchPortalPlugin {
         _scReady.WaitOne();
 
         // TODO: Exception on quit
-        _simConnect.ReceiveMessage();
+        _simConnect?.ReceiveMessage();
         //simconnect.RequestDataOnSimObjectType(Events.Test, Group.Test, 0, SIMCONNECT_SIMOBJECT_TYPE.AIRCRAFT);
       }
     }
 
     public bool MapClientEventToSimEvent(Enum eventId, string eventName) {
-      if (Connected) {
+      if (_connected) {
         _simConnect.MapClientEventToSimEvent(eventId, eventName);
         return true;
       }
@@ -114,7 +102,7 @@ namespace MSFSTouchPortalPlugin {
     }
 
     public bool TransmitClientEvent(Groups group, Enum eventId, uint data) {
-      if (Connected) {
+      if (_connected) {
         _simConnect.TransmitClientEvent((uint)SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, data, group, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
         return true;
       }
@@ -123,7 +111,7 @@ namespace MSFSTouchPortalPlugin {
     }
 
     public bool AddNotification(Enum group, Enum eventId) {
-      if (Connected) {
+      if (_connected) {
         _simConnect.AddClientEventToNotificationGroup(group, eventId, false);
         return true;
       }
@@ -132,7 +120,7 @@ namespace MSFSTouchPortalPlugin {
     }
 
     public bool RegisterToSimConnect(SimVarItem simVar) {
-      if (Connected) {
+      if (_connected) {
         _simConnect.AddToDataDefinition(simVar.def, simVar.SimVarName, simVar.Unit, SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
         _simConnect.RegisterDataDefineStruct<double>(simVar.def);
         return true;
@@ -142,7 +130,7 @@ namespace MSFSTouchPortalPlugin {
     }
 
     public bool RequestDataOnSimObjectType(SimVarItem simVar) {
-      if (Connected) {
+      if (_connected) {
         _simConnect.RequestDataOnSimObjectType(simVar.req, simVar.def, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
       }
 
@@ -158,7 +146,7 @@ namespace MSFSTouchPortalPlugin {
       if (data.dwData.Length > 0) {
         OnDataUpdateEvent((Definition)data.dwDefineID, (Request)data.dwRequestID, data.dwData[0]);
       }
-      
+
     }
 
     private void simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data) {
