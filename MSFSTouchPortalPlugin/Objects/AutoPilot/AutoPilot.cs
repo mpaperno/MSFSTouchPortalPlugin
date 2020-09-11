@@ -31,49 +31,41 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
 
     #region Attitude
 
+    [SimVarDataRequest]
     [TouchPortalAction("AutoPilotAttitude", "Attitude Hold", "MSFS", "Toggle/On/Off the attitude hold for auto pilot", "Attitude Hold - {0}")]
     [TouchPortalActionChoice(new string[] { "Toggle", "On", "Off" }, "Toggle")]
-    public object AP_ATTITUDE { get; }
-
-    [SimVarDataRequest]
     [TouchPortalState("AutoPilotAttitudeHold", "text", "AutoPilot Attitude Status", "")]
-    public static SimVarItem AutoPilotAttitudeHold =
+    public static SimVarItem AP_ATTITUDE =
       new SimVarItem() { def = Definition.AutoPilotAttitudeHold, req = Request.AutoPilotAttitudeHold, SimVarName = "AUTOPILOT ATTITUDE HOLD", Unit = Units.Bool, CanSet = false };
 
     #endregion
 
     #region Approach
 
+    [SimVarDataRequest]
     [TouchPortalAction("AutoPilotApproach", "Approach Mode", "MSFS", "Toggle/On/Off the approach mode for auto pilot", "Approach Mode - {0}")]
     [TouchPortalActionChoice(new string[] { "Toggle", "On", "Off" }, "Toggle")]
-    public object AP_APPROACH { get; }
-
-    [SimVarDataRequest]
     [TouchPortalState("AutoPilotApproachHold", "text", "AutoPilot Approach Status", "")]
-    public static SimVarItem AutoPilotApproachHold =
-      new SimVarItem() { def = Definition.AutoPilotApproachHold, req = Request.AutoPilotApproachHold, SimVarName = "AUTOPILOT APPROACH HOLD", Unit = Units.Bool, CanSet = false };
+    public static SimVarItem AP_APPROACH = new SimVarItem() { def = Definition.AutoPilotApproachHold, req = Request.AutoPilotApproachHold, SimVarName = "AUTOPILOT APPROACH HOLD", Unit = Units.Bool, CanSet = false };
 
     #endregion
 
     #region Heading
 
+    [SimVarDataRequest]
     [TouchPortalAction("AutoPilotHeading", "Heading Hold", "MSFS", "Toggle/On/Off the heading hold for auto pilot", "Heading Hold - {0}")]
     [TouchPortalActionChoice(new string[] { "Toggle", "On", "Off" }, "Toggle")]
-    public object AP_HEADING { get; }
-
-    [SimVarDataRequest]
     [TouchPortalState("AutoPilotHeadingHold", "text", "AutoPilot Heading Status", "")]
-    public static SimVarItem AutoPilotHeadingHold = 
+    public static SimVarItem AP_HEADING =
       new SimVarItem() { def = Definition.AutoPilotHeadingHold, req = Request.AutoPilotHeadingHold, SimVarName = "AUTOPILOT HEADING LOCK", Unit = Units.Bool, CanSet = false };
 
-    [SimVarDataRequest]
-    [TouchPortalState("AutoPilotHeadingVar", "text", "AutoPilot Heading Direction", "")]
-    public static SimVarItem AutoPilotHeadingVar = 
-      new SimVarItem() { def = Definition.AutoPilotHeadingVar, req = Request.AutoPilotHeadingVar, SimVarName = "AUTOPILOT HEADING LOCK DIR", Unit = Units.degrees, CanSet = false, StringFormat = "{0:F0}" };
 
+    [SimVarDataRequest]
     [TouchPortalAction("AutoPilotHeadingVar", "Heading Hold Value", "MSFS", "Sets the heading hold value", "Heading Hold Value - {0}")]
     [TouchPortalActionChoice(new string[] { "Select", "Increase", "Decrease", "Set" }, "Select")]
-    public object AP_HEADING_VAR { get; }
+    [TouchPortalState("AutoPilotHeadingVar", "text", "AutoPilot Heading Direction", "")]
+    public static SimVarItem AP_HEADING_VAR =
+      new SimVarItem() { def = Definition.AutoPilotHeadingVar, req = Request.AutoPilotHeadingVar, SimVarName = "AUTOPILOT HEADING LOCK DIR", Unit = Units.degrees, CanSet = false, StringFormat = "{0:F0}" };
 
     #endregion
 
@@ -211,11 +203,6 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
     #endregion
 
     #region Flight Level Control
-
-    [SimVarDataRequest]
-    [TouchPortalState("AutoPilotPitchHold", "text", "The status of Auto Pilot Pitch Hold button", "")]
-    public static SimVarItem AutoPilotPitchHold =
-      new SimVarItem() { def = Definition.AutoPilotPitchHold, req = Request.AutoPilotPitchHold, SimVarName = "AUTOPILOT PITCH HOLD", Unit = Units.Bool, CanSet = false }; 
 
     #endregion
   }

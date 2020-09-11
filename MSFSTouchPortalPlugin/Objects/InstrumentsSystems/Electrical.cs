@@ -10,6 +10,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     #region Alternator & Battery
 
     [TouchPortalAction("MasterAlternator", "Master Alternator", "MSFS", "Toggle Master Alternator", "Toggle Master Alternator")]
+    [TouchPortalState("AutoPilotMaster", "text", "AutoPilot Master Status", "")]
     public object MASTER_ALTERNATOR { get; }
 
     [TouchPortalAction("MasterBattery", "Master Battery", "MSFS", "Toggle Master Battery", "Toggle Master Battery")]

@@ -30,7 +30,7 @@ namespace MSFSTouchPortalPlugin.Services {
 
     public bool IsConnected() => _connected;
 
-    public void Connect() {
+    public bool Connect() {
       Console.WriteLine("Connect SimConnect");
 
       try {
@@ -65,9 +65,13 @@ namespace MSFSTouchPortalPlugin.Services {
 
         // Invoke Handler
         OnConnect();
+
+        return true;
       } catch (COMException ex) {
         Console.WriteLine("Connection to Sim failed: " + ex.Message);
       }
+
+      return false;
     }
 
     public void Disconnect() {
@@ -139,6 +143,7 @@ namespace MSFSTouchPortalPlugin.Services {
 
     private void simconnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data) {
       Console.WriteLine("Quit");
+      _connected = false;
     }
 
     private void simconnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data) {

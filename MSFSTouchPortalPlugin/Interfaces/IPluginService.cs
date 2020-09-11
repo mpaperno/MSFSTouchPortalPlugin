@@ -10,6 +10,5 @@ namespace MSFSTouchPortalPlugin.Interfaces {
   internal interface IPluginService {
     Task RunPluginServices();
     void TryConnect();
-    void SetupEventLists(Dictionary<string, Enum> internalEvents, Dictionary<string, Enum> actionEvents, Dictionary<Definition, SimVarItem> states);
   }
 }

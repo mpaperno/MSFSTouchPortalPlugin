@@ -1,6 +1,5 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Constants;
-using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -52,9 +51,6 @@ namespace MSFSTouchPortalPlugin.Services {
         events.ForEach(e => {
           // Map the touch portal action to the Sim Event
           if (Enum.TryParse(e.ReflectedType, e.Name, out dynamic result)) {
-            //simConnect.MapClientEventToSimEvent(result, e.Name);
-            //simConnect.AddNotification(group, result);
-
             // Register to Touch Portal
             string actionName = e.GetCustomAttribute<TouchPortalActionMappingAttribute>().ActionId;
             string actionValue = e.GetCustomAttribute<TouchPortalActionMappingAttribute>().Value;
@@ -81,7 +77,7 @@ namespace MSFSTouchPortalPlugin.Services {
           // Evaluate and setup the Touch Portal State ID
           string catId = stateFieldClass.GetCustomAttribute<TouchPortalCategoryAttribute>().Id;
           var item = (SimVarItem)s.GetValue(null);
-          item.TouchPortalStateId = $"{rootName}.{catId}.State.{s.Name}";
+          item.TouchPortalStateId = $"{rootName}.{catId}.State.{item.def.ToString()}";
 
           returnDict.TryAdd(item.def, item);
         });

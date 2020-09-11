@@ -62,6 +62,7 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | --- | --- | --- | --- |
 | MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotMaster | text | AutoPilot Master Status |  |
 | MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAvailable | text | AutoPilot Availability |  |
+| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotPitchHold | text | The status of Auto Pilot Pitch Hold button |  |
 | MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAttitudeHold | text | AutoPilot Attitude Status |  |
 | MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotApproachHold | text | AutoPilot Approach Status |  |
 | MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotHeadingHold | text | AutoPilot Heading Status |  |
@@ -74,7 +75,6 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotVerticalSpeedVar | text | AutoPilot Vertical Speed Value |  |
 | MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAirSpeedHold | text | AutoPilot Air Speed Status |  |
 | MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAirSpeedVar | text | AutoPilot Air Speed Value |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotPitchHold | text | The status of Auto Pilot Pitch Hold button |  |
 
 
 ---
@@ -103,6 +103,7 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 | Id | Type | Description | DefaultValue |
 | --- | --- | --- | --- |
+| MSFSTouchPortalPlugin.Electrical.State.AutoPilotMaster | text | AutoPilot Master Status |  |
 | MSFSTouchPortalPlugin.Electrical.State.LightBeaconOn | text | Light Beacon Status |  |
 | MSFSTouchPortalPlugin.Electrical.State.LightBrakeOn | text | Light Brake Status |  |
 | MSFSTouchPortalPlugin.Electrical.State.LightCabinOn | text | Light Cabin Status |  |
@@ -187,13 +188,6 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | MSFSTouchPortalPlugin.FlightInstruments.State.PlaneHeadingMagnetic | text | Plane Heading (Magnetic North) in Degrees |  |
 | MSFSTouchPortalPlugin.FlightInstruments.State.PlaneBankAngle | text | Plane Bank Angle in Degrees |  |
 | MSFSTouchPortalPlugin.FlightInstruments.State.PlanePitchAngle | text | Plane Pitch Angle in Degrees |  |
-
-
-### States
-
-| Id | Type | Description | DefaultValue |
-| --- | --- | --- | --- |
-| MSFSTouchPortalPlugin.FlightInstruments.State.GroundVelocity | text | Ground Speed in Knots |  |
 
 
 ---

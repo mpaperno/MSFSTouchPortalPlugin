@@ -5,16 +5,19 @@ using MSFSTouchPortalPlugin.Objects.Plugin;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using TouchPortalApi.Interfaces;
 using TouchPortalApi.Models;
+using Timer = System.Timers.Timer;
 
 namespace MSFSTouchPortalPlugin.Services {
   /// <inheritdoc cref="IPluginService" />
   internal class PluginService : IPluginService {
     private readonly IMessageProcessor _messageProcessor;
     private readonly ISimConnectService _simConnectService;
+    private readonly IReflectionService _reflectionService;
 
     private Dictionary<string, Enum> actionsDictionary = new Dictionary<string, Enum>();
     private Dictionary<Definition, SimVarItem> statesDictionary = new Dictionary<Definition, SimVarItem>();
@@ -24,11 +27,13 @@ namespace MSFSTouchPortalPlugin.Services {
     /// Constructor
     /// </summary>
     /// <param name="messageProcessor">Message Processor Object</param>
-    public PluginService(IMessageProcessor messageProcessor, ISimConnectService simConnectService) {
+    public PluginService(IMessageProcessor messageProcessor, ISimConnectService simConnectService, IReflectionService reflectionService) {
       _messageProcessor = messageProcessor ?? throw new ArgumentNullException(nameof(messageProcessor));
       _simConnectService = simConnectService ?? throw new ArgumentNullException(nameof(simConnectService));
+      _reflectionService = reflectionService ?? throw new ArgumentNullException(nameof(reflectionService));
 
       Initialize();
+      SetupEventLists();
     }
 
     /// <summary>
@@ -96,17 +101,21 @@ namespace MSFSTouchPortalPlugin.Services {
         foreach (var s in statesDictionary) {
           _simConnectService.RegisterToSimConnect(s.Value);
         }
+
+        Task.WhenAll(RunPluginServices());
       };
     }
 
-    public void TryConnect() {
-      _simConnectService.Connect();
+    private void SetupEventLists() {
+      internalEventsDictionary = _reflectionService.GetInternalEvents();
+      actionsDictionary = _reflectionService.GetActionEvents();
+      statesDictionary = _reflectionService.GetStates();
     }
 
-    public void SetupEventLists(Dictionary<string, Enum> internalEvents, Dictionary<string, Enum> actionEvents, Dictionary<Definition, SimVarItem> states) {
-      internalEventsDictionary = internalEvents;
-      actionsDictionary = actionEvents;
-      statesDictionary = states;
+    public void TryConnect() {
+      while (!_simConnectService.Connect()) {
+        Thread.Sleep(5000);
+      }
     }
 
     public async Task RunPluginServices() {

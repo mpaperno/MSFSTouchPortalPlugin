@@ -31,21 +31,9 @@ namespace MSFSTouchPortalPlugin {
       try {
         // Startup Plugin Service
         var pluginService = serviceProvider.GetRequiredService<IPluginService>();
-        var reflectionService = serviceProvider.GetRequiredService<IReflectionService>();
-
-        var internalEvents = reflectionService.GetInternalEvents();
-        var actionEvents = reflectionService.GetActionEvents();
-        var states = reflectionService.GetStates();
-
+        
         // Connect to MSFS
         pluginService.TryConnect();
-
-        // Setup Events/Actions
-        pluginService.SetupEventLists(internalEvents, actionEvents, states);
-
-        // Run services
-        Task.WaitAll(pluginService.RunPluginServices());
-
 
         Console.ReadLine();
       } catch (COMException ex) {
