@@ -1,4 +1,5 @@
-﻿using MSFSTouchPortalPlugin_Generator.Model;
+﻿using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin_Generator.Model;
 using System;
 using System.IO;
 using System.Linq;
@@ -85,7 +86,7 @@ namespace MSFSTouchPortalPlugin_Generator {
         });
 
         // Loop through States
-        var states = cat.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalStateAttribute))).ToList();
+        var states = cat.GetFields().Where(m => m.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalState))).ToList();
         states.ForEach(state => {
           var stateAttribute = state.GetCustomAttribute<TouchPortalStateAttribute>();
 

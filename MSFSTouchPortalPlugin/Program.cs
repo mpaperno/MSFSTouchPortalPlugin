@@ -1,12 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Interfaces;
-using MSFSTouchPortalPlugin.Objects.Plugin;
 using MSFSTouchPortalPlugin.Services;
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using TouchPortalApi;
 
 [assembly: InternalsVisibleTo("MSFSTouchPortalPlugin-Generator")]

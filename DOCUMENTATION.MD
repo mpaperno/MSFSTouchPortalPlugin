@@ -36,6 +36,8 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 | Name | Description | Type | Format | Data (Default in bold) |
 | --- | --- | --- | --- | --- |
+| Localizer | Toggle/On/Off the localizer for auto pilot | communicate | Localizer - {0} | **Toggle**,On,Off |
+| AutoPilot | Toggle/On/Off Auto Pilot | communicate | Auto Pilot Master - {0} | **Toggle**,On,Off |
 | Attitude Hold | Toggle/On/Off the attitude hold for auto pilot | communicate | Attitude Hold - {0} | **Toggle**,On,Off |
 | Approach Mode | Toggle/On/Off the approach mode for auto pilot | communicate | Approach Mode - {0} | **Toggle**,On,Off |
 | Heading Hold | Toggle/On/Off the heading hold for auto pilot | communicate | Heading Hold - {0} | **Toggle**,On,Off |
@@ -51,30 +53,7 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | Mach Hold Value | Sets the mach hold value | communicate | Mach Hold Value - {0} | Select,**Increase**,Decrease |
 | Flight Director | Toggle the Flight Director for auto pilot | communicate | Flight Director - {0} | **Toggle** |
 | Wing Leveler | Toggle/On/Off the Wing Leveler for auto pilot | communicate | Wing Leveler - {0} | **Toggle**,On,Off |
-| Localizer | Toggle/On/Off the localizer for auto pilot | communicate | Localizer - {0} | **Toggle**,On,Off |
 | Yaw Dampener | Toggle/On/Off/Set the Yaw Dampener | communicate | Yaw Dampener - {0} | **Toggle**,On,Off,Set |
-| AutoPilot | Toggle/On/Off Auto Pilot | communicate | Auto Pilot Master - {0} | **Toggle**,On,Off |
-
-
-### States
-
-| Id | Type | Description | DefaultValue |
-| --- | --- | --- | --- |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotMaster | text | AutoPilot Master Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAvailable | text | AutoPilot Availability |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotPitchHold | text | The status of Auto Pilot Pitch Hold button |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAttitudeHold | text | AutoPilot Attitude Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotApproachHold | text | AutoPilot Approach Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotHeadingHold | text | AutoPilot Heading Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotHeadingVar | text | AutoPilot Heading Direction |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAltitudeHold | text | AutoPilot Altitude Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAltitudeVar | text | AutoPilot Altitude Value |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotBackCourseHold | text | AutoPilot Back Course Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotNav1Hold | text | AutoPilot Nav1 Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotVerticalSpeedHold | text | AutoPilot Vertical Speed Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotVerticalSpeedVar | text | AutoPilot Vertical Speed Value |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAirSpeedHold | text | AutoPilot Air Speed Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAirSpeedVar | text | AutoPilot Air Speed Value |  |
 
 
 ---
@@ -89,33 +68,14 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 | Name | Description | Type | Format | Data (Default in bold) |
 | --- | --- | --- | --- | --- |
-| Master Alternator | Toggle Master Alternator | communicate | Toggle Master Alternator |  |
-| Master Battery | Toggle Master Battery | communicate | Toggle Master Battery |  |
 | Master Battery & Alternator | Toggle Master Battery & Alternator | communicate | Toggle Master Battery & Alternator |  |
 | Alternator - Specific | Toggle Specific Alternator | communicate | Toggle Altenator - {0} | **1**,2,3,4 |
 | Toggle/On/Off/Set Strobe Lights | Toggle/On/Off/Set Strobe Lights | communicate | Strobe Lights - {0} | **Toggle**,On,Off,Set |
 | Toggle/On/Off/Set Panel Lights | Toggle/On/Off/Set Panel Lights | communicate | Panel Lights - {0} | **Toggle**,On,Off,Set |
 | Toggle/On/Off/Set Landing Lights | Toggle/On/Off/Set Landing Lights | communicate | Landing Lights - {0} | **Toggle**,On,Off,Set |
 | Toggle All/Specific Lights | Toggle All/Specific Lights | communicate | Toggle Lights - {0} | **All**,Beacon,Taxi,Logo,Recognition,Wing,Nav,Cabin |
-
-
-### States
-
-| Id | Type | Description | DefaultValue |
-| --- | --- | --- | --- |
-| MSFSTouchPortalPlugin.Electrical.State.AutoPilotMaster | text | AutoPilot Master Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightBeaconOn | text | Light Beacon Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightBrakeOn | text | Light Brake Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightCabinOn | text | Light Cabin Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightHeadOn | text | Light Head Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightLandingOn | text | Light Landing Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightLogoOn | text | Light Logo Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightNavOn | text | Light Nav Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightPanelOn | text | Light Panel Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightRecognitionOn | text | Light Recognition Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightStrobeOn | text | Light Strobe Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightTaxiOn | text | Light Taxi Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightWingOn | text | Light Wing Status |  |
+| Master Alternator | Toggle Master Alternator | communicate | Toggle Master Alternator |  |
+| Master Battery | Toggle Master Battery | communicate | Toggle Master Battery |  |
 
 
 ---
@@ -126,7 +86,6 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 | Name | Description | Type | Format | Data (Default in bold) |
 | --- | --- | --- | --- | --- |
-| Master Ignition Switch | Toggle Master Ignition Switch | communicate | Toggle Master Ignition Switch |  |
 | Engine Auto Start/Shutdown | Start/Shutdown Engine | communicate | Engine - {0} | **Start**,Shutdown |
 | Toggle All Magnetos | Toggle All Magnetos | communicate | Toggle All Magnetos - {0} | **Start**,Off,Right,Left,Both,Decrease,Increase |
 | Toggle Magneto 1 | Toggle Magneto 1 | communicate | Toggle Magneto 1 - {0} | **Start**,Off,Right,Left,Both,Decrease,Increase |
@@ -134,13 +93,7 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | Toggle Magneto 3 | Toggle Magneto 3 | communicate | Toggle Magneto 3 - {0} | **Start**,Off,Right,Left,Both,Decrease,Increase |
 | Toggle Magneto 4 | Toggle Magneto 4 | communicate | Toggle Magneto 4 - {0} | **Start**,Off,Right,Left,Both,Decrease,Increase |
 | Toggle Starters | Toggle Starters | communicate | Toggle Starter - {0} | **All**,1,2,3,4 |
-
-
-### States
-
-| Id | Type | Description | DefaultValue |
-| --- | --- | --- | --- |
-| MSFSTouchPortalPlugin.Engine.State.MasterIgnitionSwitch | text | Master Ignition Switch Status |  |
+| Master Ignition Switch | Toggle Master Ignition Switch | communicate | Toggle Master Ignition Switch |  |
 
 
 ---
@@ -175,20 +128,6 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 ---
 
 ## MSFS - Flight Instruments
-
-### States
-
-| Id | Type | Description | DefaultValue |
-| --- | --- | --- | --- |
-| MSFSTouchPortalPlugin.FlightInstruments.State.GroundVelocity | text | Ground Speed in Knots |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.PlaneAltitude | text | Plane Altitude in Feet |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.PlaneAltitudeAGL | text | Plane Altitude AGL in Feet |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.GroundAltitude | text | Ground level in Feet |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.PlaneHeadingTrue | text | Plane Heading (True North) in Degrees |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.PlaneHeadingMagnetic | text | Plane Heading (Magnetic North) in Degrees |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.PlaneBankAngle | text | Plane Bank Angle in Degrees |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.PlanePitchAngle | text | Plane Pitch Angle in Degrees |  |
-
 
 ---
 
@@ -250,13 +189,6 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | Name | Description | Type | Format | Data (Default in bold) |
 | --- | --- | --- | --- | --- |
 | Connection | Toggle/On/Off SimConnect Connection | communicate | SimConnect Connection - {0} | **Toggle**,On,Off |
-
-
-### States
-
-| Id | Type | Description | DefaultValue |
-| --- | --- | --- | --- |
-| MSFSTouchPortalPlugin.Plugin.State.Connected | text | The status of SimConnect | false |
 
 
 ---

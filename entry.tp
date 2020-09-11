@@ -15,6 +15,50 @@
       "imagepath": "",
       "actions": [
         {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer",
+          "name": "Localizer",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off the localizer for auto pilot",
+          "tryInline": true,
+          "format": "Localizer - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaster",
+          "name": "AutoPilot",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off Auto Pilot",
+          "tryInline": true,
+          "format": "Auto Pilot Master - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaster.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaster.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off"
+              ]
+            }
+          ]
+        },
+        {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitude",
           "name": "Attitude Hold",
           "prefix": "MSFS",
@@ -348,28 +392,6 @@
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer",
-          "name": "Localizer",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle/On/Off the localizer for auto pilot",
-          "tryInline": true,
-          "format": "Localizer - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Toggle",
-              "valueChoices": [
-                "Toggle",
-                "On",
-                "Off"
-              ]
-            }
-          ]
-        },
-        {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotYawDampener",
           "name": "Yaw Dampener",
           "prefix": "MSFS",
@@ -388,28 +410,6 @@
                 "On",
                 "Off",
                 "Set"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaster",
-          "name": "AutoPilot",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle/On/Off Auto Pilot",
-          "tryInline": true,
-          "format": "Auto Pilot Master - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaster.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaster.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Toggle",
-              "valueChoices": [
-                "Toggle",
-                "On",
-                "Off"
               ]
             }
           ]
@@ -506,6 +506,36 @@
           "type": "text",
           "desc": "MSFS - AutoPilot - AutoPilot Air Speed Value",
           "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotMach",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Mach Hold",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotMachVar",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Mach Value",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotFlightDirector",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Flight Director Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotWingLeveler",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Wing Leveler",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotYawDampener",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - Yaw Dampener Status",
+          "default": ""
         }
       ]
     },
@@ -522,26 +552,6 @@
       "name": "MSFS - Electrical",
       "imagepath": "",
       "actions": [
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterAlternator",
-          "name": "Master Alternator",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle Master Alternator",
-          "tryInline": true,
-          "format": "Toggle Master Alternator",
-          "data": []
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterBattery",
-          "name": "Master Battery",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle Master Battery",
-          "tryInline": true,
-          "format": "Toggle Master Battery",
-          "data": []
-        },
         {
           "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterBatteryAlternator",
           "name": "Master Battery & Alternator",
@@ -670,14 +680,40 @@
               ]
             }
           ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterAlternator",
+          "name": "Master Alternator",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Master Alternator",
+          "tryInline": true,
+          "format": "Toggle Master Alternator",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterBattery",
+          "name": "Master Battery",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Master Battery",
+          "tryInline": true,
+          "format": "Toggle Master Battery",
+          "data": []
         }
       ],
       "events": [],
       "states": [
         {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.AutoPilotMaster",
+          "id": "MSFSTouchPortalPlugin.Electrical.State.MasterAlternator",
           "type": "text",
-          "desc": "MSFS - Electrical - AutoPilot Master Status",
+          "desc": "MSFS - Electrical - Master Alternator Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.MasterBattery",
+          "type": "text",
+          "desc": "MSFS - Electrical - Master Battery Status",
           "default": ""
         },
         {
@@ -759,16 +795,6 @@
       "name": "MSFS - Engine",
       "imagepath": "",
       "actions": [
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.Action.MasterIgnition",
-          "name": "Master Ignition Switch",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle Master Ignition Switch",
-          "tryInline": true,
-          "format": "Toggle Master Ignition Switch",
-          "data": []
-        },
         {
           "id": "MSFSTouchPortalPlugin.Engine.Action.EngineAuto",
           "name": "Engine Auto Start/Shutdown",
@@ -943,6 +969,16 @@
               ]
             }
           ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Engine.Action.MasterIgnition",
+          "name": "Master Ignition Switch",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Master Ignition Switch",
+          "tryInline": true,
+          "format": "Toggle Master Ignition Switch",
+          "data": []
         }
       ],
       "events": [],

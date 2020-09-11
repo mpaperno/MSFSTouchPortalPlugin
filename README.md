@@ -129,7 +129,7 @@ Extra States for Lights:
 | Control | State Variable(s) | Modes | v1/v2 | Tested |
 | --- | --- | --- | --- | --- |
 | Ignition | MasterIgnitionSwitch | Toggle | v2 | |
-| Engine Auto Start/Shutdown | TBD | Start, Shutdown | v1 | |
+| Engine Auto Start/Shutdown | TBD | Start, Shutdown | v1 | Start/Stop works, no state. |
 | Magneto - All | TBD | Start, Off, Right, Left, Both, Decrease, Increase | v1 | |
 | Magneto - 1 | TBD | Start, Off, Right, Left, Both, Decrease, Increase | v1 | |
 | Magneto - 2 | TBD | Start, Off, Right, Left, Both, Decrease, Increase | v1 | |
