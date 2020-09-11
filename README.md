@@ -47,20 +47,20 @@ To resolve after Sim startup, go into Touch Portal Plugin settings and stop/star
 | AP Approach Mode | AutoPilotApproachHold | Toggle, On, Off | v2 | Yes |
 | AP Heading Hold | AutoPilotHeadingHold | Toggle, On, Off | v2 | Yes |
 | AP Heading Var | AutoPilotHeadingVar | Select, Increase, Decrease, Set | v2 | Inc/Dec working. Select/Set do nothing |
-| AP Altitude Hold | AutoPilotAltitudeHold | Toggle, On, Off | v1 | |
-| AP Altitude Var | AutoPilotAltitudeVar | Select, Increase, Decrease | v1 | |
-| AP Back Course Mode | AutoPilotBackCourseHold |  Toggle, On, Off | v1 | |
-| AP Nav1 Mode | AutoPilotNav1Hold | Toggle, On, Off | v1 | |
+| AP Altitude Hold | AutoPilotAltitudeHold | Toggle, On, Off | v2 | |
+| AP Altitude Var | AutoPilotAltitudeVar | Select, Increase, Decrease | v2 | |
+| AP Back Course Mode | AutoPilotBackCourseHold |  Toggle, On, Off | v2 | |
+| AP Nav1 Mode | AutoPilotNav1Hold | Toggle, On, Off | v2 | |
 | AP Vertical Speed Hold | AutoPilotVerticalSpeedHold | ? | ? | VS and Vertical Hold might be mixed up. Need to redo this sections. |
-| AP Air Speed Hold | AutoPilotAirSpeedHold | Toggle, On, Off, Set | v1 | |
-| AP Air Speed Var | AutoPilotAirSpeedVar | Select, Increase, Decrease, Set | v1 | |
-| AP Mach Hold | TBD | Toggle, On, Off, Set | v1 | |
-| AP Mach Var | TBD | Select, Increase, Decrease | v1 | |
-| AP Flight Director | TBD | Toggle | v1 | |
-| AP Wing Leveler | TBD | Toggle, On, Off | v1 | |
-| AP Localizer | TBD | Toggle, On, Off | v1 | |
-| AP Yaw Dampener | TBD | Toggle, On, Off, Set | v1 | |
-| AP Flight Level Control TBD | AutoPilotPitchHold | TBD | v1 | |
+| AP Air Speed Hold | AutoPilotAirSpeedHold | Toggle, On, Off, Set | v2 | |
+| AP Air Speed Var | AutoPilotAirSpeedVar | Select, Increase, Decrease, Set | v2 | |
+| AP Mach Hold | TBD | Toggle, On, Off, Set | v2 | |
+| AP Mach Var | TBD | Select, Increase, Decrease | v2 | |
+| AP Flight Director | TBD | Toggle | v2 | |
+| AP Wing Leveler | TBD | Toggle, On, Off | v2 | |
+| AP Localizer | TBD | Toggle, On, Off | v1 | ?? How to handle? |
+| AP Yaw Dampener | TBD | Toggle, On, Off, Set | v2 | |
+| AP Flight Level Control TBD | AutoPilotPitchHold | TBD | v1 | ?? |
 
 ### Failures
 
@@ -98,9 +98,9 @@ To resolve after Sim startup, go into Touch Portal Plugin settings and stop/star
 
 | Control | State Variable(s) | Modes | v1/v2 | Tested |
 | --- | --- | --- | --- | --- |
-| Master Alternator | TBD | Toggle | v1 | |
-| Master Battery | TBD | Toggle | v1 | |
-| Master Battery & Alternator | TBD | Toggle | v1 | |
+| Master Alternator | MasterAlternator | Toggle | v2 | |
+| Master Battery | MasterBattery | Toggle | v2 | |
+| Master Battery & Alternator | MasterAlternator / MasterBattery | Toggle | v2 | |
 | Toggle Specific Alternator | TBD | 1, 2, 3, 4 | v1 | |
 | Strobe Lights | LightStrobeOn | Toggle, On, Off, Set | v1 | |
 | Panel Lights | LightPanelOn | Toggle, On, Off, Set | v1 | |
@@ -128,7 +128,7 @@ Extra States for Lights:
 
 | Control | State Variable(s) | Modes | v1/v2 | Tested |
 | --- | --- | --- | --- | --- |
-| Ignition | MasterIgnitionSwitch | Toggle | v1 | |
+| Ignition | MasterIgnitionSwitch | Toggle | v2 | |
 | Engine Auto Start/Shutdown | TBD | Start, Shutdown | v1 | |
 | Magneto - All | TBD | Start, Off, Right, Left, Both, Decrease, Increase | v1 | |
 | Magneto - 1 | TBD | Start, Off, Right, Left, Both, Decrease, Increase | v1 | |

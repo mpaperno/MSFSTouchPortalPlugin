@@ -9,12 +9,17 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
   internal class ElectricalMapping {
     #region Alternator & Battery
 
+    [SimVarDataRequest]
     [TouchPortalAction("MasterAlternator", "Master Alternator", "MSFS", "Toggle Master Alternator", "Toggle Master Alternator")]
-    [TouchPortalState("AutoPilotMaster", "text", "AutoPilot Master Status", "")]
-    public object MASTER_ALTERNATOR { get; }
+    [TouchPortalState("MasterAlternator", "text", "Master Alternator Status", "")]
+    public static SimVarItem MASTER_ALTERNATOR =
+      new SimVarItem() { def = Definition.MasterAlternator, req = Request.MasterAlternator, SimVarName = "GENERAL ENG MASTER ALTERNATOR:1", Unit = Units.Bool, CanSet = false };
 
+    [SimVarDataRequest]
     [TouchPortalAction("MasterBattery", "Master Battery", "MSFS", "Toggle Master Battery", "Toggle Master Battery")]
-    public object MASTER_BATTERY { get; }
+    [TouchPortalState("MasterBattery", "text", "Master Battery Status", "")]
+    public static SimVarItem MASTER_BATTERY =
+      new SimVarItem() { def = Definition.MasterBattery, req = Request.MasterBattery, SimVarName = "ELECTRICAL MASTER BATTERY", Unit = Units.Bool, CanSet = false };
 
     [TouchPortalAction("MasterBatteryAlternator", "Master Battery & Alternator", "MSFS", "Toggle Master Battery & Alternator", "Toggle Master Battery & Alternator")]
     public object MASTER_BATTERY_ALTERNATOR { get; }
