@@ -1,8 +1,9 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Enums;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
-
+  [SimVarDataRequestGroup]
   [TouchPortalCategory("InstrumentsSystems.Fuel", "MSFS - Fuel")]
   internal class FuelMapping {
 
@@ -53,7 +54,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     #endregion
   }
 
-  [SimNotificationGroup(SimConnectWrapper.Groups.Fuel)]
+  [SimNotificationGroup(Groups.Fuel)]
   [TouchPortalCategoryMapping("InstrumentsSystems.Fuel")]
   internal enum Fuel {
     // Placeholder to offset each enum for SimConnect

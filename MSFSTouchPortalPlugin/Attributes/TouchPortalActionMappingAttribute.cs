@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace MSFSTouchPortalPlugin.Attributes {
-  public class TouchPortalActionMappingAttribute : Attribute {
+  internal class TouchPortalActionMappingAttribute : Attribute {
     public string ActionId;
     public string Value;
 

@@ -1,14 +1,19 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Constants;
+using MSFSTouchPortalPlugin.Enums;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
+  [SimVarDataRequestGroup]
   [TouchPortalCategory("Engine", "MSFS - Engine")]
   internal class EngineMapping {
 
     #region Ignition
 
+    [SimVarDataRequest]
     [TouchPortalAction("MasterIgnition", "Master Ignition Switch", "MSFS", "Toggle Master Ignition Switch", "Toggle Master Ignition Switch")]
-    public object MASTER_IGNITION { get; }
+    [TouchPortalState("MasterIgnitionSwitch", "text", "Master Ignition Switch Status", "")]
+    public static SimVarItem MASTER_IGNITION = new SimVarItem() { def = Definition.MasterIgnitionSwitch, req = Request.MasterIgnitionSwitch, SimVarName = "MASTER IGNITION SWITCH", Unit = Units.Bool, CanSet = false };
 
     [TouchPortalAction("EngineAuto", "Engine Auto Start/Shutdown", "MSFS", "Start/Shutdown Engine", "Engine - {0}")]
     [TouchPortalActionChoice(new string[] { "Start", "Shutdown" }, "Start")]
@@ -49,7 +54,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     #endregion
   }
 
-  [SimNotificationGroup(SimConnectWrapper.Groups.Engine)]
+  [SimNotificationGroup(Groups.Engine)]
   [TouchPortalCategoryMapping("Engine")]
   internal enum Engine {
     // Placeholder to offset each enum for SimConnect

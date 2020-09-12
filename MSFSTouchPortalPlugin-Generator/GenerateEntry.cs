@@ -19,10 +19,22 @@ namespace MSFSTouchPortalPlugin_Generator {
     }
 
     public void Generate() {
+      // Find assembly
+      var a = Assembly.GetExecutingAssembly().GetReferencedAssemblies().Where(a => a.Name == _PLUGIN_NAME).FirstOrDefault();
+
+      if (a == null) {
+        throw new Exception("Unable to load assembly for reflection.");
+      }
+
+      var assembly = Assembly.Load(a);
+
+      var fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
+      var version = fvi.FileVersion;
+
       // Setup Base Model
       var model = new Base() {
         sdk = 2,
-        version = 1,
+        version = int.Parse(version.Replace(".", "")),
         name = _PLUGIN_NAME,
         id = _PLUGIN_NAME
       };
@@ -33,14 +45,6 @@ namespace MSFSTouchPortalPlugin_Generator {
       // Load asembly
       var c = MSFSTouchPortalPlugin.Objects.AutoPilot.AutoPilot.AP_AIRSPEED_HOLD;
 
-      // Find assembly
-      var a = Assembly.GetExecutingAssembly().GetReferencedAssemblies().Where(a => a.Name == _PLUGIN_NAME).FirstOrDefault();
-
-      if (a == null) {
-        throw new Exception("Unable to load assembly for reflection.");
-      }
-
-      var assembly = Assembly.Load(a);
       var q = assembly.GetTypes().ToList();
 
       // Get all classes with the TouchPortalCategory
@@ -101,7 +105,7 @@ namespace MSFSTouchPortalPlugin_Generator {
             var newState = new TouchPortalState() {
               id = $"{category.id}.State.{stateAttribute.Id}",
               type = stateAttribute.Type,
-              description = stateAttribute.Description,
+              description = $"{category.name} - {stateAttribute.Description}",
               defaultValue = stateAttribute.Default
             };
 

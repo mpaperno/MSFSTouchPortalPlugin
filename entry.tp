@@ -1,6 +1,6 @@
 {
   "sdk": 2,
-  "version": 1,
+  "version": 220,
   "name": "MSFSTouchPortalPlugin",
   "id": "MSFSTouchPortalPlugin",
   "configuration": {
@@ -14,6 +14,28 @@
       "name": "MSFS - AutoPilot",
       "imagepath": "",
       "actions": [
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer",
+          "name": "Localizer",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off the localizer for auto pilot",
+          "tryInline": true,
+          "format": "Localizer - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off"
+              ]
+            }
+          ]
+        },
         {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaster",
           "name": "AutoPilot",
@@ -370,28 +392,6 @@
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer",
-          "name": "Localizer",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle/On/Off the localizer for auto pilot",
-          "tryInline": true,
-          "format": "Localizer - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Toggle",
-              "valueChoices": [
-                "Toggle",
-                "On",
-                "Off"
-              ]
-            }
-          ]
-        },
-        {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotYawDampener",
           "name": "Yaw Dampener",
           "prefix": "MSFS",
@@ -416,7 +416,128 @@
         }
       ],
       "events": [],
-      "states": []
+      "states": [
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotMaster",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Master Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAvailable",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Availability",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotPitchHold",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - The status of Auto Pilot Pitch Hold button",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAttitudeHold",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Attitude Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotApproachHold",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Approach Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotHeadingHold",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Heading Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotHeadingVar",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Heading Direction",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAltitudeHold",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Altitude Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAltitudeVar",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Altitude Value",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotBackCourseHold",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Back Course Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotNav1Hold",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Nav1 Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotVerticalSpeedHold",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Vertical Speed Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotVerticalSpeedVar",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Vertical Speed Value",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAirSpeedHold",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Air Speed Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAirSpeedVar",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Air Speed Value",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotMach",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Mach Hold",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotMachVar",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Mach Value",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotFlightDirector",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Flight Director Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotWingLeveler",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Wing Leveler",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotYawDampener",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - Yaw Dampener Status",
+          "default": ""
+        }
+      ]
     },
     {
       "id": "MSFSTouchPortalPlugin.Communication",
@@ -431,26 +552,6 @@
       "name": "MSFS - Electrical",
       "imagepath": "",
       "actions": [
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterAlternator",
-          "name": "Master Alternator",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle Master Alternator",
-          "tryInline": true,
-          "format": "Toggle Master Alternator",
-          "data": []
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterBattery",
-          "name": "Master Battery",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle Master Battery",
-          "tryInline": true,
-          "format": "Toggle Master Battery",
-          "data": []
-        },
         {
           "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterBatteryAlternator",
           "name": "Master Battery & Alternator",
@@ -579,26 +680,121 @@
               ]
             }
           ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterAlternator",
+          "name": "Master Alternator",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Master Alternator",
+          "tryInline": true,
+          "format": "Toggle Master Alternator",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterBattery",
+          "name": "Master Battery",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Master Battery",
+          "tryInline": true,
+          "format": "Toggle Master Battery",
+          "data": []
         }
       ],
       "events": [],
-      "states": []
+      "states": [
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.MasterAlternator",
+          "type": "text",
+          "desc": "MSFS - Electrical - Master Alternator Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.MasterBattery",
+          "type": "text",
+          "desc": "MSFS - Electrical - Master Battery Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.LightBeaconOn",
+          "type": "text",
+          "desc": "MSFS - Electrical - Light Beacon Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.LightBrakeOn",
+          "type": "text",
+          "desc": "MSFS - Electrical - Light Brake Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.LightCabinOn",
+          "type": "text",
+          "desc": "MSFS - Electrical - Light Cabin Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.LightHeadOn",
+          "type": "text",
+          "desc": "MSFS - Electrical - Light Head Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.LightLandingOn",
+          "type": "text",
+          "desc": "MSFS - Electrical - Light Landing Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.LightLogoOn",
+          "type": "text",
+          "desc": "MSFS - Electrical - Light Logo Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.LightNavOn",
+          "type": "text",
+          "desc": "MSFS - Electrical - Light Nav Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.LightPanelOn",
+          "type": "text",
+          "desc": "MSFS - Electrical - Light Panel Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.LightRecognitionOn",
+          "type": "text",
+          "desc": "MSFS - Electrical - Light Recognition Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.LightStrobeOn",
+          "type": "text",
+          "desc": "MSFS - Electrical - Light Strobe Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.LightTaxiOn",
+          "type": "text",
+          "desc": "MSFS - Electrical - Light Taxi Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.LightWingOn",
+          "type": "text",
+          "desc": "MSFS - Electrical - Light Wing Status",
+          "default": ""
+        }
+      ]
     },
     {
       "id": "MSFSTouchPortalPlugin.Engine",
       "name": "MSFS - Engine",
       "imagepath": "",
       "actions": [
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.Action.MasterIgnition",
-          "name": "Master Ignition Switch",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle Master Ignition Switch",
-          "tryInline": true,
-          "format": "Toggle Master Ignition Switch",
-          "data": []
-        },
         {
           "id": "MSFSTouchPortalPlugin.Engine.Action.EngineAuto",
           "name": "Engine Auto Start/Shutdown",
@@ -773,10 +969,27 @@
               ]
             }
           ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Engine.Action.MasterIgnition",
+          "name": "Master Ignition Switch",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Master Ignition Switch",
+          "tryInline": true,
+          "format": "Toggle Master Ignition Switch",
+          "data": []
         }
       ],
       "events": [],
-      "states": []
+      "states": [
+        {
+          "id": "MSFSTouchPortalPlugin.Engine.State.MasterIgnitionSwitch",
+          "type": "text",
+          "desc": "MSFS - Engine - Master Ignition Switch Status",
+          "default": ""
+        }
+      ]
     },
     {
       "id": "MSFSTouchPortalPlugin.Environment",
@@ -983,7 +1196,56 @@
       "imagepath": "",
       "actions": [],
       "events": [],
-      "states": []
+      "states": [
+        {
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.GroundVelocity",
+          "type": "text",
+          "desc": "MSFS - Flight Instruments - Ground Speed in Knots",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneAltitude",
+          "type": "text",
+          "desc": "MSFS - Flight Instruments - Plane Altitude in Feet",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneAltitudeAGL",
+          "type": "text",
+          "desc": "MSFS - Flight Instruments - Plane Altitude AGL in Feet",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.GroundAltitude",
+          "type": "text",
+          "desc": "MSFS - Flight Instruments - Ground level in Feet",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneHeadingTrue",
+          "type": "text",
+          "desc": "MSFS - Flight Instruments - Plane Heading (True North) in Degrees",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneHeadingMagnetic",
+          "type": "text",
+          "desc": "MSFS - Flight Instruments - Plane Heading (Magnetic North) in Degrees",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneBankAngle",
+          "type": "text",
+          "desc": "MSFS - Flight Instruments - Plane Bank Angle in Degrees",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlanePitchAngle",
+          "type": "text",
+          "desc": "MSFS - Flight Instruments - Plane Pitch Angle in Degrees",
+          "default": ""
+        }
+      ]
     },
     {
       "id": "MSFSTouchPortalPlugin.FlightSystems",
@@ -1619,7 +1881,7 @@
         {
           "id": "MSFSTouchPortalPlugin.Plugin.State.Connected",
           "type": "text",
-          "desc": "The status of SimConnect",
+          "desc": "MSFS - Plugin - The status of SimConnect",
           "default": "false"
         }
       ]

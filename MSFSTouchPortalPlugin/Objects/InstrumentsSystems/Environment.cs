@@ -1,7 +1,9 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Enums;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
+  [SimVarDataRequestGroup]
   [TouchPortalCategory("Environment", "MSFS - Environment")]
   internal class EnvironmentMapping {
     #region Anti-Ice
@@ -43,7 +45,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     #endregion
   }
 
-  [SimNotificationGroup(SimConnectWrapper.Groups.Environment)]
+  [SimNotificationGroup(Groups.Environment)]
   [TouchPortalCategoryMapping("Environment")]
   internal enum Environment {
     // Placeholder to offset each enum for SimConnect

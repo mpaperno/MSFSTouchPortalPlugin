@@ -1,7 +1,9 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Enums;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.Failures {
+  [SimVarDataRequestGroup]
   [TouchPortalCategory("Failures", "MSFS - Failures")]
   internal class FailuresMapping {
 
@@ -10,7 +12,7 @@ namespace MSFSTouchPortalPlugin.Objects.Failures {
     public object FAILURES { get; }
   }
 
-  [SimNotificationGroup(SimConnectWrapper.Groups.Failures)]
+  [SimNotificationGroup(Groups.Failures)]
   [TouchPortalCategoryMapping("Failures")]
   internal enum Failures {
     // Placeholder to offset each enum for SimConnect
