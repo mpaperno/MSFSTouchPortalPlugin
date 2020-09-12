@@ -1,6 +1,6 @@
 {
   "sdk": 2,
-  "version": 220,
+  "version": 300,
   "name": "MSFSTouchPortalPlugin",
   "id": "MSFSTouchPortalPlugin",
   "configuration": {
