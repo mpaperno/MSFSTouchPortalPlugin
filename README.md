@@ -154,14 +154,14 @@ Extra States for Lights:
 
 | Control | State Variable(s) | Modes | v1/v2 | Tested |
 | --- | --- | --- | --- | --- |
-| - | GroundVelocity | - | v2 | |
-| - | PlaneAltitude | - | v2 | |
-| - | PlaneAltitudeAGL | - | v2 | |
-| - | GroundAltitude | - | v2 | |
-| - | PlaneHeadingTrue | - | v2 | |
-| - | PlaneHeadingMagnetic | - | v2 | |
-| - | PlaneBankAngle | - | v2 | |
-| - | PlanePitchAngle | - | v2 | |
+| - | GroundVelocity | - | v2 | Yes |
+| - | PlaneAltitude | - | v2 | Yes |
+| - | PlaneAltitudeAGL | - | v2 | Yes |
+| - | GroundAltitude | - | v2 | Yes |
+| - | PlaneHeadingTrue | - | v2 | Yes |
+| - | PlaneHeadingMagnetic | - | v2 | Yes |
+| - | PlaneBankAngle | - | v2 | Yes but values are opposite TODO: Flip values |
+| - | PlanePitchAngle | - | v2 | Yes but values are opposite TODO: Flip values |
 
 ### Fuel System
 

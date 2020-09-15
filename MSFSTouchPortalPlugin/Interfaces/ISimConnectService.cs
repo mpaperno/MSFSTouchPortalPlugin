@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 namespace MSFSTouchPortalPlugin.Interfaces {
   internal delegate void DataUpdateEventHandler(Definition def, Request req, object data);
   internal delegate void ConnectEventHandler();
+  internal delegate void DisconnectEventHandler();
 
   internal interface ISimConnectService {
     event DataUpdateEventHandler OnDataUpdateEvent;
     event ConnectEventHandler OnConnect;
+    event DisconnectEventHandler OnDisconnect;
 
     bool IsConnected();
     bool AddNotification(Enum group, Enum eventId);

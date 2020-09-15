@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSFSTouchPortalPlugin", "MS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSFSTouchPortalPlugin-Generator", "MSFSTouchPortalPlugin-Generator\MSFSTouchPortalPlugin-Generator.csproj", "{53A38611-6486-4FF5-8637-1C6BC38A6A18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TouchPortalExtension", "TouchPortalExtension\TouchPortalExtension.csproj", "{C217E7C3-4A14-457E-ABC8-180546369646}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TouchPortalExtension", "TouchPortalExtension\TouchPortalExtension.csproj", "{C217E7C3-4A14-457E-ABC8-180546369646}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6DF0C85E-3EB4-4898-A304-EFA04CB547A6}"
 	ProjectSection(SolutionItems) = preProject
@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSFSTouchPortalPlugin-Tests", "MSFSTouchPortalPlugin-Tests\MSFSTouchPortalPlugin-Tests.csproj", "{3A7D5537-16CD-4F3B-9630-CE480C1D30EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSFSTouchPortalPlugin-Tests", "MSFSTouchPortalPlugin-Tests\MSFSTouchPortalPlugin-Tests.csproj", "{3A7D5537-16CD-4F3B-9630-CE480C1D30EB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
