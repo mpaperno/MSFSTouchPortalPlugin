@@ -1,17 +1,36 @@
 # MSFS 2020 TouchPortal Plugin
 
 ## Overview
-This plugin will provide a two way interface between Touch Portal and Microsoft Flight Simulator 2020 through SimConnect.
+
+This plugin will provide a two way interface between Touch Portal and Microsoft Flight Simulator 2020 through SimConnect. This may work for other simulators that use SimConnect such as X-Plane 11.
 
 ## Features
-* Generates entry.tp automatically.
+
+* Connects automatically through SimConnect
+* Allows getting data variables from MSFS such as flight instruments or button/switch states.
+* Allows triggering various aircraft components from a Touch Portal panel.
 
 ## Documentation
+
 Documentation can be found here: [link](DOCUMENTATION.MD)
+
+## Installation Guide
+
+Go to the releases:
+https://github.com/tlewis17/MSFSTouchPortalPlugin/releases
+
+Get the latest version and there will be a TPP file you can download. From Touch Portal go to Import Plugin. Once you have done that restart Touch Portal. After that you will have a list of new actions you can choose from. Also "Dynamic Text" variables are now available. You can see them from the Dynamic Text Updater, or you can add an option for "On Plugin State Change" then select the corresponding state and "Changes to".
+
+For buttons you use this like:
+
+"On Plugin State Changes AutoPilot Master changes to 1" Then add whatever logic you want like button visuals. Duplicate this and add one for "does not change to 1" and that is when a button turns off.
+
+This is very much a work in progress!
+Sample TML files can be found by FordMustang:
+https://github.com/FordMustang0288/MSFSTouchPortalPages
 
 ## TODO
 
-* Connect/Disconnect Re-register services
 * States pushed back to Touch Portal
   * Done but need more mappings.
   * Also need to update MD with state info and possible values.
@@ -21,7 +40,6 @@ Documentation can be found here: [link](DOCUMENTATION.MD)
   * Reset states on start/end
 * Define SimVars
 * Documentation - Events needed and additional rows of data to display.
-* Automate generation of Entry.tp and Docs on build and put in root.
 
 * More Controls
   * VS AutoPilot
@@ -30,8 +48,6 @@ Documentation can be found here: [link](DOCUMENTATION.MD)
 ## Known Issues
 
 * "Set" buttons require data to be passed in and do not currently work.
-* SimConnect will fail if the simulator isn't running but the plugin starts up.
-To resolve after Sim startup, go into Touch Portal Plugin settings and stop/start the plugin.
 * On TP quit, the plugin won't stop itself.
   * This is coded, but not testable while debugging. Need to test with plugin installed.
 
