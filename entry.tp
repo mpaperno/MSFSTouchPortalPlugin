@@ -1,6 +1,6 @@
 {
   "sdk": 2,
-  "version": 300,
+  "version": 400,
   "name": "MSFSTouchPortalPlugin",
   "id": "MSFSTouchPortalPlugin",
   "configuration": {
@@ -1004,94 +1004,28 @@
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.Engine.Action.Magneto_1",
-          "name": "Toggle Magneto 1",
+          "id": "MSFSTouchPortalPlugin.Engine.Action.MagnetoSpecific",
+          "name": "Magnetos Specific",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Toggle Magneto 1",
+          "description": "Toggle Magneto Specific",
           "tryInline": true,
-          "format": "Toggle Magneto 1 - {$MSFSTouchPortalPlugin.Engine.Action.Magneto_1.Data.0$}",
+          "format": "Toggle Magneto {$MSFSTouchPortalPlugin.Engine.Action.MagnetoSpecific.Data.0$} - {$MSFSTouchPortalPlugin.Engine.Action.MagnetoSpecific.Data.1$}",
           "data": [
             {
-              "id": "MSFSTouchPortalPlugin.Engine.Action.Magneto_1.Data.0",
+              "id": "MSFSTouchPortalPlugin.Engine.Action.MagnetoSpecific.Data.0",
               "type": "choice",
               "label": "Action",
-              "default": "Start",
+              "default": "1",
               "valueChoices": [
-                "Start",
-                "Off",
-                "Right",
-                "Left",
-                "Both",
-                "Decrease",
-                "Increase"
+                "1",
+                "2",
+                "3",
+                "4"
               ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.Action.Magneto_2",
-          "name": "Toggle Magneto 2",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle Magneto 2",
-          "tryInline": true,
-          "format": "Toggle Magneto 2 - {$MSFSTouchPortalPlugin.Engine.Action.Magneto_2.Data.0$}",
-          "data": [
+            },
             {
-              "id": "MSFSTouchPortalPlugin.Engine.Action.Magneto_2.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Start",
-              "valueChoices": [
-                "Start",
-                "Off",
-                "Right",
-                "Left",
-                "Both",
-                "Decrease",
-                "Increase"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.Action.Magneto_3",
-          "name": "Toggle Magneto 3",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle Magneto 3",
-          "tryInline": true,
-          "format": "Toggle Magneto 3 - {$MSFSTouchPortalPlugin.Engine.Action.Magneto_3.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.Engine.Action.Magneto_3.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Start",
-              "valueChoices": [
-                "Start",
-                "Off",
-                "Right",
-                "Left",
-                "Both",
-                "Decrease",
-                "Increase"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.Action.Magneto_4",
-          "name": "Toggle Magneto 4",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle Magneto 4",
-          "tryInline": true,
-          "format": "Toggle Magneto 4 - {$MSFSTouchPortalPlugin.Engine.Action.Magneto_4.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.Engine.Action.Magneto_4.Data.0",
+              "id": "MSFSTouchPortalPlugin.Engine.Action.MagnetoSpecific.Data.1",
               "type": "choice",
               "label": "Action",
               "default": "Start",
@@ -1127,6 +1061,105 @@
                 "2",
                 "3",
                 "4"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Engine.Action.Throttle",
+          "name": "Throttle",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Sets all throttles",
+          "tryInline": true,
+          "format": "All Throttles - {$MSFSTouchPortalPlugin.Engine.Action.Throttle.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Engine.Action.Throttle.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Full",
+              "valueChoices": [
+                "Full",
+                "Increase",
+                "Increase Small",
+                "Decrease",
+                "Decrease Small",
+                "Cut",
+                "Set",
+                "10%",
+                "20%",
+                "30%",
+                "40%",
+                "50%",
+                "60%",
+                "70%",
+                "80%",
+                "90%"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Engine.Action.Mixture",
+          "name": "Mixture",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Sets all mixtures",
+          "tryInline": true,
+          "format": "All Mixtures - {$MSFSTouchPortalPlugin.Engine.Action.Mixture.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Engine.Action.Mixture.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Rich",
+              "valueChoices": [
+                "Rich",
+                "Increase",
+                "Increase Small",
+                "Decrease",
+                "Decrease Small",
+                "Lean",
+                "Best",
+                "Set"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Engine.Action.MixtureSpecific",
+          "name": "Mixture Specific",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Sets mixture on specific engine",
+          "tryInline": true,
+          "format": "Mixture {$MSFSTouchPortalPlugin.Engine.Action.MixtureSpecific.Data.0$} - {$MSFSTouchPortalPlugin.Engine.Action.MixtureSpecific.Data.1$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Engine.Action.MixtureSpecific.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "1",
+              "valueChoices": [
+                "1",
+                "2",
+                "3",
+                "4"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Engine.Action.MixtureSpecific.Data.1",
+              "type": "choice",
+              "label": "Action",
+              "default": "Rich",
+              "valueChoices": [
+                "Rich",
+                "Increase",
+                "Increase Small",
+                "Decrease",
+                "Decrease Small",
+                "Lean"
               ]
             }
           ]

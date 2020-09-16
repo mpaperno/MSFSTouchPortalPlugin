@@ -4,6 +4,7 @@ using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Objects.Plugin;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -157,9 +158,8 @@ namespace MSFSTouchPortalPlugin.Services {
 
     private void messageProcessor_OnActionEvent(string actionId, List<ActionData> dataList) {
       if (dataList.Count > 0) {
-        dataList.ForEach(a => {
-          ProcessEvent(actionId, a.Value);
-        });
+        var values = string.Join(",", dataList.Select(x => x.Value));
+        ProcessEvent(actionId, values);
       } else {
         ProcessEvent(actionId);
       }

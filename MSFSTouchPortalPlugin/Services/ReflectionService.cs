@@ -22,12 +22,12 @@ namespace MSFSTouchPortalPlugin.Services {
         var list = internalEvent.GetFields().Where(f => f.GetCustomAttribute<TouchPortalActionMappingAttribute>() != null).ToList();
 
         list.ForEach(ie => {
-          string actionName = ie.GetCustomAttribute<TouchPortalActionMappingAttribute>().ActionId;
-          string actionValue = ie.GetCustomAttribute<TouchPortalActionMappingAttribute>().Value;
+          var actionName = ie.GetCustomAttribute<TouchPortalActionMappingAttribute>().ActionId;
+          var actionValues = ie.GetCustomAttribute<TouchPortalActionMappingAttribute>().Values;
 
           if (Enum.TryParse(ie.ReflectedType, ie.Name, out dynamic result)) {
             // Put into collection
-            returnDict.TryAdd($"{rootName}.{catName}.Action.{actionName}:{actionValue}", result);
+            returnDict.TryAdd($"{rootName}.{catName}.Action.{actionName}:{string.Join(",", actionValues)}", result);
           }
         });
       });
@@ -53,10 +53,10 @@ namespace MSFSTouchPortalPlugin.Services {
           if (Enum.TryParse(e.ReflectedType, e.Name, out dynamic result)) {
             // Register to Touch Portal
             string actionName = e.GetCustomAttribute<TouchPortalActionMappingAttribute>().ActionId;
-            string actionValue = e.GetCustomAttribute<TouchPortalActionMappingAttribute>().Value;
+            var actionValues = e.GetCustomAttribute<TouchPortalActionMappingAttribute>().Values;
 
             // Put into collection
-            returnDict.TryAdd($"{rootName}.{catName}.Action.{actionName}:{actionValue}", result);
+            returnDict.TryAdd($"{rootName}.{catName}.Action.{actionName}:{string.Join(",", actionValues)}", result);
           }
         });
       });
