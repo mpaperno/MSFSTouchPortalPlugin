@@ -15,6 +15,27 @@
       "imagepath": "",
       "actions": [
         {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoBrake",
+          "name": "Auto Brake",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Increase/Decrease the auto brake",
+          "tryInline": true,
+          "format": "Auto Brake - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoBrake.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoBrake.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Increase",
+              "valueChoices": [
+                "Increaes",
+                "Decrease"
+              ]
+            }
+          ]
+        },
+        {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer",
           "name": "Localizer",
           "prefix": "MSFS",
@@ -81,6 +102,28 @@
           ]
         },
         {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitudeVar",
+          "name": "Pitch Reference Value",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Sets the pitch reference value",
+          "tryInline": true,
+          "format": "Pitch Reference Value - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitudeVar.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitudeVar.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Select",
+              "valueChoices": [
+                "Select",
+                "Increase",
+                "Decrease"
+              ]
+            }
+          ]
+        },
+        {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotApproach",
           "name": "Approach Mode",
           "prefix": "MSFS",
@@ -98,6 +141,27 @@
                 "Toggle",
                 "On",
                 "Off"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotBanking",
+          "name": "AP Max Bank Angle",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Increase/Decrease the max bank angle",
+          "tryInline": true,
+          "format": "Max Bank Angle - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotBanking.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotBanking.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Increase",
+              "valueChoices": [
+                "Increase",
+                "Decrease"
               ]
             }
           ]
@@ -186,7 +250,9 @@
               "valueChoices": [
                 "Select",
                 "Increase",
-                "Decrease"
+                "Decrease",
+                "Set",
+                "Set Metric"
               ]
             }
           ]
@@ -236,6 +302,27 @@
           ]
         },
         {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNavSelect",
+          "name": "Nav Mode - Set",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Sets the nav to 1 or 2 for Nav mode",
+          "tryInline": true,
+          "format": "Nav Mode - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNavSelect.Data.0$} ",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNavSelect.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "1",
+              "valueChoices": [
+                "1",
+                "2"
+              ]
+            }
+          ]
+        },
+        {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeedVar",
           "name": "Vertical Speed Value",
           "prefix": "MSFS",
@@ -253,7 +340,8 @@
                 "Select",
                 "Increase",
                 "Decrease",
-                "Set"
+                "Set",
+                "Set Metric"
               ]
             }
           ]
@@ -300,6 +388,27 @@
                 "Increase",
                 "Decrease",
                 "Set"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoThrottle",
+          "name": "Auto Throttle Mode",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggles the Arm/GoAround modes for auto throttle",
+          "tryInline": true,
+          "format": "Toggle Auto Throttle - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoThrottle.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoThrottle.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Arm",
+              "valueChoices": [
+                "Arm",
+                "GoAround"
               ]
             }
           ]
@@ -368,6 +477,16 @@
               ]
             }
           ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotFlightDirectorCurrentPitch",
+          "name": "Flight Director Pitch Sync",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Syncs the Flight Director with the current pitch",
+          "tryInline": true,
+          "format": "Flight Director Pitch Sync",
+          "data": []
         },
         {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotWingLeveler",
@@ -442,9 +561,21 @@
           "default": ""
         },
         {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAttitudeVar",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Pitch Reference Value",
+          "default": ""
+        },
+        {
           "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotApproachHold",
           "type": "text",
           "desc": "MSFS - AutoPilot - AutoPilot Approach Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotBanking",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Max Bank Angle",
           "default": ""
         },
         {
@@ -484,6 +615,12 @@
           "default": ""
         },
         {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotNavSelected",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Nav Selected Index",
+          "default": ""
+        },
+        {
           "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotVerticalSpeedHold",
           "type": "text",
           "desc": "MSFS - AutoPilot - AutoPilot Vertical Speed Status",
@@ -508,6 +645,18 @@
           "default": ""
         },
         {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoThrottleArm",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - Auto Throttle Armed",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoThrottleGoAround",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - Auto Throttle Armed",
+          "default": ""
+        },
+        {
           "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotMach",
           "type": "text",
           "desc": "MSFS - AutoPilot - AutoPilot Mach Hold",
@@ -523,6 +672,18 @@
           "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotFlightDirector",
           "type": "text",
           "desc": "MSFS - AutoPilot - AutoPilot Flight Director Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotFlightDirectorCurrentPitch",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - Flight Director Current Pitch",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotFlightDirectorCurrentBank",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - Flight Director Current Bank",
           "default": ""
         },
         {
@@ -1440,30 +1601,6 @@
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.Action.Gear",
-          "name": "Gear Manipulation",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Gear Manipulation",
-          "tryInline": true,
-          "format": "Gear - {$MSFSTouchPortalPlugin.FlightSystems.Action.Gear.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.FlightSystems.Action.Gear.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Toggle",
-              "valueChoices": [
-                "Toggle",
-                "Up",
-                "Down",
-                "Set",
-                "Pump"
-              ]
-            }
-          ]
-        },
-        {
           "id": "MSFSTouchPortalPlugin.FlightSystems.Action.Rudder",
           "name": "Rudder",
           "prefix": "MSFS",
@@ -1533,6 +1670,30 @@
           ]
         },
         {
+          "id": "MSFSTouchPortalPlugin.FlightSystems.Action.Gear",
+          "name": "Gear Manipulation",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Gear Manipulation",
+          "tryInline": true,
+          "format": "Gear - {$MSFSTouchPortalPlugin.FlightSystems.Action.Gear.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.FlightSystems.Action.Gear.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "Up",
+                "Down",
+                "Set",
+                "Pump"
+              ]
+            }
+          ]
+        },
+        {
           "id": "MSFSTouchPortalPlugin.FlightSystems.Action.AileronTrim",
           "name": "Aileron Trim",
           "prefix": "MSFS",
@@ -1597,7 +1758,32 @@
         }
       ],
       "events": [],
-      "states": []
+      "states": [
+        {
+          "id": "MSFSTouchPortalPlugin.FlightSystems.State.GearTotalExtended",
+          "type": "text",
+          "desc": "MSFS - Flight Systems - Total percentage of gear extended",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightSystems.State.AileronTrim",
+          "type": "text",
+          "desc": "MSFS - Flight Systems - Aileron Trim Angle",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightSystems.State.ElevatorTrim",
+          "type": "text",
+          "desc": "MSFS - Flight Systems - Elevator Trim Angle",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightSystems.State.RudderTrim",
+          "type": "text",
+          "desc": "MSFS - Flight Systems - Rudder Trim Angle",
+          "default": ""
+        }
+      ]
     },
     {
       "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel",

@@ -82,13 +82,7 @@ namespace MSFSTouchPortalPlugin.Services {
       });
 
       _simConnectService.OnConnect += () => {
-        // Map the touch portal action to the Sim Event
-        //foreach (var a in actionsDictionary) {
-        //  if (Enum.TryParse(a.ReflectedType, e.Name, out dynamic result)) {
-        //    _simConnectService.MapClientEventToSimEvent(result, e.Name);
-        //    _simConnectService.AddNotification(group, result);
-        //  }
-        //}
+        _messageProcessor.UpdateState(new StateUpdate() { Id = "MSFSTouchPortalPlugin.Plugin.State.Connected", Value = _simConnectService.IsConnected().ToString().ToLower() });
 
         // Register Actions
         foreach (var a in actionsDictionary) {
@@ -96,13 +90,16 @@ namespace MSFSTouchPortalPlugin.Services {
           _simConnectService.AddNotification(a.Value.GetType().GetCustomAttribute<SimNotificationGroupAttribute>().Group, a.Value);
         }
 
-
         // Register SimVars
         foreach (var s in statesDictionary) {
           _simConnectService.RegisterToSimConnect(s.Value);
         }
 
         Task.WhenAll(RunPluginServices());
+      };
+
+      _simConnectService.OnDisconnect += () => {
+        _messageProcessor.UpdateState(new StateUpdate() { Id = "MSFSTouchPortalPlugin.Plugin.State.Connected", Value = _simConnectService.IsConnected().ToString().ToLower() });
       };
     }
 
@@ -113,8 +110,14 @@ namespace MSFSTouchPortalPlugin.Services {
     }
 
     public void TryConnect() {
-      while (!_simConnectService.Connect()) {
-        Thread.Sleep(5000);
+      // TODO: Will this properly reconnect after starting sim, then existing sim?
+      while (true) {
+        if (!_simConnectService.IsConnected()) {
+          _simConnectService.Connect();
+        }
+
+        // SimConnect is typically available even before loading into a flight. This should connect and be ready by the time a flight is started.
+        Thread.Sleep(10000);
       }
     }
 

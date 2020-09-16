@@ -25,6 +25,7 @@ namespace MSFSTouchPortalPlugin.Services {
     
     public event DataUpdateEventHandler OnDataUpdateEvent;
     public event ConnectEventHandler OnConnect;
+    public event DisconnectEventHandler OnDisconnect;
 
     public SimConnectService() { }
 
@@ -84,16 +85,21 @@ namespace MSFSTouchPortalPlugin.Services {
       }
 
       _connected = false;
+      
+      // Invoke Handler
+      OnDisconnect();
     }
 
     public Task WaitForMessage() {
-      while (true) {
-        _scReady.WaitOne();
-
-        // TODO: Exception on quit
-        _simConnect?.ReceiveMessage();
-        //simconnect.RequestDataOnSimObjectType(Events.Test, Group.Test, 0, SIMCONNECT_SIMOBJECT_TYPE.AIRCRAFT);
+      while (_connected) {
+        if (_scReady.WaitOne(TimeSpan.FromSeconds(5))) {
+          // TODO: Exception on quit
+          _simConnect?.ReceiveMessage();
+          //simconnect.RequestDataOnSimObjectType(Events.Test, Group.Test, 0, SIMCONNECT_SIMOBJECT_TYPE.AIRCRAFT);
+        }
       }
+
+      return Task.CompletedTask;
     }
 
     public bool MapClientEventToSimEvent(Enum eventId, string eventName) {
@@ -143,7 +149,7 @@ namespace MSFSTouchPortalPlugin.Services {
 
     private void simconnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data) {
       Console.WriteLine("Quit");
-      _connected = false;
+      Disconnect();
     }
 
     private void simconnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data) {

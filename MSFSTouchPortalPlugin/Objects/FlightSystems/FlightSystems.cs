@@ -56,9 +56,12 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems {
 
     #region Gear
 
+    [SimVarDataRequest]
     [TouchPortalAction("Gear", "Gear Manipulation", "MSFS", "Gear Manipulation", "Gear - {0}")]
     [TouchPortalActionChoice(new string[] { "Toggle", "Up", "Down", "Set", "Pump" }, "Toggle")]
-    public object GEAR { get; }
+    [TouchPortalState("GearTotalExtended", "text", "Total percentage of gear extended", "")]
+    public static SimVarItem GEAR =
+      new SimVarItem() { def = Definition.GearTotalExtended, req = Request.GearTotalExtended, SimVarName = "GEAR TOTAL PCT EXTENDED", Unit = Units.percentage, CanSet = false };
 
     #endregion
 
@@ -84,17 +87,26 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems {
 
     #region Trimming
 
+    [SimVarDataRequest]
     [TouchPortalAction("AileronTrim", "Aileron Trim", "MSFS", "Aileron Trim", "Aileron Trim - {0}")]
     [TouchPortalActionChoice(new string[] { "Left", "Right" }, "Left")]
-    public object AILERON_TRIM { get; }
+    [TouchPortalState("AileronTrim", "text", "Aileron Trim Angle", "")]
+    public static SimVarItem AILERON_TRIM =
+      new SimVarItem() { def = Definition.AileronTrim, req = Request.AileronTrim, SimVarName = "AILERON TRIM", Unit = Units.radians, CanSet = false };
 
+    [SimVarDataRequest]
     [TouchPortalAction("ElevatorTrim", "Elevator Trim", "MSFS", "Elevator Trim", "Elevator Trim - {0}")]
     [TouchPortalActionChoice(new string[] { "Up", "Down" }, "Up")]
-    public object ELEVATOR_TRIM { get; }
-
+    [TouchPortalState("ElevatorTrim", "text", "Elevator Trim Angle", "")]
+    public static SimVarItem ELEVATOR_TRIM =
+      new SimVarItem() { def = Definition.ElevatorTrim, req = Request.ElevatorTrim, SimVarName = "", Unit = Units.radians, CanSet = false };
+    
+    [SimVarDataRequest]
     [TouchPortalAction("RudderTrim", "Rudder Trim", "MSFS", "Rudder Trim", "Rudder Trim - {0}")]
     [TouchPortalActionChoice(new string[] { "Left", "Right" }, "Left")]
-    public object RUDDER_TRIM { get; }
+    [TouchPortalState("RudderTrim", "text", "Rudder Trim Angle", "")]
+    public static SimVarItem RUDDER_TRIM =
+            new SimVarItem() { def = Definition.RudderTrim, req = Request.RudderTrim, SimVarName = "RUDDER TRIM", Unit = Units.radians, CanSet = false };
 
 
     [SimVarDataRequest] // XYZ

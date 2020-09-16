@@ -36,22 +36,28 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 | Name | Description | Type | Format | Data (Default in bold) |
 | --- | --- | --- | --- | --- |
+| Auto Brake | Increase/Decrease the auto brake | communicate | Auto Brake - {0} | Increaes,Decrease |
 | Localizer | Toggle/On/Off the localizer for auto pilot | communicate | Localizer - {0} | **Toggle**,On,Off |
 | AutoPilot | Toggle/On/Off Auto Pilot | communicate | Auto Pilot Master - {0} | **Toggle**,On,Off |
 | Attitude Hold | Toggle/On/Off the attitude hold for auto pilot | communicate | Attitude Hold - {0} | **Toggle**,On,Off |
+| Pitch Reference Value | Sets the pitch reference value | communicate | Pitch Reference Value - {0} | **Select**,Increase,Decrease |
 | Approach Mode | Toggle/On/Off the approach mode for auto pilot | communicate | Approach Mode - {0} | **Toggle**,On,Off |
+| AP Max Bank Angle | Increase/Decrease the max bank angle | communicate | Max Bank Angle - {0} | **Increase**,Decrease |
 | Heading Hold | Toggle/On/Off the heading hold for auto pilot | communicate | Heading Hold - {0} | **Toggle**,On,Off |
 | Heading Hold Value | Sets the heading hold value | communicate | Heading Hold Value - {0} | **Select**,Increase,Decrease,Set |
 | Altitude Hold | Toggle/On/Off the altitude hold for auto pilot | communicate | Altitude Hold - {0} | **Toggle**,On,Off |
-| Altitude Hold Value | Sets the altitude hold value | communicate | Altitude Hold Value - {0} | **Select**,Increase,Decrease |
+| Altitude Hold Value | Sets the altitude hold value | communicate | Altitude Hold Value - {0} | **Select**,Increase,Decrease,Set,Set Metric |
 | Back Course Mode | Toggle/On/Off the back course mode for auto pilot | communicate | Back Course Mode - {0} | **Toggle**,On,Off |
 | Nav1 Mode | Toggle/On/Off the Nav1 mode for auto pilot | communicate | Nav1 Mode - {0} | **Toggle**,On,Off |
-| Vertical Speed Value | Sets the vertical speed value | communicate | Vertical Speed Value - {0} | **Select**,Increase,Decrease,Set |
+| Nav Mode - Set | Sets the nav to 1 or 2 for Nav mode | communicate | Nav Mode - {0}  | **1**,2 |
+| Vertical Speed Value | Sets the vertical speed value | communicate | Vertical Speed Value - {0} | **Select**,Increase,Decrease,Set,Set Metric |
 | Airspeed Hold | Toggle/On/Off/Set the airspeed hold for auto pilot | communicate | Airspeed Hold - {0} | **Toggle**,On,Off,Set |
 | Airspeed Hold Value | Sets the airspeed hold value | communicate | Airspeed Hold Value - {0} | **Select**,Increase,Decrease,Set |
+| Auto Throttle Mode | Toggles the Arm/GoAround modes for auto throttle | communicate | Toggle Auto Throttle - {0} | **Arm**,GoAround |
 | Mach Hold | Toggle/On/Off/Set the mach hold for auto pilot | communicate | Mach Hold - {0} | **Toggle**,On,Off,Set |
 | Mach Hold Value | Sets the mach hold value | communicate | Mach Hold Value - {0} | Select,**Increase**,Decrease |
 | Flight Director | Toggle the Flight Director for auto pilot | communicate | Flight Director - {0} | **Toggle** |
+| Flight Director Pitch Sync | Syncs the Flight Director with the current pitch | communicate | Flight Director Pitch Sync |  |
 | Wing Leveler | Toggle/On/Off the Wing Leveler for auto pilot | communicate | Wing Leveler - {0} | **Toggle**,On,Off |
 | Yaw Dampener | Toggle/On/Off/Set the Yaw Dampener | communicate | Yaw Dampener - {0} | **Toggle**,On,Off,Set |
 
@@ -146,10 +152,10 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | Cowl Flaps 2 | Cowl Flaps 2 | communicate | Cowl Flaps 2 - {0} | **Increase**,Decrease |
 | Cowl Flaps 3 | Cowl Flaps 3 | communicate | Cowl Flaps 3 - {0} | **Increase**,Decrease |
 | Cowl Flaps 4 | Cowl Flaps 4 | communicate | Cowl Flaps 4 - {0} | **Increase**,Decrease |
-| Gear Manipulation | Gear Manipulation | communicate | Gear - {0} | **Toggle**,Up,Down,Set,Pump |
 | Rudder | Rudder | communicate | Rudder - {0} | **Center**,Left,Right,Set |
 | Spoilers | Spoilers | communicate | Spoilers - {0} | **Toggle**,On,Off,Set |
 | Spoilers Arm | Spoilers Arm | communicate | Spoilers Arm - {0} | **Toggle**,On,Off,Set |
+| Gear Manipulation | Gear Manipulation | communicate | Gear - {0} | **Toggle**,Up,Down,Set,Pump |
 | Aileron Trim | Aileron Trim | communicate | Aileron Trim - {0} | **Left**,Right |
 | Elevator Trim | Elevator Trim | communicate | Elevator Trim - {0} | **Up**,Down |
 | Rudder Trim | Rudder Trim | communicate | Rudder Trim - {0} | **Left**,Right |

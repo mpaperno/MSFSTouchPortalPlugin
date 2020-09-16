@@ -5,6 +5,7 @@ using MSFSTouchPortalPlugin.Services;
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using TouchPortalApi;
 
 [assembly: InternalsVisibleTo("MSFSTouchPortalPlugin-Generator")]
@@ -12,6 +13,15 @@ using TouchPortalApi;
 namespace MSFSTouchPortalPlugin {
   class Program {
     static void Main(string[] args) {
+      // Ensure only one running instance
+      const string mutextName = "MSFSTouchPortalPlugin";
+      var mutex = new Mutex(true, mutextName, out var createdNew);
+
+      if (!createdNew) {
+        Console.WriteLine($"{mutextName} is already running. Exiting application.");
+        return;
+      }
+
       // Setup DI with configured options
       var serviceProvider = new ServiceCollection()
         .ConfigureTouchPointApi((opts) => {

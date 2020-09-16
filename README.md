@@ -1,17 +1,36 @@
 # MSFS 2020 TouchPortal Plugin
 
 ## Overview
-This plugin will provide a two way interface between Touch Portal and Microsoft Flight Simulator 2020 through SimConnect.
+
+This plugin will provide a two way interface between Touch Portal and Microsoft Flight Simulator 2020 through SimConnect. This may work for other simulators that use SimConnect such as X-Plane 11.
 
 ## Features
-* Generates entry.tp automatically.
+
+* Connects automatically through SimConnect
+* Allows getting data variables from MSFS such as flight instruments or button/switch states.
+* Allows triggering various aircraft components from a Touch Portal panel.
 
 ## Documentation
+
 Documentation can be found here: [link](DOCUMENTATION.MD)
+
+## Installation Guide
+
+Go to the releases:
+https://github.com/tlewis17/MSFSTouchPortalPlugin/releases
+
+Get the latest version and there will be a TPP file you can download. From Touch Portal go to Import Plugin. Once you have done that restart Touch Portal. After that you will have a list of new actions you can choose from. Also "Dynamic Text" variables are now available. You can see them from the Dynamic Text Updater, or you can add an option for "On Plugin State Change" then select the corresponding state and "Changes to".
+
+For buttons you use this like:
+
+"On Plugin State Changes AutoPilot Master changes to 1" Then add whatever logic you want like button visuals. Duplicate this and add one for "does not change to 1" and that is when a button turns off.
+
+This is very much a work in progress!
+Sample TML files can be found by FordMustang:
+https://github.com/FordMustang0288/MSFSTouchPortalPages
 
 ## TODO
 
-* Connect/Disconnect Re-register services
 * States pushed back to Touch Portal
   * Done but need more mappings.
   * Also need to update MD with state info and possible values.
@@ -21,7 +40,6 @@ Documentation can be found here: [link](DOCUMENTATION.MD)
   * Reset states on start/end
 * Define SimVars
 * Documentation - Events needed and additional rows of data to display.
-* Automate generation of Entry.tp and Docs on build and put in root.
 
 * More Controls
   * VS AutoPilot
@@ -30,8 +48,6 @@ Documentation can be found here: [link](DOCUMENTATION.MD)
 ## Known Issues
 
 * "Set" buttons require data to be passed in and do not currently work.
-* SimConnect will fail if the simulator isn't running but the plugin starts up.
-To resolve after Sim startup, go into Touch Portal Plugin settings and stop/start the plugin.
 * On TP quit, the plugin won't stop itself.
   * This is coded, but not testable while debugging. Need to test with plugin installed.
 
@@ -43,21 +59,29 @@ To resolve after Sim startup, go into Touch Portal Plugin settings and stop/star
 | --- | --- | --- | --- | --- |
 | AP Master | AutoPilotMaster | Toggle, On, Off | v2 | Yes |
 | - | AutoPilotAvailable | - | v2 | Yes |
-| AP Altitude Hold | AutoPilotAttitudeHold | Toggle, On, Off | v2 | On/Off working, Toggle not working even with correct id to SimConnect |
+| AP Attitude Hold | AutoPilotAttitudeHold | Toggle, On, Off | v2 | |
+| AP Attitude Hold Var | AutoPilotAttitudeVar | Increase, Decrease, Select | v2 | |
 | AP Approach Mode | AutoPilotApproachHold | Toggle, On, Off | v2 | Yes |
+| AP Max Bank Angle | AutoPilotBanking | Increase, Decrease | v2 | |
 | AP Heading Hold | AutoPilotHeadingHold | Toggle, On, Off | v2 | Yes |
 | AP Heading Var | AutoPilotHeadingVar | Select, Increase, Decrease, Set | v2 | Inc/Dec working. Select/Set do nothing |
-| AP Altitude Hold | AutoPilotAltitudeHold | Toggle, On, Off | v2 | |
-| AP Altitude Var | AutoPilotAltitudeVar | Select, Increase, Decrease | v2 | |
+| AP Altitude Hold | AutoPilotAltitudeHold | Toggle, On, Off | v2 | Yes |
+| AP Altitude Var | AutoPilotAltitudeVar | Select, Increase, Decrease, Set, Set Metric | v2 | |
 | AP Back Course Mode | AutoPilotBackCourseHold |  Toggle, On, Off | v2 | |
 | AP Nav1 Mode | AutoPilotNav1Hold | Toggle, On, Off | v2 | |
+| AP Nav Mode - Set | AutoPilotNavSelected | 1, 2 | v2 | |
 | AP Vertical Speed Hold | AutoPilotVerticalSpeedHold | ? | ? | VS and Vertical Hold might be mixed up. Need to redo this sections. |
+| AP Vertical Speed Var | AutoPilotVerticalSpeedVar | Select, Increase, Decrease, Set, Set Metric | v2 | Inc/Dec working. Select/Set do nothing. |
 | AP Air Speed Hold | AutoPilotAirSpeedHold | Toggle, On, Off, Set | v2 | |
 | AP Air Speed Var | AutoPilotAirSpeedVar | Select, Increase, Decrease, Set | v2 | |
-| AP Mach Hold | TBD | Toggle, On, Off, Set | v2 | |
-| AP Mach Var | TBD | Select, Increase, Decrease | v2 | |
-| AP Flight Director | TBD | Toggle | v2 | |
-| AP Wing Leveler | TBD | Toggle, On, Off | v2 | |
+| AP Auto Throttle Mode | AutoThrottleArm AutoThrottleGoAround | Arm, GoAround | v2 | |
+| AP Auto Brake | TBD | Increase, Decrease | v2 | |
+| AP Mach Hold | AutoPilotMach | Toggle, On, Off, Set | v2 | |
+| AP Mach Var | AutoPilotMachVar | Select, Increase, Decrease | v2 | |
+| AP Flight Director | AutoPilotFlightDirector | Toggle | v2 | |
+| AP Flight Director Pitch Sync | AutoPilotFlightDirectorCurrentPitch | - | v2 | |
+| AP Flight Director Bank | AutoPilotFlightDirectorCurrentBank | - | v2 | |
+| AP Wing Leveler | AutoPilotWingLeveler | Toggle, On, Off | v2 | |
 | AP Localizer | TBD | Toggle, On, Off | v1 | ?? How to handle? |
 | AP Yaw Dampener | TBD | Toggle, On, Off, Set | v2 | |
 | AP Flight Level Control TBD | AutoPilotPitchHold | TBD | v1 | ?? |
@@ -81,13 +105,13 @@ To resolve after Sim startup, go into Touch Portal Plugin settings and stop/star
 | Cowl Flaps 2 | TBD | Increase, Decrease | v1 | |
 | Cowl Flaps 3 | TBD | Increase, Decrease | v1 | |
 | Cowl Flaps 4 | TBD | Increase, Decrease | v1 | |
-| Gear | TBD | Toggle, Up, Down, Set, Pump | v1 | |
+| Gear | GearTotalExtended | Toggle, Up, Down, Set, Pump | v2 | |
 | Rudder | TBD | Center, Left, Right, Set | v1 | |
 | Spoilers | TBD | Toggle, On, Off, Set | v1 | |
 | Spoilers Arm | TBD | Toggle, On, Off, Set | v1 | |
-| Aileron Trim | AileronTrimPct TBD | Left, RIght | v1 | |
-| Elevator Trim | TBD | Up, Down | v1 | |
-| Rudder Trim | RudderTrimPct TBD | Left, Right | v1 | |
+| Aileron Trim | AileronTrim | Left, RIght | v2 | |
+| Elevator Trim | ElevatorTrim | Up, Down | v2 | |
+| Rudder Trim | RudderTrim | Left, Right | v2 | |
 
 ### Communications
 
@@ -154,14 +178,14 @@ Extra States for Lights:
 
 | Control | State Variable(s) | Modes | v1/v2 | Tested |
 | --- | --- | --- | --- | --- |
-| - | GroundVelocity | - | v2 | |
-| - | PlaneAltitude | - | v2 | |
-| - | PlaneAltitudeAGL | - | v2 | |
-| - | GroundAltitude | - | v2 | |
-| - | PlaneHeadingTrue | - | v2 | |
-| - | PlaneHeadingMagnetic | - | v2 | |
-| - | PlaneBankAngle | - | v2 | |
-| - | PlanePitchAngle | - | v2 | |
+| - | GroundVelocity | - | v2 | Yes |
+| - | PlaneAltitude | - | v2 | Yes |
+| - | PlaneAltitudeAGL | - | v2 | Yes |
+| - | GroundAltitude | - | v2 | Yes |
+| - | PlaneHeadingTrue | - | v2 | Yes |
+| - | PlaneHeadingMagnetic | - | v2 | Yes |
+| - | PlaneBankAngle | - | v2 | Yes but values are opposite TODO: Flip values |
+| - | PlanePitchAngle | - | v2 | Yes but values are opposite TODO: Flip values |
 
 ### Fuel System
 

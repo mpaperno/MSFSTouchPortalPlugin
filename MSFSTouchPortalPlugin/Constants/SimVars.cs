@@ -11,20 +11,27 @@ namespace MSFSTouchPortalPlugin.Constants {
     AutoPilotAltitudeVar,
     AutoPilotApproachHold,
     AutoPilotAttitudeHold,
+    AutoPilotAttitudeVar,
     AutoPilotAvailable,
     AutoPilotBackCourseHold,
+    AutoPilotBanking,
     AutoPilotFlightDirector,
+    AutoPilotFlightDirectorCurrentBank,
+    AutoPilotFlightDirectorCurrentPitch,
     AutoPilotHeadingHold,
     AutoPilotHeadingVar,
     AutoPilotMach,
     AutoPilotMachVar,
     AutoPilotMaster,
     AutoPilotNav1Hold,
+    AutoPilotNavSelected,
     AutoPilotPitchHold,
     AutoPilotVerticalSpeedHold,
     AutoPilotVerticalSpeedVar,
     AutoPilotWingLeveler,
     AutoPilotYawDampener,
+    AutoThrottleArm,
+    AutoThrottleGA,
     GroundAltitude,
     GroundVelocity,
     LightBeaconOn,
@@ -48,7 +55,17 @@ namespace MSFSTouchPortalPlugin.Constants {
     PlaneHeadingTrue,
     PlaneHeadingMagnetic,
     PlanePitchAngle,
-    RudderTrimPct
+    RudderTrimPct,
+
+    #region Landing Gear
+    GearTotalExtended,
+    #endregion
+
+    #region Trimming
+    AileronTrim,
+    ElevatorTrim,
+    RudderTrim,
+    #endregion
   }
 
   public enum Request {
@@ -60,20 +77,27 @@ namespace MSFSTouchPortalPlugin.Constants {
     AutoPilotAltitudeVar,
     AutoPilotApproachHold,
     AutoPilotAttitudeHold,
+    AutoPilotAttitudeVar,
     AutoPilotAvailable,
     AutoPilotBackCourseHold,
+    AutoPilotBanking,
     AutoPilotFlightDirector,
+    AutoPilotFlightDirectorCurrentBank,
+    AutoPilotFlightDirectorCurrentPitch,
     AutoPilotHeadingHold,
     AutoPilotHeadingVar,
     AutoPilotMach,
     AutoPilotMachVar,
     AutoPilotMaster,
     AutoPilotNav1Hold,
+    AutoPilotNavSelected,
     AutoPilotPitchHold,
     AutoPilotVerticalSpeedHold,
     AutoPilotVerticalSpeedVar,
     AutoPilotWingLeveler,
     AutoPilotYawDampener,
+    AutoThrottleArm,
+    AutoThrottleGA,
     GroundAltitude,
     GroundVelocity,
     LightBeaconOn,
@@ -97,7 +121,17 @@ namespace MSFSTouchPortalPlugin.Constants {
     PlaneHeadingTrue,
     PlaneHeadingMagnetic,
     PlanePitchAngle,
-    RudderTrimPct
+    RudderTrimPct,
+
+    #region Landing Gear
+    GearTotalExtended,
+    #endregion
+
+    #region Trimming
+    AileronTrim,
+    ElevatorTrim,
+    RudderTrim,
+    #endregion
   }
 
   public static class SimVars {
