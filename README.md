@@ -59,21 +59,29 @@ https://github.com/FordMustang0288/MSFSTouchPortalPages
 | --- | --- | --- | --- | --- |
 | AP Master | AutoPilotMaster | Toggle, On, Off | v2 | Yes |
 | - | AutoPilotAvailable | - | v2 | Yes |
-| AP Altitude Hold | AutoPilotAttitudeHold | Toggle, On, Off | v2 | On/Off working, Toggle not working even with correct id to SimConnect |
+| AP Attitude Hold | AutoPilotAttitudeHold | Toggle, On, Off | v2 | |
+| AP Attitude Hold Var | AutoPilotAttitudeVar | Increase, Decrease, Select | v2 | |
 | AP Approach Mode | AutoPilotApproachHold | Toggle, On, Off | v2 | Yes |
+| AP Max Bank Angle | AutoPilotBanking | Increase, Decrease | v2 | |
 | AP Heading Hold | AutoPilotHeadingHold | Toggle, On, Off | v2 | Yes |
 | AP Heading Var | AutoPilotHeadingVar | Select, Increase, Decrease, Set | v2 | Inc/Dec working. Select/Set do nothing |
-| AP Altitude Hold | AutoPilotAltitudeHold | Toggle, On, Off | v2 | |
-| AP Altitude Var | AutoPilotAltitudeVar | Select, Increase, Decrease | v2 | |
+| AP Altitude Hold | AutoPilotAltitudeHold | Toggle, On, Off | v2 | Yes |
+| AP Altitude Var | AutoPilotAltitudeVar | Select, Increase, Decrease, Set, Set Metric | v2 | |
 | AP Back Course Mode | AutoPilotBackCourseHold |  Toggle, On, Off | v2 | |
 | AP Nav1 Mode | AutoPilotNav1Hold | Toggle, On, Off | v2 | |
+| AP Nav Mode - Set | AutoPilotNavSelected | 1, 2 | v2 | |
 | AP Vertical Speed Hold | AutoPilotVerticalSpeedHold | ? | ? | VS and Vertical Hold might be mixed up. Need to redo this sections. |
+| AP Vertical Speed Var | AutoPilotVerticalSpeedVar | Select, Increase, Decrease, Set, Set Metric | v2 | Inc/Dec working. Select/Set do nothing. |
 | AP Air Speed Hold | AutoPilotAirSpeedHold | Toggle, On, Off, Set | v2 | |
 | AP Air Speed Var | AutoPilotAirSpeedVar | Select, Increase, Decrease, Set | v2 | |
-| AP Mach Hold | TBD | Toggle, On, Off, Set | v2 | |
-| AP Mach Var | TBD | Select, Increase, Decrease | v2 | |
-| AP Flight Director | TBD | Toggle | v2 | |
-| AP Wing Leveler | TBD | Toggle, On, Off | v2 | |
+| AP Auto Throttle Mode | AutoThrottleArm AutoThrottleGoAround | Arm, GoAround | v2 | |
+| AP Auto Brake | TBD | Increase, Decrease | v2 | |
+| AP Mach Hold | AutoPilotMach | Toggle, On, Off, Set | v2 | |
+| AP Mach Var | AutoPilotMachVar | Select, Increase, Decrease | v2 | |
+| AP Flight Director | AutoPilotFlightDirector | Toggle | v2 | |
+| AP Flight Director Pitch Sync | AutoPilotFlightDirectorCurrentPitch | - | v2 | |
+| AP Flight Director Bank | AutoPilotFlightDirectorCurrentBank | - | v2 | |
+| AP Wing Leveler | AutoPilotWingLeveler | Toggle, On, Off | v2 | |
 | AP Localizer | TBD | Toggle, On, Off | v1 | ?? How to handle? |
 | AP Yaw Dampener | TBD | Toggle, On, Off, Set | v2 | |
 | AP Flight Level Control TBD | AutoPilotPitchHold | TBD | v1 | ?? |
@@ -97,13 +105,13 @@ https://github.com/FordMustang0288/MSFSTouchPortalPages
 | Cowl Flaps 2 | TBD | Increase, Decrease | v1 | |
 | Cowl Flaps 3 | TBD | Increase, Decrease | v1 | |
 | Cowl Flaps 4 | TBD | Increase, Decrease | v1 | |
-| Gear | TBD | Toggle, Up, Down, Set, Pump | v1 | |
+| Gear | GearTotalExtended | Toggle, Up, Down, Set, Pump | v2 | |
 | Rudder | TBD | Center, Left, Right, Set | v1 | |
 | Spoilers | TBD | Toggle, On, Off, Set | v1 | |
 | Spoilers Arm | TBD | Toggle, On, Off, Set | v1 | |
-| Aileron Trim | AileronTrimPct TBD | Left, RIght | v1 | |
-| Elevator Trim | TBD | Up, Down | v1 | |
-| Rudder Trim | RudderTrimPct TBD | Left, Right | v1 | |
+| Aileron Trim | AileronTrim | Left, RIght | v2 | |
+| Elevator Trim | ElevatorTrim | Up, Down | v2 | |
+| Rudder Trim | RudderTrim | Left, Right | v2 | |
 
 ### Communications
 
