@@ -198,6 +198,12 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     [TouchPortalActionMapping("MagnetoSpecific", new string[] { "4", "Increase" })]
     MAGNETO4_INCR,
 
+    MAGNETO_SET,
+    MAGNETO1_SET,
+    MAGNETO2_SET,
+    MAGNETO3_SET,
+    MAGNETO4_SET,
+
     #endregion
 
     #region Starters
@@ -270,6 +276,87 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     [SimActionEvent]
     [TouchPortalActionMapping("Throttle", "90%")]
     THROTTLE_90,
+
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "1", "Full" })]
+    THROTTLE1_FULL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "1", "Increase" })]
+    THROTTLE1_INCR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "1", "Increase Small" })]
+    THROTTLE1_INCR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "1", "Descrease" })]
+    THROTTLE1_DECR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "1", "Descrease Small" })]
+    THROTTLE1_DECR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "1", "Cut" })]
+    THROTTLE1_CUT,
+
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "2", "Full" })]
+    THROTTLE2_FULL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "2", "Increase" })]
+    THROTTLE2_INCR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "2", "Increase Small" })]
+    THROTTLE2_INCR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "2", "Descrease" })]
+    THROTTLE2_DECR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "2", "Descrease Small" })]
+    THROTTLE2_DECR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "2", "Cut" })]
+    THROTTLE2_CUT,
+
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "3", "Full" })]
+    THROTTLE3_FULL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "3", "Increase" })]
+    THROTTLE3_INCR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "3", "Increase Small" })]
+    THROTTLE3_INCR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "3", "Descrease" })]
+    THROTTLE3_DECR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "3", "Descrease Small" })]
+    THROTTLE3_DECR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "3", "Cut" })]
+    THROTTLE3_CUT,
+
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "4", "Full" })]
+    THROTTLE4_FULL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "4", "Increase" })]
+    THROTTLE4_INCR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "4", "Increase Small" })]
+    THROTTLE4_INCR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "4", "Descrease" })]
+    THROTTLE4_DECR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "4", "Descrease Small" })]
+    THROTTLE4_DECR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("ThrottleSpecific", new string[] { "4", "Cut" })]
+    THROTTLE4_CUT,
+
+    THROTTLE1_SET,
+    THROTTLE2_SET,
+    THROTTLE3_SET,
+    THROTTLE4_SET,
 
     #endregion
 

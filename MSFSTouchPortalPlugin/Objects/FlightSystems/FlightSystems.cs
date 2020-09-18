@@ -77,7 +77,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems {
 
     [TouchPortalAction("Spoilers", "Spoilers", "MSFS", "Spoilers", "Spoilers - {0}")]
     [TouchPortalActionChoice(new string[] { "Toggle", "On", "Off", "Set" }, "Toggle")]
-    public object SPOILERS { get; }
+    public static object SPOILERS { get; }
 
     [TouchPortalAction("SpoilersArm", "Spoilers Arm", "MSFS", "Spoilers Arm", "Spoilers Arm - {0}")]
     [TouchPortalActionChoice(new string[] { "Toggle", "On", "Off", "Set" }, "Toggle")]
@@ -99,7 +99,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems {
     [TouchPortalActionChoice(new string[] { "Up", "Down" }, "Up")]
     [TouchPortalState("ElevatorTrim", "text", "Elevator Trim Angle", "")]
     public static SimVarItem ELEVATOR_TRIM =
-      new SimVarItem() { def = Definition.ElevatorTrim, req = Request.ElevatorTrim, SimVarName = "", Unit = Units.radians, CanSet = false };
+      new SimVarItem() { def = Definition.ElevatorTrim, req = Request.ElevatorTrim, SimVarName = "ELEVATOR TRIM PCT", Unit = Units.radians, CanSet = false };
     
     [SimVarDataRequest]
     [TouchPortalAction("RudderTrim", "Rudder Trim", "MSFS", "Rudder Trim", "Rudder Trim - {0}")]

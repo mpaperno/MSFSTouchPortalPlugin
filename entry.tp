@@ -704,7 +704,43 @@
       "id": "MSFSTouchPortalPlugin.Communication",
       "name": "MSFS - Communication",
       "imagepath": "",
-      "actions": [],
+      "actions": [
+        {
+          "id": "MSFSTouchPortalPlugin.Communication.Action.Radios",
+          "name": "Fuel Selectors",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Fuel Selectors",
+          "tryInline": true,
+          "format": "Fuel Selector {$MSFSTouchPortalPlugin.Communication.Action.Radios.Data.0$} - {$MSFSTouchPortalPlugin.Communication.Action.Radios.Data.1$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Communication.Action.Radios.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "COM1",
+              "valueChoices": [
+                "COM1",
+                "COM2",
+                "NAV1",
+                "NAV2"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Communication.Action.Radios.Data.1",
+              "type": "choice",
+              "label": "Action",
+              "default": "Increase 25 KHz",
+              "valueChoices": [
+                "Increase 25 KHz",
+                "Increase 1 MHz",
+                "Decrease 25 KHz",
+                "Decrease 1Mhz"
+              ]
+            }
+          ]
+        }
+      ],
       "events": [],
       "states": []
     },
@@ -1342,7 +1378,14 @@
         }
       ],
       "events": [],
-      "states": []
+      "states": [
+        {
+          "id": "MSFSTouchPortalPlugin.Environment.State.PitotHeat",
+          "type": "text",
+          "desc": "MSFS - Environment - Pitot Heat Status",
+          "default": ""
+        }
+      ]
     },
     {
       "id": "MSFSTouchPortalPlugin.Failures",
@@ -1834,43 +1877,28 @@
           "data": []
         },
         {
-          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_1",
-          "name": "Fuel Selector 1",
+          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelectors",
+          "name": "Fuel Selectors",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Fuel Selector 1",
+          "description": "Fuel Selectors",
           "tryInline": true,
-          "format": "Fuel Selector 1 - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_1.Data.0$}",
+          "format": "Fuel Selector {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelectors.Data.0$} - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelectors.Data.1$}",
           "data": [
             {
-              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_1.Data.0",
+              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelectors.Data.0",
               "type": "choice",
               "label": "Action",
-              "default": "All",
+              "default": "1",
               "valueChoices": [
-                "All",
-                "Off",
-                "Left",
-                "Right",
-                "Left - Aux",
-                "Right - Aux",
-                "Center",
-                "Set"
+                "1",
+                "2",
+                "3",
+                "4"
               ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_2",
-          "name": "Fuel Selector 2",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Fuel Selector 2",
-          "tryInline": true,
-          "format": "Fuel Selector 2 - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_2.Data.0$}",
-          "data": [
+            },
             {
-              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_2.Data.0",
+              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelectors.Data.1",
               "type": "choice",
               "label": "Action",
               "default": "All",
@@ -1879,64 +1907,11 @@
                 "Off",
                 "Left",
                 "Right",
+                "Left - Main",
+                "Right - Main",
                 "Left - Aux",
                 "Right - Aux",
-                "Center",
-                "Set"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_3",
-          "name": "Fuel Selector 3",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Fuel Selector 3",
-          "tryInline": true,
-          "format": "Fuel Selector 3 - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_3.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_3.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "All",
-              "valueChoices": [
-                "All",
-                "Off",
-                "Left",
-                "Right",
-                "Left - Aux",
-                "Right - Aux",
-                "Center",
-                "Set"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_4",
-          "name": "Fuel Selector 4",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Fuel Selector 4",
-          "tryInline": true,
-          "format": "Fuel Selector 4 - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_4.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelector_4.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "All",
-              "valueChoices": [
-                "All",
-                "Off",
-                "Left",
-                "Right",
-                "Left - Aux",
-                "Right - Aux",
-                "Center",
-                "Set"
+                "Center"
               ]
             }
           ]

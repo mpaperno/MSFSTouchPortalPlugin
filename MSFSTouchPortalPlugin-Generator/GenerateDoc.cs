@@ -85,6 +85,9 @@ namespace MSFSTouchPortalPlugin_Generator {
           newCat.Actions.Add(newAct);
         });
 
+        // TODO add order by for actions/states/events.
+        newCat.Actions = newCat.Actions.OrderBy(c => c.Name).ToList();
+
         // Loop through States
         var states = cat.GetFields().Where(m => m.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalState))).ToList();
         states.ForEach(state => {
@@ -102,11 +105,15 @@ namespace MSFSTouchPortalPlugin_Generator {
           }
         });
 
+        newCat.States = newCat.States.OrderBy(c => c.Description).ToList();
+
         // Lop through Events
         // TODO: Need events
 
         model.Categories.Add(newCat);
       });
+
+      model.Categories = model.Categories.OrderBy(c => c.Name).ToList();
 
       return model;
     }
