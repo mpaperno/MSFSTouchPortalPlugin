@@ -90,8 +90,8 @@ namespace MSFSTouchPortalPlugin.Services {
       OnDisconnect();
     }
 
-    public Task WaitForMessage() {
-      while (_connected) {
+    public Task WaitForMessage(CancellationToken cancellationToken) {
+      while (_connected && !cancellationToken.IsCancellationRequested) {
         if (_scReady.WaitOne(TimeSpan.FromSeconds(5))) {
           // TODO: Exception on quit
           _simConnect?.ReceiveMessage();

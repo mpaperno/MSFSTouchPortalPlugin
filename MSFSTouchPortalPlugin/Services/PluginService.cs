@@ -1,4 +1,5 @@
-﻿using MSFSTouchPortalPlugin.Attributes;
+﻿using Microsoft.Extensions.Hosting;
+using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Objects.Plugin;
@@ -16,6 +17,9 @@ using Timer = System.Timers.Timer;
 namespace MSFSTouchPortalPlugin.Services {
   /// <inheritdoc cref="IPluginService" />
   internal class PluginService : IPluginService {
+    private CancellationToken _cancellationToken;
+
+    private readonly IHostApplicationLifetime _hostApplicationLifetime;
     private readonly IMessageProcessor _messageProcessor;
     private readonly ISimConnectService _simConnectService;
     private readonly IReflectionService _reflectionService;
@@ -28,13 +32,11 @@ namespace MSFSTouchPortalPlugin.Services {
     /// Constructor
     /// </summary>
     /// <param name="messageProcessor">Message Processor Object</param>
-    public PluginService(IMessageProcessor messageProcessor, ISimConnectService simConnectService, IReflectionService reflectionService) {
+    public PluginService(IHostApplicationLifetime hostApplicationLifetime, IMessageProcessor messageProcessor, ISimConnectService simConnectService, IReflectionService reflectionService) {
+      _hostApplicationLifetime = hostApplicationLifetime ?? throw new ArgumentNullException(nameof(hostApplicationLifetime));
       _messageProcessor = messageProcessor ?? throw new ArgumentNullException(nameof(messageProcessor));
       _simConnectService = simConnectService ?? throw new ArgumentNullException(nameof(simConnectService));
       _reflectionService = reflectionService ?? throw new ArgumentNullException(nameof(reflectionService));
-
-      Initialize();
-      SetupEventLists();
     }
 
     /// <summary>
@@ -113,15 +115,19 @@ namespace MSFSTouchPortalPlugin.Services {
       statesDictionary = _reflectionService.GetStates();
     }
 
-    public void TryConnect() {
+    private void TryConnect() {
       // TODO: Will this properly reconnect after starting sim, then existing sim?
-      while (true) {
-        if (!_simConnectService.IsConnected()) {
+      int i = 0;
+
+      while (!_cancellationToken.IsCancellationRequested) {
+        if (i == 0 && !_simConnectService.IsConnected()) {
           _simConnectService.Connect();
+          i = 10;
         }
 
         // SimConnect is typically available even before loading into a flight. This should connect and be ready by the time a flight is started.
-        Thread.Sleep(10000);
+        i--;
+        Thread.Sleep(1000);
       }
     }
 
@@ -147,7 +153,7 @@ namespace MSFSTouchPortalPlugin.Services {
 
       // Run Listen and pairing
       await Task.WhenAll(new Task[] {
-        _simConnectService.WaitForMessage()
+        _simConnectService.WaitForMessage(_cancellationToken)
       });
     }
 
@@ -203,6 +209,31 @@ namespace MSFSTouchPortalPlugin.Services {
 
         return;
       }
+    }
+
+    public Task StartAsync(CancellationToken cancellationToken) {
+      _cancellationToken = cancellationToken;
+
+      _hostApplicationLifetime.ApplicationStarted.Register(() => {
+        Initialize();
+        SetupEventLists();
+
+        TryConnect();
+      });
+
+      _hostApplicationLifetime.ApplicationStopping.Register(() => {
+        // Disconnect from SimConnect
+        _simConnectService.Disconnect();
+
+        // Stop app
+        _hostApplicationLifetime.StopApplication();
+      });
+
+      return Task.CompletedTask;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken) {
+      return Task.CompletedTask;
     }
 
     #endregion

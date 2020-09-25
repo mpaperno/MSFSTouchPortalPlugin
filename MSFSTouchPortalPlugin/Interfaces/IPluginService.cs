@@ -1,14 +1,14 @@
-﻿using MSFSTouchPortalPlugin.Constants;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.Extensions.Hosting;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MSFSTouchPortalPlugin.Interfaces {
   /// <summary>
   /// Handles communication with the Touch Portal
   /// </summary>
-  internal interface IPluginService {
+  internal interface IPluginService : IHostedService {
     Task RunPluginServices();
-    void TryConnect();
+    Task StartAsync(CancellationToken cancellationToken);
+    Task StopAsync(CancellationToken cancellationToken);
   }
 }
