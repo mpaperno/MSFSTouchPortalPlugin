@@ -48,6 +48,9 @@ namespace MSFSTouchPortalPlugin.Services {
         Environment.Exit(0);
       };
 
+      Task.Run(_messageProcessor.Listen);
+      Task.Run(_messageProcessor.TryPairAsync);
+
       // On Data Update
       _simConnectService.OnDataUpdateEvent += ((Definition def, Request req, object data) => {
         // Lookup State Mapping
@@ -144,8 +147,6 @@ namespace MSFSTouchPortalPlugin.Services {
 
       // Run Listen and pairing
       await Task.WhenAll(new Task[] {
-        _messageProcessor.Listen(),
-        _messageProcessor.TryPairAsync(),
         _simConnectService.WaitForMessage()
       });
     }
