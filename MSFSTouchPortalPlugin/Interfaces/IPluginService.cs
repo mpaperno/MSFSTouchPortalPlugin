@@ -7,7 +7,7 @@ namespace MSFSTouchPortalPlugin.Interfaces {
   /// Handles communication with the Touch Portal
   /// </summary>
   internal interface IPluginService : IHostedService {
-    Task RunPluginServices();
+    Task RunPluginServices(CancellationToken simConnectCancelToken);
     Task StartAsync(CancellationToken cancellationToken);
     Task StopAsync(CancellationToken cancellationToken);
   }

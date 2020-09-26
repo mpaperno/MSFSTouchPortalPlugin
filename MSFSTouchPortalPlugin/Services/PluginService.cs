@@ -18,6 +18,7 @@ namespace MSFSTouchPortalPlugin.Services {
   /// <inheritdoc cref="IPluginService" />
   internal class PluginService : IPluginService {
     private CancellationToken _cancellationToken;
+    private CancellationTokenSource _simConnectCancellationTokenSource;
 
     private readonly IHostApplicationLifetime _hostApplicationLifetime;
     private readonly IMessageProcessor _messageProcessor;
@@ -88,6 +89,8 @@ namespace MSFSTouchPortalPlugin.Services {
       });
 
       _simConnectService.OnConnect += () => {
+        _simConnectCancellationTokenSource = new CancellationTokenSource();
+
         _messageProcessor.UpdateState(new StateUpdate() { Id = "MSFSTouchPortalPlugin.Plugin.State.Connected", Value = _simConnectService.IsConnected().ToString().ToLower() });
 
         // Register Actions
@@ -101,10 +104,11 @@ namespace MSFSTouchPortalPlugin.Services {
           _simConnectService.RegisterToSimConnect(s.Value);
         }
 
-        Task.WhenAll(RunPluginServices());
+        Task.WhenAll(RunPluginServices(_simConnectCancellationTokenSource.Token));
       };
 
       _simConnectService.OnDisconnect += () => {
+        _simConnectCancellationTokenSource.Cancel();
         _messageProcessor.UpdateState(new StateUpdate() { Id = "MSFSTouchPortalPlugin.Plugin.State.Connected", Value = _simConnectService.IsConnected().ToString().ToLower() });
       };
     }
@@ -115,7 +119,7 @@ namespace MSFSTouchPortalPlugin.Services {
       statesDictionary = _reflectionService.GetStates();
     }
 
-    private void TryConnect() {
+    private Task TryConnect() {
       // TODO: Will this properly reconnect after starting sim, then existing sim?
       int i = 0;
 
@@ -129,11 +133,18 @@ namespace MSFSTouchPortalPlugin.Services {
         i--;
         Thread.Sleep(1000);
       }
+
+      return Task.CompletedTask;
     }
 
-    public async Task RunPluginServices() {
+    public async Task RunPluginServices(CancellationToken simConnectCancelToken) {
       // Run Data Polling
       var timer = new Timer(250) { AutoReset = false };
+
+      simConnectCancelToken.Register(() => {
+        timer.Stop();
+        timer.Dispose();
+      });
 
       timer.Elapsed += (obj, args) => {
         foreach (var s in statesDictionary) {
@@ -153,7 +164,7 @@ namespace MSFSTouchPortalPlugin.Services {
 
       // Run Listen and pairing
       await Task.WhenAll(new Task[] {
-        _simConnectService.WaitForMessage(_cancellationToken)
+        _simConnectService.WaitForMessage(simConnectCancelToken)
       });
     }
 
@@ -218,7 +229,7 @@ namespace MSFSTouchPortalPlugin.Services {
         Initialize();
         SetupEventLists();
 
-        TryConnect();
+        Task.WhenAll(TryConnect());
       });
 
       _hostApplicationLifetime.ApplicationStopping.Register(() => {
