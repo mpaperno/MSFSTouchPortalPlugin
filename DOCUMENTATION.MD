@@ -57,6 +57,7 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | Nav Mode - Set | Sets the nav to 1 or 2 for Nav mode | communicate | Nav Mode - {0}  | **1**,2 |
 | Nav1 Mode | Toggle/On/Off the Nav1 mode for auto pilot | communicate | Nav1 Mode - {0} | **Toggle**,On,Off |
 | Pitch Reference Value | Sets the pitch reference value | communicate | Pitch Reference Value - {0} | **Select**,Increase,Decrease |
+| Vertical Speed | Toggle the Vertical Speed for auto pilot | communicate | Vertical Speed - {0} | **Toggle** |
 | Vertical Speed Value | Sets the vertical speed value | communicate | Vertical Speed Value - {0} | **Select**,Increase,Decrease,Set,Set Metric |
 | Wing Leveler | Toggle/On/Off the Wing Leveler for auto pilot | communicate | Wing Leveler - {0} | **Toggle**,On,Off |
 | Yaw Dampener | Toggle/On/Off/Set the Yaw Dampener | communicate | Yaw Dampener - {0} | **Toggle**,On,Off,Set |

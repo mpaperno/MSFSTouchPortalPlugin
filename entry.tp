@@ -323,6 +323,26 @@
           ]
         },
         {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeed",
+          "name": "Vertical Speed",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle the Vertical Speed for auto pilot",
+          "tryInline": true,
+          "format": "Vertical Speed - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeed.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeed.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle"
+              ]
+            }
+          ]
+        },
+        {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeedVar",
           "name": "Vertical Speed Value",
           "prefix": "MSFS",
