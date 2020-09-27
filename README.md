@@ -42,7 +42,6 @@ https://github.com/FordMustang0288/MSFSTouchPortalPages
 * Documentation - Events needed and additional rows of data to display.
 
 * More Controls
-  * VS AutoPilot
   * Communications
 
 ## Known Issues
@@ -59,8 +58,8 @@ https://github.com/FordMustang0288/MSFSTouchPortalPages
 | --- | --- | --- | --- | --- |
 | AP Master | AutoPilotMaster | Toggle, On, Off | v2 | Yes |
 | - | AutoPilotAvailable | - | v2 | Yes |
-| AP Attitude Hold | AutoPilotAttitudeHold | Toggle, On, Off | v2 | |
-| AP Attitude Hold Var | AutoPilotAttitudeVar | Increase, Decrease, Select | v2 | |
+| AP Attitude Hold | AutoPilotAttitudeHold | Toggle, On, Off | v2 | Yes |
+| AP Attitude Hold Var | AutoPilotAttitudeVar | Increase, Decrease, Select | v2 | Yes |
 | AP Approach Mode | AutoPilotApproachHold | Toggle, On, Off | v2 | Yes |
 | AP Max Bank Angle | AutoPilotBanking | Increase, Decrease | v2 | |
 | AP Heading Hold | AutoPilotHeadingHold | Toggle, On, Off | v2 | Yes |
@@ -70,7 +69,7 @@ https://github.com/FordMustang0288/MSFSTouchPortalPages
 | AP Back Course Mode | AutoPilotBackCourseHold |  Toggle, On, Off | v2 | |
 | AP Nav1 Mode | AutoPilotNav1Hold | Toggle, On, Off | v2 | |
 | AP Nav Mode - Set | AutoPilotNavSelected | 1, 2 | v2 | |
-| AP Vertical Speed Hold | AutoPilotVerticalSpeedHold | ? | ? | VS and Vertical Hold might be mixed up. Need to redo this sections. |
+| AP Vertical Speed Hold | AutoPilotVerticalSpeedHold | Toggle | V2 | Yes |
 | AP Vertical Speed Var | AutoPilotVerticalSpeedVar | Select, Increase, Decrease, Set, Set Metric | v2 | Inc/Dec working. Select/Set do nothing. |
 | AP Air Speed Hold | AutoPilotAirSpeedHold | Toggle, On, Off, Set | v2 | |
 | AP Air Speed Var | AutoPilotAirSpeedVar | Select, Increase, Decrease, Set | v2 | |

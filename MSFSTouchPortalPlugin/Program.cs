@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Services;
@@ -6,13 +7,14 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using TouchPortalApi;
 
 [assembly: InternalsVisibleTo("MSFSTouchPortalPlugin-Generator")]
 
 namespace MSFSTouchPortalPlugin {
-  class Program {
-    static void Main(string[] args) {
+  public class Program {
+    private static async Task Main(string[] args) {
       // Ensure only one running instance
       const string mutextName = "MSFSTouchPortalPlugin";
       var mutex = new Mutex(true, mutextName, out var createdNew);
@@ -22,28 +24,18 @@ namespace MSFSTouchPortalPlugin {
         return;
       }
 
-      // Setup DI with configured options
-      var serviceProvider = new ServiceCollection()
-        .ConfigureTouchPointApi((opts) => {
-          opts.PluginId = "MSFSTouchPortalPlugin";
-          opts.ServerIp = "127.0.0.1";
-          opts.ServerPort = 12136;
-        })
-        .AddSingleton<ISimConnectService, SimConnectService>()
-        .AddSingleton<IPluginService, PluginService>()
-        .AddSingleton<IReflectionService, ReflectionService>()
-        .Configure<MSFSTouchPortalPluginOptions>((opt) => {
-        })
-        .BuildServiceProvider();
-
       try {
-        // Startup Plugin Service
-        var pluginService = serviceProvider.GetRequiredService<IPluginService>();
-        
-        // Connect to MSFS
-        pluginService.TryConnect();
-
-        Console.ReadLine();
+        await Host.CreateDefaultBuilder(args).ConfigureServices((context, services) => {
+          services.ConfigureTouchPointApi((opts) => {
+            opts.PluginId = "MSFSTouchPortalPlugin";
+            opts.ServerIp = "127.0.0.1";
+            opts.ServerPort = 12136;
+          })
+          .Configure<MSFSTouchPortalPluginOptions>((opt) => { })
+          .AddHostedService<PluginService>()
+          .AddSingleton<ISimConnectService, SimConnectService>()
+          .AddSingleton<IReflectionService, ReflectionService>();
+        }).RunConsoleAsync();
       } catch (COMException ex) {
 
       }

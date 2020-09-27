@@ -10,21 +10,10 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     [TouchPortalAction("AddFuel", "Add Fuel", "MSFS", "Adds 25% amount of Fuel", "Add 25% amount of fuel")]
     public object ADD_FUEL { get; }
 
-    [TouchPortalAction("FuelSelector_1", "Fuel Selector 1", "MSFS", "Fuel Selector 1", "Fuel Selector 1 - {0}")]
-    [TouchPortalActionChoice(new string[] { "All", "Off", "Left", "Right", "Left - Aux", "Right - Aux", "Center", "Set" }, "All")]
-    public object FUEL_SELECTOR_1 { get; }
-
-    [TouchPortalAction("FuelSelector_2", "Fuel Selector 2", "MSFS", "Fuel Selector 2", "Fuel Selector 2 - {0}")]
-    [TouchPortalActionChoice(new string[] { "All", "Off", "Left", "Right", "Left - Aux", "Right - Aux", "Center", "Set" }, "All")]
-    public object FUEL_SELECTOR_2 { get; }
-
-    [TouchPortalAction("FuelSelector_3", "Fuel Selector 3", "MSFS", "Fuel Selector 3", "Fuel Selector 3 - {0}")]
-    [TouchPortalActionChoice(new string[] { "All", "Off", "Left", "Right", "Left - Aux", "Right - Aux", "Center", "Set" }, "All")]
-    public object FUEL_SELECTOR_3 { get; }
-
-    [TouchPortalAction("FuelSelector_4", "Fuel Selector 4", "MSFS", "Fuel Selector 4", "Fuel Selector 4 - {0}")]
-    [TouchPortalActionChoice(new string[] { "All", "Off", "Left", "Right", "Left - Aux", "Right - Aux", "Center", "Set" }, "All")]
-    public object FUEL_SELECTOR_4 { get; }
+    [TouchPortalAction("FuelSelectors", "Fuel Selectors", "MSFS", "Fuel Selectors", "Fuel Selector {0} - {1}")]
+    [TouchPortalActionChoice(new string[] { "1", "2", "3", "4" }, "1")]
+    [TouchPortalActionChoice(new string[] { "All", "Off", "Left", "Right", "Left - Main", "Right - Main", "Left - Aux", "Right - Aux", "Center" }, "All")]
+    public object FUEL_SELECTORS { get; }
 
     [TouchPortalAction("Primers", "Toggle All/Specific Primers", "MSFS", "Toggle All/Specific Primers", "Toggle Primers - {0}")]
     [TouchPortalActionChoice(new string[] { "All", "1", "2", "3", "4" }, "All")]
@@ -92,103 +81,142 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     TOGGLE_FUEL_VALVE_ENG4,
 
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_1", "Off")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "1", "Off" })]
     FUEL_SELECTOR_OFF,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_1", "All")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "1", "All" })]
     FUEL_SELECTOR_ALL,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_1", "Left")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "1", "Left" })]
     FUEL_SELECTOR_LEFT,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_1", "Right")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "1", "Right" })]
     FUEL_SELECTOR_RIGHT,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_1", "Left - Aux")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "1", "Left - Main"})]
+    FUEL_SELECTOR_LEFT_MAIN,
+    [SimActionEvent]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "1", "Right - Main" })]
+    FUEL_SELECTOR_RIGHT_MAIN,
+    [SimActionEvent]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "1", "Left - Aux" })]
     FUEL_SELECTOR_LEFT_AUX,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_1", "Right - Aux")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "1", "Right - Aux" })]
     FUEL_SELECTOR_RIGHT_AUX,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_1", "Center")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "1", "Center" })]
     FUEL_SELECTOR_CENTER,
-    [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_1", "Set")]
-    FUEL_SELECTOR_SET,
 
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_2", "Off")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "2", "Off" })]
     FUEL_SELECTOR_2_OFF,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_2", "All")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "2", "All" })]
     FUEL_SELECTOR_2_ALL,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_2", "Left")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "2", "Left" })]
     FUEL_SELECTOR_2_LEFT,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_2", "Right")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "2", "Right" })]
     FUEL_SELECTOR_2_RIGHT,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_2", "Left - Aux")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "2", "Left - Main" })]
+    FUEL_SELECTOR_2_LEFT_MAIN,
+    [SimActionEvent]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "2", "Right - Main" })]
+    FUEL_SELECTOR_2_RIGHT_MAIN,
+    [SimActionEvent]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "2", "Left - Aux" })]
     FUEL_SELECTOR_2_LEFT_AUX,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_2", "Right - Aux")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "2", "Right - Aux" })]
     FUEL_SELECTOR_2_RIGHT_AUX,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_2", "Center")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "2", "Center" })]
     FUEL_SELECTOR_2_CENTER,
-    [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_2", "Set")]
-    FUEL_SELECTOR_2_SET,
 
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_3", "Off")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "3", "Off" })]
     FUEL_SELECTOR_3_OFF,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_3", "All")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "3", "All" })]
     FUEL_SELECTOR_3_ALL,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_3", "Left")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "3", "Left" })]
     FUEL_SELECTOR_3_LEFT,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_3", "Right")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "3", "Right" })]
     FUEL_SELECTOR_3_RIGHT,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_3", "Left - Aux")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "3", "Left - Main" })]
+    FUEL_SELECTOR_3_LEFT_MAIN,
+    [SimActionEvent]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "3", "Right - Main" })]
+    FUEL_SELECTOR_3_RIGHT_MAIN,
+    [SimActionEvent]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "3", "Left - Aux" })]
     FUEL_SELECTOR_3_LEFT_AUX,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_3", "Right - Aux")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "3", "Right - Aux" })]
     FUEL_SELECTOR_3_RIGHT_AUX,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_3", "Center")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "3", "Center" })]
     FUEL_SELECTOR_3_CENTER,
-    [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_3", "Set")]
-    FUEL_SELECTOR_3_SET,
 
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_4", "Off")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "4", "Off" })]
     FUEL_SELECTOR_4_OFF,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_4", "All")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "4", "All" })]
     FUEL_SELECTOR_4_ALL,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_4", "Left")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "4", "Left" })]
     FUEL_SELECTOR_4_LEFT,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_4", "Right")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "4", "Right" })]
     FUEL_SELECTOR_4_RIGHT,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_4", "Left - Aux")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "4", "Right - Main" })]
+    FUEL_SELECTOR_4_RIGHT_MAIN,
+    [SimActionEvent]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "4", "Left - Main" })]
+    FUEL_SELECTOR_4_LEFT_MAIN,
+    [SimActionEvent]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "4", "Left - Aux" })]
     FUEL_SELECTOR_4_LEFT_AUX,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_4", "Right - Aux")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "4", "Right - Aux" })]
     FUEL_SELECTOR_4_RIGHT_AUX,
     [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_4", "Center")]
+    [TouchPortalActionMapping("FuelSelectors", new string[] { "4", "Center" })]
     FUEL_SELECTOR_4_CENTER,
-    [SimActionEvent]
-    [TouchPortalActionMapping("FuelSelector_4", "Set")]
+
+    /* 
+     * (b'FUEL_SELECTOR_SET', '''Sets selector 1 position (see code list below),
+	FUEL_TANK_SELECTOR_OFF = 0
+	FUEL_TANK_SELECTOR_ALL = 1
+	FUEL_TANK_SELECTOR_LEFT = 2
+	FUEL_TANK_SELECTOR_RIGHT = 3
+	FUEL_TANK_SELECTOR_LEFT_AUX = 4
+	FUEL_TANK_SELECTOR_RIGHT_AUX = 5
+	FUEL_TANK_SELECTOR_CENTER = 6
+	FUEL_TANK_SELECTOR_CENTER2 = 7
+	FUEL_TANK_SELECTOR_CENTER3 = 8
+	FUEL_TANK_SELECTOR_EXTERNAL1 = 9
+	FUEL_TANK_SELECTOR_EXTERNAL2 = 10
+	FUEL_TANK_SELECTOR_RIGHT_TIP = 11
+	FUEL_TANK_SELECTOR_LEFT_TIP = 12
+	FUEL_TANK_SELECTOR_CROSSFEED = 13
+	FUEL_TANK_SELECTOR_CROSSFEED_L2R = 14
+	FUEL_TANK_SELECTOR_CROSSFEED_R2L = 15
+	FUEL_TANK_SELECTOR_BOTH = 16
+	FUEL_TANK_SELECTOR_EXTERNAL_ALL = 17
+	FUEL_TANK_SELECTOR_ISOLATE = 18''', "Shared Cockpit"), */
+
+    FUEL_SELECTOR_SET,
+    FUEL_SELECTOR_2_SET,
+    FUEL_SELECTOR_3_SET,
     FUEL_SELECTOR_4_SET,
 
     [SimActionEvent]

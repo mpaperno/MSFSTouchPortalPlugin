@@ -3,11 +3,16 @@
 namespace MSFSTouchPortalPlugin.Attributes {
   internal class TouchPortalActionMappingAttribute : Attribute {
     public string ActionId;
-    public string Value;
+    public string[] Values;
 
-    public TouchPortalActionMappingAttribute(string actionId, string value = "") {
+    public TouchPortalActionMappingAttribute(string actionId, string value) {
       ActionId = actionId;
-      Value = value;
+      Values = new string[] { value };
+    }
+
+    public TouchPortalActionMappingAttribute(string actionId, string[] values = null) {
+      ActionId = actionId;
+      Values = values ?? new string[] { };
     }
   }
 }

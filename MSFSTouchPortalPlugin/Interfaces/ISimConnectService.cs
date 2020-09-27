@@ -1,6 +1,7 @@
 ﻿using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MSFSTouchPortalPlugin.Interfaces {
@@ -21,6 +22,6 @@ namespace MSFSTouchPortalPlugin.Interfaces {
     bool RegisterToSimConnect(SimVarItem simVar);
     bool RequestDataOnSimObjectType(SimVarItem simVar);
     bool TransmitClientEvent(Groups group, Enum eventId, uint data);
-    Task WaitForMessage();
+    Task WaitForMessage(CancellationToken cancellationToken);
   }
 }

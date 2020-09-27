@@ -140,8 +140,11 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
 
     #region Vertical Speed
 
+
     // TODO action?
     [SimVarDataRequest]
+    [TouchPortalAction("AutoPilotVerticalSpeed", "Vertical Speed", "MSFS", "Toggle the Vertical Speed for auto pilot", "Vertical Speed - {0}")]
+    [TouchPortalActionChoice(new string[] { "Toggle" }, "Toggle")]
     [TouchPortalState("AutoPilotVerticalSpeedHold", "text", "AutoPilot Vertical Speed Status", "")]
     public static SimVarItem AutoPilotVerticalSpeedHold = 
       new SimVarItem() { def = Definition.AutoPilotVerticalSpeedHold, req = Request.AutoPilotVerticalSpeedHold, SimVarName = "AUTOPILOT VERTICAL HOLD", Unit = Units.Bool, CanSet = false };
@@ -309,6 +312,9 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
     AP_PANEL_SPEED_ON,
     AP_PANEL_SPEED_OFF,
     AP_PANEL_SPEED_SET,
+    AP_PANEL_VS_OFF,
+    AP_PANEL_VS_ON,
+    AP_PANEL_VS_SET,
 
     #region AutoPilot Master
 
@@ -471,6 +477,9 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
     #region Vertical Speed
 
     // Vertical Speed
+    [SimActionEvent]
+    [TouchPortalActionMapping("AutoPilotVerticalSpeed", "Toggle")]
+    AP_PANEL_VS_HOLD,
     [SimActionEvent]
     [TouchPortalActionMapping("AutoPilotVerticalSpeedVar", "Increase")]
     AP_VS_VAR_INC,

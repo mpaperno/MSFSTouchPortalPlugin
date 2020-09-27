@@ -1,9 +1,11 @@
-﻿using MSFSTouchPortalPlugin.Attributes;
+﻿using Microsoft.Extensions.Hosting;
+using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Objects.Plugin;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +17,10 @@ using Timer = System.Timers.Timer;
 namespace MSFSTouchPortalPlugin.Services {
   /// <inheritdoc cref="IPluginService" />
   internal class PluginService : IPluginService {
+    private CancellationToken _cancellationToken;
+    private CancellationTokenSource _simConnectCancellationTokenSource;
+
+    private readonly IHostApplicationLifetime _hostApplicationLifetime;
     private readonly IMessageProcessor _messageProcessor;
     private readonly ISimConnectService _simConnectService;
     private readonly IReflectionService _reflectionService;
@@ -27,13 +33,11 @@ namespace MSFSTouchPortalPlugin.Services {
     /// Constructor
     /// </summary>
     /// <param name="messageProcessor">Message Processor Object</param>
-    public PluginService(IMessageProcessor messageProcessor, ISimConnectService simConnectService, IReflectionService reflectionService) {
+    public PluginService(IHostApplicationLifetime hostApplicationLifetime, IMessageProcessor messageProcessor, ISimConnectService simConnectService, IReflectionService reflectionService) {
+      _hostApplicationLifetime = hostApplicationLifetime ?? throw new ArgumentNullException(nameof(hostApplicationLifetime));
       _messageProcessor = messageProcessor ?? throw new ArgumentNullException(nameof(messageProcessor));
       _simConnectService = simConnectService ?? throw new ArgumentNullException(nameof(simConnectService));
       _reflectionService = reflectionService ?? throw new ArgumentNullException(nameof(reflectionService));
-
-      Initialize();
-      SetupEventLists();
     }
 
     /// <summary>
@@ -46,6 +50,9 @@ namespace MSFSTouchPortalPlugin.Services {
         Console.WriteLine($"{DateTime.Now} TP Request Close, terminating...");
         Environment.Exit(0);
       };
+
+      Task.Run(_messageProcessor.Listen);
+      Task.Run(_messageProcessor.TryPairAsync);
 
       // On Data Update
       _simConnectService.OnDataUpdateEvent += ((Definition def, Request req, object data) => {
@@ -82,6 +89,8 @@ namespace MSFSTouchPortalPlugin.Services {
       });
 
       _simConnectService.OnConnect += () => {
+        _simConnectCancellationTokenSource = new CancellationTokenSource();
+
         _messageProcessor.UpdateState(new StateUpdate() { Id = "MSFSTouchPortalPlugin.Plugin.State.Connected", Value = _simConnectService.IsConnected().ToString().ToLower() });
 
         // Register Actions
@@ -95,10 +104,11 @@ namespace MSFSTouchPortalPlugin.Services {
           _simConnectService.RegisterToSimConnect(s.Value);
         }
 
-        Task.WhenAll(RunPluginServices());
+        Task.WhenAll(RunPluginServices(_simConnectCancellationTokenSource.Token));
       };
 
       _simConnectService.OnDisconnect += () => {
+        _simConnectCancellationTokenSource.Cancel();
         _messageProcessor.UpdateState(new StateUpdate() { Id = "MSFSTouchPortalPlugin.Plugin.State.Connected", Value = _simConnectService.IsConnected().ToString().ToLower() });
       };
     }
@@ -109,21 +119,32 @@ namespace MSFSTouchPortalPlugin.Services {
       statesDictionary = _reflectionService.GetStates();
     }
 
-    public void TryConnect() {
+    private Task TryConnect() {
       // TODO: Will this properly reconnect after starting sim, then existing sim?
-      while (true) {
-        if (!_simConnectService.IsConnected()) {
+      int i = 0;
+
+      while (!_cancellationToken.IsCancellationRequested) {
+        if (i == 0 && !_simConnectService.IsConnected()) {
           _simConnectService.Connect();
+          i = 10;
         }
 
         // SimConnect is typically available even before loading into a flight. This should connect and be ready by the time a flight is started.
-        Thread.Sleep(10000);
+        i--;
+        Thread.Sleep(1000);
       }
+
+      return Task.CompletedTask;
     }
 
-    public async Task RunPluginServices() {
+    public async Task RunPluginServices(CancellationToken simConnectCancelToken) {
       // Run Data Polling
       var timer = new Timer(250) { AutoReset = false };
+
+      simConnectCancelToken.Register(() => {
+        timer.Stop();
+        timer.Dispose();
+      });
 
       timer.Elapsed += (obj, args) => {
         foreach (var s in statesDictionary) {
@@ -143,9 +164,7 @@ namespace MSFSTouchPortalPlugin.Services {
 
       // Run Listen and pairing
       await Task.WhenAll(new Task[] {
-        _messageProcessor.Listen(),
-        _messageProcessor.TryPairAsync(),
-        _simConnectService.WaitForMessage()
+        _simConnectService.WaitForMessage(simConnectCancelToken)
       });
     }
 
@@ -157,9 +176,8 @@ namespace MSFSTouchPortalPlugin.Services {
 
     private void messageProcessor_OnActionEvent(string actionId, List<ActionData> dataList) {
       if (dataList.Count > 0) {
-        dataList.ForEach(a => {
-          ProcessEvent(actionId, a.Value);
-        });
+        var values = string.Join(",", dataList.Select(x => x.Value));
+        ProcessEvent(actionId, values);
       } else {
         ProcessEvent(actionId);
       }
@@ -202,6 +220,31 @@ namespace MSFSTouchPortalPlugin.Services {
 
         return;
       }
+    }
+
+    public Task StartAsync(CancellationToken cancellationToken) {
+      _cancellationToken = cancellationToken;
+
+      _hostApplicationLifetime.ApplicationStarted.Register(() => {
+        Initialize();
+        SetupEventLists();
+
+        Task.WhenAll(TryConnect());
+      });
+
+      _hostApplicationLifetime.ApplicationStopping.Register(() => {
+        // Disconnect from SimConnect
+        _simConnectService.Disconnect();
+
+        // Stop app
+        _hostApplicationLifetime.StopApplication();
+      });
+
+      return Task.CompletedTask;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken) {
+      return Task.CompletedTask;
     }
 
     #endregion
