@@ -31,59 +31,115 @@ https://github.com/FordMustang0288/MSFSTouchPortalPages
 
 ## TODO
 
-* States pushed back to Touch Portal
-  * Done but need more mappings.
-  * Also need to update MD with state info and possible values.
-  * Need to force update on first load.
-  * Flight Instruments
-    * Pitch/Bank need to be times by -1.
-  * Reset states on start/end
-* Define SimVars
+* Flight Instruments
+  * Pitch/Bank need to be times by -1.
 * Documentation - Events needed and additional rows of data to display.
 
-* More Controls
-  * Communications
+
+**Documentation revamp**
+* Create interactive documentation site.
+* Also generate base doc data into JSON file from code.
+* Version selector
+* Note tested/not tested
+* Note Sim compatibility, may be useful on tested/not tested
+* Filter by category
+* Search
+* Filter by Sim
 
 ## Known Issues
 
 * "Set" buttons require data to be passed in and do not currently work.
-* On TP quit, the plugin won't stop itself.
-  * This is coded, but not testable while debugging. Need to test with plugin installed.
 
 ## Available Controls
 
 ### AutoPilot
 
+#### Actions
+
+* Airspeed Hold - (Not Tested) - This will enable/disable the airspeed hold and set to the current airspeed.
+  * Toggle / On /Off / Set (DNU - TODO)
+* Airspeed Hold Value - (Not Tested) - Used to modify the current value of the airspeed hold.
+  * Select / Increase / Decrease / Set (DNU - TODO)
+* Altitude Hold -  (Tested) - This will enable/disable the altitude hold and set to the current altitude.
+  * Toggle / On / Off
+* Altitude Hold Value - (Tested) - used to modify the curent value of the altitude hold.
+  * Select / Increase / Decrease / Set (DNU - TODO) / Set Metric (DNU - TODO)
+* AP Max Bank Angle - (Not Tested) - Used to set the max bank angle for auto pilot.
+  * Increase / Decrease
+* Approach Mode - (Tested) - This will enable/disable the approach mode.
+  * Toggle / On / Off
+* Attitude Hold - (Not Tested) - This will enable/disable the attitude hold.
+  * Toggle / On / Off
+* Attitude Hold Value - (Not Tested) - Used to set the attitude hold value.
+  * Increase / Decrease / Select
+* Auto Brake - (Not Tested) - Increases/Decreases the auto brake value.
+  * Increase / Decrease
+* Auto Throttle Mode - (Not Tested) - Sets the auto throttle mode.
+  * Arm / GoAround
+* AutoPilot - (Tested) - Enables/Disables the Auto Pilot.
+  * Toggle / On / Off
+* Back Course Mode - (Tested) - Enables/Disables the back course mode.
+  * Toggle / On / Off
+* Flight Director - (Not Tested) - Toggles the Flight Director mode.
+  * Toggle
+* Flight Director Pitch Sync - (Not Tested) - Sets the FD Pitch Sync to the current pitch.
+* Heading Hold - (Tested) - Will enable/disable the heading hold and will set the value to the current heading.
+  * Toggle / On / Off
+* Heading Hold Value - (Tested) - Used to modify the heading hold value.
+  * Increase / Decrease / Select / Set (DNU - TODO)
+* Localizer - (Not Tested) - Will enable/disable the localizer.
+  * Toggle / On / Off
+* Mach Hold - (Not Tested) - Will enable/disable the mach hold and set to current mach value.
+  * Toggle / On / Off
+* Mach Hold Value - (Not Tested) - Used to set the mach hold value.
+  * Increase / Decrease / Select / Set (DNU - TODO)
+* Nav Mode - Set - (Not Tested) - Sets the nav mode to the specified nav radio.
+  * 1 / 2
+* Nav1 Mode - (Not Tested) - Sets the auto pilot to Nav mode.
+  * Toggle / On / Off
+* Vertical Speed - (Tested) - Will enable the vertical speed hold.
+  * Toggle
+* Vertical Speed Value - (Tested) - Used to increase/decrease the vertical speed value.
+  * Increase / Decrease / Select / Set (DNU - TODO) / Set Metric (DNU - TODO)
+* Wing Leveler - (Not Tested) - Used to enable/disable the wing leveler.
+  * Toggle / On / Off
+* Yaw Dampener - (Not Tested) - Used to enable/disable the yaw dampener.
+  * Toggle / On / Off / Set (DNU - TODO)
+
+#### States
+
+* Auto Throttle Armed - (Not Tested) - 1/0
+* Auto Thorttle GoAround - (Not Tested) - 1/0
+* Auto Pilot Air Speed Status - (Not Tested) - 1/0
+* Auto Pilot Air Speed Value - (Not Tested) - In Knots
+
+
 | Control | State Variable(s) | Modes | v1/v2 | Tested |
 | --- | --- | --- | --- | --- |
-| AP Master | AutoPilotMaster | Toggle, On, Off | v2 | Yes |
 | - | AutoPilotAvailable | - | v2 | Yes |
-| AP Attitude Hold | AutoPilotAttitudeHold | Toggle, On, Off | v2 | Yes |
-| AP Attitude Hold Var | AutoPilotAttitudeVar | Increase, Decrease, Select | v2 | Yes |
-| AP Approach Mode | AutoPilotApproachHold | Toggle, On, Off | v2 | Yes |
-| AP Max Bank Angle | AutoPilotBanking | Increase, Decrease | v2 | |
-| AP Heading Hold | AutoPilotHeadingHold | Toggle, On, Off | v2 | Yes |
-| AP Heading Var | AutoPilotHeadingVar | Select, Increase, Decrease, Set | v2 | Inc/Dec working. Select/Set do nothing |
-| AP Altitude Hold | AutoPilotAltitudeHold | Toggle, On, Off | v2 | Yes |
-| AP Altitude Var | AutoPilotAltitudeVar | Select, Increase, Decrease, Set, Set Metric | v2 | |
-| AP Back Course Mode | AutoPilotBackCourseHold |  Toggle, On, Off | v2 | |
-| AP Nav1 Mode | AutoPilotNav1Hold | Toggle, On, Off | v2 | |
-| AP Nav Mode - Set | AutoPilotNavSelected | 1, 2 | v2 | |
-| AP Vertical Speed Hold | AutoPilotVerticalSpeedHold | Toggle | V2 | Yes |
-| AP Vertical Speed Var | AutoPilotVerticalSpeedVar | Select, Increase, Decrease, Set, Set Metric | v2 | Inc/Dec working. Select/Set do nothing. |
-| AP Air Speed Hold | AutoPilotAirSpeedHold | Toggle, On, Off, Set | v2 | |
-| AP Air Speed Var | AutoPilotAirSpeedVar | Select, Increase, Decrease, Set | v2 | |
-| AP Auto Throttle Mode | AutoThrottleArm AutoThrottleGoAround | Arm, GoAround | v2 | |
-| AP Auto Brake | TBD | Increase, Decrease | v2 | |
-| AP Mach Hold | AutoPilotMach | Toggle, On, Off, Set | v2 | |
-| AP Mach Var | AutoPilotMachVar | Select, Increase, Decrease | v2 | |
-| AP Flight Director | AutoPilotFlightDirector | Toggle | v2 | |
-| AP Flight Director Pitch Sync | AutoPilotFlightDirectorCurrentPitch | - | v2 | |
-| AP Flight Director Bank | AutoPilotFlightDirectorCurrentBank | - | v2 | |
-| AP Wing Leveler | AutoPilotWingLeveler | Toggle, On, Off | v2 | |
-| AP Localizer | TBD | Toggle, On, Off | v1 | ?? How to handle? |
-| AP Yaw Dampener | TBD | Toggle, On, Off, Set | v2 | |
 | AP Flight Level Control TBD | AutoPilotPitchHold | TBD | v1 | ?? |
+
+### Communications
+
+#### Actions
+
+* Radio Interaction (Tested)
+  * Select Radio to interact with - COM1/COM2/NAV1/NAV2
+  * Action to perform on radio - Increase/Decrease 25 KHz/1 MHz / Carry Digits / Standby Swap
+
+  **NOTE** Decrease /w Carry works for NAV1/2, but not COM1/2, appears to be MSFS or SimConnect bug.
+
+#### States
+
+* Com1ActiveFrequency - (Tested) - ###.###
+* Com1StandbyFrequency - (Tested) - ###.###
+* Com2ActiveFrequency - (Tested) - ###.###
+* Com2StandbyFrequency - (Tested) - ###.###
+* Nav1ActiveFrequency - (Tested) - ###.###
+* Nav1StandbyFrequency - (Tested) - ###.###
+* Nav2ActiveFrequency - (Tested) - ###.###
+* Nav2StandbyFrequency - (Tested) - ###.###
+
 
 ### Failures
 
@@ -111,11 +167,6 @@ https://github.com/FordMustang0288/MSFSTouchPortalPages
 | Aileron Trim | AileronTrim | Left, RIght | v2 | |
 | Elevator Trim | ElevatorTrim | Up, Down | v2 | |
 | Rudder Trim | RudderTrim | Left, Right | v2 | |
-
-### Communications
-
-| Control | State Variable(s) | Modes | v1/v2 | Tested |
-| --- | --- | --- | --- | --- |
 
 ### Electrical
 
@@ -202,10 +253,18 @@ Extra States for Lights:
 | Fuel Pump | TBD | Toggle | v1 | |
 | Electric Fuel Pump | TBD | All, 1, 2, 3, 4 | v1 | |
 
-### Menu
+### Communications
 
-| Control | State Variable(s) | Modes | v1/v2 | Tested |
-| --- | --- | --- | --- | --- |
+#### Actions
+
+* Simulation Rate (Tested)
+  * Increase / Decrease
+
+  **NOTE** Decrease /w Carry works for NAV1/2, but not COM1/2, appears to be MSFS or SimConnect bug.
+
+#### States
+
+* SimulationRate - (Tested) - Number
 
 ### Plugin
 

@@ -24,8 +24,8 @@ namespace MSFSTouchPortalPlugin_Generator {
       // Create Markdown
       var result = CreateMarkdown(model);
 
-      File.WriteAllText(Path.Combine(_TARGET_PATH, "DOCUMENTATION.MD"), result);
-      Console.WriteLine("DOCUMENTATION.MD generated.");
+      File.WriteAllText(Path.Combine(_TARGET_PATH, "DOCUMENTATION.md"), result);
+      Console.WriteLine("DOCUMENTATION.md generated.");
     }
 
     private DocBase CreateModel() {

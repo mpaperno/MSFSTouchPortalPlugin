@@ -41,7 +41,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
       new SimVarItem() { def = Definition.AutoPilotAttitudeHold, req = Request.AutoPilotAttitudeHold, SimVarName = "AUTOPILOT ATTITUDE HOLD", Unit = Units.Bool, CanSet = false };
 
     [SimVarDataRequest]
-    [TouchPortalAction("AutoPilotAttitudeVar", "Pitch Reference Value", "MSFS", "Sets the pitch reference value", "Pitch Reference Value - {0}")]
+    [TouchPortalAction("AutoPilotAttitudeVar", "Attitude Hold Value", "MSFS", "Sets the attitude hold value", "Attitude Hold Value - {0}")]
     [TouchPortalActionChoice(new string[] { "Select", "Increase", "Decrease" }, "Select")]
     [TouchPortalState("AutoPilotAttitudeVar", "text", "AutoPilot Pitch Reference Value", "")]
     public static SimVarItem AP_ATTITUDE_PITCH =
@@ -187,7 +187,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
       new SimVarItem() { def = Definition.AutoThrottleArm, req = Request.AutoThrottleArm, SimVarName = "AUTOPILOT THROTTLE ARM", Unit = Units.Bool, CanSet = false };
 
     [SimVarDataRequest]
-    [TouchPortalState("AutoThrottleGoAround", "text", "Auto Throttle Armed", "")]
+    [TouchPortalState("AutoThrottleGoAround", "text", "Auto Throttle GoAround", "")]
     public static SimVarItem AUTO_THROTTLE_GA =
       new SimVarItem() { def = Definition.AutoThrottleGA, req = Request.AutoThrottleGA, SimVarName = "AUTOPILOT TAKEOFF POWER ACTIVE", Unit = Units.Bool, CanSet = false };
 

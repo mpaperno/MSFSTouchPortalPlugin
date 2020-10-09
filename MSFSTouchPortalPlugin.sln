@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		actions = actions
 		build.ps1 = build.ps1
+		CHANGELOG.md = CHANGELOG.md
 		DOCUMENTATION.MD = DOCUMENTATION.MD
 		entry.tp = entry.tp
 		publish.ps1 = publish.ps1
@@ -22,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSFSTouchPortalPlugin-Tests", "MSFSTouchPortalPlugin-Tests\MSFSTouchPortalPlugin-Tests.csproj", "{3A7D5537-16CD-4F3B-9630-CE480C1D30EB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TouchPortalApi", "..\TouchPortalApi\TouchPortalApi\TouchPortalApi.csproj", "{E7325B5E-AB9B-4705-AC24-4D495EB91A16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +48,10 @@ Global
 		{3A7D5537-16CD-4F3B-9630-CE480C1D30EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A7D5537-16CD-4F3B-9630-CE480C1D30EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A7D5537-16CD-4F3B-9630-CE480C1D30EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7325B5E-AB9B-4705-AC24-4D495EB91A16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7325B5E-AB9B-4705-AC24-4D495EB91A16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7325B5E-AB9B-4705-AC24-4D495EB91A16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7325B5E-AB9B-4705-AC24-4D495EB91A16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

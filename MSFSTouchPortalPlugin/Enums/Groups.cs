@@ -3,7 +3,7 @@
     System = 0,
     AutoPilot = 1,
     Fuel = 2,
-    Menu = 3,
+    SimSystem = 3,
     Engine = 4,
     Environment = 5,
     Electrical = 6,

@@ -1,6 +1,6 @@
 {
   "sdk": 2,
-  "version": 400,
+  "version": 510,
   "name": "MSFSTouchPortalPlugin",
   "id": "MSFSTouchPortalPlugin",
   "configuration": {
@@ -15,190 +15,39 @@
       "imagepath": "",
       "actions": [
         {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoBrake",
-          "name": "Auto Brake",
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAirSpeed",
+          "name": "Airspeed Hold",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Increase/Decrease the auto brake",
+          "description": "Toggle/On/Off/Set the airspeed hold for auto pilot",
           "tryInline": true,
-          "format": "Auto Brake - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoBrake.Data.0$}",
+          "format": "Airspeed Hold - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAirSpeed.Data.0$}",
           "data": [
             {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoBrake.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Increase",
-              "valueChoices": [
-                "Increaes",
-                "Decrease"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer",
-          "name": "Localizer",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle/On/Off the localizer for auto pilot",
-          "tryInline": true,
-          "format": "Localizer - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer.Data.0",
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAirSpeed.Data.0",
               "type": "choice",
               "label": "Action",
               "default": "Toggle",
               "valueChoices": [
                 "Toggle",
                 "On",
-                "Off"
+                "Off",
+                "Set"
               ]
             }
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaster",
-          "name": "AutoPilot",
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAirSpeedVar",
+          "name": "Airspeed Hold Value",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Toggle/On/Off Auto Pilot",
+          "description": "Sets the airspeed hold value",
           "tryInline": true,
-          "format": "Auto Pilot Master - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaster.Data.0$}",
+          "format": "Airspeed Hold Value - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAirSpeedVar.Data.0$}",
           "data": [
             {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaster.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Toggle",
-              "valueChoices": [
-                "Toggle",
-                "On",
-                "Off"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitude",
-          "name": "Attitude Hold",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle/On/Off the attitude hold for auto pilot",
-          "tryInline": true,
-          "format": "Attitude Hold - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitude.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitude.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Toggle",
-              "valueChoices": [
-                "Toggle",
-                "On",
-                "Off"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitudeVar",
-          "name": "Pitch Reference Value",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Sets the pitch reference value",
-          "tryInline": true,
-          "format": "Pitch Reference Value - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitudeVar.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitudeVar.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Select",
-              "valueChoices": [
-                "Select",
-                "Increase",
-                "Decrease"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotApproach",
-          "name": "Approach Mode",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle/On/Off the approach mode for auto pilot",
-          "tryInline": true,
-          "format": "Approach Mode - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotApproach.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotApproach.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Toggle",
-              "valueChoices": [
-                "Toggle",
-                "On",
-                "Off"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotBanking",
-          "name": "AP Max Bank Angle",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Increase/Decrease the max bank angle",
-          "tryInline": true,
-          "format": "Max Bank Angle - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotBanking.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotBanking.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Increase",
-              "valueChoices": [
-                "Increase",
-                "Decrease"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeading",
-          "name": "Heading Hold",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle/On/Off the heading hold for auto pilot",
-          "tryInline": true,
-          "format": "Heading Hold - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeading.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeading.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Toggle",
-              "valueChoices": [
-                "Toggle",
-                "On",
-                "Off"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeadingVar",
-          "name": "Heading Hold Value",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Sets the heading hold value",
-          "tryInline": true,
-          "format": "Heading Hold Value - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeadingVar.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeadingVar.Data.0",
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAirSpeedVar.Data.0",
               "type": "choice",
               "label": "Action",
               "default": "Select",
@@ -258,6 +107,157 @@
           ]
         },
         {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotBanking",
+          "name": "AP Max Bank Angle",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Increase/Decrease the max bank angle",
+          "tryInline": true,
+          "format": "Max Bank Angle - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotBanking.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotBanking.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Increase",
+              "valueChoices": [
+                "Increase",
+                "Decrease"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotApproach",
+          "name": "Approach Mode",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off the approach mode for auto pilot",
+          "tryInline": true,
+          "format": "Approach Mode - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotApproach.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotApproach.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitude",
+          "name": "Attitude Hold",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off the attitude hold for auto pilot",
+          "tryInline": true,
+          "format": "Attitude Hold - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitude.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitude.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitudeVar",
+          "name": "Attitude Hold Value",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Sets the attitude hold value",
+          "tryInline": true,
+          "format": "Attitude Hold Value - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitudeVar.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitudeVar.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Select",
+              "valueChoices": [
+                "Select",
+                "Increase",
+                "Decrease"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoBrake",
+          "name": "Auto Brake",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Increase/Decrease the auto brake",
+          "tryInline": true,
+          "format": "Auto Brake - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoBrake.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoBrake.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Increase",
+              "valueChoices": [
+                "Increaes",
+                "Decrease"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoThrottle",
+          "name": "Auto Throttle Mode",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggles the Arm/GoAround modes for auto throttle",
+          "tryInline": true,
+          "format": "Toggle Auto Throttle - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoThrottle.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoThrottle.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Arm",
+              "valueChoices": [
+                "Arm",
+                "GoAround"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaster",
+          "name": "AutoPilot",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off Auto Pilot",
+          "tryInline": true,
+          "format": "Auto Pilot Master - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaster.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaster.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off"
+              ]
+            }
+          ]
+        },
+        {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotBackCourse",
           "name": "Back Course Mode",
           "prefix": "MSFS",
@@ -280,16 +280,46 @@
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNav1",
-          "name": "Nav1 Mode",
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotFlightDirector",
+          "name": "Flight Director",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Toggle/On/Off the Nav1 mode for auto pilot",
+          "description": "Toggle the Flight Director for auto pilot",
           "tryInline": true,
-          "format": "Nav1 Mode - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNav1.Data.0$}",
+          "format": "Flight Director - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotFlightDirector.Data.0$}",
           "data": [
             {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNav1.Data.0",
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotFlightDirector.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotFlightDirectorCurrentPitch",
+          "name": "Flight Director Pitch Sync",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Syncs the Flight Director with the current pitch",
+          "tryInline": true,
+          "format": "Flight Director Pitch Sync",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeading",
+          "name": "Heading Hold",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off the heading hold for auto pilot",
+          "tryInline": true,
+          "format": "Heading Hold - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeading.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeading.Data.0",
               "type": "choice",
               "label": "Action",
               "default": "Toggle",
@@ -302,57 +332,16 @@
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNavSelect",
-          "name": "Nav Mode - Set",
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeadingVar",
+          "name": "Heading Hold Value",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Sets the nav to 1 or 2 for Nav mode",
+          "description": "Sets the heading hold value",
           "tryInline": true,
-          "format": "Nav Mode - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNavSelect.Data.0$} ",
+          "format": "Heading Hold Value - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeadingVar.Data.0$}",
           "data": [
             {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNavSelect.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "1",
-              "valueChoices": [
-                "1",
-                "2"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeed",
-          "name": "Vertical Speed",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle the Vertical Speed for auto pilot",
-          "tryInline": true,
-          "format": "Vertical Speed - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeed.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeed.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Toggle",
-              "valueChoices": [
-                "Toggle"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeedVar",
-          "name": "Vertical Speed Value",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Sets the vertical speed value",
-          "tryInline": true,
-          "format": "Vertical Speed Value - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeedVar.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeedVar.Data.0",
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeadingVar.Data.0",
               "type": "choice",
               "label": "Action",
               "default": "Select",
@@ -360,75 +349,29 @@
                 "Select",
                 "Increase",
                 "Decrease",
-                "Set",
-                "Set Metric"
+                "Set"
               ]
             }
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAirSpeed",
-          "name": "Airspeed Hold",
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer",
+          "name": "Localizer",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Toggle/On/Off/Set the airspeed hold for auto pilot",
+          "description": "Toggle/On/Off the localizer for auto pilot",
           "tryInline": true,
-          "format": "Airspeed Hold - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAirSpeed.Data.0$}",
+          "format": "Localizer - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer.Data.0$}",
           "data": [
             {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAirSpeed.Data.0",
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotLocalizer.Data.0",
               "type": "choice",
               "label": "Action",
               "default": "Toggle",
               "valueChoices": [
                 "Toggle",
                 "On",
-                "Off",
-                "Set"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAirSpeedVar",
-          "name": "Airspeed Hold Value",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Sets the airspeed hold value",
-          "tryInline": true,
-          "format": "Airspeed Hold Value - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAirSpeedVar.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAirSpeedVar.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Select",
-              "valueChoices": [
-                "Select",
-                "Increase",
-                "Decrease",
-                "Set"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoThrottle",
-          "name": "Auto Throttle Mode",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggles the Arm/GoAround modes for auto throttle",
-          "tryInline": true,
-          "format": "Toggle Auto Throttle - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoThrottle.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoThrottle.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Arm",
-              "valueChoices": [
-                "Arm",
-                "GoAround"
+                "Off"
               ]
             }
           ]
@@ -479,16 +422,59 @@
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotFlightDirector",
-          "name": "Flight Director",
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNavSelect",
+          "name": "Nav Mode - Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Toggle the Flight Director for auto pilot",
+          "description": "Sets the nav to 1 or 2 for Nav mode",
           "tryInline": true,
-          "format": "Flight Director - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotFlightDirector.Data.0$}",
+          "format": "Nav Mode - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNavSelect.Data.0$} ",
           "data": [
             {
-              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotFlightDirector.Data.0",
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNavSelect.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "1",
+              "valueChoices": [
+                "1",
+                "2"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNav1",
+          "name": "Nav1 Mode",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off the Nav1 mode for auto pilot",
+          "tryInline": true,
+          "format": "Nav1 Mode - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNav1.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNav1.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "On",
+                "Off"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeed",
+          "name": "Vertical Speed",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle the Vertical Speed for auto pilot",
+          "tryInline": true,
+          "format": "Vertical Speed - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeed.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeed.Data.0",
               "type": "choice",
               "label": "Action",
               "default": "Toggle",
@@ -499,14 +485,28 @@
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotFlightDirectorCurrentPitch",
-          "name": "Flight Director Pitch Sync",
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeedVar",
+          "name": "Vertical Speed Value",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Syncs the Flight Director with the current pitch",
+          "description": "Sets the vertical speed value",
           "tryInline": true,
-          "format": "Flight Director Pitch Sync",
-          "data": []
+          "format": "Vertical Speed Value - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeedVar.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeedVar.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Select",
+              "valueChoices": [
+                "Select",
+                "Increase",
+                "Decrease",
+                "Set",
+                "Set Metric"
+              ]
+            }
+          ]
         },
         {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotWingLeveler",
@@ -557,99 +557,15 @@
       "events": [],
       "states": [
         {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotMaster",
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoThrottleArm",
           "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Master Status",
+          "desc": "MSFS - AutoPilot - Auto Throttle Armed",
           "default": ""
         },
         {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAvailable",
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoThrottleGoAround",
           "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Availability",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotPitchHold",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - The status of Auto Pilot Pitch Hold button",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAttitudeHold",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Attitude Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAttitudeVar",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Pitch Reference Value",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotApproachHold",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Approach Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotBanking",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Max Bank Angle",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotHeadingHold",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Heading Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotHeadingVar",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Heading Direction",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAltitudeHold",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Altitude Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAltitudeVar",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Altitude Value",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotBackCourseHold",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Back Course Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotNav1Hold",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Nav1 Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotNavSelected",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Nav Selected Index",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotVerticalSpeedHold",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Vertical Speed Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotVerticalSpeedVar",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Vertical Speed Value",
+          "desc": "MSFS - AutoPilot - Auto Throttle GoAround",
           "default": ""
         },
         {
@@ -665,15 +581,57 @@
           "default": ""
         },
         {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoThrottleArm",
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAltitudeHold",
           "type": "text",
-          "desc": "MSFS - AutoPilot - Auto Throttle Armed",
+          "desc": "MSFS - AutoPilot - AutoPilot Altitude Status",
           "default": ""
         },
         {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoThrottleGoAround",
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAltitudeVar",
           "type": "text",
-          "desc": "MSFS - AutoPilot - Auto Throttle Armed",
+          "desc": "MSFS - AutoPilot - AutoPilot Altitude Value",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotApproachHold",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Approach Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAttitudeHold",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Attitude Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAvailable",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Availability",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotBackCourseHold",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Back Course Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotFlightDirector",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Flight Director Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotHeadingVar",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Heading Direction",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotHeadingHold",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Heading Status",
           "default": ""
         },
         {
@@ -689,15 +647,51 @@
           "default": ""
         },
         {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotFlightDirector",
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotMaster",
           "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Flight Director Status",
+          "desc": "MSFS - AutoPilot - AutoPilot Master Status",
           "default": ""
         },
         {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotFlightDirectorCurrentPitch",
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotBanking",
           "type": "text",
-          "desc": "MSFS - AutoPilot - Flight Director Current Pitch",
+          "desc": "MSFS - AutoPilot - AutoPilot Max Bank Angle",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotNavSelected",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Nav Selected Index",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotNav1Hold",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Nav1 Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAttitudeVar",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Pitch Reference Value",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotVerticalSpeedHold",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Vertical Speed Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotVerticalSpeedVar",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Vertical Speed Value",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotWingLeveler",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - AutoPilot Wing Leveler",
           "default": ""
         },
         {
@@ -707,9 +701,15 @@
           "default": ""
         },
         {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotWingLeveler",
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotFlightDirectorCurrentPitch",
           "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Wing Leveler",
+          "desc": "MSFS - AutoPilot - Flight Director Current Pitch",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotPitchHold",
+          "type": "text",
+          "desc": "MSFS - AutoPilot - The status of Auto Pilot Pitch Hold button",
           "default": ""
         },
         {
@@ -727,12 +727,12 @@
       "actions": [
         {
           "id": "MSFSTouchPortalPlugin.Communication.Action.Radios",
-          "name": "Fuel Selectors",
+          "name": "Radio Interaction",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Fuel Selectors",
+          "description": "Radio Interaction",
           "tryInline": true,
-          "format": "Fuel Selector {$MSFSTouchPortalPlugin.Communication.Action.Radios.Data.0$} - {$MSFSTouchPortalPlugin.Communication.Action.Radios.Data.1$}",
+          "format": "Radio {$MSFSTouchPortalPlugin.Communication.Action.Radios.Data.0$} - {$MSFSTouchPortalPlugin.Communication.Action.Radios.Data.1$}",
           "data": [
             {
               "id": "MSFSTouchPortalPlugin.Communication.Action.Radios.Data.0",
@@ -754,31 +754,73 @@
               "valueChoices": [
                 "Increase 25 KHz",
                 "Increase 1 MHz",
+                "Increase 25 KHz w/ Carry Digits",
                 "Decrease 25 KHz",
-                "Decrease 1Mhz"
+                "Decrease 1Mhz",
+                "Decrease 25 KHz w/ Carry Digits",
+                "Standby Swap"
               ]
             }
           ]
         }
       ],
       "events": [],
-      "states": []
+      "states": [
+        {
+          "id": "MSFSTouchPortalPlugin.Communication.State.Com1ActiveFrequency",
+          "type": "text",
+          "desc": "MSFS - Communication - The frequency of the active COM1 radio",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Communication.State.Com2ActiveFrequency",
+          "type": "text",
+          "desc": "MSFS - Communication - The frequency of the active COM2 radio",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Communication.State.Nav1ActiveFrequency",
+          "type": "text",
+          "desc": "MSFS - Communication - The frequency of the active NAV1 radio",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Communication.State.Nav2ActiveFrequency",
+          "type": "text",
+          "desc": "MSFS - Communication - The frequency of the active NAV2 radio",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Communication.State.Com1StandbyFrequency",
+          "type": "text",
+          "desc": "MSFS - Communication - The frequency of the standby COM1 radio",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Communication.State.Com2StandbyFrequency",
+          "type": "text",
+          "desc": "MSFS - Communication - The frequency of the standby COM2 radio",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Communication.State.Nav1StandbyFrequency",
+          "type": "text",
+          "desc": "MSFS - Communication - The frequency of the standby NAV1 radio",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Communication.State.Nav2StandbyFrequency",
+          "type": "text",
+          "desc": "MSFS - Communication - The frequency of the standby NAV2 radio",
+          "default": ""
+        }
+      ]
     },
     {
       "id": "MSFSTouchPortalPlugin.Electrical",
       "name": "MSFS - Electrical",
       "imagepath": "",
       "actions": [
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterBatteryAlternator",
-          "name": "Master Battery & Alternator",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle Master Battery & Alternator",
-          "tryInline": true,
-          "format": "Toggle Master Battery & Alternator",
-          "data": []
-        },
         {
           "id": "MSFSTouchPortalPlugin.Electrical.Action.AlternatorIndex",
           "name": "Alternator - Specific",
@@ -803,16 +845,73 @@
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.Electrical.Action.StrobeLights",
-          "name": "Toggle/On/Off/Set Strobe Lights",
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterAlternator",
+          "name": "Master Alternator",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Toggle/On/Off/Set Strobe Lights",
+          "description": "Toggle Master Alternator",
           "tryInline": true,
-          "format": "Strobe Lights - {$MSFSTouchPortalPlugin.Electrical.Action.StrobeLights.Data.0$}",
+          "format": "Toggle Master Alternator",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterBattery",
+          "name": "Master Battery",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Master Battery",
+          "tryInline": true,
+          "format": "Toggle Master Battery",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterBatteryAlternator",
+          "name": "Master Battery & Alternator",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Master Battery & Alternator",
+          "tryInline": true,
+          "format": "Toggle Master Battery & Alternator",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.ToggleLights",
+          "name": "Toggle All/Specific Lights",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle All/Specific Lights",
+          "tryInline": true,
+          "format": "Toggle Lights - {$MSFSTouchPortalPlugin.Electrical.Action.ToggleLights.Data.0$}",
           "data": [
             {
-              "id": "MSFSTouchPortalPlugin.Electrical.Action.StrobeLights.Data.0",
+              "id": "MSFSTouchPortalPlugin.Electrical.Action.ToggleLights.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "All",
+              "valueChoices": [
+                "All",
+                "Beacon",
+                "Taxi",
+                "Logo",
+                "Recognition",
+                "Wing",
+                "Nav",
+                "Cabin"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.LandingLights",
+          "name": "Toggle/On/Off/Set Landing Lights",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/On/Off/Set Landing Lights",
+          "tryInline": true,
+          "format": "Landing Lights - {$MSFSTouchPortalPlugin.Electrical.Action.LandingLights.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Electrical.Action.LandingLights.Data.0",
               "type": "choice",
               "label": "Action",
               "default": "Toggle",
@@ -849,16 +948,16 @@
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.Electrical.Action.LandingLights",
-          "name": "Toggle/On/Off/Set Landing Lights",
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.StrobeLights",
+          "name": "Toggle/On/Off/Set Strobe Lights",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Toggle/On/Off/Set Landing Lights",
+          "description": "Toggle/On/Off/Set Strobe Lights",
           "tryInline": true,
-          "format": "Landing Lights - {$MSFSTouchPortalPlugin.Electrical.Action.LandingLights.Data.0$}",
+          "format": "Strobe Lights - {$MSFSTouchPortalPlugin.Electrical.Action.StrobeLights.Data.0$}",
           "data": [
             {
-              "id": "MSFSTouchPortalPlugin.Electrical.Action.LandingLights.Data.0",
+              "id": "MSFSTouchPortalPlugin.Electrical.Action.StrobeLights.Data.0",
               "type": "choice",
               "label": "Action",
               "default": "Toggle",
@@ -870,69 +969,10 @@
               ]
             }
           ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.Action.ToggleLights",
-          "name": "Toggle All/Specific Lights",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle All/Specific Lights",
-          "tryInline": true,
-          "format": "Toggle Lights - {$MSFSTouchPortalPlugin.Electrical.Action.ToggleLights.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.Electrical.Action.ToggleLights.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "All",
-              "valueChoices": [
-                "All",
-                "Beacon",
-                "Taxi",
-                "Logo",
-                "Recognition",
-                "Wing",
-                "Nav",
-                "Cabin"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterAlternator",
-          "name": "Master Alternator",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle Master Alternator",
-          "tryInline": true,
-          "format": "Toggle Master Alternator",
-          "data": []
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterBattery",
-          "name": "Master Battery",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle Master Battery",
-          "tryInline": true,
-          "format": "Toggle Master Battery",
-          "data": []
         }
       ],
       "events": [],
       "states": [
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.MasterAlternator",
-          "type": "text",
-          "desc": "MSFS - Electrical - Master Alternator Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.MasterBattery",
-          "type": "text",
-          "desc": "MSFS - Electrical - Master Battery Status",
-          "default": ""
-        },
         {
           "id": "MSFSTouchPortalPlugin.Electrical.State.LightBeaconOn",
           "type": "text",
@@ -1004,6 +1044,18 @@
           "type": "text",
           "desc": "MSFS - Electrical - Light Wing Status",
           "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.MasterAlternator",
+          "type": "text",
+          "desc": "MSFS - Electrical - Master Alternator Status",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.MasterBattery",
+          "type": "text",
+          "desc": "MSFS - Electrical - Master Battery Status",
+          "default": ""
         }
       ]
     },
@@ -1029,32 +1081,6 @@
               "valueChoices": [
                 "Start",
                 "Shutdown"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.Action.AllMagenetos",
-          "name": "Toggle All Magnetos",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle All Magnetos",
-          "tryInline": true,
-          "format": "Toggle All Magnetos - {$MSFSTouchPortalPlugin.Engine.Action.AllMagenetos.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.Engine.Action.AllMagenetos.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Start",
-              "valueChoices": [
-                "Start",
-                "Off",
-                "Right",
-                "Left",
-                "Both",
-                "Decrease",
-                "Increase"
               ]
             }
           ]
@@ -1098,63 +1124,14 @@
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.Engine.Action.Starters",
-          "name": "Toggle Starters",
+          "id": "MSFSTouchPortalPlugin.Engine.Action.MasterIgnition",
+          "name": "Master Ignition Switch",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Toggle Starters",
+          "description": "Toggle Master Ignition Switch",
           "tryInline": true,
-          "format": "Toggle Starter - {$MSFSTouchPortalPlugin.Engine.Action.Starters.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.Engine.Action.Starters.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "All",
-              "valueChoices": [
-                "All",
-                "1",
-                "2",
-                "3",
-                "4"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.Action.Throttle",
-          "name": "Throttle",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Sets all throttles",
-          "tryInline": true,
-          "format": "All Throttles - {$MSFSTouchPortalPlugin.Engine.Action.Throttle.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.Engine.Action.Throttle.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Full",
-              "valueChoices": [
-                "Full",
-                "Increase",
-                "Increase Small",
-                "Decrease",
-                "Decrease Small",
-                "Cut",
-                "Set",
-                "10%",
-                "20%",
-                "30%",
-                "40%",
-                "50%",
-                "60%",
-                "70%",
-                "80%",
-                "90%"
-              ]
-            }
-          ]
+          "format": "Toggle Master Ignition Switch",
+          "data": []
         },
         {
           "id": "MSFSTouchPortalPlugin.Engine.Action.Mixture",
@@ -1221,14 +1198,89 @@
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.Engine.Action.MasterIgnition",
-          "name": "Master Ignition Switch",
+          "id": "MSFSTouchPortalPlugin.Engine.Action.Throttle",
+          "name": "Throttle",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Toggle Master Ignition Switch",
+          "description": "Sets all throttles",
           "tryInline": true,
-          "format": "Toggle Master Ignition Switch",
-          "data": []
+          "format": "All Throttles - {$MSFSTouchPortalPlugin.Engine.Action.Throttle.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Engine.Action.Throttle.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Full",
+              "valueChoices": [
+                "Full",
+                "Increase",
+                "Increase Small",
+                "Decrease",
+                "Decrease Small",
+                "Cut",
+                "Set",
+                "10%",
+                "20%",
+                "30%",
+                "40%",
+                "50%",
+                "60%",
+                "70%",
+                "80%",
+                "90%"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Engine.Action.AllMagenetos",
+          "name": "Toggle All Magnetos",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle All Magnetos",
+          "tryInline": true,
+          "format": "Toggle All Magnetos - {$MSFSTouchPortalPlugin.Engine.Action.AllMagenetos.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Engine.Action.AllMagenetos.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Start",
+              "valueChoices": [
+                "Start",
+                "Off",
+                "Right",
+                "Left",
+                "Both",
+                "Decrease",
+                "Increase"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Engine.Action.Starters",
+          "name": "Toggle Starters",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Starters",
+          "tryInline": true,
+          "format": "Toggle Starter - {$MSFSTouchPortalPlugin.Engine.Action.Starters.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Engine.Action.Starters.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "All",
+              "valueChoices": [
+                "All",
+                "1",
+                "2",
+                "3",
+                "4"
+              ]
+            }
+          ]
         }
       ],
       "events": [],
@@ -1354,26 +1406,6 @@
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.Environment.Action.StructuralDeIce",
-          "name": "Structural De-ice",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle Structural DeIce",
-          "tryInline": true,
-          "format": "Toggle Structural DeIce",
-          "data": []
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.Action.PropellerDeIce",
-          "name": "Propeller De-ice",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle Propeller DeIce",
-          "tryInline": true,
-          "format": "Toggle Propeller DeIce",
-          "data": []
-        },
-        {
           "id": "MSFSTouchPortalPlugin.Environment.Action.PitotHeat",
           "name": "Pitot Heat",
           "prefix": "MSFS",
@@ -1395,6 +1427,26 @@
               ]
             }
           ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Environment.Action.PropellerDeIce",
+          "name": "Propeller De-ice",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Propeller DeIce",
+          "tryInline": true,
+          "format": "Toggle Propeller DeIce",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Environment.Action.StructuralDeIce",
+          "name": "Structural De-ice",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Structural DeIce",
+          "tryInline": true,
+          "format": "Toggle Structural DeIce",
+          "data": []
         }
       ],
       "events": [],
@@ -1455,15 +1507,15 @@
       "events": [],
       "states": [
         {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.GroundVelocity",
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.GroundAltitude",
           "type": "text",
-          "desc": "MSFS - Flight Instruments - Ground Speed in Knots",
+          "desc": "MSFS - Flight Instruments - Ground level in Feet",
           "default": ""
         },
         {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneAltitude",
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.GroundVelocity",
           "type": "text",
-          "desc": "MSFS - Flight Instruments - Plane Altitude in Feet",
+          "desc": "MSFS - Flight Instruments - Ground Speed in Knots",
           "default": ""
         },
         {
@@ -1473,15 +1525,15 @@
           "default": ""
         },
         {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.GroundAltitude",
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneAltitude",
           "type": "text",
-          "desc": "MSFS - Flight Instruments - Ground level in Feet",
+          "desc": "MSFS - Flight Instruments - Plane Altitude in Feet",
           "default": ""
         },
         {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneHeadingTrue",
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneBankAngle",
           "type": "text",
-          "desc": "MSFS - Flight Instruments - Plane Heading (True North) in Degrees",
+          "desc": "MSFS - Flight Instruments - Plane Bank Angle in Degrees",
           "default": ""
         },
         {
@@ -1491,9 +1543,9 @@
           "default": ""
         },
         {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneBankAngle",
+          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneHeadingTrue",
           "type": "text",
-          "desc": "MSFS - Flight Instruments - Plane Bank Angle in Degrees",
+          "desc": "MSFS - Flight Instruments - Plane Heading (True North) in Degrees",
           "default": ""
         },
         {
@@ -1509,6 +1561,27 @@
       "name": "MSFS - Flight Systems",
       "imagepath": "",
       "actions": [
+        {
+          "id": "MSFSTouchPortalPlugin.FlightSystems.Action.AileronTrim",
+          "name": "Aileron Trim",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Aileron Trim",
+          "tryInline": true,
+          "format": "Aileron Trim - {$MSFSTouchPortalPlugin.FlightSystems.Action.AileronTrim.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.FlightSystems.Action.AileronTrim.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Left",
+              "valueChoices": [
+                "Left",
+                "Right"
+              ]
+            }
+          ]
+        },
         {
           "id": "MSFSTouchPortalPlugin.FlightSystems.Action.Ailerons",
           "name": "Ailerons",
@@ -1550,64 +1623,6 @@
                 "All",
                 "Left",
                 "Right"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.Action.ParkingBreak",
-          "name": "Toggle Parking Brake",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle Parking Brake",
-          "tryInline": true,
-          "format": "Toggle Parking Brake",
-          "data": []
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.Action.Flaps",
-          "name": "Flaps",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Flaps",
-          "tryInline": true,
-          "format": "Flaps - {$MSFSTouchPortalPlugin.FlightSystems.Action.Flaps.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.FlightSystems.Action.Flaps.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Up",
-              "valueChoices": [
-                "Up",
-                "Down",
-                "Increase",
-                "Decrease",
-                "1",
-                "2",
-                "3",
-                "Set"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.Action.CowlFlapsAll",
-          "name": "Cowl Flaps All",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Cowl Flaps All",
-          "tryInline": true,
-          "format": "Cowl Flaps All - {$MSFSTouchPortalPlugin.FlightSystems.Action.CowlFlapsAll.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.FlightSystems.Action.CowlFlapsAll.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Increase",
-              "valueChoices": [
-                "Increase",
-                "Decrease"
               ]
             }
           ]
@@ -1697,6 +1712,99 @@
           ]
         },
         {
+          "id": "MSFSTouchPortalPlugin.FlightSystems.Action.CowlFlapsAll",
+          "name": "Cowl Flaps All",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Cowl Flaps All",
+          "tryInline": true,
+          "format": "Cowl Flaps All - {$MSFSTouchPortalPlugin.FlightSystems.Action.CowlFlapsAll.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.FlightSystems.Action.CowlFlapsAll.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Increase",
+              "valueChoices": [
+                "Increase",
+                "Decrease"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightSystems.Action.ElevatorTrim",
+          "name": "Elevator Trim",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Elevator Trim",
+          "tryInline": true,
+          "format": "Elevator Trim - {$MSFSTouchPortalPlugin.FlightSystems.Action.ElevatorTrim.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.FlightSystems.Action.ElevatorTrim.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Up",
+              "valueChoices": [
+                "Up",
+                "Down"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightSystems.Action.Flaps",
+          "name": "Flaps",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Flaps",
+          "tryInline": true,
+          "format": "Flaps - {$MSFSTouchPortalPlugin.FlightSystems.Action.Flaps.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.FlightSystems.Action.Flaps.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Up",
+              "valueChoices": [
+                "Up",
+                "Down",
+                "Increase",
+                "Decrease",
+                "1",
+                "2",
+                "3",
+                "Set"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightSystems.Action.Gear",
+          "name": "Gear Manipulation",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Gear Manipulation",
+          "tryInline": true,
+          "format": "Gear - {$MSFSTouchPortalPlugin.FlightSystems.Action.Gear.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.FlightSystems.Action.Gear.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "Up",
+                "Down",
+                "Set",
+                "Pump"
+              ]
+            }
+          ]
+        },
+        {
           "id": "MSFSTouchPortalPlugin.FlightSystems.Action.Rudder",
           "name": "Rudder",
           "prefix": "MSFS",
@@ -1715,6 +1823,27 @@
                 "Left",
                 "Right",
                 "Set"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightSystems.Action.RudderTrim",
+          "name": "Rudder Trim",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Rudder Trim",
+          "tryInline": true,
+          "format": "Rudder Trim - {$MSFSTouchPortalPlugin.FlightSystems.Action.RudderTrim.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.FlightSystems.Action.RudderTrim.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Left",
+              "valueChoices": [
+                "Left",
+                "Right"
               ]
             }
           ]
@@ -1766,101 +1895,18 @@
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.Action.Gear",
-          "name": "Gear Manipulation",
+          "id": "MSFSTouchPortalPlugin.FlightSystems.Action.ParkingBreak",
+          "name": "Toggle Parking Brake",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Gear Manipulation",
+          "description": "Toggle Parking Brake",
           "tryInline": true,
-          "format": "Gear - {$MSFSTouchPortalPlugin.FlightSystems.Action.Gear.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.FlightSystems.Action.Gear.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Toggle",
-              "valueChoices": [
-                "Toggle",
-                "Up",
-                "Down",
-                "Set",
-                "Pump"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.Action.AileronTrim",
-          "name": "Aileron Trim",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Aileron Trim",
-          "tryInline": true,
-          "format": "Aileron Trim - {$MSFSTouchPortalPlugin.FlightSystems.Action.AileronTrim.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.FlightSystems.Action.AileronTrim.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Left",
-              "valueChoices": [
-                "Left",
-                "Right"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.Action.ElevatorTrim",
-          "name": "Elevator Trim",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Elevator Trim",
-          "tryInline": true,
-          "format": "Elevator Trim - {$MSFSTouchPortalPlugin.FlightSystems.Action.ElevatorTrim.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.FlightSystems.Action.ElevatorTrim.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Up",
-              "valueChoices": [
-                "Up",
-                "Down"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.Action.RudderTrim",
-          "name": "Rudder Trim",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Rudder Trim",
-          "tryInline": true,
-          "format": "Rudder Trim - {$MSFSTouchPortalPlugin.FlightSystems.Action.RudderTrim.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.FlightSystems.Action.RudderTrim.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Left",
-              "valueChoices": [
-                "Left",
-                "Right"
-              ]
-            }
-          ]
+          "format": "Toggle Parking Brake",
+          "data": []
         }
       ],
       "events": [],
       "states": [
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.GearTotalExtended",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Total percentage of gear extended",
-          "default": ""
-        },
         {
           "id": "MSFSTouchPortalPlugin.FlightSystems.State.AileronTrim",
           "type": "text",
@@ -1878,6 +1924,12 @@
           "type": "text",
           "desc": "MSFS - Flight Systems - Rudder Trim Angle",
           "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.FlightSystems.State.GearTotalExtended",
+          "type": "text",
+          "desc": "MSFS - Flight Systems - Total percentage of gear extended",
+          "default": ""
         }
       ]
     },
@@ -1894,6 +1946,50 @@
           "description": "Adds 25% amount of Fuel",
           "tryInline": true,
           "format": "Add 25% amount of fuel",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.ElectricFuelPump",
+          "name": "Electric Fuel Pump - Toggle",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggles the Electric Fuel Pump",
+          "tryInline": true,
+          "format": "Toggle Electric Fuel Pump - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.ElectricFuelPump.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.ElectricFuelPump.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "All",
+              "valueChoices": [
+                "All",
+                "1",
+                "2",
+                "3",
+                "4"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelDump",
+          "name": "Fuel Dump - Toggle",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggles the Fuel Dump",
+          "tryInline": true,
+          "format": "Toggle Fuel Dump",
+          "data": []
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelPump",
+          "name": "Fuel Pump - Toggle",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggles the Fuel Pump",
+          "tryInline": true,
+          "format": "Toggle Fuel Pump",
           "data": []
         },
         {
@@ -1937,62 +2033,6 @@
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.Primers",
-          "name": "Toggle All/Specific Primers",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle All/Specific Primers",
-          "tryInline": true,
-          "format": "Toggle Primers - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.Primers.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.Primers.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "All",
-              "valueChoices": [
-                "All",
-                "1",
-                "2",
-                "3",
-                "4"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelDump",
-          "name": "Fuel Dump - Toggle",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggles the Fuel Dump",
-          "tryInline": true,
-          "format": "Toggle Fuel Dump",
-          "data": []
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.CrossFeed",
-          "name": "Toggle/Open/Off Cross Feed",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggle/Open/Off Cross Feed",
-          "tryInline": true,
-          "format": "Cross Feed - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.CrossFeed.Data.0$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.CrossFeed.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "Open",
-              "valueChoices": [
-                "Toggle",
-                "Open",
-                "Off"
-              ]
-            }
-          ]
-        },
-        {
           "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelValve",
           "name": "Toggle All/Specific Fuel Valve",
           "prefix": "MSFS",
@@ -2017,26 +2057,16 @@
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelPump",
-          "name": "Fuel Pump - Toggle",
+          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.Primers",
+          "name": "Toggle All/Specific Primers",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Toggles the Fuel Pump",
+          "description": "Toggle All/Specific Primers",
           "tryInline": true,
-          "format": "Toggle Fuel Pump",
-          "data": []
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.ElectricFuelPump",
-          "name": "Electric Fuel Pump - Toggle",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Toggles the Electric Fuel Pump",
-          "tryInline": true,
-          "format": "Toggle Electric Fuel Pump - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.ElectricFuelPump.Data.0$}",
+          "format": "Toggle Primers - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.Primers.Data.0$}",
           "data": [
             {
-              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.ElectricFuelPump.Data.0",
+              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.Primers.Data.0",
               "type": "choice",
               "label": "Action",
               "default": "All",
@@ -2049,16 +2079,30 @@
               ]
             }
           ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.CrossFeed",
+          "name": "Toggle/Open/Off Cross Feed",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle/Open/Off Cross Feed",
+          "tryInline": true,
+          "format": "Cross Feed - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.CrossFeed.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.CrossFeed.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Open",
+              "valueChoices": [
+                "Toggle",
+                "Open",
+                "Off"
+              ]
+            }
+          ]
         }
       ],
-      "events": [],
-      "states": []
-    },
-    {
-      "id": "MSFSTouchPortalPlugin.Menu",
-      "name": "MSFS - Menu",
-      "imagepath": "",
-      "actions": [],
       "events": [],
       "states": []
     },
@@ -2097,6 +2141,43 @@
           "type": "text",
           "desc": "MSFS - Plugin - The status of SimConnect",
           "default": "false"
+        }
+      ]
+    },
+    {
+      "id": "MSFSTouchPortalPlugin.SimSystem",
+      "name": "MSFS - System",
+      "imagepath": "",
+      "actions": [
+        {
+          "id": "MSFSTouchPortalPlugin.SimSystem.Action.SimulationRate",
+          "name": "Simulation Rate",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Simulation Rate",
+          "tryInline": true,
+          "format": "Rate {$MSFSTouchPortalPlugin.SimSystem.Action.SimulationRate.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.SimSystem.Action.SimulationRate.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Decrease",
+              "valueChoices": [
+                "Increase",
+                "Decrease"
+              ]
+            }
+          ]
+        }
+      ],
+      "events": [],
+      "states": [
+        {
+          "id": "MSFSTouchPortalPlugin.SimSystem.State.SimulationRate",
+          "type": "text",
+          "desc": "MSFS - System - The current simulation rate",
+          "default": ""
         }
       ]
     }

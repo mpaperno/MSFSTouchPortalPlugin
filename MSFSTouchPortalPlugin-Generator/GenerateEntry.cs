@@ -94,6 +94,9 @@ namespace MSFSTouchPortalPlugin_Generator {
           category.actions.Add(action);
         });
 
+        // Ordering
+        category.actions = category.actions.OrderBy(c => c.name).ToList();
+
         // TODO: Non-Choice Types
 
         // TODO: Add states
@@ -113,10 +116,16 @@ namespace MSFSTouchPortalPlugin_Generator {
           }
         });
 
+        // Ordering
+        category.states = category.states.OrderBy(c => c.description).ToList();
+
         // TODO: Add events
 
         model.categories.Add(category);
       });
+
+      // Ordering
+      model.categories = model.categories.OrderBy(c => c.name).ToList();
 
       var context = new ValidationContext(model, null, null);
       var errors = new Collection<ValidationResult>();

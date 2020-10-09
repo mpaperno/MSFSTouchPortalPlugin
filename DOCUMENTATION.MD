@@ -24,9 +24,9 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 [MSFS - Fuel](#msfs-fuel)
 
-[MSFS - Menu](#msfs-menu)
-
 [MSFS - Plugin](#msfs-plugin)
+
+[MSFS - System](#msfs-system)
 
 ---
 
@@ -43,6 +43,7 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | AP Max Bank Angle | Increase/Decrease the max bank angle | communicate | Max Bank Angle - {0} | **Increase**,Decrease |
 | Approach Mode | Toggle/On/Off the approach mode for auto pilot | communicate | Approach Mode - {0} | **Toggle**,On,Off |
 | Attitude Hold | Toggle/On/Off the attitude hold for auto pilot | communicate | Attitude Hold - {0} | **Toggle**,On,Off |
+| Attitude Hold Value | Sets the attitude hold value | communicate | Attitude Hold Value - {0} | **Select**,Increase,Decrease |
 | Auto Brake | Increase/Decrease the auto brake | communicate | Auto Brake - {0} | Increaes,Decrease |
 | Auto Throttle Mode | Toggles the Arm/GoAround modes for auto throttle | communicate | Toggle Auto Throttle - {0} | **Arm**,GoAround |
 | AutoPilot | Toggle/On/Off Auto Pilot | communicate | Auto Pilot Master - {0} | **Toggle**,On,Off |
@@ -56,7 +57,6 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | Mach Hold Value | Sets the mach hold value | communicate | Mach Hold Value - {0} | Select,**Increase**,Decrease |
 | Nav Mode - Set | Sets the nav to 1 or 2 for Nav mode | communicate | Nav Mode - {0}  | **1**,2 |
 | Nav1 Mode | Toggle/On/Off the Nav1 mode for auto pilot | communicate | Nav1 Mode - {0} | **Toggle**,On,Off |
-| Pitch Reference Value | Sets the pitch reference value | communicate | Pitch Reference Value - {0} | **Select**,Increase,Decrease |
 | Vertical Speed | Toggle the Vertical Speed for auto pilot | communicate | Vertical Speed - {0} | **Toggle** |
 | Vertical Speed Value | Sets the vertical speed value | communicate | Vertical Speed Value - {0} | **Select**,Increase,Decrease,Set,Set Metric |
 | Wing Leveler | Toggle/On/Off the Wing Leveler for auto pilot | communicate | Wing Leveler - {0} | **Toggle**,On,Off |
@@ -71,7 +71,7 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 | Name | Description | Type | Format | Data (Default in bold) |
 | --- | --- | --- | --- | --- |
-| Fuel Selectors | Fuel Selectors | communicate | Fuel Selector {0} - {1} | **COM1**,COM2,NAV1,NAV2 |
+| Radio Interaction | Radio Interaction | communicate | Radio {0} - {1} | **COM1**,COM2,NAV1,NAV2 |
 
 
 ---
@@ -189,10 +189,6 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 ---
 
-## MSFS - Menu
-
----
-
 ## MSFS - Plugin
 
 ### Actions
@@ -200,6 +196,17 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | Name | Description | Type | Format | Data (Default in bold) |
 | --- | --- | --- | --- | --- |
 | Connection | Toggle/On/Off SimConnect Connection | communicate | SimConnect Connection - {0} | **Toggle**,On,Off |
+
+
+---
+
+## MSFS - System
+
+### Actions
+
+| Name | Description | Type | Format | Data (Default in bold) |
+| --- | --- | --- | --- | --- |
+| Simulation Rate | Simulation Rate | communicate | Rate {0} | Increase,**Decrease** |
 
 
 ---
