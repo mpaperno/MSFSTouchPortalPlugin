@@ -1,8 +1,14 @@
 # MSFS 2020 TouchPortal Plugin
 
+<!--![.NET Core](https://github.com/tlewis17/TouchPortalAPI/workflows/.NET%20Core/badge.svg?branch=master)-->
+[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/tlewis17/MSFSTouchPortalPlugin?include_prereleases)](https://github.com/tlewis17/MSFSTouchPortalPlugin/releases)
+[![Downloads](https://img.shields.io/github/downloads/tlewis17/MSFSTouchPortalPlugin/total.svg)](https://github.com/tlewis17/MSFSTouchPortalPlugin/releases)
+[![Stars](https://img.shields.io/github/stars/tlewis17/MSFSTouchPortalPlugin)](https://github.com/tlewis17/MSFSTouchPortalPlugin/stargazers)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
+
 ## Overview
 
-This plugin will provide a two way interface between Touch Portal and Microsoft Flight Simulator 2020 through SimConnect. This may work for other simulators that use SimConnect such as X-Plane 11.
+This plugin will provide a two way interface between Touch Portal and Microsoft Flight Simulator 2020 through SimConnect. This may work for other simulators that use SimConnect such as X-Plane 11. A good starting point for pages would be to look at FordMustang0288's repo: [MSFSTouchPortalPages](https://github.com/FordMustang0288/MSFSTouchPortalPages)
 
 ## Features
 
@@ -12,7 +18,7 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 ## Documentation
 
-Documentation can be found here: [link](DOCUMENTATION.MD)
+Events and states available are documented in the readme below. Automated Documentation can be found here: [link](DOCUMENTATION.md).
 
 ## Installation Guide
 
