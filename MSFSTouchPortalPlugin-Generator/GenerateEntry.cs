@@ -65,7 +65,8 @@ namespace MSFSTouchPortalPlugin_Generator {
         var category = new TouchPortalCategory {
           Id = $"{_options.Value.PluginName}.{att.Id}",
           Name = att.Name,
-          Imagepath = att.ImagePath
+          // Imagepath = att.ImagePath
+          Imagepath = Path.Combine("%TP_PLUGIN_FOLDER%", "MSFS-TouchPortal-Plugin", "airplane_takeoff24.png")
         };
 
         // Add actions

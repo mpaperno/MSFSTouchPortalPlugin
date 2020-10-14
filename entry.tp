@@ -12,7 +12,7 @@
     {
       "id": "MSFSTouchPortalPlugin.AutoPilot",
       "name": "MSFS - AutoPilot",
-      "imagepath": "",
+      "imagepath": "%TP_PLUGIN_FOLDER%\\MSFS-TouchPortal-Plugin\\airplane_takeoff24.png",
       "actions": [
         {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAirSpeed",
@@ -723,7 +723,7 @@
     {
       "id": "MSFSTouchPortalPlugin.Communication",
       "name": "MSFS - Communication",
-      "imagepath": "",
+      "imagepath": "%TP_PLUGIN_FOLDER%\\MSFS-TouchPortal-Plugin\\airplane_takeoff24.png",
       "actions": [
         {
           "id": "MSFSTouchPortalPlugin.Communication.Action.Radios",
@@ -819,7 +819,7 @@
     {
       "id": "MSFSTouchPortalPlugin.Electrical",
       "name": "MSFS - Electrical",
-      "imagepath": "",
+      "imagepath": "%TP_PLUGIN_FOLDER%\\MSFS-TouchPortal-Plugin\\airplane_takeoff24.png",
       "actions": [
         {
           "id": "MSFSTouchPortalPlugin.Electrical.Action.AlternatorIndex",
@@ -1062,7 +1062,7 @@
     {
       "id": "MSFSTouchPortalPlugin.Engine",
       "name": "MSFS - Engine",
-      "imagepath": "",
+      "imagepath": "%TP_PLUGIN_FOLDER%\\MSFS-TouchPortal-Plugin\\airplane_takeoff24.png",
       "actions": [
         {
           "id": "MSFSTouchPortalPlugin.Engine.Action.EngineAuto",
@@ -1453,7 +1453,7 @@
     {
       "id": "MSFSTouchPortalPlugin.Environment",
       "name": "MSFS - Environment",
-      "imagepath": "",
+      "imagepath": "%TP_PLUGIN_FOLDER%\\MSFS-TouchPortal-Plugin\\airplane_takeoff24.png",
       "actions": [
         {
           "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIce",
@@ -1592,7 +1592,7 @@
     {
       "id": "MSFSTouchPortalPlugin.Failures",
       "name": "MSFS - Failures",
-      "imagepath": "",
+      "imagepath": "%TP_PLUGIN_FOLDER%\\MSFS-TouchPortal-Plugin\\airplane_takeoff24.png",
       "actions": [
         {
           "id": "MSFSTouchPortalPlugin.Failures.Action.Failures",
@@ -1632,7 +1632,7 @@
     {
       "id": "MSFSTouchPortalPlugin.FlightInstruments",
       "name": "MSFS - Flight Instruments",
-      "imagepath": "",
+      "imagepath": "%TP_PLUGIN_FOLDER%\\MSFS-TouchPortal-Plugin\\airplane_takeoff24.png",
       "actions": [],
       "events": [],
       "states": [
@@ -1731,7 +1731,7 @@
     {
       "id": "MSFSTouchPortalPlugin.FlightSystems",
       "name": "MSFS - Flight Systems",
-      "imagepath": "",
+      "imagepath": "%TP_PLUGIN_FOLDER%\\MSFS-TouchPortal-Plugin\\airplane_takeoff24.png",
       "actions": [
         {
           "id": "MSFSTouchPortalPlugin.FlightSystems.Action.AileronTrim",
@@ -2120,7 +2120,7 @@
     {
       "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel",
       "name": "MSFS - Fuel",
-      "imagepath": "",
+      "imagepath": "%TP_PLUGIN_FOLDER%\\MSFS-TouchPortal-Plugin\\airplane_takeoff24.png",
       "actions": [
         {
           "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.AddFuel",
@@ -2293,7 +2293,7 @@
     {
       "id": "MSFSTouchPortalPlugin.Plugin",
       "name": "MSFS - Plugin",
-      "imagepath": "",
+      "imagepath": "%TP_PLUGIN_FOLDER%\\MSFS-TouchPortal-Plugin\\airplane_takeoff24.png",
       "actions": [
         {
           "id": "MSFSTouchPortalPlugin.Plugin.Action.Connection",
@@ -2331,7 +2331,7 @@
     {
       "id": "MSFSTouchPortalPlugin.SimSystem",
       "name": "MSFS - System",
-      "imagepath": "",
+      "imagepath": "%TP_PLUGIN_FOLDER%\\MSFS-TouchPortal-Plugin\\airplane_takeoff24.png",
       "actions": [
         {
           "id": "MSFSTouchPortalPlugin.SimSystem.Action.SimulationRate",

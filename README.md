@@ -175,8 +175,8 @@ https://github.com/FordMustang0288/MSFSTouchPortalPages
   * Up / Down / Increase / Decrease / 1 / 2 / 3
 * Toggle Parking Brake - (Tested) - Toggles the parking brake on or off
 * Rudder Trim - (Tested) - Left / Right
-* Elevator Trim - (Tested) - Left / Right
-* Aileron Trim - (Tested) - Up / Down
+* Elevator Trim - (Tested) - Up / Down
+* Aileron Trim - (Tested) - Left / Right
 
 #### States
 
