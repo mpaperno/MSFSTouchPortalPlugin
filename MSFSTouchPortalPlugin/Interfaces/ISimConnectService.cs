@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace MSFSTouchPortalPlugin.Interfaces {
-  internal delegate void DataUpdateEventHandler(Definition def, Request req, object data);
+  internal delegate void DataUpdateEventHandler(Definition def, Definition req, object data);
   internal delegate void ConnectEventHandler();
   internal delegate void DisconnectEventHandler();
 

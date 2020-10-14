@@ -42,9 +42,7 @@ namespace MSFSTouchPortalPlugin.Services {
       var enumList = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsEnum && t.GetCustomAttribute<SimNotificationGroupAttribute>() != null).ToList();
       enumList.ForEach(enumValue => {
         // Get the notification group to register
-        var group = enumValue.GetCustomAttribute<SimNotificationGroupAttribute>().Group;
         var catName = enumValue.GetCustomAttribute<TouchPortalCategoryMappingAttribute>().CategoryId;
-
         // Configure SimConnect action mappings
         var events = enumValue.GetMembers().Where(m => m.CustomAttributes.Any(att => att.AttributeType == typeof(SimActionEventAttribute))).ToList();
 
@@ -69,17 +67,15 @@ namespace MSFSTouchPortalPlugin.Services {
 
       var stateFieldList = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass && t.GetCustomAttribute<SimVarDataRequestGroupAttribute>() != null).ToList();
       stateFieldList.ForEach(stateFieldClass => {
-        string catName = stateFieldClass.GetCustomAttribute<TouchPortalCategoryAttribute>().Name;
-
         // Get all States and register to SimConnect
         var states = stateFieldClass.GetFields().Where(m => m.CustomAttributes.Any(att => att.AttributeType == typeof(SimVarDataRequestAttribute))).ToList();
         states.ForEach(s => {
           // Evaluate and setup the Touch Portal State ID
           string catId = stateFieldClass.GetCustomAttribute<TouchPortalCategoryAttribute>().Id;
           var item = (SimVarItem)s.GetValue(null);
-          item.TouchPortalStateId = $"{rootName}.{catId}.State.{item.def.ToString()}";
+          item.TouchPortalStateId = $"{rootName}.{catId}.State.{item.Def}";
 
-          returnDict.TryAdd(item.def, item);
+          returnDict.TryAdd(item.Def, item);
         });
       });
 

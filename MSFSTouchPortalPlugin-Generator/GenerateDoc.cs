@@ -1,4 +1,7 @@
-﻿using MSFSTouchPortalPlugin.Attributes;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using MSFSTouchPortalPlugin_Generator.Configuration;
+using MSFSTouchPortalPlugin_Generator.Interfaces;
 using MSFSTouchPortalPlugin_Generator.Model;
 using System;
 using System.IO;
@@ -8,13 +11,13 @@ using System.Text;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin_Generator {
-  public class GenerateDoc {
-    private readonly string _PLUGIN_NAME = "";
-    private readonly string _TARGET_PATH = "";
+  internal class GenerateDoc : IGenerateDoc {
+    private readonly ILogger<GenerateDoc> _logger;
+    private readonly IOptions<GeneratorOptions> _options;
 
-    public GenerateDoc(string pluginName, string targetPath) {
-      _PLUGIN_NAME = pluginName;
-      _TARGET_PATH = targetPath;
+    public GenerateDoc(ILogger<GenerateDoc> logger, IOptions<GeneratorOptions> options) {
+      _logger = logger;
+      _options = options;
     }
 
     public void Generate() {
@@ -24,22 +27,22 @@ namespace MSFSTouchPortalPlugin_Generator {
       // Create Markdown
       var result = CreateMarkdown(model);
 
-      File.WriteAllText(Path.Combine(_TARGET_PATH, "DOCUMENTATION.md"), result);
-      Console.WriteLine("DOCUMENTATION.md generated.");
+      File.WriteAllText(Path.Combine(_options.Value.TargetPath, "DOCUMENTATION.md"), result);
+      _logger.LogInformation("DOCUMENTATION.md generated.");
     }
 
     private DocBase CreateModel() {
       // Load asembly
-      var c = MSFSTouchPortalPlugin.Objects.AutoPilot.AutoPilot.AP_AIRSPEED_HOLD;
+      var l = MSFSTouchPortalPlugin.Objects.AutoPilot.AutoPilot.AP_AIRSPEED_HOLD;
 
       // Find assembly
-      var a = Assembly.GetExecutingAssembly().GetReferencedAssemblies().Where(a => a.Name == _PLUGIN_NAME).FirstOrDefault();
+      var a = Assembly.GetExecutingAssembly().GetReferencedAssemblies().FirstOrDefault(a => a.Name == _options.Value.PluginName);
 
       if (a == null) {
-        throw new Exception("Unable to load assembly for reflection.");
+        throw new ArgumentNullException("Unable to load assembly for reflection.");
       }
 
-      var model = new DocBase() {
+      var model = new DocBase {
         Title = "MSFS 2020 TouchPortal Plugin",
         Overview = "This plugin will provide a two way interface between Touch Portal and Microsoft Flight Simulator 2020 through SimConnect."
       };
@@ -53,7 +56,7 @@ namespace MSFSTouchPortalPlugin_Generator {
       // Loop through categories
       classList.ForEach(cat => {
         var catAttr = (TouchPortalCategoryAttribute)Attribute.GetCustomAttribute(cat, typeof(TouchPortalCategoryAttribute));
-        var newCat = new DocCategory() {
+        var newCat = new DocCategory {
           Name = catAttr.Name
         };
 
@@ -61,7 +64,7 @@ namespace MSFSTouchPortalPlugin_Generator {
         var actions = cat.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalActionAttribute))).ToList();
         actions.ForEach(act => {
           var actionAttribute = (TouchPortalActionAttribute)Attribute.GetCustomAttribute(act, typeof(TouchPortalActionAttribute));
-          var newAct = new DocAction() {
+          var newAct = new DocAction {
             Name = actionAttribute.Name,
             Description = actionAttribute.Description,
             Type = actionAttribute.Type,
@@ -71,9 +74,9 @@ namespace MSFSTouchPortalPlugin_Generator {
           // Loop through Action Data
           var choiceAttributes = act.GetCustomAttributes<TouchPortalActionChoiceAttribute>()?.ToList();
 
-          if (choiceAttributes.Count > 0) {
+          if (choiceAttributes?.Count > 0) {
             for (int i = 0; i < choiceAttributes.Count; i++) {
-              var data = new DocActionData() {
+              var data = new DocActionData {
                 Type = "choice",
                 DefaultValue = choiceAttributes[i].DefaultValue,
                 Values = string.Join(",", choiceAttributes[i].ChoiceValues)
@@ -85,7 +88,6 @@ namespace MSFSTouchPortalPlugin_Generator {
           newCat.Actions.Add(newAct);
         });
 
-        // TODO add order by for actions/states/events.
         newCat.Actions = newCat.Actions.OrderBy(c => c.Name).ToList();
 
         // Loop through States
@@ -94,8 +96,8 @@ namespace MSFSTouchPortalPlugin_Generator {
           var stateAttribute = state.GetCustomAttribute<TouchPortalStateAttribute>();
 
           if (stateAttribute != null) {
-            var newState = new DocState() {
-              Id = $"{_PLUGIN_NAME}.{catAttr.Id}.State.{stateAttribute.Id}",
+            var newState = new DocState {
+              Id = $"{_options.Value.PluginName}.{catAttr.Id}.State.{stateAttribute.Id}",
               Type = stateAttribute.Type,
               Description = stateAttribute.Description,
               DefaultValue = stateAttribute.Default
@@ -107,7 +109,7 @@ namespace MSFSTouchPortalPlugin_Generator {
 
         newCat.States = newCat.States.OrderBy(c => c.Description).ToList();
 
-        // Lop through Events
+        // Loop through Events
         // TODO: Need events
 
         model.Categories.Add(newCat);

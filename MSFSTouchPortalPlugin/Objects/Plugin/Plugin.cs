@@ -3,11 +3,11 @@ using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.Plugin {
   [TouchPortalCategory("Plugin", "MSFS - Plugin")]
-  internal class PluginMapping {
+  internal static class PluginMapping {
     [TouchPortalAction("Connection", "Connection", "MSFS", "Toggle/On/Off SimConnect Connection", "SimConnect Connection - {0}")]
-    [TouchPortalActionChoice(new string[] { "Toggle", "On", "Off" }, "Toggle")]
+    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" }, "Toggle")]
     [TouchPortalState("Connected", "text", "The status of SimConnect", "false")]
-    public object Connection { get; }
+    public static object Connection { get; }
   }
 
   [InternalEvent]

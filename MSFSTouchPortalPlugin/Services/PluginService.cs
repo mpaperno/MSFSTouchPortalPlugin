@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Interfaces;
@@ -9,18 +10,18 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using TouchPortalApi.Interfaces;
 using TouchPortalApi.Models;
 using Timer = System.Timers.Timer;
 
 namespace MSFSTouchPortalPlugin.Services {
   /// <inheritdoc cref="IPluginService" />
-  internal class PluginService : IPluginService {
+  internal class PluginService : IPluginService, IDisposable {
     private CancellationToken _cancellationToken;
     private CancellationTokenSource _simConnectCancellationTokenSource;
 
     private readonly IHostApplicationLifetime _hostApplicationLifetime;
+    private readonly ILogger<PluginService> _logger;
     private readonly IMessageProcessor _messageProcessor;
     private readonly ISimConnectService _simConnectService;
     private readonly IReflectionService _reflectionService;
@@ -33,8 +34,10 @@ namespace MSFSTouchPortalPlugin.Services {
     /// Constructor
     /// </summary>
     /// <param name="messageProcessor">Message Processor Object</param>
-    public PluginService(IHostApplicationLifetime hostApplicationLifetime, IMessageProcessor messageProcessor, ISimConnectService simConnectService, IReflectionService reflectionService) {
+    public PluginService(IHostApplicationLifetime hostApplicationLifetime, ILogger<PluginService> logger,
+      IMessageProcessor messageProcessor, ISimConnectService simConnectService, IReflectionService reflectionService) {
       _hostApplicationLifetime = hostApplicationLifetime ?? throw new ArgumentNullException(nameof(hostApplicationLifetime));
+      _logger = logger ?? throw new ArgumentNullException(nameof(logger));
       _messageProcessor = messageProcessor ?? throw new ArgumentNullException(nameof(messageProcessor));
       _simConnectService = simConnectService ?? throw new ArgumentNullException(nameof(simConnectService));
       _reflectionService = reflectionService ?? throw new ArgumentNullException(nameof(reflectionService));
@@ -44,10 +47,10 @@ namespace MSFSTouchPortalPlugin.Services {
     /// Initialized the Touch Portal Message Processor
     /// </summary>
     private void Initialize() {
-      _messageProcessor.OnActionEvent += new ActionEventHandler(messageProcessor_OnActionEvent);
-      _messageProcessor.OnListChangeEventHandler += new ListChangeEventHandler(messageProcessor_OnListChangeEventHandler);
+      _messageProcessor.OnActionEvent += new ActionEventHandler(MessageProcessor_OnActionEvent);
+      _messageProcessor.OnListChangeEventHandler += new ListChangeEventHandler(MessageProcessor_OnListChangeEventHandler);
       _messageProcessor.OnCloseEventHandler += () => {
-        Console.WriteLine($"{DateTime.Now} TP Request Close, terminating...");
+        _logger.LogInformation($"{DateTime.Now} TP Request Close, terminating...");
         Environment.Exit(0);
       };
 
@@ -55,7 +58,7 @@ namespace MSFSTouchPortalPlugin.Services {
       Task.Run(_messageProcessor.TryPairAsync);
 
       // On Data Update
-      _simConnectService.OnDataUpdateEvent += ((Definition def, Request req, object data) => {
+      _simConnectService.OnDataUpdateEvent += ((Definition def, Definition req, object data) => {
         // Lookup State Mapping
         if (statesDictionary.TryGetValue(def, out var value)) {
           var stringVal = data.ToString();
@@ -66,22 +69,16 @@ namespace MSFSTouchPortalPlugin.Services {
             object valObj = stringVal;
 
             // Handle conversions
-            switch (value.Unit) {
-              case Units.degrees:
-              case Units.knots:
-              case Units.feet:
-              case Units.MHz:
-                valObj = float.Parse(stringVal);
-                break;
-              case Units.radians:
-                // Convert to Degrees
-                valObj = float.Parse(stringVal) * (180 / Math.PI);
-                break;
+            if (ShouldConvertToFload(value.Unit)) {
+              valObj = float.Parse(stringVal);
+            } else if (value.Unit == Units.radians) {
+              // Convert to Degrees
+              valObj = float.Parse(stringVal) * (180 / Math.PI);
             }
 
             // Update if known id.
             if (!string.IsNullOrWhiteSpace(value.TouchPortalStateId)) {
-              _messageProcessor.UpdateState(new StateUpdate() { Id = value.TouchPortalStateId, Value = string.Format(value.StringFormat, valObj) });
+              _messageProcessor.UpdateState(new StateUpdate { Id = value.TouchPortalStateId, Value = string.Format(value.StringFormat, valObj) });
             }
           }
 
@@ -92,7 +89,7 @@ namespace MSFSTouchPortalPlugin.Services {
       _simConnectService.OnConnect += () => {
         _simConnectCancellationTokenSource = new CancellationTokenSource();
 
-        _messageProcessor.UpdateState(new StateUpdate() { Id = "MSFSTouchPortalPlugin.Plugin.State.Connected", Value = _simConnectService.IsConnected().ToString().ToLower() });
+        _messageProcessor.UpdateState(new StateUpdate { Id = "MSFSTouchPortalPlugin.Plugin.State.Connected", Value = _simConnectService.IsConnected().ToString().ToLower() });
 
         // Register Actions
         foreach (var a in actionsDictionary) {
@@ -110,8 +107,24 @@ namespace MSFSTouchPortalPlugin.Services {
 
       _simConnectService.OnDisconnect += () => {
         _simConnectCancellationTokenSource.Cancel();
-        _messageProcessor.UpdateState(new StateUpdate() { Id = "MSFSTouchPortalPlugin.Plugin.State.Connected", Value = _simConnectService.IsConnected().ToString().ToLower() });
+        _messageProcessor.UpdateState(new StateUpdate { Id = "MSFSTouchPortalPlugin.Plugin.State.Connected", Value = _simConnectService.IsConnected().ToString().ToLower() });
       };
+    }
+
+    /// <summary>
+    /// All the unit types that should convert to Float
+    /// </summary>
+    /// <param name="unitType">The unit type</param>
+    /// <returns>True if it should be a float</returns>
+    private bool ShouldConvertToFload(string unitType) {
+      return unitType == Units.degrees ||
+        unitType == Units.knots ||
+        unitType == Units.feet ||
+        unitType == Units.MHz ||
+        unitType == Units.percent ||
+        unitType == Units.rpm ||
+        unitType == Units.mach ||
+        unitType == Units.feetminute;
     }
 
     private void SetupEventLists() {
@@ -121,7 +134,6 @@ namespace MSFSTouchPortalPlugin.Services {
     }
 
     private Task TryConnect() {
-      // TODO: Will this properly reconnect after starting sim, then existing sim?
       int i = 0;
 
       while (!_cancellationToken.IsCancellationRequested) {
@@ -166,16 +178,16 @@ namespace MSFSTouchPortalPlugin.Services {
       // Run Listen and pairing
       await Task.WhenAll(new Task[] {
         _simConnectService.WaitForMessage(simConnectCancelToken)
-      });
+      }).ConfigureAwait(false);
     }
 
     #region OnEvents
 
-    private void messageProcessor_OnListChangeEventHandler(string actionId, string value) {
-      Console.WriteLine($"{DateTime.Now} Choice Event Fired.");
+    private void MessageProcessor_OnListChangeEventHandler(string actionId, string value) {
+      _logger.LogInformation($"{DateTime.Now} Choice Event Fired. ActionId: {actionId} Value: {value}");
     }
 
-    private void messageProcessor_OnActionEvent(string actionId, List<ActionData> dataList) {
+    private void MessageProcessor_OnActionEvent(string actionId, List<ActionData> dataList) {
       if (dataList.Count > 0) {
         var values = string.Join(",", dataList.Select(x => x.Value));
         ProcessEvent(actionId, values);
@@ -187,9 +199,8 @@ namespace MSFSTouchPortalPlugin.Services {
     private void ProcessEvent(string actionId, string value = default) {
       // Plugin Events
       if (internalEventsDictionary.TryGetValue($"{actionId}:{value}", out var internalEventResult)) {
-        Console.WriteLine($"{DateTime.Now} {internalEventResult} - Firing Internal Event");
+        _logger.LogInformation($"{DateTime.Now} {internalEventResult} - Firing Internal Event");
 
-        // TODO: Modify Connect/Disconnect to re-setup events and notifications
         switch (internalEventResult) {
           case Plugin.ToggleConnection:
             if (_simConnectService.IsConnected()) {
@@ -208,6 +219,9 @@ namespace MSFSTouchPortalPlugin.Services {
               _simConnectService.Disconnect();
             }
             break;
+          default:
+            // No other types of events supported right now.
+            break;
         }
 
         return;
@@ -215,11 +229,9 @@ namespace MSFSTouchPortalPlugin.Services {
 
       // Sim Events
       if (actionsDictionary.TryGetValue($"{actionId}:{value}", out var eventResult)) {
-        Console.WriteLine($"{DateTime.Now} {eventResult} - Firing Event");
+        _logger.LogInformation($"{DateTime.Now} {eventResult} - Firing Event");
         var group = eventResult.GetType().GetCustomAttribute<SimNotificationGroupAttribute>().Group;
         _simConnectService.TransmitClientEvent(group, eventResult, 0);
-
-        return;
       }
     }
 
@@ -247,6 +259,27 @@ namespace MSFSTouchPortalPlugin.Services {
     public Task StopAsync(CancellationToken cancellationToken) {
       return Task.CompletedTask;
     }
+
+    #region IDisposable Support
+    private bool disposedValue; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing) {
+      if (!disposedValue) {
+        if (disposing) {
+          // Dispose managed state (managed objects).
+          _simConnectCancellationTokenSource.Dispose();
+        }
+
+        disposedValue = true;
+      }
+    }
+
+    // This code added to correctly implement the disposable pattern.
+    public void Dispose() {
+      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+      Dispose(true);
+    }
+    #endregion
 
     #endregion
   }

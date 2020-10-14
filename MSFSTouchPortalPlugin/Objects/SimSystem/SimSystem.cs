@@ -6,17 +6,13 @@ using TouchPortalExtension.Attributes;
 namespace MSFSTouchPortalPlugin.Objects.SimSystem {
   [SimVarDataRequestGroup]
   [TouchPortalCategory("SimSystem", "MSFS - System")]
-  internal class SimSystemMapping {
-    //[TouchPortalAction("Pause", "Pause", "MSFS", "Toggle/On/Off Pause", "Pause - {0}")]
-    //[TouchPortalActionChoice(new string[] { "Toggle", "On", "Off" }, "Toggle")]
-    //public object PAUSE { get; }
-
+  internal static class SimSystemMapping {
     [SimVarDataRequest]
     [TouchPortalAction("SimulationRate", "Simulation Rate", "MSFS", "Simulation Rate", "Rate {0}")]
-    [TouchPortalActionChoice(new string[] { "Increase", "Decrease" }, "Decrease")]
+    [TouchPortalActionChoice(new [] { "Increase", "Decrease" }, "Decrease")]
     [TouchPortalState("SimulationRate", "text", "The current simulation rate", "")]
-    public static SimVarItem SimulationRate =
-      new SimVarItem() { def = Definition.SimulationRate, req = Request.SimulationRate, SimVarName = "SIMULATION RATE", Unit = Units.number, CanSet = false };
+    public static readonly SimVarItem SimulationRate =
+      new SimVarItem { Def = Definition.SimulationRate, SimVarName = "SIMULATION RATE", Unit = Units.number, CanSet = false };
   }
 
   [SimNotificationGroup(Groups.SimSystem)]

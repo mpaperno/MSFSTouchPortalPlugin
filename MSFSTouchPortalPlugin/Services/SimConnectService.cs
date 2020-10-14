@@ -1,4 +1,5 @@
-﻿using Microsoft.FlightSimulator.SimConnect;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.FlightSimulator.SimConnect;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Interfaces;
@@ -13,26 +14,30 @@ namespace MSFSTouchPortalPlugin.Services {
   /// <summary>
   /// Wrapper for SimConnect
   /// </summary>
-  internal class SimConnectService : ISimConnectService {
+  internal class SimConnectService : ISimConnectService, IDisposable {
     [DllImport("kernel32.dll")]
     static extern IntPtr GetConsoleWindow();
 
+    private readonly ILogger<SimConnectService> _logger;
+
     const uint NOTIFICATION_PRIORITY = 10000000;
     const int WM_USER_SIMCONNECT = 0x0402;
-    SimConnect _simConnect = null;
-    EventWaitHandle _scReady = new EventWaitHandle(false, EventResetMode.AutoReset);
-    private bool _connected = false;
+    SimConnect _simConnect;
+    readonly EventWaitHandle _scReady = new EventWaitHandle(false, EventResetMode.AutoReset);
+    private bool _connected;
     
     public event DataUpdateEventHandler OnDataUpdateEvent;
     public event ConnectEventHandler OnConnect;
     public event DisconnectEventHandler OnDisconnect;
 
-    public SimConnectService() { }
+    public SimConnectService(ILogger<SimConnectService> logger) {
+      _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
     public bool IsConnected() => _connected;
 
     public bool Connect() {
-      Console.WriteLine("Connect SimConnect");
+      _logger.LogInformation("Connect SimConnect");
 
       try {
         _simConnect = new SimConnect("Touch Portal Plugin", GetConsoleWindow(), WM_USER_SIMCONNECT, _scReady, 0);
@@ -40,18 +45,16 @@ namespace MSFSTouchPortalPlugin.Services {
         _connected = true;
 
         // System Events
-        _simConnect.OnRecvOpen += new SimConnect.RecvOpenEventHandler(simconnect_OnRecvOpen);
-        _simConnect.OnRecvQuit += new SimConnect.RecvQuitEventHandler(simconnect_OnRecvQuit);
-        _simConnect.OnRecvException += new SimConnect.RecvExceptionEventHandler(simconnect_OnRecvException);
+        _simConnect.OnRecvOpen += new SimConnect.RecvOpenEventHandler(Simconnect_OnRecvOpen);
+        _simConnect.OnRecvQuit += new SimConnect.RecvQuitEventHandler(Simconnect_OnRecvQuit);
+        _simConnect.OnRecvException += new SimConnect.RecvExceptionEventHandler(Simconnect_OnRecvException);
 
         // Sim mapped events
-        _simConnect.OnRecvEvent += new SimConnect.RecvEventEventHandler(simconnect_OnRecvEvent);
-
-        // simconnect.OnRecvAssignedObjectId += new SimConnect.RecvAssignedObjectIdEventHandler(simconnect_OnRecvAssignedObjectId);
+        _simConnect.OnRecvEvent += new SimConnect.RecvEventEventHandler(Simconnect_OnRecvEvent);
 
         // Sim Data
-        _simConnect.OnRecvSimobjectData += new SimConnect.RecvSimobjectDataEventHandler(simconnect_OnRecvSimObjectData);
-        _simConnect.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(simconnect_OnRecvSimobjectDataBytype);
+        _simConnect.OnRecvSimobjectData += new SimConnect.RecvSimobjectDataEventHandler(Simconnect_OnRecvSimObjectData);
+        _simConnect.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(Simconnect_OnRecvSimobjectDataBytype);
 
         _simConnect.ClearNotificationGroup(Groups.System);
         _simConnect.SetNotificationGroupPriority(Groups.System, NOTIFICATION_PRIORITY);
@@ -65,18 +68,18 @@ namespace MSFSTouchPortalPlugin.Services {
         _simConnect.Text(SIMCONNECT_TEXT_TYPE.PRINT_BLACK, 5, Events.StartupMessage, "TouchPortal Connected");
 
         // Invoke Handler
-        OnConnect();
+        OnConnect?.Invoke();
 
         return true;
       } catch (COMException ex) {
-        Console.WriteLine("Connection to Sim failed: " + ex.Message);
+        _logger.LogInformation("Connection to Sim failed: {exception}", ex.Message);
       }
 
       return false;
     }
 
     public void Disconnect() {
-      Console.WriteLine("Disconnect SimConnect");
+      _logger.LogInformation("Disconnect SimConnect");
 
       if (_simConnect != null) {
         /// Dispose serves the same purpose as SimConnect_Close()
@@ -85,17 +88,15 @@ namespace MSFSTouchPortalPlugin.Services {
       }
 
       _connected = false;
-      
+
       // Invoke Handler
-      OnDisconnect();
+      OnDisconnect?.Invoke();
     }
 
     public Task WaitForMessage(CancellationToken cancellationToken) {
       while (_connected && !cancellationToken.IsCancellationRequested) {
         if (_scReady.WaitOne(TimeSpan.FromSeconds(5))) {
-          // TODO: Exception on quit
           _simConnect?.ReceiveMessage();
-          //simconnect.RequestDataOnSimObjectType(Events.Test, Group.Test, 0, SIMCONNECT_SIMOBJECT_TYPE.AIRCRAFT);
         }
       }
 
@@ -113,7 +114,7 @@ namespace MSFSTouchPortalPlugin.Services {
 
     public bool TransmitClientEvent(Groups group, Enum eventId, uint data) {
       if (_connected) {
-        _simConnect.TransmitClientEvent((uint)SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, data, group, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+        _simConnect.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, data, group, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
         return true;
       }
 
@@ -131,8 +132,8 @@ namespace MSFSTouchPortalPlugin.Services {
 
     public bool RegisterToSimConnect(SimVarItem simVar) {
       if (_connected) {
-        _simConnect.AddToDataDefinition(simVar.def, simVar.SimVarName, simVar.Unit, SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-        _simConnect.RegisterDataDefineStruct<double>(simVar.def);
+        _simConnect.AddToDataDefinition(simVar.Def, simVar.SimVarName, simVar.Unit, SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+        _simConnect.RegisterDataDefineStruct<double>(simVar.Def);
         return true;
       }
 
@@ -141,44 +142,39 @@ namespace MSFSTouchPortalPlugin.Services {
 
     public bool RequestDataOnSimObjectType(SimVarItem simVar) {
       if (_connected) {
-        _simConnect.RequestDataOnSimObjectType(simVar.req, simVar.def, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
+        _simConnect.RequestDataOnSimObjectType(simVar.Def, simVar.Def, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
       }
 
       return false;
     }
 
-    private void simconnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data) {
-      Console.WriteLine("Quit");
+    private void Simconnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data) {
+      _logger.LogInformation("Quit");
       Disconnect();
     }
 
-    private void simconnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data) {
-      Console.WriteLine("ReceivedObjectDataByType");
+    private void Simconnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data) {
       if (data.dwData.Length > 0) {
-        OnDataUpdateEvent((Definition)data.dwDefineID, (Request)data.dwRequestID, data.dwData[0]);
+        OnDataUpdateEvent?.Invoke((Definition)data.dwDefineID, (Definition)data.dwRequestID, data.dwData[0]);
       }
 
     }
 
-    private void simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data) {
-      Console.WriteLine("Opened");
+    private void Simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data) {
+      _logger.LogInformation("Opened");
     }
 
-    private void simconnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data) {
+    private void Simconnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data) {
       SIMCONNECT_EXCEPTION eException = (SIMCONNECT_EXCEPTION)data.dwException;
-      Console.WriteLine("SimConnect_OnRecvException: " + eException.ToString());
+      _logger.LogInformation("SimConnect_OnRecvException: {exception}", eException.ToString());
     }
-
-    //private void simconnect_OnRecvAssignedObjectId(SimConnect sender, SIMCONNECT_RECV_ASSIGNED_OBJECT_ID data) {
-    //  Console.WriteLine("Recieved");
-    //}
 
     /// <summary>
     /// Events triggered by sending events to the Sim
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="data"></param>
-    private void simconnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data) {
+    private void Simconnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data) {
       Groups group = (Groups)data.uGroupID;
       dynamic eventId = null;
 
@@ -192,13 +188,37 @@ namespace MSFSTouchPortalPlugin.Services {
         case Groups.Fuel:
           eventId = (Fuel)data.uEventID;
           break;
+        default:
+          // No other actions
+          break;
       }
 
-      Console.WriteLine($"{DateTime.Now} Recieved: {group} - {eventId}");
+      _logger.LogInformation($"{DateTime.Now} Recieved: {group} - {eventId}");
     }
 
-    private void simconnect_OnRecvSimObjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data) {
-      Console.WriteLine("Recieved");
+    private void Simconnect_OnRecvSimObjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data) {
+      // Empty method for now, not implemented
     }
+
+    #region IDisposable Support
+    private bool disposedValue; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing) {
+      if (!disposedValue) {
+        if (disposing) {
+          // Dispose managed state (managed objects).
+          _scReady.Dispose();
+        }
+
+        disposedValue = true;
+      }
+    }
+
+    // This code added to correctly implement the disposable pattern.
+    public void Dispose() {
+      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+      Dispose(true);
+    }
+    #endregion
   }
 }

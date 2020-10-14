@@ -5,11 +5,11 @@ using TouchPortalExtension.Attributes;
 namespace MSFSTouchPortalPlugin.Objects.Failures {
   [SimVarDataRequestGroup]
   [TouchPortalCategory("Failures", "MSFS - Failures")]
-  internal class FailuresMapping {
+  internal static class FailuresMapping {
 
     [TouchPortalAction("Failures", "Failures", "MSFS", "Toggle Failures", "Toggle Failures - {0}")]
-    [TouchPortalActionChoice(new string[] { "Electrical", "Vacuum", "Pitot", "Static Port", "Hydraulic", "Total Brake", "Left Brake", "Right Brake", "Engine 1", "Engine 2", "Engine 3", "Engine 4" }, "Electrical")]
-    public object FAILURES { get; }
+    [TouchPortalActionChoice(new [] { "Electrical", "Vacuum", "Pitot", "Static Port", "Hydraulic", "Total Brake", "Left Brake", "Right Brake", "Engine 1", "Engine 2", "Engine 3", "Engine 4" }, "Electrical")]
+    public static object FAILURES { get; }
   }
 
   [SimNotificationGroup(Groups.Failures)]

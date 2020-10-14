@@ -15,8 +15,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		actions = actions
 		build.ps1 = build.ps1
 		CHANGELOG.md = CHANGELOG.md
-		DOCUMENTATION.MD = DOCUMENTATION.MD
+		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
+		DOCUMENTATION.md = DOCUMENTATION.md
 		entry.tp = entry.tp
+		LICENSE = LICENSE
 		publish.ps1 = publish.ps1
 		README.md = README.md
 		states = states
@@ -24,7 +26,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSFSTouchPortalPlugin-Tests", "MSFSTouchPortalPlugin-Tests\MSFSTouchPortalPlugin-Tests.csproj", "{3A7D5537-16CD-4F3B-9630-CE480C1D30EB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TouchPortalApi", "..\TouchPortalApi\TouchPortalApi\TouchPortalApi.csproj", "{E7325B5E-AB9B-4705-AC24-4D495EB91A16}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{BB11FB83-1407-4C82-AA08-67D7BB5A106B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ISSUE_TEMPLATE", "ISSUE_TEMPLATE", "{D74D033D-8E79-4CCD-9D07-7CD7CD2FEF49}"
+	ProjectSection(SolutionItems) = preProject
+		.github\ISSUE_TEMPLATE\bug_report.md = .github\ISSUE_TEMPLATE\bug_report.md
+		.github\ISSUE_TEMPLATE\feature_request.md = .github\ISSUE_TEMPLATE\feature_request.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,13 +56,13 @@ Global
 		{3A7D5537-16CD-4F3B-9630-CE480C1D30EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A7D5537-16CD-4F3B-9630-CE480C1D30EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A7D5537-16CD-4F3B-9630-CE480C1D30EB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E7325B5E-AB9B-4705-AC24-4D495EB91A16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E7325B5E-AB9B-4705-AC24-4D495EB91A16}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E7325B5E-AB9B-4705-AC24-4D495EB91A16}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E7325B5E-AB9B-4705-AC24-4D495EB91A16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BB11FB83-1407-4C82-AA08-67D7BB5A106B} = {6DF0C85E-3EB4-4898-A304-EFA04CB547A6}
+		{D74D033D-8E79-4CCD-9D07-7CD7CD2FEF49} = {BB11FB83-1407-4C82-AA08-67D7BB5A106B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8A111C57-4F14-4766-94E9-EB7FC1180379}

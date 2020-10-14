@@ -11,14 +11,18 @@ namespace TouchPortalExtension.Attributes {
 
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
   public class TouchPortalActionAttribute : Attribute {
-    public string Id;
-    public string Name;
-    public string Prefix;
-    public string Description;
-    public string Format;
-    public string Type;
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string Prefix { get; set; }
+    public string Description { get; set; }
+    public string Format { get; set; }
+    public string Type { get; set; }
 
-    public TouchPortalActionAttribute(string id, string name, string prefix, string description, string format, string type = "communicate") {
+    public TouchPortalActionAttribute(string id, string name, string prefix, string description, string format) {
+      SetupProperties(id, name, prefix, description, format, "communicate");
+    }
+
+    private void SetupProperties(string id, string name, string prefix, string description, string format, string type) {
       Id = id;
       Name = name;
       Prefix = prefix;
@@ -28,10 +32,11 @@ namespace TouchPortalExtension.Attributes {
     }
   }
 
+
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
   public class TouchPortalActionChoiceAttribute : Attribute {
-    public string[] ChoiceValues;
-    public string DefaultValue;
+    public string[] ChoiceValues { get; set; }
+    public string DefaultValue { get; set; }
 
     public TouchPortalActionChoiceAttribute(string[] choiceValues, string defaultValue) {
       ChoiceValues = choiceValues;

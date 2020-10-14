@@ -1,17 +1,27 @@
-﻿namespace MSFSTouchPortalPlugin_Generator {
-  class Program {
-    private const string _PLUGIN_NAME = "MSFSTouchPortalPlugin";
-    private static string _TargetPath = "..\\..\\..\\..\\";
-    static void Main(string[] args) {
-      if (args.Length >= 1) {
-        _TargetPath = args[0];
-      }
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using MSFSTouchPortalPlugin_Generator.Configuration;
+using MSFSTouchPortalPlugin_Generator.Interfaces;
+using System.Threading.Tasks;
 
-      var entryGenerator = new GenerateEntry(_PLUGIN_NAME, _TargetPath);
-      entryGenerator.Generate();
+namespace MSFSTouchPortalPlugin_Generator {
+  static class Program {
+    static async Task Main(string[] args) {
+      await Host.CreateDefaultBuilder(args).ConfigureServices((context, services) => {
+        services
+        .AddLogging()
+        .Configure<GeneratorOptions>((opt) => {
+          opt.PluginName = "MSFSTouchPortalPlugin";
+          opt.TargetPath = "..\\..\\..\\..\\";
 
-      var docGenerator = new GenerateDoc(_PLUGIN_NAME, _TargetPath);
-      docGenerator.Generate();
+          if (args.Length >= 1) {
+            opt.TargetPath = args[0];
+          }
+        })
+        .AddHostedService<RunService>()
+        .AddSingleton<IGenerateDoc, GenerateDoc>()
+        .AddSingleton<IGenerateEntry, GenerateEntry>();
+      }).RunConsoleAsync();
     }
   }
 }

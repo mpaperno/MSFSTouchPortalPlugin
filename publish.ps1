@@ -16,33 +16,29 @@ if(-Not ([string]::IsNullOrEmpty($VersionSuffix))) {
   $VersionSuffixCommand = "--version-suffix"
 }
 
-Write-Host "Restoring 'MSFSTouchPortalPlugin' component....`n" -foregroundcolor "Magenta"
+Write-Information "Restoring 'MSFSTouchPortalPlugin' component....`n" -InformationAction Continue
 dotnet restore "MSFSTouchPortalPlugin"
 dotnet restore "MSFSTouchPortalPlugin.Tests"
 
-Write-Host "Building 'MSFSTouchPortalPlugin' component...`n" -foregroundcolor "Magenta"
+Write-Information "Building 'MSFSTouchPortalPlugin' component...`n" -InformationAction Continue
 dotnet build "MSFSTouchPortalPlugin" --configuration $Configuration
 
-Write-Host "Cleaning 'MSFSTouchPortalPlugin' packages-dist folder..." -foregroundcolor "Magenta"
+Write-Information "Cleaning 'MSFSTouchPortalPlugin' packages-dist folder..." -InformationAction Continue
 $CurrentDir = [System.IO.Path]::GetDirectoryName($myInvocation.MyCommand.Path)
 $DistFolderPath = "$CurrentDir\packages-dist"
 if (Test-Path $DistFolderPath) {
   Remove-Item $DistFolderPath -Force -Recurse
 }
 
-Write-Host "Publishing 'MSFSTouchPortalPlugin' component...`n" -foregroundcolor "Magenta"
+Write-Information "Publishing 'MSFSTouchPortalPlugin' component...`n" -InformationAction Continue
 dotnet publish "MSFSTouchPortalPlugin" --output "$DistFolderPath\MSFS-TouchPortal-Plugin\dist" --configuration $Configuration $VersionSuffixCommand $VersionSuffix -r "win-x64" --self-contained true
-
-# Build documentation
-#Write-Host "Publishing 'MSFSTouchPortalPlugin-Generator' component...`n" -foregroundcolor "Magenta"
-#dotnet publish "MSFSTouchPortalPlugin-Generator" --output "$DistFolderPath\MSFS-TouchPortal-Plugin-Generator" --configuration $Configuration $VersionSuffixCommand $VersionSuffix
 
 # Run Documentation
 dotnet run -p "MSFSTouchPortalPlugin-Generator" ".\packages-dist\MSFS-TouchPortal-Plugin"
-#&"$DistFolderPath\MSFS-TouchPortal-Plugin-Generator\MSFSTouchPortalPlugin-Generator.exe '$DistFolderPath\MSFS-TouchPortal-Plugin'"
 
-# Copy Entry.tp, Readme, Documentation to publish
-copy "README.MD" "$DistFolderPath\MSFS-TouchPortal-Plugin"
+# Copy Entry.tp, Readme, Documentation, CHANGELOG to publish
+copy "README.md" "$DistFolderPath\MSFS-TouchPortal-Plugin"
+copy "CHANGELOG.md" "$DistFolderPath\MSFS-TouchPortal-Plugin"
 
 # Create TPP File
 Compress-Archive -Path "$DistFolderPath\MSFS-TouchPortal-Plugin" -DestinationPath "$DistFolderPath\MSFS-TouchPortal-Plugin.zip"

@@ -7,12 +7,12 @@ namespace MSFSTouchPortalPlugin.Attributes {
 
     public TouchPortalActionMappingAttribute(string actionId, string value) {
       ActionId = actionId;
-      Values = new string[] { value };
+      Values = new [] { value };
     }
 
     public TouchPortalActionMappingAttribute(string actionId, string[] values = null) {
       ActionId = actionId;
-      Values = values ?? new string[] { };
+      Values = values ?? new string [] { };
     }
   }
 }

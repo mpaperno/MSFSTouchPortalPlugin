@@ -159,8 +159,6 @@ https://github.com/FordMustang0288/MSFSTouchPortalPages
 | --- | --- | --- | --- | --- |
 | Ailerons | TBD | Center, Left, Right, Set | v1 | |
 | Brakes | TBD | All, Left, Right | v1 | |
-| Parking Brake | TBD | Toggle | v1 | |
-| Flaps | TBD | Up, Down, Increase, Decrease, 1, 2, 3, Set | v1 | |
 | Cowl Flaps All | TBD | Increase, Decrease | v1 | |
 | Cowl Flaps 1 | TBD | Increase, Decrease | v1 | |
 | Cowl Flaps 2 | TBD | Increase, Decrease | v1 | |
@@ -170,9 +168,23 @@ https://github.com/FordMustang0288/MSFSTouchPortalPages
 | Rudder | TBD | Center, Left, Right, Set | v1 | |
 | Spoilers | TBD | Toggle, On, Off, Set | v1 | |
 | Spoilers Arm | TBD | Toggle, On, Off, Set | v1 | |
-| Aileron Trim | AileronTrim | Left, RIght | v2 | |
-| Elevator Trim | ElevatorTrim | Up, Down | v2 | |
-| Rudder Trim | RudderTrim | Left, Right | v2 | |
+
+#### Actions
+
+* Flaps - (Tested) - Changes the position of the flaps
+  * Up / Down / Increase / Decrease / 1 / 2 / 3
+* Toggle Parking Brake - (Tested) - Toggles the parking brake on or off
+* Rudder Trim - (Tested) - Left / Right
+* Elevator Trim - (Tested) - Left / Right
+* Aileron Trim - (Tested) - Up / Down
+
+#### States
+
+* Aileron Trim - (Tested) - Percent
+* Elevator Trim - (Tested) - Percent
+* FlapsHandlePercent - (Tested) - Percent
+* ParkingBrakeIndicator - (Tested) - True/False
+* RudderTrim - (Tested) - Percent
 
 ### Electrical
 
@@ -217,18 +229,48 @@ Extra States for Lights:
 | Magneto - 4 | TBD | Start, Off, Right, Left, Both, Decrease, Increase | v1 | |
 | Toggle Starters | TBD | All, 1, 2, 3, 4 | v1 | |
 
+#### Actions
+
+* Throttle (All Engines) (Partial Test) - Full, Increase, Increase Small, Decrease, Decrease Small, Cut, Set, 10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90%
+    * Do not use Set, all "Set" commands for all actions are not implemented.
+* Throttle Specific (Not Tested) - Full, Increase, Increase Small, Decrease, Decrease Small, Cut
+
+#### States
+
+* MixtureEngine1 - (Tested) - Percentage
+* MixtureEngine2 - (Tested) - Percentage
+* MixtureEngine3 - (Not Tested) - Percentage
+* MixtureEngine4 - (Not Tested) - Percentage
+* PropellerEngine1 - (Tested) - Percentage
+* PropellerEngine2 - (Tested) - Percentage
+* PropellerEngine3 - (Not Tested) - Percentage
+* PropellerEngine4 - (Not Tested) - Percentage
+* RPMN1Engine1 - (Tested) - RPM
+* RPMN1Engine2 - (Tested) - RPM
+* RPMN1Engine3 - (Tested) - RPM
+* RPMN1Engine4 - (Tested) - RPM
+* ThrottleEngine1 - (Tested) - Percentage
+* ThrottleEngine2 - (Tested) - Percentage
+* ThrottleEngine3 - (Tested) - Percentage
+* ThrottleEngine4 - (Tested) - Percentage
+
 ### Environment
 
-| Control | State Variable(s) | Modes | v1/v2 | Tested |
-| --- | --- | --- | --- | --- |
-| Anti-Ice | TBD | Toggle, On, Off, Set | v1 | |
-| Anti-Ice Engine 1 | TBD | Toggle, On, Off, Set | v1 | |
-| Anti-Ice Engine 2 | TBD | Toggle, On, Off, Set | v1 | |
-| Anti-Ice Engine 3 | TBD | Toggle, On, Off, Set | v1 | |
-| Anti-Ice Engine 4 | TBD | Toggle, On, Off, Set | v1 | |
-| Anti-Ice Structural | TBD | Toggle | v1 | |
-| Anti-Ice Propeller | TBD | Toggle | v1 | |
-| Pitot Head | TBD | Toggle, On, Off, Set | v1 | |
+#### Actions
+
+* Anti-Ice - (Not Tested) - Toggles / On / Off Anti-Ice
+* Anti-Ice Engine - (Not Tested) - Toggles Anti-Ice for engines 1, 2, 3, or 4.
+* Propeller De-Ice - (Not Tested) - Toggle
+* Structural De-Ice - (Not Tested) - Toggle
+* Pitot Heat - (Not Tested) - Toggle / On / Off Pitot Heat
+
+#### States
+
+* AntiIceEng1 - (Not Tested) - True/False
+* AntiIceEng2 - (Not Tested) - True/False
+* AntiIceEng3 - (Not Tested) - True/False
+* AntiIceEng4 - (Not Tested) - True/False
+* PitotHeat - (Not Tested) - True/False
 
 ### Flight Instruments
 
@@ -242,6 +284,26 @@ Extra States for Lights:
 | - | PlaneHeadingMagnetic | - | v2 | Yes |
 | - | PlaneBankAngle | - | v2 | Yes but values are opposite TODO: Flip values |
 | - | PlanePitchAngle | - | v2 | Yes but values are opposite TODO: Flip values |
+
+#### Actions
+
+#### States
+
+* AirSpeedIndicated - (Tested) - Knots
+* AirSpeedMach - (Tested) - Mach
+* AirSpeedTrue - (Tested) - Knots
+* FlapSpeedExceeeded - (Not Tested) - True/False
+* GroundVelocity - (Tested) - Knots
+* GroundAltitude - (Tested) - Feet
+* OverspeedWarning - (Tested) - True/False
+* PlaneAltitude - (Tested) - Feet
+* PlanteAltitudeAGL - (Tested) - Feet
+* PlaneBankAngle - (Tested) - Degrees
+* PlaneHeadingMagnetic - (Tested) - Degrees
+* PlaneHeadingTrue - (Tested) - Degrees
+* PlanePitchAngle - (Tested) - Degrees
+* StallWarning - (Tested) - True/False
+* VerticalSpeed - (Tested) - Feet per minute
 
 ### Fuel System
 

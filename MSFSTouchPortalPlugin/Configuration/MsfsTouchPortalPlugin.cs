@@ -1,4 +1,4 @@
 ﻿namespace MSFSTouchPortalPlugin.Configuration {
-  internal class MSFSTouchPortalPluginOptions {
+  internal class MsfsTouchPortalPlugin {
   }
 }
