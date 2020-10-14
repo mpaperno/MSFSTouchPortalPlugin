@@ -1,5 +1,56 @@
 # MSFS Touch Portal Plugin
 
+## 0.5.2 (10-13-2020)
+* Modified states to not have units. These can be added through Touch Portal if user chooses.
+* De-Ice engine actions have been combined. Will require re-configuring on Page.
+
+### New/Modified Actions
+* Flaps - Up, Down, Increase, Decrease, 1, 2, 3
+* Parking Brake - Toggle
+* Rudder Trim - Left / Right
+* Elevator Trim - Up / Down
+* Aileron Trim - Left / Right
+* Throttle All Engines - Full, Increase, Increase Small, Decrease, Decrease Small, Cut, 10%-90%
+* Throttle Specific - Full, Increase, Increase Small, Decrease, Decrease Small, Cut
+* Anti-Ice - Toggle / On / Off
+* Anti-Ice Engine - Toggle for engines 1, 2, 3, 4
+* PitotHeat - Toggle / On / Off
+
+### New/Modified States
+* Aileron Trim
+* Elevator Trim
+* Flaps Handle Percentage
+* Parking Brake Indicator
+* Rudder Trim
+* MixtureEngine1
+* MixtureEngine2
+* MixtureEngine3
+* MixtureEngine4
+* PropellerEngine1
+* PropellerEngine2
+* PropellerEngine3
+* PropellerEngine4
+* RPMN1Engine1
+* RPMN1Engine2
+* RPMN1Engine3
+* RPMN1Engine4
+* ThrottleEngine1
+* ThrottleEngine2
+* ThrottleEngine3
+* ThrottleEngine4
+* AntiIceEng1
+* AntiIceEng2
+* AntiIceEng3
+* AntiIceEng4
+* PitotHeat
+* AirSpeedIndicated
+* AirSpeedMach
+* AirSpeedTrue
+* FlapSpeedExceeded
+* OverspeedWarning
+* StallWarning
+* VerticalSpeed
+
 ## 0.5.1 (10-9-2020)
 Entry.tp file is now properly alphabetized.
 
