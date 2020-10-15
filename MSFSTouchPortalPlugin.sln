@@ -34,6 +34,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ISSUE_TEMPLATE", "ISSUE_TEM
 	ProjectSection(SolutionItems) = preProject
 		.github\ISSUE_TEMPLATE\bug_report.md = .github\ISSUE_TEMPLATE\bug_report.md
 		.github\ISSUE_TEMPLATE\feature_request.md = .github\ISSUE_TEMPLATE\feature_request.md
+		.github\ISSUE_TEMPLATE\new_action_request.md = .github\ISSUE_TEMPLATE\new_action_request.md
+		.github\ISSUE_TEMPLATE\new_state_request.md = .github\ISSUE_TEMPLATE\new_state_request.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PULL_REQUEST_TEMPLATE", "PULL_REQUEST_TEMPLATE", "{8781784E-631E-4D29-A3A1-9CBEFBC01310}"
+	ProjectSection(SolutionItems) = preProject
+		.github\PULL_REQUEST_TEMPLATE\pull_request_template.md = .github\PULL_REQUEST_TEMPLATE\pull_request_template.md
 	EndProjectSection
 EndProject
 Global
@@ -65,6 +72,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{BB11FB83-1407-4C82-AA08-67D7BB5A106B} = {6DF0C85E-3EB4-4898-A304-EFA04CB547A6}
 		{D74D033D-8E79-4CCD-9D07-7CD7CD2FEF49} = {BB11FB83-1407-4C82-AA08-67D7BB5A106B}
+		{8781784E-631E-4D29-A3A1-9CBEFBC01310} = {BB11FB83-1407-4C82-AA08-67D7BB5A106B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8A111C57-4F14-4766-94E9-EB7FC1180379}
