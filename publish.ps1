@@ -39,6 +39,7 @@ dotnet run -p "MSFSTouchPortalPlugin-Generator" ".\packages-dist\MSFS-TouchPorta
 # Copy Entry.tp, Readme, Documentation, CHANGELOG to publish
 copy "README.md" "$DistFolderPath\MSFS-TouchPortal-Plugin"
 copy "CHANGELOG.md" "$DistFolderPath\MSFS-TouchPortal-Plugin"
+copy "airplane_takeoff24.png" "$DistFolderPath\MSFS-TouchPortal-Plugin"
 
 # Create TPP File
 Compress-Archive -Path "$DistFolderPath\MSFS-TouchPortal-Plugin" -DestinationPath "$DistFolderPath\MSFS-TouchPortal-Plugin.zip"
