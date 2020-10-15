@@ -1,6 +1,7 @@
 # MSFS 2020 TouchPortal Plugin
 
 <!--![.NET Core](https://github.com/tlewis17/TouchPortalAPI/workflows/.NET%20Core/badge.svg?branch=master)-->
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/3901311e74b34683b618ff62e79e131d)](https://www.codacy.com/gh/tlewis17/MSFSTouchPortalPlugin/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tlewis17/MSFSTouchPortalPlugin&amp;utm_campaign=Badge_Grade)
 [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/tlewis17/MSFSTouchPortalPlugin?include_prereleases)](https://github.com/tlewis17/MSFSTouchPortalPlugin/releases)
 [![Downloads](https://img.shields.io/github/downloads/tlewis17/MSFSTouchPortalPlugin/total.svg)](https://github.com/tlewis17/MSFSTouchPortalPlugin/releases)
 [![Stars](https://img.shields.io/github/stars/tlewis17/MSFSTouchPortalPlugin)](https://github.com/tlewis17/MSFSTouchPortalPlugin/stargazers)
