@@ -6,6 +6,7 @@ using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Objects.AutoPilot;
 using MSFSTouchPortalPlugin.Objects.InstrumentsSystems;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace MSFSTouchPortalPlugin.Services {
     SimConnect _simConnect;
     readonly EventWaitHandle _scReady = new EventWaitHandle(false, EventResetMode.AutoReset);
     private bool _connected;
-    
+
     public event DataUpdateEventHandler OnDataUpdateEvent;
     public event ConnectEventHandler OnConnect;
     public event DisconnectEventHandler OnDisconnect;
@@ -228,5 +229,12 @@ namespace MSFSTouchPortalPlugin.Services {
     #endregion
   }
 
-  struct StringVal64 {[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)] public string Value; }
+  struct StringVal64 : IEquatable<StringVal64> {
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+    public string Value;
+
+    public bool Equals(StringVal64 other) {
+      return other.Value == Value;
+    }
+  }
 }
