@@ -321,7 +321,7 @@ Extra States for Lights:
 | Fuel Pump | TBD | Toggle | v1 | |
 | Electric Fuel Pump | TBD | All, 1, 2, 3, 4 | v1 | |
 
-### Communications
+### SimSystem
 
 #### Actions
 
@@ -333,6 +333,12 @@ Extra States for Lights:
 #### States
 
 * SimulationRate - (Tested) - Number
+* AtcType - (Tested) - Type of aircraft used by ATC
+* AtcModel - (Tested) - Model of aircraft used by ATC
+* AtcId - (Tested) - Aircraft Id used by ATC
+* AtcAirline - (Tested) - Airline used by ATC
+* AtcFlightNumber - (Tested) - Flight Number used by ATC
+* AircraftTitle - (Tested) - Aircraft Title
 
 ### Plugin
 

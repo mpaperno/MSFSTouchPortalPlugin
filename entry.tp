@@ -1,6 +1,6 @@
 {
   "sdk": 2,
-  "version": 520,
+  "version": 530,
   "name": "MSFSTouchPortalPlugin",
   "id": "MSFSTouchPortalPlugin",
   "configuration": {
@@ -2358,9 +2358,45 @@
       "events": [],
       "states": [
         {
+          "id": "MSFSTouchPortalPlugin.SimSystem.State.AtcId",
+          "type": "text",
+          "desc": "MSFS - System - Aircraft Id used by ATC",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.SimSystem.State.AircraftTitle",
+          "type": "text",
+          "desc": "MSFS - System - Aircraft Title",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.SimSystem.State.AtcAirline",
+          "type": "text",
+          "desc": "MSFS - System - Airline used by ATC",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.SimSystem.State.AtcFlightNumber",
+          "type": "text",
+          "desc": "MSFS - System - Flight Number used by ATC",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.SimSystem.State.AtcModel",
+          "type": "text",
+          "desc": "MSFS - System - Model of aircraft used by ATC",
+          "default": ""
+        },
+        {
           "id": "MSFSTouchPortalPlugin.SimSystem.State.SimulationRate",
           "type": "text",
           "desc": "MSFS - System - The current simulation rate",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.SimSystem.State.AtcType",
+          "type": "text",
+          "desc": "MSFS - System - Type of aircraft used by ATC",
           "default": ""
         }
       ]

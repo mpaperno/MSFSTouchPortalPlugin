@@ -132,8 +132,14 @@ namespace MSFSTouchPortalPlugin.Services {
 
     public bool RegisterToSimConnect(SimVarItem simVar) {
       if (_connected) {
-        _simConnect.AddToDataDefinition(simVar.Def, simVar.SimVarName, simVar.Unit, SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-        _simConnect.RegisterDataDefineStruct<double>(simVar.Def);
+        if (simVar.Unit == Units.String) {
+          _simConnect.AddToDataDefinition(simVar.Def, simVar.SimVarName, null, SIMCONNECT_DATATYPE.STRING64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+          _simConnect.RegisterDataDefineStruct<StringVal64>(simVar.Def);
+        } else {
+          _simConnect.AddToDataDefinition(simVar.Def, simVar.SimVarName, simVar.Unit, SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+          _simConnect.RegisterDataDefineStruct<double>(simVar.Def);
+        }
+
         return true;
       }
 
@@ -221,4 +227,6 @@ namespace MSFSTouchPortalPlugin.Services {
     }
     #endregion
   }
+
+  struct StringVal64 {[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)] public string Value; }
 }

@@ -1,5 +1,14 @@
 # MSFS Touch Portal Plugin
 
+## 0.5.3 (10-14-2020)
+* Added new states:
+  * AtcType - Type of aircraft used by ATC
+  * AtcModel - Model of aircraft used by ATC
+  * AtcId - Aircraft Id used by ATC
+  * AtcAirline -- Airline used by ATC
+  * AtcFlightNumber - Flight Number used by ATC
+  * AircraftTitle - Aircraft Title
+
 ## 0.5.2 (10-13-2020)
 * Modified states to not have units. These can be added through Touch Portal if user chooses.
 * De-Ice engine actions have been combined. Will require re-configuring on Page.

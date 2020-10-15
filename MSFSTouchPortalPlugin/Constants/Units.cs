@@ -332,6 +332,7 @@
     internal const string squareyard = "square yard";
     internal const string squareyards = "square yards";
     internal const string sqyd = "sq yd";
+    internal const string String = "String";
     internal const string third = "third";
     internal const string thirds = "thirds";
     internal const string times = "times";
