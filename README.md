@@ -15,9 +15,9 @@ Another good page for use is created by TaxTips at: [FltSim-msfs2020-Control](ht
 
 ## Features
 
-*   Connects automatically through SimConnect
-*   Allows getting data variables from MSFS such as flight instruments or button/switch states.
-*   Allows triggering various aircraft components from a Touch Portal panel.
+* Connects automatically through SimConnect
+* Allows getting data variables from MSFS such as flight instruments or button/switch states.
+* Allows triggering various aircraft components from a Touch Portal panel.
 
 ## Documentation
 
@@ -40,24 +40,24 @@ https://github.com/FordMustang0288/MSFSTouchPortalPages
 
 ## TODO
 
-*   Flight Instruments
-    *   Pitch/Bank need to be times by -1.
-*   Documentation - Events needed and additional rows of data to display.
+* Flight Instruments
+    * Pitch/Bank need to be times by -1.
+* Documentation - Events needed and additional rows of data to display.
 
 **Documentation revamp**
 
-*   Create interactive documentation site.
-*   Also generate base doc data into JSON file from code.
-*   Version selector
-*   Note tested/not tested
-*   Note Sim compatibility, may be useful on tested/not tested
-*   Filter by category
-*   Search
-*   Filter by Sim
+* Create interactive documentation site.
+* Also generate base doc data into JSON file from code.
+* Version selector
+* Note tested/not tested
+* Note Sim compatibility, may be useful on tested/not tested
+* Filter by category
+* Search
+* Filter by Sim
 
 ## Known Issues
 
-*   "Set" buttons require data to be passed in and do not currently work.
+* "Set" buttons require data to be passed in and do not currently work.
 
 ## Available Controls
 
@@ -65,62 +65,62 @@ https://github.com/FordMustang0288/MSFSTouchPortalPages
 
 #### Actions
 
-*   Airspeed Hold - (Not Tested) - This will enable/disable the airspeed hold and set to the current airspeed.
-    *   Toggle / On /Off / Set (DNU - TODO)
-*   Airspeed Hold Value - (Not Tested) - Used to modify the current value of the airspeed hold.
-    *   Select / Increase / Decrease / Set (DNU - TODO)
-*   Altitude Hold -  (Tested) - This will enable/disable the altitude hold and set to the current altitude.
-    *   Toggle / On / Off
-*   Altitude Hold Value - (Tested) - used to modify the curent value of the altitude hold.
-    *   Select / Increase / Decrease / Set (DNU - TODO) / Set Metric (DNU - TODO)
-*   AP Max Bank Angle - (Not Tested) - Used to set the max bank angle for auto pilot.
-    *   Increase / Decrease
-*   Approach Mode - (Tested) - This will enable/disable the approach mode.
-    *   Toggle / On / Off
-*   Attitude Hold - (Not Tested) - This will enable/disable the attitude hold.
-    *   Toggle / On / Off
-*   Attitude Hold Value - (Not Tested) - Used to set the attitude hold value.
-    *   Increase / Decrease / Select
-*   Auto Brake - (Not Tested) - Increases/Decreases the auto brake value.
-    *   Increase / Decrease
-*   Auto Throttle Mode - (Not Tested) - Sets the auto throttle mode.
-    *   Arm / GoAround
-*   AutoPilot - (Tested) - Enables/Disables the Auto Pilot.
-    *   Toggle / On / Off
-*   Back Course Mode - (Tested) - Enables/Disables the back course mode.
-    *   Toggle / On / Off
-*   Flight Director - (Not Tested) - Toggles the Flight Director mode.
-    *   Toggle
-*   Flight Director Pitch Sync - (Not Tested) - Sets the FD Pitch Sync to the current pitch.
-*   Heading Hold - (Tested) - Will enable/disable the heading hold and will set the value to the current heading.
-    *   Toggle / On / Off
-*   Heading Hold Value - (Tested) - Used to modify the heading hold value.
-    *   Increase / Decrease / Select / Set (DNU - TODO)
-*   Localizer - (Not Tested) - Will enable/disable the localizer.
-    *   Toggle / On / Off
-*   Mach Hold - (Not Tested) - Will enable/disable the mach hold and set to current mach value.
-    *   Toggle / On / Off
-*   Mach Hold Value - (Not Tested) - Used to set the mach hold value.
-    *   Increase / Decrease / Select / Set (DNU - TODO)
-*   Nav Mode - Set - (Not Tested) - Sets the nav mode to the specified nav radio.
-    *   1 / 2
-*   Nav1 Mode - (Not Tested) - Sets the auto pilot to Nav mode.
-    *   Toggle / On / Off
-*   Vertical Speed - (Tested) - Will enable the vertical speed hold.
-    *   Toggle
-*   Vertical Speed Value - (Tested) - Used to increase/decrease the vertical speed value.
-    *   Increase / Decrease / Select / Set (DNU - TODO) / Set Metric (DNU - TODO)
-*   Wing Leveler - (Not Tested) - Used to enable/disable the wing leveler.
-    *   Toggle / On / Off
-*   Yaw Dampener - (Not Tested) - Used to enable/disable the yaw dampener.
-    *   Toggle / On / Off / Set (DNU - TODO)
+* Airspeed Hold - (Not Tested) - This will enable/disable the airspeed hold and set to the current airspeed.
+    * Toggle / On /Off / Set (DNU - TODO)
+* Airspeed Hold Value - (Not Tested) - Used to modify the current value of the airspeed hold.
+    * Select / Increase / Decrease / Set (DNU - TODO)
+* Altitude Hold -  (Tested) - This will enable/disable the altitude hold and set to the current altitude.
+    * Toggle / On / Off
+* Altitude Hold Value - (Tested) - used to modify the curent value of the altitude hold.
+    * Select / Increase / Decrease / Set (DNU - TODO) / Set Metric (DNU - TODO)
+* AP Max Bank Angle - (Not Tested) - Used to set the max bank angle for auto pilot.
+    * Increase / Decrease
+* Approach Mode - (Tested) - This will enable/disable the approach mode.
+    * Toggle / On / Off
+* Attitude Hold - (Not Tested) - This will enable/disable the attitude hold.
+    * Toggle / On / Off
+* Attitude Hold Value - (Not Tested) - Used to set the attitude hold value.
+    * Increase / Decrease / Select
+* Auto Brake - (Not Tested) - Increases/Decreases the auto brake value.
+    * Increase / Decrease
+* Auto Throttle Mode - (Not Tested) - Sets the auto throttle mode.
+    * Arm / GoAround
+* AutoPilot - (Tested) - Enables/Disables the Auto Pilot.
+    * Toggle / On / Off
+* Back Course Mode - (Tested) - Enables/Disables the back course mode.
+    * Toggle / On / Off
+* Flight Director - (Not Tested) - Toggles the Flight Director mode.
+    * Toggle
+* Flight Director Pitch Sync - (Not Tested) - Sets the FD Pitch Sync to the current pitch.
+* Heading Hold - (Tested) - Will enable/disable the heading hold and will set the value to the current heading.
+    * Toggle / On / Off
+* Heading Hold Value - (Tested) - Used to modify the heading hold value.
+    * Increase / Decrease / Select / Set (DNU - TODO)
+* Localizer - (Not Tested) - Will enable/disable the localizer.
+    * Toggle / On / Off
+* Mach Hold - (Not Tested) - Will enable/disable the mach hold and set to current mach value.
+    * Toggle / On / Off
+* Mach Hold Value - (Not Tested) - Used to set the mach hold value.
+    * Increase / Decrease / Select / Set (DNU - TODO)
+* Nav Mode - Set - (Not Tested) - Sets the nav mode to the specified nav radio.
+    * 1 / 2
+* Nav1 Mode - (Not Tested) - Sets the auto pilot to Nav mode.
+    * Toggle / On / Off
+* Vertical Speed - (Tested) - Will enable the vertical speed hold.
+    * Toggle
+* Vertical Speed Value - (Tested) - Used to increase/decrease the vertical speed value.
+    * Increase / Decrease / Select / Set (DNU - TODO) / Set Metric (DNU - TODO)
+* Wing Leveler - (Not Tested) - Used to enable/disable the wing leveler.
+    * Toggle / On / Off
+* Yaw Dampener - (Not Tested) - Used to enable/disable the yaw dampener.
+    * Toggle / On / Off / Set (DNU - TODO)
 
 #### States
 
-*   Auto Throttle Armed - (Not Tested) - 1/0
-*   Auto Thorttle GoAround - (Not Tested) - 1/0
-*   Auto Pilot Air Speed Status - (Not Tested) - 1/0
-*   Auto Pilot Air Speed Value - (Not Tested) - In Knots
+* Auto Throttle Armed - (Not Tested) - 1/0
+* Auto Thorttle GoAround - (Not Tested) - 1/0
+* Auto Pilot Air Speed Status - (Not Tested) - 1/0
+* Auto Pilot Air Speed Value - (Not Tested) - In Knots
 
 | Control | State Variable(s) | Modes | v1/v2 | Tested |
 | --- | --- | --- | --- | --- |
@@ -131,23 +131,23 @@ https://github.com/FordMustang0288/MSFSTouchPortalPages
 
 #### Actions
 
-*   Radio Interaction (Tested)
+* Radio Interaction (Tested)
 
-    *   Select Radio to interact with - COM1/COM2/NAV1/NAV2
-    *   Action to perform on radio - Increase/Decrease 25 KHz/1 MHz / Carry Digits / Standby Swap
+    * Select Radio to interact with - COM1/COM2/NAV1/NAV2
+    * Action to perform on radio - Increase/Decrease 25 KHz/1 MHz / Carry Digits / Standby Swap
 
     **NOTE** Decrease /w Carry works for NAV1/2, but not COM1/2, appears to be MSFS or SimConnect bug.
 
 #### States
 
-*   Com1ActiveFrequency - (Tested) - ###.###
-*   Com1StandbyFrequency - (Tested) - ###.###
-*   Com2ActiveFrequency - (Tested) - ###.###
-*   Com2StandbyFrequency - (Tested) - ###.###
-*   Nav1ActiveFrequency - (Tested) - ###.###
-*   Nav1StandbyFrequency - (Tested) - ###.###
-*   Nav2ActiveFrequency - (Tested) - ###.###
-*   Nav2StandbyFrequency - (Tested) - ###.###
+* Com1ActiveFrequency - (Tested) - ###.###
+* Com1StandbyFrequency - (Tested) - ###.###
+* Com2ActiveFrequency - (Tested) - ###.###
+* Com2StandbyFrequency - (Tested) - ###.###
+* Nav1ActiveFrequency - (Tested) - ###.###
+* Nav1StandbyFrequency - (Tested) - ###.###
+* Nav2ActiveFrequency - (Tested) - ###.###
+* Nav2StandbyFrequency - (Tested) - ###.###
 
 ### Failures
 
@@ -173,20 +173,20 @@ https://github.com/FordMustang0288/MSFSTouchPortalPages
 
 #### Actions
 
-*   Flaps - (Tested) - Changes the position of the flaps
-    *   Up / Down / Increase / Decrease / 1 / 2 / 3
-*   Toggle Parking Brake - (Tested) - Toggles the parking brake on or off
-*   Rudder Trim - (Tested) - Left / Right
-*   Elevator Trim - (Tested) - Up / Down
-*   Aileron Trim - (Tested) - Left / Right
+* Flaps - (Tested) - Changes the position of the flaps
+    * Up / Down / Increase / Decrease / 1 / 2 / 3
+* Toggle Parking Brake - (Tested) - Toggles the parking brake on or off
+* Rudder Trim - (Tested) - Left / Right
+* Elevator Trim - (Tested) - Up / Down
+* Aileron Trim - (Tested) - Left / Right
 
 #### States
 
-*   Aileron Trim - (Tested) - Percent
-*   Elevator Trim - (Tested) - Percent
-*   FlapsHandlePercent - (Tested) - Percent
-*   ParkingBrakeIndicator - (Tested) - True/False
-*   RudderTrim - (Tested) - Percent
+* Aileron Trim - (Tested) - Percent
+* Elevator Trim - (Tested) - Percent
+* FlapsHandlePercent - (Tested) - Percent
+* ParkingBrakeIndicator - (Tested) - True/False
+* RudderTrim - (Tested) - Percent
 
 ### Electrical
 
@@ -233,46 +233,46 @@ Extra States for Lights:
 
 #### Actions
 
-*   Throttle (All Engines) (Partial Test) - Full, Increase, Increase Small, Decrease, Decrease Small, Cut, Set, 10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90%
-    *   Do not use Set, all "Set" commands for all actions are not implemented.
-*   Throttle Specific (Not Tested) - Full, Increase, Increase Small, Decrease, Decrease Small, Cut
+* Throttle (All Engines) (Partial Test) - Full, Increase, Increase Small, Decrease, Decrease Small, Cut, Set, 10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90%
+    * Do not use Set, all "Set" commands for all actions are not implemented.
+* Throttle Specific (Not Tested) - Full, Increase, Increase Small, Decrease, Decrease Small, Cut
 
 #### States
 
-*   MixtureEngine1 - (Tested) - Percentage
-*   MixtureEngine2 - (Tested) - Percentage
-*   MixtureEngine3 - (Not Tested) - Percentage
-*   MixtureEngine4 - (Not Tested) - Percentage
-*   PropellerEngine1 - (Tested) - Percentage
-*   PropellerEngine2 - (Tested) - Percentage
-*   PropellerEngine3 - (Not Tested) - Percentage
-*   PropellerEngine4 - (Not Tested) - Percentage
-*   RPMN1Engine1 - (Tested) - RPM
-*   RPMN1Engine2 - (Tested) - RPM
-*   RPMN1Engine3 - (Tested) - RPM
-*   RPMN1Engine4 - (Tested) - RPM
-*   ThrottleEngine1 - (Tested) - Percentage
-*   ThrottleEngine2 - (Tested) - Percentage
-*   ThrottleEngine3 - (Tested) - Percentage
-*   ThrottleEngine4 - (Tested) - Percentage
+* MixtureEngine1 - (Tested) - Percentage
+* MixtureEngine2 - (Tested) - Percentage
+* MixtureEngine3 - (Not Tested) - Percentage
+* MixtureEngine4 - (Not Tested) - Percentage
+* PropellerEngine1 - (Tested) - Percentage
+* PropellerEngine2 - (Tested) - Percentage
+* PropellerEngine3 - (Not Tested) - Percentage
+* PropellerEngine4 - (Not Tested) - Percentage
+* RPMN1Engine1 - (Tested) - RPM
+* RPMN1Engine2 - (Tested) - RPM
+* RPMN1Engine3 - (Tested) - RPM
+* RPMN1Engine4 - (Tested) - RPM
+* ThrottleEngine1 - (Tested) - Percentage
+* ThrottleEngine2 - (Tested) - Percentage
+* ThrottleEngine3 - (Tested) - Percentage
+* ThrottleEngine4 - (Tested) - Percentage
 
 ### Environment
 
 #### Actions
 
-*   Anti-Ice - (Not Tested) - Toggles / On / Off Anti-Ice
-*   Anti-Ice Engine - (Not Tested) - Toggles Anti-Ice for engines 1, 2, 3, or 4.
-*   Propeller De-Ice - (Not Tested) - Toggle
-*   Structural De-Ice - (Not Tested) - Toggle
-*   Pitot Heat - (Not Tested) - Toggle / On / Off Pitot Heat
+* Anti-Ice - (Not Tested) - Toggles / On / Off Anti-Ice
+* Anti-Ice Engine - (Not Tested) - Toggles Anti-Ice for engines 1, 2, 3, or 4.
+* Propeller De-Ice - (Not Tested) - Toggle
+* Structural De-Ice - (Not Tested) - Toggle
+* Pitot Heat - (Not Tested) - Toggle / On / Off Pitot Heat
 
 #### States
 
-*   AntiIceEng1 - (Not Tested) - True/False
-*   AntiIceEng2 - (Not Tested) - True/False
-*   AntiIceEng3 - (Not Tested) - True/False
-*   AntiIceEng4 - (Not Tested) - True/False
-*   PitotHeat - (Not Tested) - True/False
+* AntiIceEng1 - (Not Tested) - True/False
+* AntiIceEng2 - (Not Tested) - True/False
+* AntiIceEng3 - (Not Tested) - True/False
+* AntiIceEng4 - (Not Tested) - True/False
+* PitotHeat - (Not Tested) - True/False
 
 ### Flight Instruments
 
@@ -291,21 +291,21 @@ Extra States for Lights:
 
 #### States
 
-*   AirSpeedIndicated - (Tested) - Knots
-*   AirSpeedMach - (Tested) - Mach
-*   AirSpeedTrue - (Tested) - Knots
-*   FlapSpeedExceeeded - (Not Tested) - True/False
-*   GroundVelocity - (Tested) - Knots
-*   GroundAltitude - (Tested) - Feet
-*   OverspeedWarning - (Tested) - True/False
-*   PlaneAltitude - (Tested) - Feet
-*   PlanteAltitudeAGL - (Tested) - Feet
-*   PlaneBankAngle - (Tested) - Degrees
-*   PlaneHeadingMagnetic - (Tested) - Degrees
-*   PlaneHeadingTrue - (Tested) - Degrees
-*   PlanePitchAngle - (Tested) - Degrees
-*   StallWarning - (Tested) - True/False
-*   VerticalSpeed - (Tested) - Feet per minute
+* AirSpeedIndicated - (Tested) - Knots
+* AirSpeedMach - (Tested) - Mach
+* AirSpeedTrue - (Tested) - Knots
+* FlapSpeedExceeeded - (Not Tested) - True/False
+* GroundVelocity - (Tested) - Knots
+* GroundAltitude - (Tested) - Feet
+* OverspeedWarning - (Tested) - True/False
+* PlaneAltitude - (Tested) - Feet
+* PlanteAltitudeAGL - (Tested) - Feet
+* PlaneBankAngle - (Tested) - Degrees
+* PlaneHeadingMagnetic - (Tested) - Degrees
+* PlaneHeadingTrue - (Tested) - Degrees
+* PlanePitchAngle - (Tested) - Degrees
+* StallWarning - (Tested) - True/False
+* VerticalSpeed - (Tested) - Feet per minute
 
 ### Fuel System
 
@@ -327,21 +327,21 @@ Extra States for Lights:
 
 #### Actions
 
-*   Simulation Rate (Tested)
+* Simulation Rate (Tested)
 
-    *   Increase / Decrease
+    * Increase / Decrease
 
     **NOTE** Decrease /w Carry works for NAV1/2, but not COM1/2, appears to be MSFS or SimConnect bug.
 
 #### States
 
-*   SimulationRate - (Tested) - Number
-*   AtcType - (Tested) - Type of aircraft used by ATC
-*   AtcModel - (Tested) - Model of aircraft used by ATC
-*   AtcId - (Tested) - Aircraft Id used by ATC
-*   AtcAirline - (Tested) - Airline used by ATC
-*   AtcFlightNumber - (Tested) - Flight Number used by ATC
-*   AircraftTitle - (Tested) - Aircraft Title
+* SimulationRate - (Tested) - Number
+* AtcType - (Tested) - Type of aircraft used by ATC
+* AtcModel - (Tested) - Model of aircraft used by ATC
+* AtcId - (Tested) - Aircraft Id used by ATC
+* AtcAirline - (Tested) - Airline used by ATC
+* AtcFlightNumber - (Tested) - Flight Number used by ATC
+* AircraftTitle - (Tested) - Aircraft Title
 
 ### Plugin
 
@@ -351,5 +351,5 @@ Extra States for Lights:
 
 ## References
 
-*   [EventIdss](https://docs.microsoft.com/en-us/previous-versions/microsoft-esp/cc526980\(v=msdn.10\))
-*   [Variables](https://docs.microsoft.com/en-us/previous-versions/microsoft-esp/cc526981\(v=msdn.10\))
+* [EventIdss](https://docs.microsoft.com/en-us/previous-versions/microsoft-esp/cc526980\(v=msdn.10\))
+* [Variables](https://docs.microsoft.com/en-us/previous-versions/microsoft-esp/cc526981\(v=msdn.10\))
