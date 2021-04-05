@@ -8,23 +8,29 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using TouchPortalApi.Interfaces;
-using TouchPortalApi.Models;
+using TouchPortalSDK;
+using TouchPortalSDK.Interfaces;
+using TouchPortalSDK.Messages.Events;
+using TouchPortalSDK.Messages.Models;
 using Timer = System.Timers.Timer;
 
 namespace MSFSTouchPortalPlugin.Services {
   /// <inheritdoc cref="IPluginService" />
-  internal class PluginService : IPluginService, IDisposable {
+  internal class PluginService : IPluginService, IDisposable, ITouchPortalEventHandler {
     private CancellationToken _cancellationToken;
     private CancellationTokenSource _simConnectCancellationTokenSource;
 
     private readonly IHostApplicationLifetime _hostApplicationLifetime;
     private readonly ILogger<PluginService> _logger;
-    private readonly IMessageProcessor _messageProcessor;
+    private readonly ITouchPortalClient _client;
     private readonly ISimConnectService _simConnectService;
     private readonly IReflectionService _reflectionService;
+
+    public string PluginId => "MSFSTouchPortalPlugin";
+    private IReadOnlyCollection<Setting> _settings;
 
     private Dictionary<string, Enum> actionsDictionary = new Dictionary<string, Enum>();
     private Dictionary<Definition, SimVarItem> statesDictionary = new Dictionary<Definition, SimVarItem>();
@@ -35,27 +41,22 @@ namespace MSFSTouchPortalPlugin.Services {
     /// </summary>
     /// <param name="messageProcessor">Message Processor Object</param>
     public PluginService(IHostApplicationLifetime hostApplicationLifetime, ILogger<PluginService> logger,
-      IMessageProcessor messageProcessor, ISimConnectService simConnectService, IReflectionService reflectionService) {
+      ITouchPortalClientFactory clientFactory, ISimConnectService simConnectService, IReflectionService reflectionService) {
       _hostApplicationLifetime = hostApplicationLifetime ?? throw new ArgumentNullException(nameof(hostApplicationLifetime));
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-      _messageProcessor = messageProcessor ?? throw new ArgumentNullException(nameof(messageProcessor));
       _simConnectService = simConnectService ?? throw new ArgumentNullException(nameof(simConnectService));
       _reflectionService = reflectionService ?? throw new ArgumentNullException(nameof(reflectionService));
+
+      _client = clientFactory.Create(this);
     }
 
     /// <summary>
     /// Initialized the Touch Portal Message Processor
     /// </summary>
-    private void Initialize() {
-      _messageProcessor.OnActionEvent += new ActionEventHandler(MessageProcessor_OnActionEvent);
-      _messageProcessor.OnListChangeEventHandler += new ListChangeEventHandler(MessageProcessor_OnListChangeEventHandler);
-      _messageProcessor.OnCloseEventHandler += () => {
-        _logger.LogInformation($"{DateTime.Now} TP Request Close, terminating...");
-        Environment.Exit(0);
-      };
-
-      Task.Run(_messageProcessor.Listen);
-      Task.Run(_messageProcessor.TryPairAsync);
+    private bool Initialize() {
+      if (!_client.Connect()) {
+        return false;
+      }
 
       // On Data Update
       _simConnectService.OnDataUpdateEvent += ((Definition def, Definition req, object data) => {
@@ -64,6 +65,7 @@ namespace MSFSTouchPortalPlugin.Services {
           var stringVal = data.ToString();
 
           // Only update state on changes
+          // TODO: Move these to after parsing due to fractional unnoticable changes.
           if (value.Value != stringVal) {
             value.Value = stringVal;
             object valObj = stringVal;
@@ -80,7 +82,7 @@ namespace MSFSTouchPortalPlugin.Services {
 
             // Update if known id.
             if (!string.IsNullOrWhiteSpace(value.TouchPortalStateId)) {
-              _messageProcessor.UpdateState(new StateUpdate { Id = value.TouchPortalStateId, Value = string.Format(value.StringFormat, valObj) });
+              _client.StateUpdate(value.TouchPortalStateId, string.Format(value.StringFormat, valObj));
             }
           }
 
@@ -91,7 +93,7 @@ namespace MSFSTouchPortalPlugin.Services {
       _simConnectService.OnConnect += () => {
         _simConnectCancellationTokenSource = new CancellationTokenSource();
 
-        _messageProcessor.UpdateState(new StateUpdate { Id = "MSFSTouchPortalPlugin.Plugin.State.Connected", Value = _simConnectService.IsConnected().ToString().ToLower() });
+        _client.StateUpdate("MSFSTouchPortalPlugin.Plugin.State.Connected", _simConnectService.IsConnected().ToString().ToLower());
 
         // Register Actions
         foreach (var a in actionsDictionary) {
@@ -109,8 +111,10 @@ namespace MSFSTouchPortalPlugin.Services {
 
       _simConnectService.OnDisconnect += () => {
         _simConnectCancellationTokenSource.Cancel();
-        _messageProcessor.UpdateState(new StateUpdate { Id = "MSFSTouchPortalPlugin.Plugin.State.Connected", Value = _simConnectService.IsConnected().ToString().ToLower() });
+        _client.StateUpdate("MSFSTouchPortalPlugin.Plugin.State.Connected", _simConnectService.IsConnected().ToString().ToLower());
       };
+
+      return true;
     }
 
     /// <summary>
@@ -183,21 +187,6 @@ namespace MSFSTouchPortalPlugin.Services {
       }).ConfigureAwait(false);
     }
 
-    #region OnEvents
-
-    private void MessageProcessor_OnListChangeEventHandler(string actionId, string value) {
-      _logger.LogInformation($"{DateTime.Now} Choice Event Fired. ActionId: {actionId} Value: {value}");
-    }
-
-    private void MessageProcessor_OnActionEvent(string actionId, List<ActionData> dataList) {
-      if (dataList.Count > 0) {
-        var values = string.Join(",", dataList.Select(x => x.Value));
-        ProcessEvent(actionId, values);
-      } else {
-        ProcessEvent(actionId);
-      }
-    }
-
     private void ProcessEvent(string actionId, string value = default) {
       // Plugin Events
       if (internalEventsDictionary.TryGetValue($"{actionId}:{value}", out var internalEventResult)) {
@@ -241,9 +230,12 @@ namespace MSFSTouchPortalPlugin.Services {
       _cancellationToken = cancellationToken;
 
       _hostApplicationLifetime.ApplicationStarted.Register(() => {
-        Initialize();
-        SetupEventLists();
+        if (!Initialize()) {
+          _hostApplicationLifetime.StopApplication();
+          return;
+        }
 
+        SetupEventLists();
         Task.WhenAll(TryConnect());
       });
 
@@ -252,7 +244,7 @@ namespace MSFSTouchPortalPlugin.Services {
         _simConnectService.Disconnect();
 
         // Stop app
-        _hostApplicationLifetime.StopApplication();
+        //_hostApplicationLifetime.StopApplication();
       });
 
       return Task.CompletedTask;
@@ -269,7 +261,7 @@ namespace MSFSTouchPortalPlugin.Services {
       if (!disposedValue) {
         if (disposing) {
           // Dispose managed state (managed objects).
-          _simConnectCancellationTokenSource.Dispose();
+          _simConnectCancellationTokenSource?.Dispose();
         }
 
         disposedValue = true;
@@ -283,6 +275,46 @@ namespace MSFSTouchPortalPlugin.Services {
     }
     #endregion
 
+    #region TouchPortalSDK Events
+
+    public void OnInfoEvent(InfoEvent message) {
+      throw new NotImplementedException();
+    }
+
+    public void OnListChangedEvent(ListChangeEvent message) {
+      throw new NotImplementedException();
+    }
+
+    public void OnBroadcastEvent(BroadcastEvent message) {
+      throw new NotImplementedException();
+    }
+
+    public void OnSettingsEvent(SettingsEvent message) {
+      throw new NotImplementedException();
+    }
+
+    public void OnActionEvent(ActionEvent message) {
+      if (message.Data.Count > 0) {
+        var values = string.Join(",", message.Data.Select(x => x.Value));
+        ProcessEvent(message.ActionId, values);
+      } else {
+        ProcessEvent(message.ActionId);
+      }
+    }
+
+    public void OnClosedEvent(string message) {
+      _logger?.LogInformation("TouchPortal Disconnected.");
+
+      //Optional force exits this plugin.
+      Environment.Exit(0);
+    }
+
+    public void OnUnhandledEvent(string jsonMessage) {
+      var jsonDocument = JsonSerializer.Deserialize<JsonDocument>(jsonMessage);
+      _logger?.LogWarning($"Unhandled message: {jsonDocument}");
+    }
     #endregion
+
+    
   }
 }

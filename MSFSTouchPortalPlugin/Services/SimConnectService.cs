@@ -6,7 +6,6 @@ using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Objects.AutoPilot;
 using MSFSTouchPortalPlugin.Objects.InstrumentsSystems;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
