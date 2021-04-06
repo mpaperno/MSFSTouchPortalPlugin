@@ -52,7 +52,7 @@ namespace MSFSTouchPortalPlugin_Generator {
       // Add Plug Start Comand
       model.Plugin_start_cmd = Path.Combine("%TP_PLUGIN_FOLDER%", "MSFS-TouchPortal-Plugin\\dist", "MSFSTouchPortalPlugin.exe");
       // Load asembly
-      var l = MSFSTouchPortalPlugin.Objects.AutoPilot.AutoPilot.AP_AIRSPEED_HOLD;
+      _ = MSFSTouchPortalPlugin.Objects.AutoPilot.AutoPilot.AP_AIRSPEED_HOLD;
 
       var q = assembly.GetTypes().ToList();
 

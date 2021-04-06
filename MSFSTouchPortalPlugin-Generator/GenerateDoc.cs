@@ -33,7 +33,7 @@ namespace MSFSTouchPortalPlugin_Generator {
 
     private DocBase CreateModel() {
       // Load asembly
-      var l = MSFSTouchPortalPlugin.Objects.AutoPilot.AutoPilot.AP_AIRSPEED_HOLD;
+      _ = MSFSTouchPortalPlugin.Objects.AutoPilot.AutoPilot.AP_AIRSPEED_HOLD;
 
       // Find assembly
       var a = Assembly.GetExecutingAssembly().GetReferencedAssemblies().FirstOrDefault(a => a.Name == _options.Value.PluginName);

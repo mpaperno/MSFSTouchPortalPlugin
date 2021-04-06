@@ -23,10 +23,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENSE = LICENSE
 		publish.ps1 = publish.ps1
 		README.md = README.md
+		sonarcube.ps1 = sonarcube.ps1
 		states = states
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSFSTouchPortalPlugin-Tests", "MSFSTouchPortalPlugin-Tests\MSFSTouchPortalPlugin-Tests.csproj", "{3A7D5537-16CD-4F3B-9630-CE480C1D30EB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{BB11FB83-1407-4C82-AA08-67D7BB5A106B}"
 EndProject
@@ -42,6 +41,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PULL_REQUEST_TEMPLATE", "PU
 	ProjectSection(SolutionItems) = preProject
 		.github\PULL_REQUEST_TEMPLATE\pull-request-template.md = .github\PULL_REQUEST_TEMPLATE\pull-request-template.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSFSTouchPortalPlugin-Tests", "MSFSTouchPortalPlugin-Tests\MSFSTouchPortalPlugin-Tests.csproj", "{562A58FF-DD9A-4839-B503-4520D3BE96DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,10 +62,10 @@ Global
 		{C217E7C3-4A14-457E-ABC8-180546369646}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C217E7C3-4A14-457E-ABC8-180546369646}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C217E7C3-4A14-457E-ABC8-180546369646}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A7D5537-16CD-4F3B-9630-CE480C1D30EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A7D5537-16CD-4F3B-9630-CE480C1D30EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A7D5537-16CD-4F3B-9630-CE480C1D30EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A7D5537-16CD-4F3B-9630-CE480C1D30EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

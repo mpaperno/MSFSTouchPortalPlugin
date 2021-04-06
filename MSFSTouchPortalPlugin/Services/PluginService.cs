@@ -30,7 +30,7 @@ namespace MSFSTouchPortalPlugin.Services {
     private readonly IReflectionService _reflectionService;
 
     public string PluginId => "MSFSTouchPortalPlugin";
-    private IReadOnlyCollection<Setting> _settings;
+    private readonly IReadOnlyCollection<Setting> _settings;
 
     private Dictionary<string, Enum> actionsDictionary = new Dictionary<string, Enum>();
     private Dictionary<Definition, SimVarItem> statesDictionary = new Dictionary<Definition, SimVarItem>();
@@ -47,115 +47,13 @@ namespace MSFSTouchPortalPlugin.Services {
       _simConnectService = simConnectService ?? throw new ArgumentNullException(nameof(simConnectService));
       _reflectionService = reflectionService ?? throw new ArgumentNullException(nameof(reflectionService));
 
-      _client = clientFactory.Create(this);
+      _client = clientFactory?.Create(this) ?? throw new ArgumentNullException(nameof(clientFactory));
     }
 
     /// <summary>
-    /// Initialized the Touch Portal Message Processor
+    /// Runs the plugin services
     /// </summary>
-    private bool Initialize() {
-      if (!_client.Connect()) {
-        return false;
-      }
-
-      // On Data Update
-      _simConnectService.OnDataUpdateEvent += ((Definition def, Definition req, object data) => {
-        // Lookup State Mapping
-        if (statesDictionary.TryGetValue(def, out var value)) {
-          var stringVal = data.ToString();
-
-          // Only update state on changes
-          // TODO: Move these to after parsing due to fractional unnoticable changes.
-          if (value.Value != stringVal) {
-            value.Value = stringVal;
-            object valObj = stringVal;
-
-            // Handle conversions
-            if (ShouldConvertToFload(value.Unit)) {
-              valObj = float.Parse(stringVal);
-            } else if (value.Unit == Units.String) {
-              valObj = ((StringVal64)data).Value;
-            } else if (value.Unit == Units.radians) {
-              // Convert to Degrees
-              valObj = float.Parse(stringVal) * (180 / Math.PI);
-            }
-
-            // Update if known id.
-            if (!string.IsNullOrWhiteSpace(value.TouchPortalStateId)) {
-              _client.StateUpdate(value.TouchPortalStateId, string.Format(value.StringFormat, valObj));
-            }
-          }
-
-          value.SetPending(false);
-        }
-      });
-
-      _simConnectService.OnConnect += () => {
-        _simConnectCancellationTokenSource = new CancellationTokenSource();
-
-        _client.StateUpdate("MSFSTouchPortalPlugin.Plugin.State.Connected", _simConnectService.IsConnected().ToString().ToLower());
-
-        // Register Actions
-        foreach (var a in actionsDictionary) {
-          _simConnectService.MapClientEventToSimEvent(a.Value, a.Value.ToString());
-          _simConnectService.AddNotification(a.Value.GetType().GetCustomAttribute<SimNotificationGroupAttribute>().Group, a.Value);
-        }
-
-        // Register SimVars
-        foreach (var s in statesDictionary) {
-          _simConnectService.RegisterToSimConnect(s.Value);
-        }
-
-        Task.WhenAll(RunPluginServices(_simConnectCancellationTokenSource.Token));
-      };
-
-      _simConnectService.OnDisconnect += () => {
-        _simConnectCancellationTokenSource.Cancel();
-        _client.StateUpdate("MSFSTouchPortalPlugin.Plugin.State.Connected", _simConnectService.IsConnected().ToString().ToLower());
-      };
-
-      return true;
-    }
-
-    /// <summary>
-    /// All the unit types that should convert to Float
-    /// </summary>
-    /// <param name="unitType">The unit type</param>
-    /// <returns>True if it should be a float</returns>
-    private bool ShouldConvertToFload(string unitType) {
-      return unitType == Units.degrees ||
-        unitType == Units.knots ||
-        unitType == Units.feet ||
-        unitType == Units.MHz ||
-        unitType == Units.percent ||
-        unitType == Units.rpm ||
-        unitType == Units.mach ||
-        unitType == Units.feetminute;
-    }
-
-    private void SetupEventLists() {
-      internalEventsDictionary = _reflectionService.GetInternalEvents();
-      actionsDictionary = _reflectionService.GetActionEvents();
-      statesDictionary = _reflectionService.GetStates();
-    }
-
-    private Task TryConnect() {
-      int i = 0;
-
-      while (!_cancellationToken.IsCancellationRequested) {
-        if (i == 0 && !_simConnectService.IsConnected()) {
-          _simConnectService.Connect();
-          i = 10;
-        }
-
-        // SimConnect is typically available even before loading into a flight. This should connect and be ready by the time a flight is started.
-        i--;
-        Thread.Sleep(1000);
-      }
-
-      return Task.CompletedTask;
-    }
-
+    /// <param name="simConnectCancelToken">The Cancellation Token</param>
     public async Task RunPluginServices(CancellationToken simConnectCancelToken) {
       // Run Data Polling
       var timer = new Timer(250) { AutoReset = false };
@@ -185,6 +83,159 @@ namespace MSFSTouchPortalPlugin.Services {
       await Task.WhenAll(new Task[] {
         _simConnectService.WaitForMessage(simConnectCancelToken)
       }).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Starts the plugin service
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token</param>
+    public Task StartAsync(CancellationToken cancellationToken) {
+      _cancellationToken = cancellationToken;
+
+      _hostApplicationLifetime.ApplicationStarted.Register(() => {
+        if (!Initialize()) {
+          _hostApplicationLifetime.StopApplication();
+          return;
+        }
+
+        SetupEventLists();
+        Task.WhenAll(TryConnect());
+      });
+
+      _hostApplicationLifetime.ApplicationStopping.Register(() => {
+        // Disconnect from SimConnect
+        _simConnectService.Disconnect();
+      });
+
+      return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Stops the plugin service
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token</param>
+    public Task StopAsync(CancellationToken cancellationToken) {
+      return Task.CompletedTask;
+    }
+
+    #region IDisposable Support
+    private bool disposedValue; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing) {
+      if (!disposedValue) {
+        if (disposing) {
+          // Dispose managed state (managed objects).
+          _simConnectCancellationTokenSource?.Dispose();
+        }
+
+        disposedValue = true;
+      }
+    }
+
+    // This code added to correctly implement the disposable pattern.
+    public void Dispose() {
+      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+    #endregion
+
+    /// <summary>
+    /// Initialized the Touch Portal Message Processor
+    /// </summary>
+    private bool Initialize() {
+      if (!_client.Connect()) {
+        return false;
+      }
+
+      // Setup SimConnect Events
+      _simConnectService.OnDataUpdateEvent += SimConnectEvent_OnDataUpdateEvent;
+      _simConnectService.OnConnect += SimConnectEvent_OnConnect;
+      _simConnectService.OnDisconnect += SimConnectEvent_OnDisconnect;
+
+      return true;
+    }
+
+    #region SimConnect Events
+
+    private void SimConnectEvent_OnConnect() {
+      _simConnectCancellationTokenSource = new CancellationTokenSource();
+
+      _client.StateUpdate("MSFSTouchPortalPlugin.Plugin.State.Connected", _simConnectService.IsConnected().ToString().ToLower());
+
+      // Register Actions
+      foreach (var a in actionsDictionary) {
+        _simConnectService.MapClientEventToSimEvent(a.Value, a.Value.ToString());
+        _simConnectService.AddNotification(a.Value.GetType().GetCustomAttribute<SimNotificationGroupAttribute>().Group, a.Value);
+      }
+
+      // Register SimVars
+      foreach (var s in statesDictionary) {
+        _simConnectService.RegisterToSimConnect(s.Value);
+      }
+
+      Task.WhenAll(RunPluginServices(_simConnectCancellationTokenSource.Token));
+    }
+
+    private void SimConnectEvent_OnDataUpdateEvent(Definition def, Definition req, object data) {
+      // Lookup State Mapping
+      if (statesDictionary.TryGetValue(def, out var value)) {
+        var stringVal = data.ToString();
+
+        // Only update state on changes
+        // TODO: Move these to after parsing due to fractional unnoticable changes.
+        if (value.Value != stringVal) {
+          value.Value = stringVal;
+          object valObj = stringVal;
+
+          // Handle conversions
+          if (Units.ShouldConvertToFloat(value.Unit)) {
+            valObj = float.Parse(stringVal);
+          } else if (value.Unit == Units.String) {
+            valObj = ((StringVal64)data).Value;
+          } else if (value.Unit == Units.radians) {
+            // Convert to Degrees
+            valObj = float.Parse(stringVal) * (180 / Math.PI);
+          }
+
+          // Update if known id.
+          if (!string.IsNullOrWhiteSpace(value.TouchPortalStateId)) {
+            _client.StateUpdate(value.TouchPortalStateId, string.Format(value.StringFormat, valObj));
+          }
+        }
+
+        value.SetPending(false);
+      }
+    }
+
+    private void SimConnectEvent_OnDisconnect() {
+      _simConnectCancellationTokenSource.Cancel();
+      _client.StateUpdate("MSFSTouchPortalPlugin.Plugin.State.Connected", _simConnectService.IsConnected().ToString().ToLower());
+    }
+
+    #endregion
+
+    private void SetupEventLists() {
+      internalEventsDictionary = _reflectionService.GetInternalEvents();
+      actionsDictionary = _reflectionService.GetActionEvents();
+      statesDictionary = _reflectionService.GetStates();
+    }
+
+    private Task TryConnect() {
+      int i = 0;
+
+      while (!_cancellationToken.IsCancellationRequested) {
+        if (i == 0 && !_simConnectService.IsConnected()) {
+          _simConnectService.Connect();
+          i = 10;
+        }
+
+        // SimConnect is typically available even before loading into a flight. This should connect and be ready by the time a flight is started.
+        i--;
+        Thread.Sleep(1000);
+      }
+
+      return Task.CompletedTask;
     }
 
     private void ProcessEvent(string actionId, string value = default) {
@@ -225,55 +276,6 @@ namespace MSFSTouchPortalPlugin.Services {
         _simConnectService.TransmitClientEvent(group, eventResult, 0);
       }
     }
-
-    public Task StartAsync(CancellationToken cancellationToken) {
-      _cancellationToken = cancellationToken;
-
-      _hostApplicationLifetime.ApplicationStarted.Register(() => {
-        if (!Initialize()) {
-          _hostApplicationLifetime.StopApplication();
-          return;
-        }
-
-        SetupEventLists();
-        Task.WhenAll(TryConnect());
-      });
-
-      _hostApplicationLifetime.ApplicationStopping.Register(() => {
-        // Disconnect from SimConnect
-        _simConnectService.Disconnect();
-
-        // Stop app
-        //_hostApplicationLifetime.StopApplication();
-      });
-
-      return Task.CompletedTask;
-    }
-
-    public Task StopAsync(CancellationToken cancellationToken) {
-      return Task.CompletedTask;
-    }
-
-    #region IDisposable Support
-    private bool disposedValue; // To detect redundant calls
-
-    protected virtual void Dispose(bool disposing) {
-      if (!disposedValue) {
-        if (disposing) {
-          // Dispose managed state (managed objects).
-          _simConnectCancellationTokenSource?.Dispose();
-        }
-
-        disposedValue = true;
-      }
-    }
-
-    // This code added to correctly implement the disposable pattern.
-    public void Dispose() {
-      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-      Dispose(true);
-    }
-    #endregion
 
     #region TouchPortalSDK Events
 

@@ -1,0 +1,12 @@
+{
+  "ServerUri": "http://192.168.1.85:6600",
+  "Organization": null,
+  "ProjectKey": "MSFSTouchPortalPlugin",
+  "ProjectName": "MSFSTouchPortalPlugin",
+  "Profiles": {
+    "CSharp": {
+      "ProfileKey": "AXil_5o9XJR2smTbw8lc",
+      "ProfileTimestamp": "2021-04-06T07:04:55Z"
+    }
+  }
+}

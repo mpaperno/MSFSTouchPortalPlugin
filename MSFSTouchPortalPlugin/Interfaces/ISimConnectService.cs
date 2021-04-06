@@ -1,9 +1,11 @@
 ﻿using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 namespace MSFSTouchPortalPlugin.Interfaces {
   internal delegate void DataUpdateEventHandler(Definition def, Definition req, object data);
   internal delegate void ConnectEventHandler();
