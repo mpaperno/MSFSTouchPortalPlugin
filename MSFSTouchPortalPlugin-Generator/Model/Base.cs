@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace MSFSTouchPortalPlugin_Generator.Model {
   class Base {
     [Required, Range(1, int.MaxValue)]
-    public int Sdk { get; set; } = 2;
+    public int Sdk { get; set; } = 3;
     [Required, Range(1, int.MaxValue)]
     public int Version { get; set; }
     [Required, MinLength(5)]
@@ -17,6 +17,7 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string Plugin_start_cmd { get; set; } = string.Empty;
     [ValidateObject]
     public List<TouchPortalCategory> Categories { get; set; } = new List<TouchPortalCategory>();
+    public List<object> Settings { get; set; } = new List<object>();
   }
 
   class Configuration {

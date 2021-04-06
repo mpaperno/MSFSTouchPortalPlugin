@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MSFSTouchPortalPlugin.Interfaces;
+using MSFSTouchPortalPlugin.Services;
 using MSFSTouchPortalPlugin_Generator.Configuration;
 using MSFSTouchPortalPlugin_Generator.Interfaces;
 using System.Threading.Tasks;
@@ -19,6 +21,7 @@ namespace MSFSTouchPortalPlugin_Generator {
           }
         })
         .AddHostedService<RunService>()
+        .AddSingleton<IPluginService, PluginService>() // Force load of assembly for generation
         .AddSingleton<IGenerateDoc, GenerateDoc>()
         .AddSingleton<IGenerateEntry, GenerateEntry>();
       }).RunConsoleAsync();

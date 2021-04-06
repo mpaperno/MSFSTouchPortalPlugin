@@ -316,7 +316,5 @@ namespace MSFSTouchPortalPlugin.Services {
       _logger?.LogWarning($"Unhandled message: {jsonDocument}");
     }
     #endregion
-
-    
   }
 }

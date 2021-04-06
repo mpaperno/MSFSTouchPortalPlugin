@@ -42,7 +42,7 @@ namespace MSFSTouchPortalPlugin_Generator {
 
       // Setup Base Model
       var model = new Base {
-        Sdk = 2,
+        Sdk = 3,
         Version = int.Parse(version.Replace(".", "")),
         Name = _options.Value.PluginName,
         Id = _options.Value.PluginName

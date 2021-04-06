@@ -41,9 +41,13 @@ copy "README.md" "$DistFolderPath\MSFS-TouchPortal-Plugin"
 copy "CHANGELOG.md" "$DistFolderPath\MSFS-TouchPortal-Plugin"
 copy "airplane_takeoff24.png" "$DistFolderPath\MSFS-TouchPortal-Plugin"
 
+# Get version
+$FileVersion = (Get-Command packages-dist\MSFS-TouchPortal-Plugin\dist\MSFSTouchPortalPlugin.dll).FileVersionInfo.FileVersion
+
 # Create TPP File
-Compress-Archive -Path "$DistFolderPath\MSFS-TouchPortal-Plugin" -DestinationPath "$DistFolderPath\MSFS-TouchPortal-Plugin.zip"
-Rename-Item -Path "$DistFolderPath\MSFS-TouchPortal-Plugin.zip" -NewName "MSFS-TouchPortal-Plugin.tpp"
+#Compress-Archive -Path "$DistFolderPath\MSFS-TouchPortal-Plugin" -DestinationPath "$DistFolderPath\MSFS-TouchPortal-Plugin.zip"
+#Rename-Item -Path "$DistFolderPath\MSFS-TouchPortal-Plugin.zip" -NewName "MSFS-TouchPortal-Plugin.tpp"
+& "C:\Program Files\7-Zip\7z.exe" a $DistFolderPath\MSFS-TouchPortal-Plugin-$FileVersion.tpp "$DistFolderPath\MSFS-TouchPortal-Plugin\*" -r
 
 if ($IsBuildAgent) {
   exit 0
