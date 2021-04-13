@@ -36,7 +36,7 @@ namespace MSFSTouchPortalPlugin_Generator {
       var a = Assembly.GetExecutingAssembly().GetReferencedAssemblies().FirstOrDefault(a => a.Name == _options.Value.PluginName);
 
       if (a == null) {
-        throw new ArgumentNullException("Unable to load assembly for reflection.");
+        throw new FileNotFoundException("Unable to load assembly for reflection.");
       }
 
       var model = new DocBase {
@@ -107,7 +107,6 @@ namespace MSFSTouchPortalPlugin_Generator {
         newCat.States = newCat.States.OrderBy(c => c.Description).ToList();
 
         // Loop through Events
-        // TODO: Need events
 
         model.Categories.Add(newCat);
       });
@@ -158,7 +157,7 @@ namespace MSFSTouchPortalPlugin_Generator {
           s.Append("\n\n");
         }
 
-        // TODO: Loop Events
+        // Loop Events
 
         s.Append("---\n\n");
       });

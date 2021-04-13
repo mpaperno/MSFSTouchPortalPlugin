@@ -138,8 +138,6 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
 
     #region Vertical Speed
 
-
-    // TODO action?
     [SimVarDataRequest]
     [TouchPortalAction("AutoPilotVerticalSpeed", "Vertical Speed", "MSFS", "Toggle the Vertical Speed for auto pilot", "Vertical Speed - {0}")]
     [TouchPortalActionChoice(new [] { "Toggle" }, "Toggle")]

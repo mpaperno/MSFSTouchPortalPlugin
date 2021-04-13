@@ -5,6 +5,7 @@ using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Services;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using TouchPortalSDK;
 using TouchPortalSDK.Interfaces;
 using Xunit;
@@ -67,7 +68,7 @@ namespace MSFSTouchPortalPlugin_Tests.Services {
     }
 
     [Fact]
-    public async void StopAsync_ShouldComplete() {
+    public async Task StopAsync_ShouldComplete() {
       // arrange
       var mockHostApplicationLifetime = new Mock<IHostApplicationLifetime>();
       var mockILoggerPluginService = new NullLogger<PluginService>();
@@ -79,8 +80,9 @@ namespace MSFSTouchPortalPlugin_Tests.Services {
 
       // act
       var service = new PluginService(mockHostApplicationLifetime.Object, mockILoggerPluginService, mockITouchPortalClientFactory.Object, mockISimConnectService.Object, mockIReflectionService.Object);
-      await service.StopAsync(new CancellationToken());
 
+      Assert.NotNull(service);
+      await service.StopAsync(new CancellationToken());
     }
   }
 }

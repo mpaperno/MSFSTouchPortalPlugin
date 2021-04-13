@@ -47,7 +47,7 @@ $FileVersion = (Get-Command packages-dist\MSFS-TouchPortal-Plugin\dist\MSFSTouch
 # Create TPP File
 #Compress-Archive -Path "$DistFolderPath\MSFS-TouchPortal-Plugin" -DestinationPath "$DistFolderPath\MSFS-TouchPortal-Plugin.zip"
 #Rename-Item -Path "$DistFolderPath\MSFS-TouchPortal-Plugin.zip" -NewName "MSFS-TouchPortal-Plugin.tpp"
-& "C:\Program Files\7-Zip\7z.exe" a $DistFolderPath\MSFS-TouchPortal-Plugin-$FileVersion.tpp "$DistFolderPath\MSFS-TouchPortal-Plugin\*" -r
+& "C:\Program Files\7-Zip\7z.exe" a $DistFolderPath\MSFS-TouchPortal-Plugin-$FileVersion.tpp "$DistFolderPath\*" -r -tzip
 
 if ($IsBuildAgent) {
   exit 0

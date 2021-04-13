@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Services;
+using Serilog;
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -40,6 +41,7 @@ namespace MSFSTouchPortalPlugin {
       try {
         await Host.CreateDefaultBuilder(args).ConfigureServices((context, services) => {
           services.AddLogging(configure => {
+            configure.AddSerilog(logger: new LoggerConfiguration().WriteTo.File("logs\\MSFSTouchPortalPlugin.log", rollingInterval: RollingInterval.Day).CreateLogger(), dispose: true);
             configure.AddSimpleConsole(options => options.TimestampFormat = "[yyyy.MM.dd HH:mm:ss] ");
             configure.AddConfiguration(configurationRoot.GetSection("Logging"));
           })
