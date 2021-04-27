@@ -10,7 +10,7 @@
 
 ## Overview
 
-This plugin will provide a two way interface between Touch Portal and Microsoft Flight Simulator 2020 through SimConnect. This may work for other simulators that use SimConnect such as X-Plane 11. A good starting point for pages would be to look at FordMustang0288's repo: [MSFSTouchPortalPages](https://github.com/FordMustang0288/MSFSTouchPortalPages).
+This plugin will provide a two way interface between Touch Portal and Microsoft Flight Simulator 2020 through SimConnect. This may work for other simulators that use SimConnect. A good starting point for pages would be to look at FordMustang0288's repo: [MSFSTouchPortalPages](https://github.com/FordMustang0288/MSFSTouchPortalPages).
 Another good page for use is created by TaxTips at: [FltSim-msfs2020-Control](https://github.com/HiDTH/FltSim-msfs2020-Control)
 
 ## Features
