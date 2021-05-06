@@ -5,6 +5,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/8930a85ee1e3482e82c2b2d40a892640)](https://www.codacy.com/gh/Touch-Portal-MSFS/MSFSTouchPortalPlugin/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Touch-Portal-MSFS/MSFSTouchPortalPlugin&amp;utm_campaign=Badge_Grade)
 [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/Touch-Portal-MSFS/MSFSTouchPortalPlugin?include_prereleases)](https://github.com/Touch-Portal-MSFS/MSFSTouchPortalPlugin/releases)
 [![Downloads](https://img.shields.io/github/downloads/Touch-Portal-MSFS/MSFSTouchPortalPlugin/total.svg)](https://github.com/Touch-Portal-MSFS/MSFSTouchPortalPlugin/releases)
+[![Downloads](https://img.shields.io/github/downloads/Touch-Portal-MSFS/MSFSTouchPortalPlugin/0.5.3/total)](https://github.com/Touch-Portal-MSFS/MSFSTouchPortalPlugin/releases/tag/0.5.3)
 [![Stars](https://img.shields.io/github/stars/Touch-Portal-MSFS/MSFSTouchPortalPlugin)](https://github.com/Touch-Portal-MSFS/MSFSTouchPortalPlugin/stargazers)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 
