@@ -1,6 +1,6 @@
 {
   "sdk": 3,
-  "version": 530,
+  "version": 1000,
   "name": "MSFSTouchPortalPlugin",
   "id": "MSFSTouchPortalPlugin",
   "configuration": {
@@ -845,6 +845,16 @@
           ]
         },
         {
+          "id": "MSFSTouchPortalPlugin.Electrical.Action.AvionicsMasterSwitch",
+          "name": "Avionics Master",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "Toggle Avionics Master",
+          "tryInline": true,
+          "format": "Toggle Avionics Master",
+          "data": []
+        },
+        {
           "id": "MSFSTouchPortalPlugin.Electrical.Action.MasterAlternator",
           "name": "Master Alternator",
           "prefix": "MSFS",
@@ -973,6 +983,12 @@
       ],
       "events": [],
       "states": [
+        {
+          "id": "MSFSTouchPortalPlugin.Electrical.State.AvionicsMasterSwitch",
+          "type": "text",
+          "desc": "MSFS - Electrical - Avionics Master Switch",
+          "default": ""
+        },
         {
           "id": "MSFSTouchPortalPlugin.Electrical.State.LightBeaconOn",
           "type": "text",

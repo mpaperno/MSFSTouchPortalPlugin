@@ -252,7 +252,6 @@
 "SUCTION_PRESSURE": ["Vacuum system suction pressure", b'SUCTION PRESSURE', b'Inches of Mercury, inHg', 'Y'],
 
 // Avionics
-"AVIONICS_MASTER_SWITCH": ["Avionics switch state", b'AVIONICS MASTER SWITCH', b'Bool', 'N'],
 "NAV_SOUND:index": ["Nav audio flag. Index of 1 or 2.", b'NAV SOUND:index', b'Bool', 'N'],
 "DME_SOUND": ["DME audio flag", b'DME SOUND', b'Bool', 'N'],
 "ADF_SOUND:index": ["ADF audio flag. Index of 0 or 1.", b'ADF SOUND:index', b'Bool', 'N'],

@@ -148,7 +148,6 @@
 (b'ADF_CARD_SET', "Sets ADF card (0-360),", "Shared Cockpit"),
 (b'TOGGLE_DME', "Toggles between NAV 1 and NAV 2", "Shared Cockpit"),
 (b'AVIONICS_MASTER_SET', "Sets the avionics master switch", "All aircraft"),
-(b'TOGGLE_AVIONICS_MASTER', "Toggles the avionics master switch", "All aircraft"),
 (b'ADF1_RADIO_TENTHS_DEC', "Decrements ADF 1 by 0.1 KHz.", "Shared Cockpit"),
 (b'ADF1_RADIO_TENTHS_INC', "Increments ADF 1 by 0.1 KHz.", "Shared Cockpit"),
 (b'XPNDR_1000_DEC', "Decrements first digit of transponder", "Shared Cockpit"),
