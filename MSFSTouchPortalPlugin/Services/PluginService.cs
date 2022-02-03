@@ -6,6 +6,7 @@ using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Objects.Plugin;
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
@@ -15,7 +16,7 @@ using TouchPortalSDK;
 using TouchPortalSDK.Interfaces;
 using TouchPortalSDK.Messages.Events;
 using TouchPortalSDK.Messages.Models;
-using Timer = System.Timers.Timer;
+using Timer = MSFSTouchPortalPlugin.Helpers.UnthreadedTimer;
 
 namespace MSFSTouchPortalPlugin.Services {
   /// <inheritdoc cref="IPluginService" />
@@ -31,10 +32,16 @@ namespace MSFSTouchPortalPlugin.Services {
 
     public string PluginId => "MSFSTouchPortalPlugin";
     private readonly IReadOnlyCollection<Setting> _settings;
+    /// <summary>
+    /// milliseconds for repeat (held) actions; Perhaps this could be a setting for this plugin.
+    /// </summary>
+    public int ActionRepeatInterval = 450;
 
     private Dictionary<string, Enum> actionsDictionary = new Dictionary<string, Enum>();
     private Dictionary<Definition, SimVarItem> statesDictionary = new Dictionary<Definition, SimVarItem>();
     private Dictionary<string, Enum> internalEventsDictionary = new Dictionary<string, Enum>();
+
+    private readonly ConcurrentDictionary<string, Timer> repeatingActionTimers = new();
 
     /// <summary>
     /// Constructor
@@ -55,34 +62,35 @@ namespace MSFSTouchPortalPlugin.Services {
     /// </summary>
     /// <param name="simConnectCancelToken">The Cancellation Token</param>
     public async Task RunPluginServices(CancellationToken simConnectCancelToken) {
-      // Run Data Polling
-      var timer = new Timer(250) { AutoReset = false };
+      // Run Data Polling and repeating actions timers
+      var runTimersTask = RunTimedEventsTask(simConnectCancelToken);
 
-      simConnectCancelToken.Register(() => {
-        timer.Stop();
-        timer.Dispose();
-      });
-
-      timer.Elapsed += (obj, args) => {
-        foreach (var s in statesDictionary) {
-          // Expire pending if more than 30 seconds
-          s.Value.PendingTimeout();
-
-          // Check if Pending data request in paly
-          if (!s.Value.PendingRequest) {
-            _simConnectService.RequestDataOnSimObjectType(s.Value);
-            s.Value.SetPending(true);
-          }
-        }
-        timer.Start();
-      };
-
-      timer.Start();
-
-      // Run Listen and pairing
       await Task.WhenAll(new Task[] {
+        runTimersTask,
+        // Run Listen and pairing
         _simConnectService.WaitForMessage(simConnectCancelToken)
       }).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Async task for running various timed SimConnect events on one thread.
+    /// This is primarily used for data polling and repeating (held) actions.
+    /// </summary>
+    /// <param name="cancellationToken">The Cancellation Token</param>
+    private async Task RunTimedEventsTask(CancellationToken cancellationToken) {
+      // Run Data Polling
+      var dataPollTimer = new Timer(250);
+      dataPollTimer.Elapsed += delegate { CheckPendingRequests(); };
+      dataPollTimer.Start();
+
+      while (_simConnectService.IsConnected() && !cancellationToken.IsCancellationRequested) {
+        dataPollTimer.Tick();
+        foreach (Timer tim in repeatingActionTimers.Values)
+          tim.Tick();
+        await Task.Delay(20, cancellationToken);
+      }
+
+      dataPollTimer.Dispose();
     }
 
     /// <summary>
@@ -277,10 +285,33 @@ namespace MSFSTouchPortalPlugin.Services {
       }
     }
 
+    private void CheckPendingRequests() {
+      foreach (var s in statesDictionary) {
+        // Expire pending if more than 30 seconds
+        s.Value.PendingTimeout();
+
+        // Check if Pending data request in paly
+        if (!s.Value.PendingRequest) {
+          _simConnectService.RequestDataOnSimObjectType(s.Value);
+          s.Value.SetPending(true);
+        }
+      }
+    }
+
+    private void ClearRepeatingActions() {
+      foreach (var act in repeatingActionTimers) {
+        if (repeatingActionTimers.TryRemove(act.Key, out var tim)) {
+          tim.Dispose();
+        }
+      }
+    }
+
     #region TouchPortalSDK Events
 
     public void OnInfoEvent(InfoEvent message) {
-      throw new NotImplementedException();
+      _logger.LogInformation(
+        $"[Info] VersionCode: '{message.TpVersionCode}', VersionString: '{message.TpVersionString}', SDK: '{message.SdkVersion}', PluginVersion: '{message.PluginVersion}', Status: '{message.Status}'"
+      );
     }
 
     public void OnListChangedEvent(ListChangeEvent message) {
@@ -295,12 +326,39 @@ namespace MSFSTouchPortalPlugin.Services {
       throw new NotImplementedException();
     }
 
-    public void OnActionEvent(ActionEvent message) {
-      if (message.Data.Count > 0) {
-        var values = string.Join(",", message.Data.Select(x => x.Value));
-        ProcessEvent(message.ActionId, values);
-      } else {
-        ProcessEvent(message.ActionId);
+    public void OnActionEvent(ActionEvent message)
+    {
+      //_logger.LogInformation($"ACTION {message.Type}");
+      string values = default;
+      if (message.Data.Count > 0)
+        values = string.Join(",", message.Data.Select(x => x.Value));
+
+      // Actions used in TP "On Hold" events will send "down" and "up" events, in that order (usually).
+      // "On Pressed" actions will have an "action" event. These are all abstracted into TouchPortalSDK enums.
+      // Note that an "On Hold" action ("down" event) is _not_ triggered upon initial press. This allow different
+      // actions per button, and button designer can still choose to duplicate the Hold action in the Pressed handler.
+      switch (message.GetPressState()) {
+        case TouchPortalSDK.Messages.Models.Enums.Press.Down:
+          // "On Hold" activated ("down" event). Try to add this action to the repeating/scheduled actions queue, unless it already exists.
+          var timer = new Timer(ActionRepeatInterval);
+          timer.Elapsed += delegate { ProcessEvent(message.ActionId, values); };
+          if (repeatingActionTimers.TryAdd(message.ActionId, timer))
+            timer.Start();
+          else
+            timer.Dispose();
+          break;
+
+        case TouchPortalSDK.Messages.Models.Enums.Press.Up:
+          // "On Hold" released ("up" event). Mark action for removal from repeating queue.
+          if (repeatingActionTimers.TryRemove(message.ActionId, out var tim))
+            tim.Dispose();
+          // No further processing for this action.
+          break;
+
+        case TouchPortalSDK.Messages.Models.Enums.Press.Tap:
+          // Process an "On Pressed" ("action" event) action.
+          ProcessEvent(message.ActionId, values);
+          break;
       }
     }
 
