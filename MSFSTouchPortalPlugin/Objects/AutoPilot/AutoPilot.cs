@@ -39,7 +39,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
       new SimVarItem { Def = Definition.AutoPilotAttitudeHold, SimVarName = "AUTOPILOT ATTITUDE HOLD", Unit = Units.Bool, CanSet = false };
 
     [SimVarDataRequest]
-    [TouchPortalAction("AutoPilotAttitudeVar", "Attitude Hold Value", "MSFS", "Sets the attitude hold value", "Attitude Hold Value - {0}")]
+    [TouchPortalAction("AutoPilotAttitudeVar", "Attitude Hold Value", "MSFS", "Sets the attitude hold value", "Attitude Hold Value - {0}", true)]
     [TouchPortalActionChoice(new [] { "Select", "Increase", "Decrease" }, "Select")]
     [TouchPortalState("AutoPilotAttitudeVar", "text", "AutoPilot Pitch Reference Value", "")]
     public static readonly SimVarItem AP_ATTITUDE_PITCH =
@@ -61,7 +61,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
     #region Bank
 
     [SimVarDataRequest]
-    [TouchPortalAction("AutoPilotBanking", "AP Max Bank Angle", "MSFS", "Increase/Decrease the max bank angle", "Max Bank Angle - {0}")]
+    [TouchPortalAction("AutoPilotBanking", "AP Max Bank Angle", "MSFS", "Increase/Decrease the max bank angle", "Max Bank Angle - {0}", true)]
     [TouchPortalActionChoice(new [] { "Increase", "Decrease" }, "Increase")]
     [TouchPortalState("AutoPilotBanking", "text", "AutoPilot Max Bank Angle", "")]
     public static readonly SimVarItem AP_MAX_BANK =
@@ -80,7 +80,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
 
 
     [SimVarDataRequest]
-    [TouchPortalAction("AutoPilotHeadingVar", "Heading Hold Value", "MSFS", "Sets the heading hold value", "Heading Hold Value - {0}")]
+    [TouchPortalAction("AutoPilotHeadingVar", "Heading Hold Value", "MSFS", "Sets the heading hold value", "Heading Hold Value - {0}", true)]
     [TouchPortalActionChoice(new [] { "Select", "Increase", "Decrease", "Set" }, "Select")]
     [TouchPortalState("AutoPilotHeadingVar", "text", "AutoPilot Heading Direction", "")]
     public static readonly SimVarItem AP_HEADING_VAR =
@@ -99,7 +99,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
 
 
     [SimVarDataRequest]
-    [TouchPortalAction("AutoPilotAltitudeVar", "Altitude Hold Value", "MSFS", "Sets the altitude hold value", "Altitude Hold Value - {0}")]
+    [TouchPortalAction("AutoPilotAltitudeVar", "Altitude Hold Value", "MSFS", "Sets the altitude hold value", "Altitude Hold Value - {0}", true)]
     [TouchPortalActionChoice(new [] { "Select", "Increase", "Decrease", "Set", "Set Metric" }, "Select")]
     [TouchPortalState("AutoPilotAltitudeVar", "text", "AutoPilot Altitude Value", "")]
     public static readonly SimVarItem AP_ALTITUDE_VAR =
@@ -147,7 +147,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
 
 
     [SimVarDataRequest]
-    [TouchPortalAction("AutoPilotVerticalSpeedVar", "Vertical Speed Value", "MSFS", "Sets the vertical speed value", "Vertical Speed Value - {0}")]
+    [TouchPortalAction("AutoPilotVerticalSpeedVar", "Vertical Speed Value", "MSFS", "Sets the vertical speed value", "Vertical Speed Value - {0}", true)]
     [TouchPortalActionChoice(new [] { "Select", "Increase", "Decrease", "Set", "Set Metric" }, "Select")]
     [TouchPortalState("AutoPilotVerticalSpeedVar", "text", "AutoPilot Vertical Speed Value", "")]
     public static readonly SimVarItem AP_VERTICALSPEED_VAR =
@@ -165,7 +165,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
       new SimVarItem { Def = Definition.AutoPilotAirSpeedHold, SimVarName = "AUTOPILOT AIRSPEED HOLD", Unit = Units.Bool, CanSet = false };
 
     [SimVarDataRequest]
-    [TouchPortalAction("AutoPilotAirSpeedVar", "Airspeed Hold Value", "MSFS", "Sets the airspeed hold value", "Airspeed Hold Value - {0}")]
+    [TouchPortalAction("AutoPilotAirSpeedVar", "Airspeed Hold Value", "MSFS", "Sets the airspeed hold value", "Airspeed Hold Value - {0}", true)]
     [TouchPortalActionChoice(new [] { "Select", "Increase", "Decrease", "Set" }, "Select")]
     [TouchPortalState("AutoPilotAirSpeedVar", "text", "AutoPilot Air Speed Value", "")]
     public static readonly SimVarItem AP_AIRSPEED_VAR =
@@ -192,7 +192,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot {
 
     #region AutoBrake
 
-    [TouchPortalAction("AutoBrake", "Auto Brake", "MSFS", "Increase/Decrease the auto brake", "Auto Brake - {0}")]
+    [TouchPortalAction("AutoBrake", "Auto Brake", "MSFS", "Increase/Decrease the auto brake", "Auto Brake - {0}", true)]
     [TouchPortalActionChoice(new [] { "Increaes", "Decrease" }, "Increase")]
     public static object AUTO_BRAKE { get; }
 
