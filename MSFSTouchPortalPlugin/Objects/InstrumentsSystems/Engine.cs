@@ -48,7 +48,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     [TouchPortalActionChoice(new [] { "Full", "Increase", "Increase Small", "Decrease", "Decrease Small", "Cut", "Set", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%" }, "Full")]
     public static object THROTTLE { get; }
 
-    [TouchPortalAction("ThrottleSpecific", "Throttle Specific", "MSFS", "Sets Throttle on specific engine", "Throttle {0} - {1}")]
+    [TouchPortalAction("ThrottleSpecific", "Throttle Specific", "MSFS", "Sets Throttle on specific engine", "Throttle {0} - {1}", true)]
     [TouchPortalActionChoice(new [] { "1", "2", "3", "4" }, "1")]
     [TouchPortalActionChoice(new [] { "Full", "Increase", "Increase Small", "Decrease", "Decrease Small", "Cut" }, "Full")]
     public static object THROTTLE_SPECIFIC { get; }
@@ -74,11 +74,11 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
 
     #region Mixture
 
-    [TouchPortalAction("Mixture", "Mixture", "MSFS", "Sets all mixtures", "All Mixtures - {0}")]
+    [TouchPortalAction("Mixture", "Mixture", "MSFS", "Sets all mixtures", "All Mixtures - {0}", true)]
     [TouchPortalActionChoice(new [] { "Rich", "Increase", "Increase Small", "Decrease", "Decrease Small", "Lean", "Best", "Set" }, "Rich")]
     public static object MIXTURE { get; }
 
-    [TouchPortalAction("MixtureSpecific", "Mixture Specific", "MSFS", "Sets mixture on specific engine", "Mixture {0} - {1}")]
+    [TouchPortalAction("MixtureSpecific", "Mixture Specific", "MSFS", "Sets mixture on specific engine", "Mixture {0} - {1}", true)]
     [TouchPortalActionChoice(new [] { "1", "2", "3", "4" }, "1")]
     [TouchPortalActionChoice(new [] { "Rich", "Increase", "Increase Small", "Decrease", "Decrease Small", "Lean" }, "Rich")]
     public static object MIXTURE_SPECIFIC { get; }
