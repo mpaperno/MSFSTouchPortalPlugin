@@ -19,6 +19,7 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string Description { get; set; }
     public string Type { get; set; }
     public string Format { get; set; }
+    public bool HasHoldFunctionality { get; set; } = false;
     public List<DocActionData> Data { get; set; } = new List<DocActionData>();
   }
 

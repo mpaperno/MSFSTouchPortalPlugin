@@ -50,6 +50,7 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     [Required, MinLength(2)]
     public string Description { get; set; }
     public bool TryInline { get; set; } = true;
+    public bool HasHoldFunctionality { get; set; } = false;
     [Required, MinLength(2)]
     public string Format { get; set; }
     public List<TouchPortalActionData> Data { get; set; } = new List<TouchPortalActionData>();
