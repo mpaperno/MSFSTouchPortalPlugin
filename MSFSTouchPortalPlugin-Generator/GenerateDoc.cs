@@ -65,7 +65,8 @@ namespace MSFSTouchPortalPlugin_Generator {
             Name = actionAttribute.Name,
             Description = actionAttribute.Description,
             Type = actionAttribute.Type,
-            Format = actionAttribute.Format
+            Format = actionAttribute.Format,
+            HasHoldFunctionality = actionAttribute.HasHoldFunctionality
           };
 
           // Loop through Action Data
@@ -137,11 +138,11 @@ namespace MSFSTouchPortalPlugin_Generator {
         // Loop Actions
         if (cat.Actions.Count > 0) {
           s.Append("### Actions\n\n");
-          s.Append("| Name | Description | Type | Format | Data (Default in bold) |\n");
-          s.Append("| --- | --- | --- | --- | --- |\n");
+          s.Append("| Name | Description | Type | Format | Data (Default in bold) | Hold |\n");
+          s.Append("| --- | --- | --- | --- | --- | --- |\n");
           cat.Actions.ForEach(act => {
             // TODO: Only supports showing a single line of data
-            s.Append($"| {act.Name} | {act.Description} | {act.Type} | {act.Format} | {(act.Data.Count > 0 ? act.Data[0].Values.Replace(act.Data[0].DefaultValue, $"**{act.Data[0].DefaultValue}**") :  "")} |\n");
+            s.Append($"| {act.Name} | {act.Description} | {act.Type} | {act.Format} | {(act.Data.Count > 0 ? act.Data[0].Values.Replace(act.Data[0].DefaultValue, $"**{act.Data[0].DefaultValue}**") : "")} | {act.HasHoldFunctionality} |\n");
           });
           s.Append("\n\n");
         }

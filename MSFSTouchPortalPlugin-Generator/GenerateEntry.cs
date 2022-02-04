@@ -81,6 +81,7 @@ namespace MSFSTouchPortalPlugin_Generator {
             Description = actionAttribute.Description,
             TryInline = true,
             Format = actionAttribute.Format,
+            HasHoldFunctionality = actionAttribute.HasHoldFunctionality,
           };
 
           // Has Choices

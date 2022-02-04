@@ -17,18 +17,20 @@ namespace TouchPortalExtension.Attributes {
     public string Description { get; set; }
     public string Format { get; set; }
     public string Type { get; set; }
+    public bool HasHoldFunctionality { get; set; }
 
-    public TouchPortalActionAttribute(string id, string name, string prefix, string description, string format) {
-      SetupProperties(id, name, prefix, description, format, "communicate");
+    public TouchPortalActionAttribute(string id, string name, string prefix, string description, string format, bool holdable = false) {
+      SetupProperties(id, name, prefix, description, format, holdable, "communicate");
     }
 
-    private void SetupProperties(string id, string name, string prefix, string description, string format, string type) {
+    private void SetupProperties(string id, string name, string prefix, string description, string format, bool holdable, string type) {
       Id = id;
       Name = name;
       Prefix = prefix;
       Description = description;
       Format = format;
       Type = type;
+      HasHoldFunctionality = holdable;
     }
   }
 
