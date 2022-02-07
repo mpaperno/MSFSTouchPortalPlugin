@@ -5,5 +5,5 @@ obj/
 dist/
 packages-dist/
 MSFSTouchPortalPlugin-Tests/TestResults/
-
 .sonarqube/
+*.user
