@@ -93,6 +93,6 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
   [TouchPortalCategoryMapping("FlightInstruments")]
   internal enum FlightInstruments {
     // Placeholder to offset each enum for SimConnect
-    Init = 7000,
+    Init = 8000,
   }
 }

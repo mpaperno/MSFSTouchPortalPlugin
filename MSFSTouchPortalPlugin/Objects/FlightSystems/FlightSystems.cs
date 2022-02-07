@@ -43,19 +43,23 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems {
 
     [TouchPortalAction("CowlFlaps1", "Cowl Flaps 1", "MSFS", "Cowl Flaps 1", "Cowl Flaps 1 - {0}")]
     [TouchPortalActionChoice(new [] { "Increase", "Decrease" }, "Increase")]
-    public static object COWL_FLAPS_1 { get; }
+    [TouchPortalState("CowlFlaps1Percent", "text", "Cowl Flaps 1 Opened Percentage", "")]
+    public static readonly SimVarItem COWL_FLAPS_1 = new SimVarItem { Def = Definition.CowlFlaps1Percent, SimVarName = "RECIP ENG COWL FLAP POSITION:1", Unit = Units.percent, CanSet = true, StringFormat = "{0:0.0#}" };
 
     [TouchPortalAction("CowlFlaps2", "Cowl Flaps 2", "MSFS", "Cowl Flaps 2", "Cowl Flaps 2 - {0}")]
     [TouchPortalActionChoice(new [] { "Increase", "Decrease" }, "Increase")]
-    public static object COWL_FLAPS_2 { get; }
+    [TouchPortalState("CowlFlaps2Percent", "text", "Cowl Flaps 2 Opened Percentage", "")]
+    public static readonly SimVarItem COWL_FLAPS_2 = new SimVarItem { Def = Definition.CowlFlaps2Percent, SimVarName = "RECIP ENG COWL FLAP POSITION:2", Unit = Units.percent, CanSet = true, StringFormat = "{0:0.0#}" };
 
     [TouchPortalAction("CowlFlaps3", "Cowl Flaps 3", "MSFS", "Cowl Flaps 3", "Cowl Flaps 3 - {0}")]
     [TouchPortalActionChoice(new [] { "Increase", "Decrease" }, "Increase")]
-    public static object COWL_FLAPS_3 { get; }
+    [TouchPortalState("CowlFlaps3Percent", "text", "Cowl Flaps 3 Opened Percentage", "")]
+    public static readonly SimVarItem COWL_FLAPS_3 = new SimVarItem { Def = Definition.CowlFlaps3Percent, SimVarName = "RECIP ENG COWL FLAP POSITION:3", Unit = Units.percent, CanSet = true, StringFormat = "{0:0.0#}" };
 
     [TouchPortalAction("CowlFlaps4", "Cowl Flaps 4", "MSFS", "Cowl Flaps 4", "Cowl Flaps 4 - {0}")]
     [TouchPortalActionChoice(new [] { "Increase", "Decrease" }, "Increase")]
-    public static object COWL_FLAPS_4 { get; }
+    [TouchPortalState("CowlFlaps4Percent", "text", "Cowl Flaps 4 Opened Percentage", "")]
+    public static readonly SimVarItem COWL_FLAPS_4 = new SimVarItem { Def = Definition.CowlFlaps4Percent, SimVarName = "RECIP ENG COWL FLAP POSITION:4", Unit = Units.percent, CanSet = true, StringFormat = "{0:0.0#}" };
 
     #endregion
 
@@ -104,21 +108,30 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems {
     [TouchPortalActionChoice(new [] { "Up", "Down" }, "Up")]
     [TouchPortalState("ElevatorTrim", "text", "Elevator Trim Angle", "")]
     public static readonly SimVarItem ELEVATOR_TRIM =
-      new SimVarItem { Def = Definition.ElevatorTrim, SimVarName = "ELEVATOR TRIM PCT", Unit = Units.degrees, CanSet = false, StringFormat = "{0:0.0#}" };
+      new SimVarItem { Def = Definition.ElevatorTrim, SimVarName = "ELEVATOR TRIM POSITION", Unit = Units.degrees, CanSet = true, StringFormat = "{0:0.0#}" };
 
     [SimVarDataRequest]
     [TouchPortalAction("RudderTrim", "Rudder Trim", "MSFS", "Rudder Trim", "Rudder Trim - {0}")]
     [TouchPortalActionChoice(new [] { "Left", "Right" }, "Left")]
     [TouchPortalState("RudderTrim", "text", "Rudder Trim Angle", "")]
     public static readonly SimVarItem RUDDER_TRIM =
-            new SimVarItem { Def = Definition.RudderTrim, SimVarName = "RUDDER TRIM", Unit = Units.degrees, CanSet = false, StringFormat = "{0:0.0#}" };
+      new SimVarItem { Def = Definition.RudderTrim, SimVarName = "RUDDER TRIM", Unit = Units.degrees, CanSet = false, StringFormat = "{0:0.0#}" };
 
 
     [SimVarDataRequest] // XYZ
-    public static readonly SimVarItem AileronTrimPct = new SimVarItem { Def = Definition.AileronTrimPct, SimVarName = "", Unit = Units.number, CanSet = true };
-    [SimVarDataRequest]
-    public static readonly SimVarItem RudderTrimPct = new SimVarItem { Def = Definition.RudderTrimPct, SimVarName = "RUDDER TRIM PCT", Unit = Units.percentover100, CanSet = true };
+    [TouchPortalState("AileronTrimPct", "text", "Aileron Trim Percent", "0")]
+    public static readonly SimVarItem AILERON_TRIM_PCT =
+      new SimVarItem { Def = Definition.AileronTrimPct, SimVarName = "AILERON TRIM PCT", Unit = Units.percentover100, CanSet = true, StringFormat = "{0:F1}" };
 
+    [SimVarDataRequest]
+    [TouchPortalState("ElevatorTrimPct", "text", "Elevator Trim Percent", "0")]
+    public static readonly SimVarItem ELEVATOR_TRIM_PCT =
+      new SimVarItem { Def = Definition.ElevatorTrimPct, SimVarName = "ELEVATOR TRIM PCT", Unit = Units.percentover100, CanSet = false, StringFormat = "{0:F1}" };
+
+    [SimVarDataRequest]
+    [TouchPortalState("RudderTrimPct", "text", "Rudder Trim Percent", "0")]
+    public static readonly SimVarItem RUDDER_TRIM_PCT =
+      new SimVarItem { Def = Definition.RudderTrimPct, SimVarName = "RUDDER TRIM PCT", Unit = Units.percentover100, CanSet = true, StringFormat = "{0:F1}" };
     #endregion
   }
 
