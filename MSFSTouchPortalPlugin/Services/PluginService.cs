@@ -209,7 +209,7 @@ namespace MSFSTouchPortalPlugin.Services {
     }
 
     private void SimConnectEvent_OnDisconnect() {
-      _simConnectCancellationTokenSource.Cancel();
+      _simConnectCancellationTokenSource?.Cancel();
       _client.StateUpdate("MSFSTouchPortalPlugin.Plugin.State.Connected", _simConnectService.IsConnected().ToString().ToLower());
     }
 
@@ -222,10 +222,16 @@ namespace MSFSTouchPortalPlugin.Services {
     }
 
     private Task TryConnect() {
-
+      short i = 0;
       while (!_cancellationToken.IsCancellationRequested) {
         if (autoReconnectSimConnect && !_simConnectService.IsConnected()) {
-          _simConnectService.Connect();
+          if (i == 0) {
+            if (!_simConnectService.Connect())
+              i = 10;  // delay reconnect attempt on error
+          }
+          else {
+            --i;
+          }
         }
 
         // SimConnect is typically available even before loading into a flight. This should connect and be ready by the time a flight is started.
