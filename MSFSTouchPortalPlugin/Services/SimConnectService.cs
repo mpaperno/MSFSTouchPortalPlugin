@@ -114,8 +114,14 @@ namespace MSFSTouchPortalPlugin.Services {
 
     public bool TransmitClientEvent(Groups group, Enum eventId, uint data) {
       if (_connected) {
-        _simConnect.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, data, group, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
-        return true;
+        try {
+          _simConnect.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, data, group, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+          return true;
+        }
+        catch (Exception ex) {
+          _logger.LogError(ex, $"TransmitClientEvent({group}, {eventId}, {data}) failed, disconnecting.");
+          Disconnect();
+        }
       }
 
       return false;
@@ -148,7 +154,14 @@ namespace MSFSTouchPortalPlugin.Services {
 
     public bool RequestDataOnSimObjectType(SimVarItem simVar) {
       if (_connected) {
-        _simConnect.RequestDataOnSimObjectType(simVar.Def, simVar.Def, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
+        try {
+          _simConnect.RequestDataOnSimObjectType(simVar.Def, simVar.Def, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
+          return true;
+        }
+        catch (Exception ex) {
+          _logger.LogError(ex, $"RequestDataOnSimObjectType({simVar.Def}) failed, disconnecting.");
+          Disconnect();
+        }
       }
 
       return false;
