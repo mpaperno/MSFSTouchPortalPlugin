@@ -232,8 +232,9 @@ namespace MSFSTouchPortalPlugin.Services {
     [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
     public string Value;
 
-    public bool Equals(StringVal64 other) {
-      return other.Value == Value;
-    }
+    public bool Equals(StringVal64 other) => other.Value == Value;
+    public override bool Equals(object obj) => (obj is StringVal64 && Equals((StringVal64)obj));
+    public override string ToString() => Value;
+    public override int GetHashCode() => Value.GetHashCode();
   }
 }
