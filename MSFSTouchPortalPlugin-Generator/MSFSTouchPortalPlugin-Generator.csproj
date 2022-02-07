@@ -5,6 +5,12 @@
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>MSFSTouchPortalPlugin_Generator</RootNamespace>
     <CodeAnalysisRuleSet>..\.sonarlint\msfstouchportalplugincsharp.ruleset</CodeAnalysisRuleSet>
+    <Platforms>x64</Platforms>
+    <Version>1.1.0</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <NoWarn>1701;1702;S125;CS8032</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

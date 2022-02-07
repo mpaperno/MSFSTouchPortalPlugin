@@ -5,6 +5,8 @@
     <RootNamespace>MSFSTouchPortalPlugin_Tests</RootNamespace>
 
     <IsPackable>false</IsPackable>
+
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

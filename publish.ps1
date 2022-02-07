@@ -21,7 +21,7 @@ dotnet restore "MSFSTouchPortalPlugin"
 dotnet restore "MSFSTouchPortalPlugin.Tests"
 
 Write-Information "Building 'MSFSTouchPortalPlugin' component...`n" -InformationAction Continue
-dotnet build "MSFSTouchPortalPlugin" --configuration $Configuration
+dotnet build "MSFSTouchPortalPlugin" --configuration $Configuration -p:Platform=x64
 
 Write-Information "Cleaning 'MSFSTouchPortalPlugin' packages-dist folder..." -InformationAction Continue
 $CurrentDir = [System.IO.Path]::GetDirectoryName($myInvocation.MyCommand.Path)
@@ -31,10 +31,10 @@ if (Test-Path $DistFolderPath) {
 }
 
 Write-Information "Publishing 'MSFSTouchPortalPlugin' component...`n" -InformationAction Continue
-dotnet publish "MSFSTouchPortalPlugin" --output "$DistFolderPath\MSFS-TouchPortal-Plugin\dist" --configuration $Configuration $VersionSuffixCommand $VersionSuffix -r "win-x64" --self-contained true
+dotnet publish "MSFSTouchPortalPlugin" --output "$DistFolderPath\MSFS-TouchPortal-Plugin\dist" --configuration $Configuration -p:Platform=x64 $VersionSuffixCommand $VersionSuffix -r "win-x64" --self-contained true
 
 # Run Documentation
-dotnet run -p "MSFSTouchPortalPlugin-Generator" ".\packages-dist\MSFS-TouchPortal-Plugin"
+dotnet run -p "MSFSTouchPortalPlugin-Generator" "$DistFolderPath\MSFS-TouchPortal-Plugin"
 
 # Copy Entry.tp, Readme, Documentation, CHANGELOG to publish
 copy "README.md" "$DistFolderPath\MSFS-TouchPortal-Plugin"
@@ -42,7 +42,7 @@ copy "CHANGELOG.md" "$DistFolderPath\MSFS-TouchPortal-Plugin"
 copy "airplane_takeoff24.png" "$DistFolderPath\MSFS-TouchPortal-Plugin"
 
 # Get version
-$FileVersion = (Get-Command packages-dist\MSFS-TouchPortal-Plugin\dist\MSFSTouchPortalPlugin.dll).FileVersionInfo.FileVersion
+$FileVersion = (Get-Command $DistFolderPath\MSFS-TouchPortal-Plugin\dist\MSFSTouchPortalPlugin.dll).FileVersionInfo.FileVersion
 
 # Create TPP File
 #Compress-Archive -Path "$DistFolderPath\MSFS-TouchPortal-Plugin" -DestinationPath "$DistFolderPath\MSFS-TouchPortal-Plugin.zip"

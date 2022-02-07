@@ -11,6 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TouchPortalExtension", "Tou
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6DF0C85E-3EB4-4898-A304-EFA04CB547A6}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		actions = actions
 		airplane_takeoff1600.png = airplane_takeoff1600.png
@@ -42,30 +43,30 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PULL_REQUEST_TEMPLATE", "PU
 		.github\PULL_REQUEST_TEMPLATE\pull-request-template.md = .github\PULL_REQUEST_TEMPLATE\pull-request-template.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSFSTouchPortalPlugin-Tests", "MSFSTouchPortalPlugin-Tests\MSFSTouchPortalPlugin-Tests.csproj", "{562A58FF-DD9A-4839-B503-4520D3BE96DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSFSTouchPortalPlugin-Tests", "MSFSTouchPortalPlugin-Tests\MSFSTouchPortalPlugin-Tests.csproj", "{562A58FF-DD9A-4839-B503-4520D3BE96DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D3F1B2FB-0846-4003-8D2E-355273668F37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D3F1B2FB-0846-4003-8D2E-355273668F37}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D3F1B2FB-0846-4003-8D2E-355273668F37}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D3F1B2FB-0846-4003-8D2E-355273668F37}.Release|Any CPU.Build.0 = Release|Any CPU
-		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C217E7C3-4A14-457E-ABC8-180546369646}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C217E7C3-4A14-457E-ABC8-180546369646}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C217E7C3-4A14-457E-ABC8-180546369646}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C217E7C3-4A14-457E-ABC8-180546369646}.Release|Any CPU.Build.0 = Release|Any CPU
-		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3F1B2FB-0846-4003-8D2E-355273668F37}.Debug|x64.ActiveCfg = Debug|x64
+		{D3F1B2FB-0846-4003-8D2E-355273668F37}.Debug|x64.Build.0 = Debug|x64
+		{D3F1B2FB-0846-4003-8D2E-355273668F37}.Release|x64.ActiveCfg = Release|x64
+		{D3F1B2FB-0846-4003-8D2E-355273668F37}.Release|x64.Build.0 = Release|x64
+		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Debug|x64.ActiveCfg = Debug|x64
+		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Debug|x64.Build.0 = Debug|x64
+		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Release|x64.ActiveCfg = Release|x64
+		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Release|x64.Build.0 = Release|x64
+		{C217E7C3-4A14-457E-ABC8-180546369646}.Debug|x64.ActiveCfg = Debug|x64
+		{C217E7C3-4A14-457E-ABC8-180546369646}.Debug|x64.Build.0 = Debug|x64
+		{C217E7C3-4A14-457E-ABC8-180546369646}.Release|x64.ActiveCfg = Release|x64
+		{C217E7C3-4A14-457E-ABC8-180546369646}.Release|x64.Build.0 = Release|x64
+		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Debug|x64.ActiveCfg = Debug|x64
+		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Debug|x64.Build.0 = Debug|x64
+		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Release|x64.ActiveCfg = Release|x64
+		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
