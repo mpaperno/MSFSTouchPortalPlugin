@@ -28,6 +28,7 @@ namespace MSFSTouchPortalPlugin.Services {
     private readonly ITouchPortalClient _client;
     private readonly ISimConnectService _simConnectService;
     private readonly IReflectionService _reflectionService;
+    private bool autoReconnectSimConnect = true;
 
     public string PluginId => "MSFSTouchPortalPlugin";
     private readonly IReadOnlyCollection<Setting> _settings;
@@ -104,6 +105,7 @@ namespace MSFSTouchPortalPlugin.Services {
 
       _hostApplicationLifetime.ApplicationStopping.Register(() => {
         // Disconnect from SimConnect
+        autoReconnectSimConnect = false;
         _simConnectService.Disconnect();
       });
 
@@ -220,16 +222,13 @@ namespace MSFSTouchPortalPlugin.Services {
     }
 
     private Task TryConnect() {
-      int i = 0;
 
       while (!_cancellationToken.IsCancellationRequested) {
-        if (i == 0 && !_simConnectService.IsConnected()) {
+        if (autoReconnectSimConnect && !_simConnectService.IsConnected()) {
           _simConnectService.Connect();
-          i = 10;
         }
 
         // SimConnect is typically available even before loading into a flight. This should connect and be ready by the time a flight is started.
-        i--;
         Thread.Sleep(1000);
       }
 
@@ -244,18 +243,20 @@ namespace MSFSTouchPortalPlugin.Services {
         switch (internalEventResult) {
           case Plugin.ToggleConnection:
             if (_simConnectService.IsConnected()) {
+              autoReconnectSimConnect = false;
               _simConnectService.Disconnect();
             } else {
-              _simConnectService.Connect();
+              autoReconnectSimConnect = true;
             }
             break;
           case Plugin.Connect:
             if (!_simConnectService.IsConnected()) {
-              _simConnectService.Connect();
+              autoReconnectSimConnect = true;
             }
             break;
           case Plugin.Disconnect:
             if (_simConnectService.IsConnected()) {
+              autoReconnectSimConnect = false;
               _simConnectService.Disconnect();
             }
             break;
