@@ -170,6 +170,8 @@ namespace MSFSTouchPortalPlugin.Services {
         _simConnectService.MapClientEventToSimEvent(a.Value, a.Value.ToString());
         _simConnectService.AddNotification(a.Value.GetType().GetCustomAttribute<SimNotificationGroupAttribute>().Group, a.Value);
       }
+      // must be called after adding notifications
+      _simConnectService.SetNotificationGroupPriorities();
 
       // Register SimVars
       foreach (var s in statesDictionary) {
