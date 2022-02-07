@@ -1,7 +1,8 @@
 {
   "profiles": {
     "MSFSTouchPortalPlugin-Generator": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "..\\..\\..\\..\\..\\"
     }
   }
 }
