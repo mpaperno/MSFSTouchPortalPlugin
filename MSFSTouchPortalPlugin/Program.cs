@@ -26,7 +26,7 @@ namespace MSFSTouchPortalPlugin {
       //Build configuration:
       var configurationRoot = new ConfigurationBuilder()
           .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
-          .AddJsonFile("appsettings.json")
+          .AddJsonFile("appsettings.json", false, true)
           .Build();
 
       // Ensure only one running instance
@@ -39,18 +39,21 @@ namespace MSFSTouchPortalPlugin {
       }
 
       try {
-        await Host.CreateDefaultBuilder(args).ConfigureServices((context, services) => {
-          services.AddLogging(configure => {
-            configure.AddSerilog(logger: new LoggerConfiguration().WriteTo.File("logs\\MSFSTouchPortalPlugin.log", rollingInterval: RollingInterval.Day).CreateLogger(), dispose: true);
-            configure.AddSimpleConsole(options => options.TimestampFormat = "[yyyy.MM.dd HH:mm:ss] ");
-            configure.AddConfiguration(configurationRoot.GetSection("Logging"));
+        await Host.CreateDefaultBuilder(args)
+          .ConfigureLogging((hostContext, loggingBuilder) => { 
+            loggingBuilder
+              .ClearProviders()
+              .AddSerilog(logger: new LoggerConfiguration().ReadFrom.Configuration(configurationRoot).CreateLogger(), dispose: true);
           })
-          .Configure<MsfsTouchPortalPlugin>((opt) => { })
-          .AddHostedService<PluginService>()
-          .AddSingleton<ISimConnectService, SimConnectService>()
-          .AddSingleton<IReflectionService, ReflectionService>()
-          .AddTouchPortalSdk(configurationRoot);
-        }).RunConsoleAsync();
+          .ConfigureServices((context, services) => {
+            services
+              .Configure<MsfsTouchPortalPlugin>((opt) => { })
+              .AddHostedService<PluginService>()
+              .AddSingleton<ISimConnectService, SimConnectService>()
+              .AddSingleton<IReflectionService, ReflectionService>()
+              .AddTouchPortalSdk(configurationRoot);
+          })
+          .RunConsoleAsync();
       } catch (COMException ex) {
         logger.LogError($"COMException: {ex.Message}");
       }
