@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿
+// define to enable extra request tracking code (for UNKNOWN_ID and similar errors)
+//#define DEBUG_REQUESTS
+
+using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Constants;
@@ -10,6 +14,9 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+#if DEBUG_REQUESTS
+using System.Collections.Generic;
+#endif
 
 namespace MSFSTouchPortalPlugin.Services {
   /// <summary>
@@ -61,6 +68,9 @@ namespace MSFSTouchPortalPlugin.Services {
         _simConnect.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(Simconnect_OnRecvSimobjectDataBytype);
         //_simConnect.OnRecvSimobjectData += new SimConnect.RecvSimobjectDataEventHandler(Simconnect_OnRecvSimObjectData);  // unused for now
 
+#if DEBUG_REQUESTS
+        DbgSetupRequestTracking();
+#endif
         _simConnect.Text(SIMCONNECT_TEXT_TYPE.PRINT_BLACK, 5, Events.StartupMessage, "TouchPortal Connected");
 
         // Invoke Handler
@@ -91,7 +101,7 @@ namespace MSFSTouchPortalPlugin.Services {
 
     public Task WaitForMessage(CancellationToken cancellationToken) {
       while (_connected && !cancellationToken.IsCancellationRequested) {
-        if (_scReady.WaitOne(TimeSpan.FromSeconds(5))) {
+        if (_scReady.WaitOne(5000)) {
           _simConnect?.ReceiveMessage();
         }
       }
@@ -102,6 +112,7 @@ namespace MSFSTouchPortalPlugin.Services {
     public bool MapClientEventToSimEvent(Enum eventId, string eventName) {
       if (_connected) {
         _simConnect.MapClientEventToSimEvent(eventId, eventName);
+        DbgAddSendRecord($"MapClientEventToSimEvent(eventId: {eventId}; eventName: {eventName})");
         return true;
       }
 
@@ -112,6 +123,7 @@ namespace MSFSTouchPortalPlugin.Services {
       if (_connected) {
         try {
           _simConnect.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, data, group, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+          DbgAddSendRecord($"TransmitClientEvent(group: {group}; eventId: {eventId}; data: {data})");
           return true;
         }
         catch (Exception ex) {
@@ -126,6 +138,7 @@ namespace MSFSTouchPortalPlugin.Services {
     public bool AddNotification(Groups group, Enum eventId) {
       if (DEBUG_NOTIFICATIONS && _connected) {
         _simConnect.AddClientEventToNotificationGroup(group, eventId, false);
+        DbgAddSendRecord($"AddNotification(group: {group}; eventId: {eventId}");
         return true;
       }
 
@@ -134,20 +147,26 @@ namespace MSFSTouchPortalPlugin.Services {
 
     public void SetNotificationGroupPriorities() {
       if (DEBUG_NOTIFICATIONS && _connected) {
-        foreach (Enum g in Enum.GetValues(typeof(Groups)))
+        foreach (Enum g in Enum.GetValues(typeof(Groups))) {
           _simConnect.SetNotificationGroupPriority(g, NOTIFICATION_PRIORITY);
+          DbgAddSendRecord($"SetNotificationGroupPriority(Group: {g})");
+        }
       }
     }
 
     public bool RegisterToSimConnect(SimVarItem simVar) {
       if (_connected) {
-        if (simVar.Unit == Units.String) {
-          _simConnect.AddToDataDefinition(simVar.Def, simVar.SimVarName, null, SIMCONNECT_DATATYPE.STRING64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+        bool isStrType = simVar.Unit == Units.String;
+        string unitName = isStrType ? null : simVar.Unit;
+        SIMCONNECT_DATATYPE scType = isStrType ? SIMCONNECT_DATATYPE.STRING64 : SIMCONNECT_DATATYPE.FLOAT64;
+        _simConnect.AddToDataDefinition(simVar.Def, simVar.SimVarName, unitName, scType, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+        DbgAddSendRecord($"AddToDataDefinition(simVar.Def: {simVar.Def}; simVar.SimVarName: {simVar.SimVarName}; simVar.Unit: {simVar.Unit};");
+
+        if (isStrType)
           _simConnect.RegisterDataDefineStruct<StringVal64>(simVar.Def);
-        } else {
-          _simConnect.AddToDataDefinition(simVar.Def, simVar.SimVarName, simVar.Unit, SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+        else
           _simConnect.RegisterDataDefineStruct<double>(simVar.Def);
-        }
+        DbgAddSendRecord($"RegisterDataDefineStruct<{(isStrType ? "String64" : "double")}>(simVar.Def: {simVar.Def}");
 
         return true;
       }
@@ -159,6 +178,7 @@ namespace MSFSTouchPortalPlugin.Services {
       if (_connected) {
         try {
           _simConnect.RequestDataOnSimObjectType(simVar.Def, simVar.Def, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
+          DbgAddSendRecord($"RequestDataOnSimObjectType(simVar.Def: {simVar.Def})");
           return true;
         }
         catch (Exception ex) {
@@ -188,7 +208,8 @@ namespace MSFSTouchPortalPlugin.Services {
 
     private void Simconnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data) {
       SIMCONNECT_EXCEPTION eException = (SIMCONNECT_EXCEPTION)data.dwException;
-      _logger.LogInformation("SimConnect_OnRecvException: {exception}", eException.ToString());
+      string request = DbgGetSendRecord(data.dwSendID);
+      _logger.LogInformation($"SimConnect_OnRecvException: {eException}; SendID: {data.dwSendID}; Index: {data.dwIndex}; Request: {request}");
     }
 
     /// <summary>
@@ -235,6 +256,48 @@ namespace MSFSTouchPortalPlugin.Services {
       Dispose(true);
       GC.SuppressFinalize(this);
     }
+    #endregion
+
+    #region Request Debugging
+
+#if DEBUG_REQUESTS
+
+    // Extra SimConnect functions via native pointer
+    IntPtr hSimConnect;
+    [DllImport("SimConnect.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+    private static extern int /* HRESULT */ SimConnect_GetLastSentPacketID(IntPtr hSimConnect, out uint /* DWORD */ dwSendID);
+    // for tracking requests by their SendID
+    private readonly Dictionary<uint, string> dbgSendRecordsDict = new();
+
+    private void DbgSetupRequestTracking() {
+      // Get direct access to the SimConnect handle, to use functions otherwise not supported.
+      FieldInfo fiSimConnect = typeof(SimConnect).GetField("hSimConnect", BindingFlags.NonPublic | BindingFlags.Instance);
+      hSimConnect = (IntPtr)fiSimConnect.GetValue(_simConnect);
+    }
+
+    private void DbgAddSendRecord(string record) {
+      if (_simConnect == null || !_connected)
+        return;
+      if (dbgSendRecordsDict.Count > 5000)
+        dbgSendRecordsDict.Remove(dbgSendRecordsDict.Keys.First());
+      SimConnect_GetLastSentPacketID(hSimConnect, out uint dwSendID);
+      _ = dbgSendRecordsDict.TryAdd(dwSendID, record);
+    }
+
+    private string DbgGetSendRecord(uint sendId) {
+      if (dbgSendRecordsDict.TryGetValue(sendId, out string record))
+        return record;
+      return $"Recrod not found for SendID {sendId}";
+    }
+
+#else
+#pragma warning disable S1172 // Unused method parameters should be removed
+    [System.Diagnostics.Conditional("DEBUG_REQUESTS")]  // prevents any parameters being passed to this method from being evaluated
+    private static void DbgAddSendRecord(string _) { /* no-op when request tracking disabled */ }
+    private static string DbgGetSendRecord(uint _) => "Request tracking disabled.";
+#pragma warning restore S1172
+#endif  // DEBUG_REQUESTS
+
     #endregion
   }
 
