@@ -191,8 +191,6 @@ namespace MSFSTouchPortalPlugin.Services {
           // Handle conversions
           if (Units.ShouldConvertToFloat(value.Unit)) {
             valObj = float.Parse(stringVal);
-          } else if (value.Unit == Units.String) {
-            valObj = ((StringVal64)data).Value;
           } else if (value.Unit == Units.radians) {
             // Convert to Degrees
             valObj = float.Parse(stringVal) * (180 / Math.PI);
