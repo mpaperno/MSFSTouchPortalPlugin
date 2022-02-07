@@ -15,6 +15,11 @@ namespace MSFSTouchPortalPlugin.Objects.SimSystem {
       new SimVarItem { Def = Definition.SimulationRate, SimVarName = "SIMULATION RATE", Unit = Units.number, CanSet = false };
 
     [SimVarDataRequest]
+    [TouchPortalAction("SelectedParameter", "Change Selected Value (+/-)", "MSFS", "Selected Value", "Value {0}", true)]
+    [TouchPortalActionChoice(new[] { "Increase", "Decrease" }, "Decrease")]
+    public static object SELECTED_PARAMETER_CHANGE { get; }
+
+    [SimVarDataRequest]
     [TouchPortalState("AtcType", "text", "Type of aircraft used by ATC", "")]
     public static readonly SimVarItem AtcType = new SimVarItem { Def = Definition.AtcType, SimVarName = "ATC TYPE", Unit = Units.String, CanSet = false };
 
@@ -45,6 +50,17 @@ namespace MSFSTouchPortalPlugin.Objects.SimSystem {
     // Placeholder to offset each enum for SimConnect
     Init = 3000,
 
+    #region KeySelect
+
+    [SimActionEvent]
+    [TouchPortalActionMapping("SelectedParameter", "Increase")]
+    PLUS,
+    [SimActionEvent]
+    [TouchPortalActionMapping("SelectedParameter", "Decrease")]
+    MINUS,
+
+    #endregion
+
     #region SimRate
 
     [SimActionEvent]
@@ -52,7 +68,7 @@ namespace MSFSTouchPortalPlugin.Objects.SimSystem {
     SIM_RATE_INCR,
     [SimActionEvent]
     [TouchPortalActionMapping("SimulationRate", "Decrease")]
-    SIM_RATE_DECR
+    SIM_RATE_DECR,
 
     #endregion
   }
