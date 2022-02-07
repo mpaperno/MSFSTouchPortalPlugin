@@ -49,41 +49,41 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     public static object ALL_LIGHTS { get; }
 
     [SimVarDataRequest]
-    [TouchPortalState("LightBeaconOn", "text", "Light Beacon Status", "")]
-    public static readonly SimVarItem LightBeaconOn = new SimVarItem { Def = Definition.LightBeaconOn, SimVarName = "LIGHT BEACON ON", Unit = Units.Bool, CanSet = false };
+    [TouchPortalState("LightBeaconOn", "text", "Light Beacon Switch Status", "")]
+    public static readonly SimVarItem LightBeaconOn = new SimVarItem { Def = Definition.LightBeaconOn, SimVarName = "LIGHT BEACON", Unit = Units.Bool, CanSet = false };
     [SimVarDataRequest]
-    [TouchPortalState("LightBrakeOn", "text", "Light Brake Status", "")]
+    [TouchPortalState("LightBrakeOn", "text", "Light Brake Switch or Light Status", "")]
     public static readonly SimVarItem LightBrakeOn = new SimVarItem { Def = Definition.LightBrakeOn, SimVarName = "LIGHT BRAKE ON", Unit = Units.Bool, CanSet = false };
     [SimVarDataRequest]
-    [TouchPortalState("LightCabinOn", "text", "Light Cabin Status", "")]
-    public static readonly SimVarItem LightCabinOn = new SimVarItem { Def = Definition.LightCabinOn, SimVarName = "LIGHT CABIN ON", Unit = Units.Bool, CanSet = false };
+    [TouchPortalState("LightCabinOn", "text", "Light Cabin Switch Status", "")]
+    public static readonly SimVarItem LightCabinOn = new SimVarItem { Def = Definition.LightCabinOn, SimVarName = "LIGHT CABIN", Unit = Units.Bool, CanSet = false };
     [SimVarDataRequest]
-    [TouchPortalState("LightHeadOn", "text", "Light Head Status", "")]
+    [TouchPortalState("LightHeadOn", "text", "Light Head Switch or Light Status", "")]
     public static readonly SimVarItem LightHeadOn = new SimVarItem { Def = Definition.LightHeadOn, SimVarName = "LIGHT HEAD ON", Unit = Units.Bool, CanSet = false };
     [SimVarDataRequest]
-    [TouchPortalState("LightLandingOn", "text", "Light Landing Status", "")]
-    public static readonly SimVarItem LightLandingOn = new SimVarItem { Def = Definition.LightLandingOn, SimVarName = "LIGHT LANDING ON", Unit = Units.Bool, CanSet = false };
+    [TouchPortalState("LightLandingOn", "text", "Light Landing Switch Status", "")]
+    public static readonly SimVarItem LightLandingOn = new SimVarItem { Def = Definition.LightLandingOn, SimVarName = "LIGHT LANDING", Unit = Units.Bool, CanSet = false };
     [SimVarDataRequest]
-    [TouchPortalState("LightLogoOn", "text", "Light Logo Status", "")]
-    public static readonly SimVarItem LightLogoOn = new SimVarItem { Def = Definition.LightLogoOn, SimVarName = "LIGHT LOGO ON", Unit = Units.Bool, CanSet = false };
+    [TouchPortalState("LightLogoOn", "text", "Light Logo Switch Status", "")]
+    public static readonly SimVarItem LightLogoOn = new SimVarItem { Def = Definition.LightLogoOn, SimVarName = "LIGHT LOGO", Unit = Units.Bool, CanSet = false };
     [SimVarDataRequest]
-    [TouchPortalState("LightNavOn", "text", "Light Nav Status", "")]
-    public static readonly SimVarItem LightNavOn = new SimVarItem { Def = Definition.LightNavOn, SimVarName = "LIGHT NAV ON", Unit = Units.Bool, CanSet = false };
+    [TouchPortalState("LightNavOn", "text", "Light Nav Switch Status", "")]
+    public static readonly SimVarItem LightNavOn = new SimVarItem { Def = Definition.LightNavOn, SimVarName = "LIGHT NAV", Unit = Units.Bool, CanSet = false };
     [SimVarDataRequest]
-    [TouchPortalState("LightPanelOn", "text", "Light Panel Status", "")]
-    public static readonly SimVarItem LightPanelOn = new SimVarItem { Def = Definition.LightPanelOn, SimVarName = "LIGHT PANEL ON", Unit = Units.Bool, CanSet = false };
+    [TouchPortalState("LightPanelOn", "text", "Light Panel Switch Status", "")]
+    public static readonly SimVarItem LightPanelOn = new SimVarItem { Def = Definition.LightPanelOn, SimVarName = "LIGHT PANEL", Unit = Units.Bool, CanSet = false };
     [SimVarDataRequest]
-    [TouchPortalState("LightRecognitionOn", "text", "Light Recognition Status", "")]
-    public static readonly SimVarItem LightRecognitionOn = new SimVarItem { Def = Definition.LightRecognitionOn, SimVarName = "LIGHT RECOGNITION ON", Unit = Units.Bool, CanSet = false };
+    [TouchPortalState("LightRecognitionOn", "text", "Light Recognition Switch Status", "")]
+    public static readonly SimVarItem LightRecognitionOn = new SimVarItem { Def = Definition.LightRecognitionOn, SimVarName = "LIGHT RECOGNITION", Unit = Units.Bool, CanSet = false };
     [SimVarDataRequest]
-    [TouchPortalState("LightStrobeOn", "text", "Light Strobe Status", "")]
-    public static readonly SimVarItem LightStrobeOn = new SimVarItem { Def = Definition.LightStrobeOn, SimVarName = "LIGHT STROBE ON", Unit = Units.Bool, CanSet = false };
+    [TouchPortalState("LightStrobeOn", "text", "Light Strobe Switch Status", "")]
+    public static readonly SimVarItem LightStrobeOn = new SimVarItem { Def = Definition.LightStrobeOn, SimVarName = "LIGHT STROBE", Unit = Units.Bool, CanSet = false };
     [SimVarDataRequest]
-    [TouchPortalState("LightTaxiOn", "text", "Light Taxi Status", "")]
-    public static readonly SimVarItem LightTaxiOn = new SimVarItem { Def = Definition.LightTaxiOn, SimVarName = "LIGHT TAXI ON", Unit = Units.Bool, CanSet = false };
+    [TouchPortalState("LightTaxiOn", "text", "Light Taxi Switch Status", "")]
+    public static readonly SimVarItem LightTaxiOn = new SimVarItem { Def = Definition.LightTaxiOn, SimVarName = "LIGHT TAXI", Unit = Units.Bool, CanSet = false };
     [SimVarDataRequest]
-    [TouchPortalState("LightWingOn", "text", "Light Wing Status", "")]
-    public static readonly SimVarItem LightWingOn = new SimVarItem { Def = Definition.LightWingOn, SimVarName = "LIGHT WING ON", Unit = Units.Bool, CanSet = false };
+    [TouchPortalState("LightWingOn", "text", "Light Wing Switch Status", "")]
+    public static readonly SimVarItem LightWingOn = new SimVarItem { Def = Definition.LightWingOn, SimVarName = "LIGHT WING", Unit = Units.Bool, CanSet = false };
 
     #endregion
 
@@ -116,7 +116,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     [SimActionEvent]
     [TouchPortalActionMapping("AlternatorIndex", "2")]
     TOGGLE_ALTERNATOR2,
-    
+
     [SimActionEvent]
     [TouchPortalActionMapping("AlternatorIndex", "3")]
     TOGGLE_ALTERNATOR3,
