@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 using TouchPortalSDK;
 using TouchPortalSDK.Interfaces;
 using TouchPortalSDK.Messages.Events;
-using TouchPortalSDK.Messages.Models;
 using Timer = MSFSTouchPortalPlugin.Helpers.UnthreadedTimer;
 
 namespace MSFSTouchPortalPlugin.Services {
@@ -31,7 +30,6 @@ namespace MSFSTouchPortalPlugin.Services {
     private readonly IReflectionService _reflectionService;
 
     public string PluginId => "MSFSTouchPortalPlugin";
-    private readonly IReadOnlyCollection<Setting> _settings;
     /// <summary>
     /// milliseconds for repeat (held) actions; Perhaps this could be a setting for this plugin.
     /// </summary>
@@ -40,6 +38,7 @@ namespace MSFSTouchPortalPlugin.Services {
     private Dictionary<string, Enum> actionsDictionary = new Dictionary<string, Enum>();
     private Dictionary<Definition, SimVarItem> statesDictionary = new Dictionary<Definition, SimVarItem>();
     private Dictionary<string, Enum> internalEventsDictionary = new Dictionary<string, Enum>();
+    private Dictionary<string, PluginSetting> pluginSettingsDictionary = new();
 
     private readonly ConcurrentDictionary<string, Timer> repeatingActionTimers = new();
 
@@ -106,7 +105,6 @@ namespace MSFSTouchPortalPlugin.Services {
           return;
         }
 
-        SetupEventLists();
         Task.WhenAll(TryConnect());
       });
 
@@ -152,6 +150,8 @@ namespace MSFSTouchPortalPlugin.Services {
     /// Initialized the Touch Portal Message Processor
     /// </summary>
     private bool Initialize() {
+      SetupEventLists();  // set these up first to have access to defined plugin settings
+
       if (!_client.Connect()) {
         return false;
       }
@@ -227,6 +227,7 @@ namespace MSFSTouchPortalPlugin.Services {
       internalEventsDictionary = _reflectionService.GetInternalEvents();
       actionsDictionary = _reflectionService.GetActionEvents();
       statesDictionary = _reflectionService.GetStates();
+      pluginSettingsDictionary = _reflectionService.GetSettings();
     }
 
     private Task TryConnect() {
@@ -306,24 +307,42 @@ namespace MSFSTouchPortalPlugin.Services {
       }
     }
 
+    /// <summary>
+    /// Handles an array of `Setting` types sent from TP. This could come from either the
+    /// initial `OnInfoEvent` message, or the dedicated `OnSettingsEvent` message.
+    /// </summary>
+    /// <param name="settings"></param>
+    private void ProcessPluginSettings(IReadOnlyCollection<TouchPortalSDK.Messages.Models.Setting> settings) {
+      if (settings == null)
+        return;
+      foreach (var s in settings) {
+        if (pluginSettingsDictionary.TryGetValue(s.Name, out PluginSetting setting)) {
+          setting.SetValueFromString(s.Value);
+          if (!string.IsNullOrWhiteSpace(setting.TouchPortalStateId))
+            _client.StateUpdate(setting.TouchPortalStateId, setting.ValueAsStr());
+        }
+      }
+    }
+
     #region TouchPortalSDK Events
 
     public void OnInfoEvent(InfoEvent message) {
       _logger.LogInformation(
         $"[Info] VersionCode: '{message.TpVersionCode}', VersionString: '{message.TpVersionString}', SDK: '{message.SdkVersion}', PluginVersion: '{message.PluginVersion}', Status: '{message.Status}'"
       );
+      ProcessPluginSettings(message.Settings);
     }
 
     public void OnListChangedEvent(ListChangeEvent message) {
-      throw new NotImplementedException();
+      // not implemented yet
     }
 
     public void OnBroadcastEvent(BroadcastEvent message) {
-      throw new NotImplementedException();
+      // not implemented yet
     }
 
     public void OnSettingsEvent(SettingsEvent message) {
-      throw new NotImplementedException();
+      ProcessPluginSettings(message.Values);
     }
 
     public void OnActionEvent(ActionEvent message)
