@@ -28,13 +28,9 @@ namespace MSFSTouchPortalPlugin.Services {
     private readonly ITouchPortalClient _client;
     private readonly ISimConnectService _simConnectService;
     private readonly IReflectionService _reflectionService;
-    private bool autoReconnectSimConnect = true;
+    private bool autoReconnectSimConnect = false;
 
     public string PluginId => "MSFSTouchPortalPlugin";
-    /// <summary>
-    /// milliseconds for repeat (held) actions; Perhaps this could be a setting for this plugin.
-    /// </summary>
-    public int ActionRepeatInterval = 450;
 
     private Dictionary<string, Enum> actionsDictionary = new Dictionary<string, Enum>();
     private Dictionary<Definition, SimVarItem> statesDictionary = new Dictionary<Definition, SimVarItem>();
@@ -87,7 +83,7 @@ namespace MSFSTouchPortalPlugin.Services {
         dataPollTimer.Tick();
         foreach (Timer tim in repeatingActionTimers.Values)
           tim.Tick();
-        await Task.Delay(20, cancellationToken);
+        await Task.Delay(25, cancellationToken);
       }
 
       dataPollTimer.Dispose();
@@ -260,8 +256,9 @@ namespace MSFSTouchPortalPlugin.Services {
       // Plugin Events
       if (internalEventsDictionary.TryGetValue($"{actionId}:{value}", out var internalEventResult)) {
         _logger.LogInformation($"{DateTime.Now} {internalEventResult} - Firing Internal Event");
+        Plugin typedResult = (Plugin)internalEventResult;
 
-        switch (internalEventResult) {
+        switch (typedResult) {
           case Plugin.ToggleConnection:
             if (_simConnectService.IsConnected()) {
               autoReconnectSimConnect = false;
@@ -281,6 +278,24 @@ namespace MSFSTouchPortalPlugin.Services {
               _simConnectService.Disconnect();
             }
             break;
+
+          case Plugin.ActionRepeatIntervalInc:
+          case Plugin.ActionRepeatIntervalDec: {
+              var interval = Settings.ActionRepeatInterval.ValueAsDbl();
+              if (typedResult == Plugin.ActionRepeatIntervalInc)
+                interval = Math.Min(interval + 50, Settings.ActionRepeatInterval.MaxValue);
+              else
+                interval = Math.Max(interval - 50, Settings.ActionRepeatInterval.MinValue);
+              if (interval != Settings.ActionRepeatInterval.ValueAsDbl())
+                _client.SettingUpdate(Settings.ActionRepeatInterval.Name, $"{interval:F0}");  // this will trigger the actual value update
+            }
+            break;
+
+          // FIXME when we can use freeform values in action data
+          case var n when (n >= Plugin.ActionRepeatInterval50 && n <= Plugin.ActionRepeatInterval1000):
+            _client.SettingUpdate(Settings.ActionRepeatInterval.Name, value);  // this will trigger the actual value update
+            break;
+
           default:
             // No other types of events supported right now.
             break;
@@ -342,6 +357,7 @@ namespace MSFSTouchPortalPlugin.Services {
         $"[Info] VersionCode: '{message.TpVersionCode}', VersionString: '{message.TpVersionString}', SDK: '{message.SdkVersion}', PluginVersion: '{message.PluginVersion}', Status: '{message.Status}'"
       );
       ProcessPluginSettings(message.Settings);
+      autoReconnectSimConnect = (Settings.ConnectSimOnStartup.ValueAsInt() != 0);
     }
 
     public void OnListChangedEvent(ListChangeEvent message) {
@@ -370,7 +386,7 @@ namespace MSFSTouchPortalPlugin.Services {
       switch (message.GetPressState()) {
         case TouchPortalSDK.Messages.Models.Enums.Press.Down:
           // "On Hold" activated ("down" event). Try to add this action to the repeating/scheduled actions queue, unless it already exists.
-          var timer = new Timer(ActionRepeatInterval);
+          var timer = new Timer(Settings.ActionRepeatInterval.ValueAsInt());
           timer.Elapsed += delegate { ProcessEvent(message.ActionId, values); };
           if (repeatingActionTimers.TryAdd(message.ActionId, timer))
             timer.Start();
