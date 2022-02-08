@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace MSFSTouchPortalPlugin_Generator.Model {
@@ -16,8 +17,8 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public Configuration Configuration { get; set; } = new Configuration();
     public string Plugin_start_cmd { get; set; } = string.Empty;
     [ValidateObject]
-    public List<TouchPortalCategory> Categories { get; set; } = new List<TouchPortalCategory>();
-    public List<object> Settings { get; set; } = new List<object>();
+    public List<TouchPortalCategory> Categories { get; set; } = new();
+    public List<TouchPortalSetting> Settings { get; set; } = new();
   }
 
   class Configuration {
@@ -78,6 +79,26 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string Description { get; set; }
     [Required, JsonProperty("default")]
     public string DefaultValue { get; set; }
+  }
+
+  class TouchPortalSetting
+  {
+    [Required, MinLength(5)]
+    public string Name { get; set; }
+    [Required]
+    public string Type { get; set; }
+    [JsonProperty("default")]
+    public string DefaultValue { get; set; } = string.Empty;
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public int MaxLength { get; set; } = 0;
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [DefaultValue(double.NaN)]
+    public double MinValue { get; set; } = double.NaN;
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [DefaultValue(double.NaN)]
+    public double MaxValue { get; set; } = double.NaN;
+    public bool IsPassword { get; set; } = false;
+    public bool ReadOnly { get; set; } = false;
   }
 
   public class ValidateObjectAttribute : ValidationAttribute {

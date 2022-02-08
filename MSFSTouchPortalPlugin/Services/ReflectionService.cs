@@ -1,6 +1,7 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Interfaces;
+using MSFSTouchPortalPlugin.Objects.Plugin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,6 +77,30 @@ namespace MSFSTouchPortalPlugin.Services {
           item.TouchPortalStateId = $"{rootName}.{catId}.State.{item.Def}";
 
           returnDict.TryAdd(item.Def, item);
+        });
+      });
+
+      return returnDict;
+    }
+
+    public Dictionary<string, PluginSetting> GetSettings() {
+      Dictionary<string, PluginSetting> returnDict = new();
+
+      var setContainers = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass && t.GetCustomAttribute<TouchPortalSettingsContainerAttribute>() != null).ToList();
+      setContainers.ForEach(setCtr => {
+        var fieldList = setCtr.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public).ToList();
+        fieldList.ForEach(settingField => {
+          var settingAttr = settingField.GetCustomAttribute<TouchPortalSettingAttribute>();
+          var settingsObj = (PluginSetting)settingField.GetValue(null);
+          if (settingAttr != null && settingsObj != null) {
+            if (settingsObj.Name == null)
+              settingsObj.Name = settingAttr.Name;
+            if (settingsObj.Default == null)
+              settingsObj.Default = settingAttr.Default;
+            if (settingsObj.TouchPortalStateId == null && (settingField.GetCustomAttribute<TouchPortalStateAttribute>()?.Id is var stateId && stateId != null))
+              settingsObj.TouchPortalStateId = $"{rootName}.Plugin.State.{stateId}";
+            returnDict.TryAdd(settingAttr.Name, settingsObj);
+          }
         });
       });
 
