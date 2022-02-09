@@ -1,4 +1,31 @@
-# MSFS Touch Portal Plugin
+# MSFS Touch Portal Plugin - MP fork
+
+## 0.5.4-mp (Feb-08-2021)
+* Added support for "On Hold" type Touch Portal actions with a configurable repeat time. 
+  All current actions which may make sense to repeat (such as for control surfaces or AP adjustments) should now be available in the "On Hold" TP button configuration page.
+  The generated documentation now shows which actions can be held.
+  - Note that "On Hold" actions do _not_ trigger upon first button press, you need to  configure an "On Pressed" action as well, which is a bit more setup but is more flexible
+  in case a single press should do some different action.
+* Added support for Touch Portal plugin Settings (in the TP _Settings -> Plug-ins -> MSFSTouchPortalPlugin_ page).
+* Added setting to control automatic connection to SimConnect upon TP (or plugin) startup. When disabled, connectin must be made manually via the existing Connect action.
+* Fixed issue with re-connecting to SimConnect automatically despite user's Disconnect/Toggle Off action.
+* Fixed text values like ATC ID and Aircraft Title not updating properly after the first time. [#42](https://github.com/tlewis17/MSFSTouchPortalPlugin/issues/42)
+* Fixed/changed light switch states to only reflect switch status, not the light OR switch being on. [#5](https://github.com/tlewis17/MSFSTouchPortalPlugin/issues/5)
+* Fixed that Elevevator Trim Position (degrees) was actually reporting the percentage-open value (percents also added, see below).
+* More robust recovery (reconnection) in case of (some) unexpected SimConnect errors.
+* Fixed generated documentation to include all TP States per category. It now also includes settings information.
+* Less verbose logging by default, with more control via `appsettings.json` file (changes in config reflected w/out restarting the plugin).
+* General performance and stability improvements.
+* Added new actions:
+  - Propeller Pitch Adjust All/1/2/3/4 Incr/Incr Small/Decr/Decr Small/Min/Max/Feather Switch
+  - Selected value (knob) increase/decrease (eg. for autopilot settings, same as +/- keys)
+  - Held Action Repeat Rate, Increment/Decrement 50ms or choose one of several presets.
+* Added new states:
+  - Ele/Ail/Rud Trim angles in Percent
+  - Cowl Flaps 1-4 Opened Percentage
+  - Propeller 1-4 Feather Switch and Feathered State
+  - Deice and Pitot Heat switch states for Panel, Structural, Windshield, and Pitot 1-4
+  - Current Held Action Repeat Rate (in ms)
 
 ## 0.5.3 (10-14-2020)
 * Added new states:
