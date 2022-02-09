@@ -1,13 +1,13 @@
 # MSFS Touch Portal Plugin - MP fork
 
-## 0.5.4-mp (Feb-08-2021)
+## 0.5.4-mp (Feb-08-2022)
 * Added support for "On Hold" type Touch Portal actions with a configurable repeat time. 
   All current actions which may make sense to repeat (such as for control surfaces or AP adjustments) should now be available in the "On Hold" TP button configuration page.
   The generated documentation now shows which actions can be held.
   - Note that "On Hold" actions do _not_ trigger upon first button press, you need to  configure an "On Pressed" action as well, which is a bit more setup but is more flexible
   in case a single press should do some different action.
 * Added support for Touch Portal plugin Settings (in the TP _Settings -> Plug-ins -> MSFSTouchPortalPlugin_ page).
-* Added setting to control automatic connection to SimConnect upon TP (or plugin) startup. When disabled, connectin must be made manually via the existing Connect action.
+* Added setting to control automatic connection to SimConnect upon TP (or plugin) startup. When disabled, connection must be made manually via the existing Connect action.
 * Fixed issue with re-connecting to SimConnect automatically despite user's Disconnect/Toggle Off action.
 * Fixed text values like ATC ID and Aircraft Title not updating properly after the first time. [#42](https://github.com/tlewis17/MSFSTouchPortalPlugin/issues/42)
 * Fixed/changed light switch states to only reflect switch status, not the light OR switch being on. [#5](https://github.com/tlewis17/MSFSTouchPortalPlugin/issues/5)
