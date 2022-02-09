@@ -21,7 +21,7 @@ Another good page for use is created by TaxTips at: [FltSim-msfs2020-Control](ht
 
 ## Documentation
 
-Auto-generated documentation on all actions, states, and settings can be found here: [link](DOCUMENTATION.md).
+Auto-generated documentation on all actions, states, and settings can be found in [DOCUMENTATION.MD](DOCUMENTATION.MD).
 
 ## Installation Guide
 
