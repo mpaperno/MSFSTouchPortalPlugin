@@ -103,6 +103,11 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
 
     #region Propeller
 
+    [TouchPortalAction("PropellerPitch", "Propeller Pitch", "MSFS", "Adjusts propeller pitch levers/feather", "Pitch {0} - {1}", true)]
+    [TouchPortalActionChoice(new[] {"All", "1", "2", "3", "4" }, "All")]
+    [TouchPortalActionChoice(new[] { "Increment", "Increment Small", "Decrement", "Decrement Small", "Min (hi pitch)", "Max (lo pitch)", "Toggle Feather Switch" }, "Increment")]
+    public static object PROPELLER_PITCH { get; }
+
     [SimVarDataRequest]
     [TouchPortalState("PropellerEngine1", "text", "Propeller - Engine 1 - Percentage", "")]
     public static readonly SimVarItem PropellerEngine1 = new SimVarItem { Def = Definition.PropellerEngine1, SimVarName = "GENERAL ENG PROPELLER LEVER POSITION:1", Unit = Units.percent, CanSet = true, StringFormat = "{0:0.0#}" };
@@ -118,6 +123,33 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     [SimVarDataRequest]
     [TouchPortalState("PropellerEngine4", "text", "Propeller - Engine 4 - Percentage", "")]
     public static readonly SimVarItem PropellerEngine4 = new SimVarItem { Def = Definition.PropellerEngine4, SimVarName = "GENERAL ENG PROPELLER LEVER POSITION:4", Unit = Units.percent, CanSet = true, StringFormat = "{0:0.0#}" };
+
+    [SimVarDataRequest]
+    [TouchPortalState("Propeller1FeatherSw", "text", "Propeller - Engine 1 - Feather Switch State (bool)", "")]
+    public static readonly SimVarItem Propeller1FeatherSw = new SimVarItem { Def = Definition.Propeller1FeatherSw, SimVarName = "PROP FEATHER SWITCH:1", Unit = Units.Bool, CanSet = false };
+    [SimVarDataRequest]
+    [TouchPortalState("Propeller2FeatherSw", "text", "Propeller - Engine 2 - Feather Switch State (bool)", "")]
+    public static readonly SimVarItem Propeller2FeatherSw = new SimVarItem { Def = Definition.Propeller2FeatherSw, SimVarName = "PROP FEATHER SWITCH:2", Unit = Units.Bool, CanSet = false };
+    [SimVarDataRequest]
+    [TouchPortalState("Propeller3FeatherSw", "text", "Propeller - Engine 3 - Feather Switch State (bool)", "")]
+    public static readonly SimVarItem Propeller3FeatherSw = new SimVarItem { Def = Definition.Propeller3FeatherSw, SimVarName = "PROP FEATHER SWITCH:3", Unit = Units.Bool, CanSet = false };
+    [SimVarDataRequest]
+    [TouchPortalState("Propeller4FeatherSw", "text", "Propeller - Engine 4 - Feather Switch State (bool)", "")]
+    public static readonly SimVarItem Propeller4FeatherSw = new SimVarItem { Def = Definition.Propeller4FeatherSw, SimVarName = "PROP FEATHER SWITCH:4", Unit = Units.Bool, CanSet = false };
+
+    [SimVarDataRequest]
+    [TouchPortalState("Propeller1Feathered", "text", "Propeller - Engine 1 - Feathered (bool)", "")]
+    public static readonly SimVarItem Propeller1Feathered = new SimVarItem { Def = Definition.Propeller1Feathered, SimVarName = "PROP FEATHERED:1", Unit = Units.Bool, CanSet = false };
+    [SimVarDataRequest]
+    [TouchPortalState("Propeller2Feathered", "text", "Propeller - Engine 2 - Feathered (bool)", "")]
+    public static readonly SimVarItem Propeller2Feathered = new SimVarItem { Def = Definition.Propeller2Feathered, SimVarName = "PROP FEATHERED:2", Unit = Units.Bool, CanSet = false };
+    [SimVarDataRequest]
+    [TouchPortalState("Propeller3Feathered", "text", "Propeller - Engine 3 - Feathered (bool)", "")]
+    public static readonly SimVarItem Propeller3Feathered = new SimVarItem { Def = Definition.Propeller3Feathered, SimVarName = "PROP FEATHERED:3", Unit = Units.Bool, CanSet = false };
+    [SimVarDataRequest]
+    [TouchPortalState("Propeller4Feathered", "text", "Propeller - Engine 4 - Feathered (bool)", "")]
+    public static readonly SimVarItem Propeller4Feathered = new SimVarItem { Def = Definition.Propeller4Feathered, SimVarName = "PROP FEATHERED:4", Unit = Units.Bool, CanSet = false };
+
 
     #endregion
 
@@ -561,6 +593,120 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     MIXTURE2_SET,
     MIXTURE3_SET,
     MIXTURE4_SET,
+
+    #endregion
+
+    #region Propeller
+
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "All", "Increment" })]
+    PROP_PITCH_INCR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "All", "Increment Small" })]
+    PROP_PITCH_INCR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "All", "Decrement" })]
+    PROP_PITCH_DECR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "All", "Decrement Small" })]
+    PROP_PITCH_DECR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "All", "Min (hi pitch)" })]
+    PROP_PITCH_HI,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "All", "Max (lo pitch)" })]
+    PROP_PITCH_LO,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "All", "Toggle Feather Switch" })]
+    TOGGLE_FEATHER_SWITCHES,
+
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "1", "Increment" })]
+    PROP_PITCH1_INCR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "1", "Increment Small" })]
+    PROP_PITCH1_INCR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "1", "Decrement" })]
+    PROP_PITCH1_DECR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "1", "Decrement Small" })]
+    PROP_PITCH1_DECR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "1", "Min (hi pitch)" })]
+    PROP_PITCH1_HI,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "1", "Max (lo pitch)" })]
+    PROP_PITCH1_LO,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "1", "Toggle Feather Switch" })]
+    TOGGLE_FEATHER_SWITCH_1,
+
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "1", "Increment" })]
+    PROP_PITCH2_INCR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "2", "Increment Small" })]
+    PROP_PITCH2_INCR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "2", "Decrement" })]
+    PROP_PITCH2_DECR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "2", "Decrement Small" })]
+    PROP_PITCH2_DECR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "2", "Min (hi pitch)" })]
+    PROP_PITCH2_HI,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "2", "Max (lo pitch)" })]
+    PROP_PITCH2_LO,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "2", "Toggle Feather Switch" })]
+    TOGGLE_FEATHER_SWITCH_2,
+
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "3", "Increment" })]
+    PROP_PITCH3_INCR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "3", "Increment Small" })]
+    PROP_PITCH3_INCR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "3", "Decrement" })]
+    PROP_PITCH3_DECR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "3", "Decrement Small" })]
+    PROP_PITCH3_DECR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "3", "Min (hi pitch)" })]
+    PROP_PITCH3_HI,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "3", "Max (lo pitch)" })]
+    PROP_PITCH3_LO,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "3", "Toggle Feather Switch" })]
+    TOGGLE_FEATHER_SWITCH_3,
+
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "4", "Increment" })]
+    PROP_PITCH4_INCR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "4", "Increment Small" })]
+    PROP_PITCH4_INCR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "4", "Decrement" })]
+    PROP_PITCH4_DECR,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "4", "Decrement Small" })]
+    PROP_PITCH4_DECR_SMALL,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "4", "Min (hi pitch)" })]
+    PROP_PITCH4_HI,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "4", "Max (lo pitch)" })]
+    PROP_PITCH4_LO,
+    [SimActionEvent]
+    [TouchPortalActionMapping("PropellerPitch", new[] { "4", "Toggle Feather Switch" })]
+    TOGGLE_FEATHER_SWITCH_4,
 
     #endregion
   }

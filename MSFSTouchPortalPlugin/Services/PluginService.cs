@@ -107,6 +107,7 @@ namespace MSFSTouchPortalPlugin.Services {
 
       _hostApplicationLifetime.ApplicationStopping.Register(() => {
         // Disconnect from SimConnect
+        autoReconnectSimConnect = false;
         _simConnectService.Disconnect();
       });
 
@@ -173,6 +174,8 @@ namespace MSFSTouchPortalPlugin.Services {
         _simConnectService.MapClientEventToSimEvent(a.Value, a.Value.ToString());
         _simConnectService.AddNotification(a.Value.GetType().GetCustomAttribute<SimNotificationGroupAttribute>().Group, a.Value);
       }
+      // must be called after adding notifications
+      _simConnectService.SetNotificationGroupPriorities();
 
       // Register SimVars
       foreach (var s in statesDictionary) {
@@ -196,11 +199,12 @@ namespace MSFSTouchPortalPlugin.Services {
           // Handle conversions
           if (Units.ShouldConvertToFloat(value.Unit)) {
             valObj = float.Parse(stringVal);
-          } else if (value.Unit == Units.String) {
-            valObj = ((StringVal64)data).Value;
           } else if (value.Unit == Units.radians) {
             // Convert to Degrees
             valObj = float.Parse(stringVal) * (180 / Math.PI);
+          } else if (value.Unit == Units.percentover100) {
+            // Convert to actual percentage (percentover100 range is 0 to 1)
+            valObj = float.Parse(stringVal) * 100.0f;
           }
 
           // Update if known id.
@@ -214,7 +218,7 @@ namespace MSFSTouchPortalPlugin.Services {
     }
 
     private void SimConnectEvent_OnDisconnect() {
-      _simConnectCancellationTokenSource.Cancel();
+      _simConnectCancellationTokenSource?.Cancel();
       _client.StateUpdate("MSFSTouchPortalPlugin.Plugin.State.Connected", _simConnectService.IsConnected().ToString().ToLower());
     }
 
@@ -228,16 +232,19 @@ namespace MSFSTouchPortalPlugin.Services {
     }
 
     private Task TryConnect() {
-      int i = 0;
-
+      short i = 0;
       while (!_cancellationToken.IsCancellationRequested) {
-        if (i == 0 && !_simConnectService.IsConnected()) {
-          _simConnectService.Connect();
-          i = 10;
+        if (autoReconnectSimConnect && !_simConnectService.IsConnected()) {
+          if (i == 0) {
+            if (!_simConnectService.Connect())
+              i = 10;  // delay reconnect attempt on error
+          }
+          else {
+            --i;
+          }
         }
 
         // SimConnect is typically available even before loading into a flight. This should connect and be ready by the time a flight is started.
-        i--;
         Thread.Sleep(1000);
       }
 
@@ -253,18 +260,20 @@ namespace MSFSTouchPortalPlugin.Services {
         switch (typedResult) {
           case Plugin.ToggleConnection:
             if (_simConnectService.IsConnected()) {
+              autoReconnectSimConnect = false;
               _simConnectService.Disconnect();
             } else {
-              _simConnectService.Connect();
+              autoReconnectSimConnect = true;
             }
             break;
           case Plugin.Connect:
             if (!_simConnectService.IsConnected()) {
-              _simConnectService.Connect();
+              autoReconnectSimConnect = true;
             }
             break;
           case Plugin.Disconnect:
             if (_simConnectService.IsConnected()) {
+              autoReconnectSimConnect = false;
               _simConnectService.Disconnect();
             }
             break;
