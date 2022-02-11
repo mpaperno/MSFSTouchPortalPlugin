@@ -62,12 +62,17 @@ namespace MSFSTouchPortalPlugin_Generator {
       // For each category, add to model
       s.ForEach(cat => {
         var att = (TouchPortalCategoryAttribute)Attribute.GetCustomAttribute(cat, typeof(TouchPortalCategoryAttribute));
-        var category = new TouchPortalCategory {
-          Id = $"{_options.Value.PluginName}.{att.Id}",
-          Name = att.Name,
-          // Imagepath = att.ImagePath
-          Imagepath = Path.Combine("%TP_PLUGIN_FOLDER%", "MSFS-TouchPortal-Plugin", "airplane_takeoff24.png")
-        };
+        bool newCatCreated = false;
+        var category = model.Categories.FirstOrDefault(c => c.Name == att.Name);
+        if (category == null) {
+          category = new TouchPortalCategory {
+            Id = $"{_options.Value.PluginName}.{att.Id}",
+            Name = att.Name,
+            // Imagepath = att.ImagePath
+            Imagepath = Path.Combine("%TP_PLUGIN_FOLDER%", "MSFS-TouchPortal-Plugin", "airplane_takeoff24.png")
+          };
+          newCatCreated = true;
+        }
 
         // Add actions
         var actions = cat.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalActionAttribute))).ToList();
@@ -81,6 +86,7 @@ namespace MSFSTouchPortalPlugin_Generator {
             Description = actionAttribute.Description,
             TryInline = true,
             Format = actionAttribute.Format,
+            HasHoldFunctionality = actionAttribute.HasHoldFunctionality,
           };
 
           // Has Choices
@@ -131,11 +137,36 @@ namespace MSFSTouchPortalPlugin_Generator {
 
         // Add events
 
-        model.Categories.Add(category);
+        if (newCatCreated)
+          model.Categories.Add(category);
       });
 
       // Ordering
       model.Categories = model.Categories.OrderBy(c => c.Name).ToList();
+
+      // Settings
+      var setContainers = q.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalSettingsContainerAttribute))).OrderBy(o => o.Name).ToList();
+      setContainers.ForEach(setCtr => {
+        var settingsList = setCtr.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalSettingAttribute))).ToList();
+        settingsList.ForEach(setType => {
+          var att = (TouchPortalSettingAttribute)Attribute.GetCustomAttribute(setType, typeof(TouchPortalSettingAttribute));
+          var setting = new TouchPortalSetting {
+            Name = att.Name,
+            Type = att.Type,
+            DefaultValue = att.Default,
+            IsPassword = att.IsPassword,
+            ReadOnly = att.ReadOnly
+          };
+          if (att.MaxLength > 0)
+            setting.MaxLength = att.MaxLength;
+          if (att.MinValue != double.NaN)
+            setting.MinValue = att.MinValue;
+          if (att.MaxValue != double.NaN)
+            setting.MaxValue = att.MaxValue;
+
+          model.Settings.Add(setting);
+        });
+      });
 
       var context = new ValidationContext(model, null, null);
       var errors = new Collection<ValidationResult>();
