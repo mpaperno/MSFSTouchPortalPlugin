@@ -292,6 +292,7 @@ namespace MSFSTouchPortalPlugin.Services {
 
 #else
 #pragma warning disable S1172 // Unused method parameters should be removed
+    [System.Diagnostics.Conditional("DEBUG_REQUESTS")]  // prevents any parameters being passed to this method from being evaluated
     private static void DbgAddSendRecord(string _) { /* no-op when request tracking disabled */ }
     private static string DbgGetSendRecord(uint _) => "Request tracking disabled.";
 #pragma warning restore S1172
