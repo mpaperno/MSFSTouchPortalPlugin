@@ -1,7 +1,7 @@
 ﻿using System;
 using TouchPortalExtension.Enums;
 
-namespace MSFSTouchPortalPlugin.Objects.Plugin
+namespace MSFSTouchPortalPlugin.Types
 {
   public class PluginSetting
   {
@@ -31,7 +31,8 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
       if (ValueType == DataType.Number) {
         if (double.TryParse(value, out var numVal))
           Value = numVal;
-      } else {
+      }
+      else {
         Value = value;
       }
     }
@@ -59,7 +60,7 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
       }
     }
 
-    public int ValueAsInt() => (Value == null || ValueType != DataType.Number) ? 0 : (int)Value;
+    public int ValueAsInt() => Value == null || ValueType != DataType.Number ? 0 : (int)Value;
     public double ValueAsDbl() => Value == null ? double.NaN : (double)Value;
     public string ValueAsStr() => Value == null ? string.Empty : Value.ToString();
 

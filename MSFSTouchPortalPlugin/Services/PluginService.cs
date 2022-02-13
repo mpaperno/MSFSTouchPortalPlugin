@@ -4,6 +4,7 @@ using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Objects.Plugin;
+using MSFSTouchPortalPlugin.Types;
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
