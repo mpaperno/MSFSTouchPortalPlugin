@@ -147,7 +147,7 @@ namespace MSFSTouchPortalPlugin_Generator {
       return model;
     }
 
-    private string CreateMarkdown(DocBase model) {
+    private static string CreateMarkdown(DocBase model) {
       var s = new StringBuilder();
 
       s.Append($"# {model.Title}\n\n");
@@ -170,8 +170,8 @@ namespace MSFSTouchPortalPlugin_Generator {
         s.Append("| --- | --- | --- | --- | --- | --- |\n");
         s.Append($"| {setting.ReadOnly} | {setting.Type} | {setting.DefaultValue} ");
         s.Append($"| {(setting.MaxLength > 0 ? setting.MaxLength : "N/A")} ");
-        s.Append($"| {(setting.MinValue != double.NaN ? setting.MinValue : "N/A")} ");
-        s.Append($"| {(setting.MaxValue != double.NaN ? setting.MaxValue : "N/A")} ");
+        s.Append($"| {(double.IsNaN(setting.MinValue) ? "N/A" : setting.MinValue)} ");
+        s.Append($"| {(double.IsNaN(setting.MaxValue) ? "N/A" : setting.MaxValue)} ");
         s.Append("|\n\n");
         s.Append(setting.Description + "\n\n");
       });

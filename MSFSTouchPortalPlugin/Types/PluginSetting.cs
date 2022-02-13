@@ -40,7 +40,7 @@ namespace MSFSTouchPortalPlugin.Types
     public void SetValueDynamic(dynamic value) {
       try {
         if (ValueType == DataType.Number) {
-          double realVal = Convert.ToDouble(value); ;
+          double realVal = Convert.ToDouble(value);
           if (!double.IsNaN(MinValue))
             realVal = Math.Max(realVal, MinValue);
           if (!double.IsNaN(MaxValue))
