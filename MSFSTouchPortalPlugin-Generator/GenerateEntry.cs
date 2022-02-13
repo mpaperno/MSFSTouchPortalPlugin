@@ -162,9 +162,9 @@ namespace MSFSTouchPortalPlugin_Generator {
           };
           if (att.MaxLength > 0)
             setting.MaxLength = att.MaxLength;
-          if (att.MinValue != double.NaN)
+          if (!double.IsNaN(att.MinValue))
             setting.MinValue = att.MinValue;
-          if (att.MaxValue != double.NaN)
+          if (!double.IsNaN(att.MaxValue))
             setting.MaxValue = att.MaxValue;
 
           model.Settings.Add(setting);

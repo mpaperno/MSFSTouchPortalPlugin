@@ -296,13 +296,15 @@ namespace MSFSTouchPortalPlugin.Services {
     #endregion
   }
 
-  struct StringVal64 : IEquatable<StringVal64> {
+  internal readonly struct StringVal64 : IEquatable<StringVal64> {
     [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
-    public string Value;
+    public readonly string Value;
 
     public bool Equals(StringVal64 other) => other.Value == Value;
     public override bool Equals(object obj) => (obj is StringVal64 && Equals((StringVal64)obj));
     public override string ToString() => Value;
     public override int GetHashCode() => Value.GetHashCode();
+    public static bool operator ==(StringVal64 obj1, StringVal64 obj2) => obj1.Equals(obj2);
+    public static bool operator !=(StringVal64 obj1, StringVal64 obj2) => !obj1.Equals(obj2);
   }
 }
