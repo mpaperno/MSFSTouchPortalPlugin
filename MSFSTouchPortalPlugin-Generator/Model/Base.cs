@@ -65,9 +65,18 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     [Required]
     public string Label { get; set; } = "Action";
     [Required, JsonProperty("default")]
-    public string DefaultValue { get; set; }
-    [Required]
+    public object DefaultValue { get; set; } = null;
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public string[] ValueChoices { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [DefaultValue(double.NaN)]
+    public double MinValue { get; set; } = double.NaN;
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [DefaultValue(double.NaN)]
+    public double MaxValue { get; set; } = double.NaN;
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [DefaultValue(true)]
+    public bool AllowDecimals { get; set; } = true;
   }
 
   class TouchPortalState {

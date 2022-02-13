@@ -40,6 +40,9 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string Type { get; set; }
     public string Values { get; set; }
     public string DefaultValue { get; set; }
+    public double MinValue { get; set; }
+    public double MaxValue { get; set; }
+    public bool AllowDecimals { get; set; }
   }
 
   public class DocState {

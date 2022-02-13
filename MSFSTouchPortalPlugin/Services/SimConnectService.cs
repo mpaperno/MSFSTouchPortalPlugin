@@ -4,19 +4,13 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
-using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Interfaces;
 using System;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-#if DEBUG_REQUESTS
-using System.Collections.Generic;
-#endif
 
 namespace MSFSTouchPortalPlugin.Services {
   /// <summary>
@@ -27,6 +21,7 @@ namespace MSFSTouchPortalPlugin.Services {
     static extern IntPtr GetConsoleWindow();
 
     private readonly ILogger<SimConnectService> _logger;
+    private readonly IReflectionService _reflectionService;
 
     const uint NOTIFICATION_PRIORITY = 10000000;
     const int WM_USER_SIMCONNECT = 0x0402;
@@ -41,8 +36,9 @@ namespace MSFSTouchPortalPlugin.Services {
     public event ConnectEventHandler OnConnect;
     public event DisconnectEventHandler OnDisconnect;
 
-    public SimConnectService(ILogger<SimConnectService> logger) {
+    public SimConnectService(ILogger<SimConnectService> logger, IReflectionService reflectionService) {
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+      _reflectionService = reflectionService ?? throw new ArgumentNullException(nameof(reflectionService));
     }
 
     public bool IsConnected() => (_connected && _simConnect != null);
@@ -221,13 +217,8 @@ namespace MSFSTouchPortalPlugin.Services {
       string grpName = data.uGroupID.ToString();
       string eventId = data.uEventID.ToString();
       if (Enum.IsDefined(typeof(Groups), (int)data.uGroupID)) {
-        Groups group = (Groups)data.uGroupID;
-        grpName = group.ToString();
-        Type toEnum = Assembly.GetExecutingAssembly().GetTypes().First(
-          t => t.IsEnum && t.GetCustomAttribute<SimNotificationGroupAttribute>() != null && t.GetCustomAttribute<SimNotificationGroupAttribute>().Group == group
-        );
-        if (toEnum != null)
-          eventId = Enum.ToObject(toEnum, data.uEventID).ToString();
+        grpName = ((Groups)data.uGroupID).ToString();
+        eventId = _reflectionService.GetSimEventNameById(data.uEventID);
       }
       _logger.LogInformation($"Simconnect_OnRecvEvent Recieved: Group: {grpName}; Event: {eventId}");
     }
@@ -267,27 +258,31 @@ namespace MSFSTouchPortalPlugin.Services {
     [DllImport("SimConnect.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
     private static extern int /* HRESULT */ SimConnect_GetLastSentPacketID(IntPtr hSimConnect, out uint /* DWORD */ dwSendID);
     // for tracking requests by their SendID
-    private readonly Dictionary<uint, string> dbgSendRecordsDict = new();
+    private readonly System.Collections.Generic.Dictionary<uint, string> dbgSendRecordsDict = new();
 
     private void DbgSetupRequestTracking() {
       // Get direct access to the SimConnect handle, to use functions otherwise not supported.
-      FieldInfo fiSimConnect = typeof(SimConnect).GetField("hSimConnect", BindingFlags.NonPublic | BindingFlags.Instance);
+      System.Reflection.FieldInfo fiSimConnect = typeof(SimConnect).GetField("hSimConnect", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
       hSimConnect = (IntPtr)fiSimConnect.GetValue(_simConnect);
     }
 
     private void DbgAddSendRecord(string record) {
       if (_simConnect == null || !_connected)
         return;
-      if (dbgSendRecordsDict.Count > 5000)
-        dbgSendRecordsDict.Remove(dbgSendRecordsDict.Keys.First());
-      SimConnect_GetLastSentPacketID(hSimConnect, out uint dwSendID);
-      _ = dbgSendRecordsDict.TryAdd(dwSendID, record);
+      if (dbgSendRecordsDict.Count > 5000) {
+        // we'd like to remove the oldest, first, record but the order isn't really guaranteed. We could get a list of keys and sort it... but this should suffice for debugs.
+        var enmr = dbgSendRecordsDict.Keys.GetEnumerator();
+        enmr.MoveNext();
+        dbgSendRecordsDict.Remove(enmr.Current);
+      }
+      if (SimConnect_GetLastSentPacketID(hSimConnect, out uint dwSendID) == 0)
+        _ = dbgSendRecordsDict.TryAdd(dwSendID, record);
     }
 
     private string DbgGetSendRecord(uint sendId) {
       if (dbgSendRecordsDict.TryGetValue(sendId, out string record))
         return record;
-      return $"Recrod not found for SendID {sendId}";
+      return $"Record not found for SendID {sendId}";
     }
 
 #else

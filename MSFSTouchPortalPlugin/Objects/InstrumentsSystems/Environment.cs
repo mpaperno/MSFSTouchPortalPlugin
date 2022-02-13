@@ -3,19 +3,36 @@ using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
 using TouchPortalExtension.Attributes;
 
-namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
+namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
+{
   [SimVarDataRequestGroup]
+  [SimNotificationGroup(Groups.Environment)]
   [TouchPortalCategory("Environment", "MSFS - Environment")]
   internal static class EnvironmentMapping {
     #region Anti-Ice
 
     [TouchPortalAction("AntiIce", "Anti-Ice", "MSFS", "Toggle/On/Off Anti Ice", "Anti Ice - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off", "Set" }, "Toggle")]
-    public static object ANTI_ICE { get; }
+    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
+    [TouchPortalActionMapping("ANTI_ICE_TOGGLE", "Toggle")]
+    [TouchPortalActionMapping("ANTI_ICE_ON", "On")]
+    [TouchPortalActionMapping("ANTI_ICE_OFF", "Off")]
+    public static object AntiIce { get; }
 
-    [TouchPortalAction("AntiIceEng", "Anti-Ice Engine", "MSFS", "Toggle/On/Off Anti Ice Engine", "Anti Ice Engine {0} - {1}")]
-    [TouchPortalActionChoice(new[] { "1", "2", "3", "4" }, "1")]
-    [TouchPortalActionChoice(new [] { "Toggle","Set" }, "Toggle")]
+    [TouchPortalAction("AntiIceEng", "Anti-Ice Engine", "MSFS", "Toggle Anti Ice Engine", "Anti Ice Engine {0} Toggle")]
+    [TouchPortalActionChoice(new[] { "1", "2", "3", "4" })]
+    [TouchPortalActionMapping("ANTI_ICE_TOGGLE_ENG1", "1")]
+    [TouchPortalActionMapping("ANTI_ICE_TOGGLE_ENG2", "2")]
+    [TouchPortalActionMapping("ANTI_ICE_TOGGLE_ENG3", "3")]
+    [TouchPortalActionMapping("ANTI_ICE_TOGGLE_ENG4", "4")]
+    public static object AntiIceEng { get; }
+
+    [TouchPortalAction("AntiIceEngSet", "Anti-Ice Engine Set", "MSFS", "Set On/Off Anti Ice Engine", "Anti Ice Engine {0} - {1}")]
+    [TouchPortalActionChoice(new[] { "1", "2", "3", "4" })]
+    [TouchPortalActionSwitch()]
+    [TouchPortalActionMapping("ANTI_ICE_SET_ENG1", "1")]
+    [TouchPortalActionMapping("ANTI_ICE_SET_ENG2", "2")]
+    [TouchPortalActionMapping("ANTI_ICE_SET_ENG3", "3")]
+    [TouchPortalActionMapping("ANTI_ICE_SET_ENG4", "4")]
     public static object ANTI_ICE_ENGINE { get; }
 
     [SimVarDataRequest]
@@ -35,9 +52,11 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     public static readonly SimVarItem AntiIceEng4 = new SimVarItem { Def = Definition.AntiIceEng4, SimVarName = "GENERAL ENG ANTI ICE POSITION:4", Unit = Units.Bool, CanSet = false };
 
     [TouchPortalAction("StructuralDeIce", "Structural De-ice", "MSFS", "Toggle Structural DeIce", "Toggle Structural DeIce")]
+    [TouchPortalActionMapping("TOGGLE_STRUCTURAL_DEICE")]
     public static object STRUCTURAL_DEICE { get; }
 
     [TouchPortalAction("PropellerDeIce", "Propeller De-ice", "MSFS", "Toggle Propeller DeIce", "Toggle Propeller DeIce")]
+    [TouchPortalActionMapping("TOGGLE_PROPELLER_DEICE")]
     public static object PROPELLER_DEICE { get; }
 
     [SimVarDataRequest]
@@ -71,7 +90,10 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
 
     [SimVarDataRequest]
     [TouchPortalAction("PitotHeat", "Pitot Heat", "MSFS", "Toggle/On/Off Pitot Heat", "Pitot Heat - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off", "Set" }, "Toggle")]
+    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
+    [TouchPortalActionMapping("PITOT_HEAT_TOGGLE", "Toggle")]
+    [TouchPortalActionMapping("PITOT_HEAT_ON", "On")]
+    [TouchPortalActionMapping("PITOT_HEAT_OFF", "Off")]
     [TouchPortalState("PitotHeat", "text", "Pitot Heat Status", "")]
     public static readonly SimVarItem PITOT_HEAT = new SimVarItem { Def = Definition.PitotHeat, SimVarName = "PITOT HEAT", Unit = Units.Bool, CanSet = false };
 
@@ -91,87 +113,6 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
     [TouchPortalState("PitotHeatSwitch4", "text", "Pitot Heat Switch 4 State (0=Off; 1=On; 2=Auto)", "")]
     public static readonly SimVarItem PitotHeatSwitch4 = new SimVarItem { Def = Definition.PitotHeatSwitch4, SimVarName = "PITOT HEAT SWITCH:4", Unit = Units.Enum, CanSet = false };
 
-    #endregion
-  }
-
-  [SimNotificationGroup(Groups.Environment)]
-  [TouchPortalCategoryMapping("Environment")]
-  internal enum Environment {
-    // Placeholder to offset each enum for SimConnect
-    Init = 5000,
-
-    #region Anti-Ice
-
-    // Anti-Ice
-    [SimActionEvent]
-    [TouchPortalActionMapping("AntiIce", "Toggle")]
-    ANTI_ICE_TOGGLE,
-    [SimActionEvent]
-    [TouchPortalActionMapping("AntiIce", "On")]
-    ANTI_ICE_ON,
-    [SimActionEvent]
-    [TouchPortalActionMapping("AntiIce", "Off")]
-    ANTI_ICE_OFF,
-    [SimActionEvent]
-    [TouchPortalActionMapping("AntiIce", "Set")]
-    ANTI_ICE_SET,
-
-    // Anti-Ice Eng 1
-    [SimActionEvent]
-    [TouchPortalActionMapping("AntiIceEng", new[] { "1", "Toggle" })]
-    ANTI_ICE_TOGGLE_ENG1,
-    [SimActionEvent]
-    [TouchPortalActionMapping("AntiIceEng", new[] { "1", "Set" })]
-    ANTI_ICE_SET_ENG1,
-
-    // Anti-Ice Eng 2
-    [SimActionEvent]
-    [TouchPortalActionMapping("AntiIceEng", new[] { "2", "Toggle" })]
-    ANTI_ICE_TOGGLE_ENG2,
-    [SimActionEvent]
-    [TouchPortalActionMapping("AntiIceEng", new[] { "2", "Set" })]
-    ANTI_ICE_SET_ENG2,
-
-    // Anti-Ice Eng 3
-    [SimActionEvent]
-    [TouchPortalActionMapping("AntiIceEng", new[] { "3", "Toggle" })]
-    ANTI_ICE_TOGGLE_ENG3,
-    [SimActionEvent]
-    [TouchPortalActionMapping("AntiIceEng", new[] { "3", "Set" })]
-    ANTI_ICE_SET_ENG3,
-
-    // Anti-Ice Eng 4
-    [SimActionEvent]
-    [TouchPortalActionMapping("AntiIceEng", new[] { "4", "Toggle" })]
-    ANTI_ICE_TOGGLE_ENG4,
-    [SimActionEvent]
-    [TouchPortalActionMapping("AntiIceEng", new[] { "4", "Set" })]
-    ANTI_ICE_SET_ENG4,
-
-    [SimActionEvent]
-    [TouchPortalActionMapping("StructuralDeIce")]
-    TOGGLE_STRUCTURAL_DEICE,
-
-    [SimActionEvent]
-    [TouchPortalActionMapping("PropellerDeIce")]
-    TOGGLE_PROPELLER_DEICE,
-
-    #endregion
-
-    #region Pitot Heat
-    // Pitot Heat
-    [SimActionEvent]
-    [TouchPortalActionMapping("PitotHeat", "Toggle")]
-    PITOT_HEAT_TOGGLE,
-    [SimActionEvent]
-    [TouchPortalActionMapping("PitotHeat", "On")]
-    PITOT_HEAT_ON,
-    [SimActionEvent]
-    [TouchPortalActionMapping("PitotHeat", "Off")]
-    PITOT_HEAT_OFF,
-    [SimActionEvent]
-    [TouchPortalActionMapping("PitotHeat", "Set")]
-    PITOT_HEAT_SET,
     #endregion
   }
 }
