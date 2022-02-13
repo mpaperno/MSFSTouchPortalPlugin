@@ -76,7 +76,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     [TouchPortalActionMapping("MAGNETO4_INCR", new[] { "4", "Increase" })]
     public static object MAGNETO_SPECIFIC { get; }
 
-    [TouchPortalAction("MagnetoSet", "Magnetos Set", "MSFS", "Set Magneto Switch", "Magneto Switch {0} to {1}")]
+    [TouchPortalAction("MagnetoSet", "Magnetos Set", "MSFS", "Set Magneto Switch Position", "Magneto Switch {0} to position {1}")]
     [TouchPortalActionChoice(new[] { "All", "1", "2", "3", "4" })]
     [TouchPortalActionNumeric(1, 1, 5)]
     [TouchPortalActionMapping("MAGNETO_SET", "All")]
@@ -151,7 +151,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     [TouchPortalActionMapping("THROTTLE4_CUT",        new[] { "4", "Cut" })]
     public static object THROTTLE_SPECIFIC { get; }
 
-    [TouchPortalAction("ThrottleSet", "Throttle Set", "MSFS", "Sets all or specific Throttle(s) to specific value", "Set Throttle {0} to {1}")]
+    [TouchPortalAction("ThrottleSet", "Throttle Set", "MSFS", "Sets all or specific Throttle(s) to specific value", "Set Throttle {0} to {1}%")]
     [TouchPortalActionChoice(new[] { "All", "1", "2", "3", "4" }, "All")]
     [TouchPortalActionText("0", 0, 100)]
     [TouchPortalActionMapping("THROTTLE_SET",  new[] { "All" })]
@@ -289,7 +289,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     [TouchPortalActionMapping("TOGGLE_FEATHER_SWITCH_4", new[] { "4", "Toggle Feather Switch" })]
     public static object PROPELLER_PITCH { get; }
 
-    [TouchPortalAction("PropellerPitchSet", "Propeller Pitch Set", "MSFS", "Sets propeller pitch lever to value (0 to 16383)", "Swt Prop {0} Pitch to {1}")]
+    [TouchPortalAction("PropellerPitchSet", "Propeller Pitch Set", "MSFS", "Sets propeller pitch lever to value", "Set Propeller {0} Pitch to {1} (0 to 16383)")]
     [TouchPortalActionChoice(new[] { "All", "1", "2", "3", "4" })]
     [TouchPortalActionText("0", 0, 16383)]
     [TouchPortalActionMapping("PROP_PITCH_SET", "All")]
