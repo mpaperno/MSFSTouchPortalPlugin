@@ -1,14 +1,6 @@
 ﻿using System;
 
 namespace TouchPortalExtension.Attributes {
-  public enum DataType {
-    None,
-    Text,
-    Number,
-    Switch,
-    Choice
-  }
-
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
   public class TouchPortalActionAttribute : Attribute {
     public string Id { get; set; }
