@@ -219,6 +219,7 @@ namespace MSFSTouchPortalPlugin.Services {
 
     private void SimConnectEvent_OnDisconnect() {
       _simConnectCancellationTokenSource?.Cancel();
+      ClearRepeatingActions();
       _client.StateUpdate("MSFSTouchPortalPlugin.Plugin.State.Connected", _simConnectService.IsConnected().ToString().ToLower());
     }
 
