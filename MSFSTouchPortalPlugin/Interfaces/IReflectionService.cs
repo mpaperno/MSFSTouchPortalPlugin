@@ -1,12 +1,17 @@
 ﻿using MSFSTouchPortalPlugin.Constants;
+using MSFSTouchPortalPlugin.Types;
 using System;
 using System.Collections.Generic;
 
-namespace MSFSTouchPortalPlugin.Interfaces {
+namespace MSFSTouchPortalPlugin.Interfaces
+{
   internal interface IReflectionService {
-    Dictionary<string, Enum> GetInternalEvents();
-    Dictionary<string, Enum> GetActionEvents();
+    Dictionary<string, ActionEventType> GetActionEvents();
     Dictionary<Definition, SimVarItem> GetStates();
-    Dictionary<string, Objects.Plugin.PluginSetting> GetSettings();
+    Dictionary<string, PluginSetting> GetSettings();
+    ref readonly Dictionary<Enum, dynamic> GetClientEventIdToNameMap();
+    string GetSimEventNameById(Enum id);
+    string GetSimEventNameById(uint id);
+    string GetSimEventNameById(int id);
   }
 }

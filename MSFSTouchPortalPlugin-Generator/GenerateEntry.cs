@@ -52,7 +52,7 @@ namespace MSFSTouchPortalPlugin_Generator {
       // Add Plug Start Comand
       model.Plugin_start_cmd = Path.Combine("%TP_PLUGIN_FOLDER%", "MSFS-TouchPortal-Plugin\\dist", "MSFSTouchPortalPlugin.exe");
       // Load asembly
-      _ = MSFSTouchPortalPlugin.Objects.AutoPilot.AutoPilot.AP_AIRSPEED_HOLD;
+      _ = MSFSTouchPortalPlugin.Objects.Plugin.Plugin.Init;
 
       var q = assembly.GetTypes().ToList();
 
@@ -89,17 +89,20 @@ namespace MSFSTouchPortalPlugin_Generator {
             HasHoldFunctionality = actionAttribute.HasHoldFunctionality,
           };
 
-          // Has Choices
-          var choiceAttributes = act.GetCustomAttributes<TouchPortalActionChoiceAttribute>()?.ToList();
-
-          if (choiceAttributes?.Count > 0) {
-            for (int i = 0; i < choiceAttributes.Count; i++) {
+          // Action Data
+          var dataAttributes = act.GetCustomAttributes<TouchPortalActionDataAttribute>();
+          if (dataAttributes.Any()) {
+            for (int i = 0, e = dataAttributes.Count(); i < e; ++i) {
+              var attrib = dataAttributes.ElementAt(i);
               var data = new TouchPortalActionData {
                 Id = $"{action.Id}.Data.{i}",
-                Type = "choice",
-                Label = "Action",
-                DefaultValue = choiceAttributes[i].DefaultValue,
-                ValueChoices = choiceAttributes[i].ChoiceValues
+                Type = attrib.Type,
+                Label = attrib.Label ?? "Action",
+                DefaultValue = attrib.GetDefaultValue(),
+                ValueChoices = attrib.ChoiceValues,
+                MinValue = attrib.MinValue,
+                MaxValue = attrib.MaxValue,
+                AllowDecimals = attrib.AllowDecimals,
               };
 
               action.Data.Add(data);

@@ -3,14 +3,17 @@ using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
 using TouchPortalExtension.Attributes;
 
-namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
+namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
+{
   [SimVarDataRequestGroup]
+  [SimNotificationGroup(Groups.Electrical)]
   [TouchPortalCategory("Electrical", "MSFS - Electrical")]
   internal static class ElectricalMapping {
     #region Avionics
 
     [SimVarDataRequest]
     [TouchPortalAction("AvionicsMasterSwitch", "Avionics Master", "MSFS", "Toggle Avionics Master", "Toggle Avionics Master")]
+    [TouchPortalActionMapping("TOGGLE_AVIONICS_MASTER")]
     [TouchPortalState("AvionicsMasterSwitch", "text", "Avionics Master Switch", "")]
     public static readonly SimVarItem TOGGLE_AVIONICS_MASTER = new SimVarItem { Def = Definition.AvionicsMasterSwitch, SimVarName = "AVIONICS MASTER SWITCH", Unit = Units.Bool, CanSet = false };
 
@@ -20,41 +23,65 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
 
     [SimVarDataRequest]
     [TouchPortalAction("MasterAlternator", "Master Alternator", "MSFS", "Toggle Master Alternator", "Toggle Master Alternator")]
+    [TouchPortalActionMapping("TOGGLE_MASTER_ALTERNATOR")]
     [TouchPortalState("MasterAlternator", "text", "Master Alternator Status", "")]
     public static readonly SimVarItem MASTER_ALTERNATOR =
       new SimVarItem { Def = Definition.MasterAlternator, SimVarName = "GENERAL ENG MASTER ALTERNATOR:1", Unit = Units.Bool, CanSet = false };
 
     [SimVarDataRequest]
     [TouchPortalAction("MasterBattery", "Master Battery", "MSFS", "Toggle Master Battery", "Toggle Master Battery")]
+    [TouchPortalActionMapping("TOGGLE_MASTER_BATTERY")]
     [TouchPortalState("MasterBattery", "text", "Master Battery Status", "")]
     public static readonly SimVarItem MASTER_BATTERY =
       new SimVarItem { Def = Definition.MasterBattery, SimVarName = "ELECTRICAL MASTER BATTERY", Unit = Units.Bool, CanSet = false };
 
     [TouchPortalAction("MasterBatteryAlternator", "Master Battery & Alternator", "MSFS", "Toggle Master Battery & Alternator", "Toggle Master Battery & Alternator")]
+    [TouchPortalActionMapping("TOGGLE_MASTER_BATTERY_ALTERNATOR")]
     public static object MASTER_BATTERY_ALTERNATOR { get; }
 
     [TouchPortalAction("AlternatorIndex", "Alternator - Specific", "MSFS", "Toggle Specific Alternator", "Toggle Altenator - {0}")]
-    [TouchPortalActionChoice(new[] { "1", "2", "3", "4" }, "1")]
+    [TouchPortalActionChoice(new[] { "1", "2", "3", "4" })]
+    [TouchPortalActionMapping("TOGGLE_ALTERNATOR1", "1")]
+    [TouchPortalActionMapping("TOGGLE_ALTERNATOR2", "2")]
+    [TouchPortalActionMapping("TOGGLE_ALTERNATOR3", "3")]
+    [TouchPortalActionMapping("TOGGLE_ALTERNATOR4", "4")]
     public static object ALTERNATOR_INDEX { get; }
 
     #endregion
 
     #region Lights
 
-    [TouchPortalAction("StrobeLights", "Toggle/On/Off/Set Strobe Lights", "MSFS", "Toggle/On/Off/Set Strobe Lights", "Strobe Lights - {0}")]
-    [TouchPortalActionChoice(new[] { "Toggle", "On", "Off", "Set" }, "Toggle")]
+    [TouchPortalAction("StrobeLights", "Toggle/On/Off Strobe Lights", "MSFS", "Toggle/On/Off Strobe Lights", "Strobe Lights - {0}")]
+    [TouchPortalActionChoice(new[] { "Toggle", "On", "Off" })]
+    [TouchPortalActionMapping("STROBES_TOGGLE", "Toggle")]
+    [TouchPortalActionMapping("STROBES_ON", "On")]
+    [TouchPortalActionMapping("STROBES_OFF", "Off")]
     public static object STROBE_LIGHTS { get; }
 
-    [TouchPortalAction("PanelLights", "Toggle/On/Off/Set Panel Lights", "MSFS", "Toggle/On/Off/Set Panel Lights", "Panel Lights - {0}")]
-    [TouchPortalActionChoice(new[] { "Toggle", "On", "Off", "Set" }, "Toggle")]
+    [TouchPortalAction("PanelLights", "Toggle/On/Off Panel Lights", "MSFS", "Toggle/On/Off Panel Lights", "Panel Lights - {0}")]
+    [TouchPortalActionChoice(new[] { "Toggle", "On", "Off" })]
+    [TouchPortalActionMapping("PANEL_LIGHTS_TOGGLE", "Toggle")]
+    [TouchPortalActionMapping("PANEL_LIGHTS_ON", "On")]
+    [TouchPortalActionMapping("PANEL_LIGHTS_OFF", "Off")]
     public static object PANEL_LIGHTS { get; }
 
-    [TouchPortalAction("LandingLights", "Toggle/On/Off/Set Landing Lights", "MSFS", "Toggle/On/Off/Set Landing Lights", "Landing Lights - {0}")]
-    [TouchPortalActionChoice(new[] { "Toggle", "On", "Off", "Set" }, "Toggle")]
+    [TouchPortalAction("LandingLights", "Toggle/On/Off Landing Lights", "MSFS", "Toggle/On/Off Landing Lights", "Landing Lights - {0}")]
+    [TouchPortalActionChoice(new[] { "Toggle", "On", "Off" })]
+    [TouchPortalActionMapping("LANDING_LIGHTS_TOGGLE", "Toggle")]
+    [TouchPortalActionMapping("LANDING_LIGHTS_ON", "On")]
+    [TouchPortalActionMapping("LANDING_LIGHTS_OFF", "Off")]
     public static object LANDING_LIGHTS { get; }
 
     [TouchPortalAction("ToggleLights", "Toggle All/Specific Lights", "MSFS", "Toggle All/Specific Lights", "Toggle Lights - {0}")]
-    [TouchPortalActionChoice(new[] { "All", "Beacon", "Taxi", "Logo", "Recognition", "Wing", "Nav", "Cabin" }, "All")]
+    [TouchPortalActionChoice(new[] { "All", "Beacon", "Taxi", "Logo", "Recognition", "Wing", "Nav", "Cabin" })]
+    [TouchPortalActionMapping("ALL_LIGHTS_TOGGLE", "All")]
+    [TouchPortalActionMapping("TOGGLE_BEACON_LIGHTS", "Beacon")]
+    [TouchPortalActionMapping("TOGGLE_TAXI_LIGHTS", "Taxi")]
+    [TouchPortalActionMapping("TOGGLE_LOGO_LIGHTS", "Logo")]
+    [TouchPortalActionMapping("TOGGLE_RECOGNITION_LIGHTS", "Recognition")]
+    [TouchPortalActionMapping("TOGGLE_WING_LIGHTS", "Wing")]
+    [TouchPortalActionMapping("TOGGLE_NAV_LIGHTS", "Nav")]
+    [TouchPortalActionMapping("TOGGLE_CABIN_LIGHTS", "Cabin")]
     public static object ALL_LIGHTS { get; }
 
     [SimVarDataRequest]
@@ -96,120 +123,5 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
 
     #endregion
 
-  }
-
-  [SimNotificationGroup(Groups.Electrical)]
-  [TouchPortalCategoryMapping("Electrical")]
-  internal enum Electrical {
-    // Placeholder to offset each enum for SimConnect
-    Init = 6000,
-
-    #region Avionics
-
-    [SimActionEvent]
-    [TouchPortalActionMapping("AvionicsMasterSwitch")]
-    TOGGLE_AVIONICS_MASTER,
-
-    #endregion
-
-    #region Alternator & Battery
-
-    [SimActionEvent]
-    [TouchPortalActionMapping("MasterAlternator")]
-    TOGGLE_MASTER_ALTERNATOR,
-
-    [SimActionEvent]
-    [TouchPortalActionMapping("MasterBattery")]
-    TOGGLE_MASTER_BATTERY,
-
-    [SimActionEvent]
-    [TouchPortalActionMapping("MasterBatteryAlternator")]
-    TOGGLE_MASTER_BATTERY_ALTERNATOR,
-
-    [SimActionEvent]
-    [TouchPortalActionMapping("AlternatorIndex", "1")]
-    TOGGLE_ALTERNATOR1,
-
-    [SimActionEvent]
-    [TouchPortalActionMapping("AlternatorIndex", "2")]
-    TOGGLE_ALTERNATOR2,
-
-    [SimActionEvent]
-    [TouchPortalActionMapping("AlternatorIndex", "3")]
-    TOGGLE_ALTERNATOR3,
-
-    [SimActionEvent]
-    [TouchPortalActionMapping("AlternatorIndex", "4")]
-    TOGGLE_ALTERNATOR4,
-
-    #endregion
-
-    #region Lights
-
-    [SimActionEvent]
-    [TouchPortalActionMapping("StrobeLights", "Toggle")]
-    STROBES_TOGGLE,
-    [SimActionEvent]
-    [TouchPortalActionMapping("StrobeLights", "On")]
-    STROBES_ON,
-    [SimActionEvent]
-    [TouchPortalActionMapping("StrobeLights", "Off")]
-    STROBES_OFF,
-    [SimActionEvent]
-    [TouchPortalActionMapping("StrobeLights", "Set")]
-    STROBES_SET,
-
-    [SimActionEvent]
-    [TouchPortalActionMapping("PanelLights", "Toggle")]
-    PANEL_LIGHTS_TOGGLE,
-    [SimActionEvent]
-    [TouchPortalActionMapping("PanelLights", "On")]
-    PANEL_LIGHTS_ON,
-    [SimActionEvent]
-    [TouchPortalActionMapping("PanelLights", "Off")]
-    PANEL_LIGHTS_OFF,
-    [SimActionEvent]
-    [TouchPortalActionMapping("PanelLights", "Set")]
-    PANEL_LIGHTS_SET,
-
-    [SimActionEvent]
-    [TouchPortalActionMapping("LandingLights", "Toggle")]
-    LANDING_LIGHTS_TOGGLE,
-    [SimActionEvent]
-    [TouchPortalActionMapping("LandingLights", "On")]
-    LANDING_LIGHTS_ON,
-    [SimActionEvent]
-    [TouchPortalActionMapping("LandingLights", "Off")]
-    LANDING_LIGHTS_OFF,
-    [SimActionEvent]
-    [TouchPortalActionMapping("LandingLights", "Set")]
-    LANDING_LIGHTS_SET,
-
-    [SimActionEvent]
-    [TouchPortalActionMapping("ToggleLights", "All")]
-    ALL_LIGHTS_TOGGLE,
-    [SimActionEvent]
-    [TouchPortalActionMapping("ToggleLights", "Beacon")]
-    TOGGLE_BEACON_LIGHTS,
-    [SimActionEvent]
-    [TouchPortalActionMapping("ToggleLights", "Taxi")]
-    TOGGLE_TAXI_LIGHTS,
-    [SimActionEvent]
-    [TouchPortalActionMapping("ToggleLights", "Logo")]
-    TOGGLE_LOGO_LIGHTS,
-    [SimActionEvent]
-    [TouchPortalActionMapping("ToggleLights", "Recognition")]
-    TOGGLE_RECOGNITION_LIGHTS,
-    [SimActionEvent]
-    [TouchPortalActionMapping("ToggleLights", "Wing")]
-    TOGGLE_WING_LIGHTS,
-    [SimActionEvent]
-    [TouchPortalActionMapping("ToggleLights", "Nav")]
-    TOGGLE_NAV_LIGHTS,
-    [SimActionEvent]
-    [TouchPortalActionMapping("ToggleLights", "Cabin")]
-    TOGGLE_CABIN_LIGHTS,
-
-    #endregion
   }
 }

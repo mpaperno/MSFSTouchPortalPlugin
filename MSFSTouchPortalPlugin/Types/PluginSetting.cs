@@ -1,7 +1,7 @@
 ﻿using System;
-using TouchPortalExtension.Attributes;
+using TouchPortalExtension.Enums;
 
-namespace MSFSTouchPortalPlugin.Objects.Plugin
+namespace MSFSTouchPortalPlugin.Types
 {
   public class PluginSetting
   {
@@ -23,31 +23,7 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
         return _value;
       }
       set {
-        if (ValueType == DataType.Number) {
-          if (!value.GetType().IsAssignableTo(typeof(double))) {
-            _value = null;
-          }
-          else {
-            double realVal = (double)value;
-            if (!double.IsNaN(MinValue))
-              realVal = Math.Max(realVal, MinValue);
-            if (!double.IsNaN(MaxValue))
-              realVal = Math.Min(realVal, MaxValue);
-            _value = realVal;
-          }
-        }
-        // string
-        else {
-          if (!value.GetType().IsAssignableTo(typeof(string))) {
-            _value = null;
-          }
-          else {
-            string strVal = (string)value;
-            if (MaxLength > 0 && strVal.Length > MaxLength)
-              strVal = strVal.Remove(MaxLength + 1);
-            _value = strVal;
-          }
-        }
+        SetValueDynamic(value);
       }
     }
 
@@ -55,12 +31,36 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
       if (ValueType == DataType.Number) {
         if (double.TryParse(value, out var numVal))
           Value = numVal;
-      } else {
+      }
+      else {
         Value = value;
       }
     }
 
-    public int ValueAsInt() => (Value == null || ValueType != DataType.Number) ? 0 : (int)Value;
+    public void SetValueDynamic(dynamic value) {
+      try {
+        if (ValueType == DataType.Number) {
+          double realVal = Convert.ToDouble(value); ;
+          if (!double.IsNaN(MinValue))
+            realVal = Math.Max(realVal, MinValue);
+          if (!double.IsNaN(MaxValue))
+            realVal = Math.Min(realVal, MaxValue);
+          _value = realVal;
+        }
+        // string
+        else {
+          string strVal = Convert.ToString(value);
+          if (MaxLength > 0 && !string.IsNullOrEmpty(strVal))
+            strVal = strVal[..Math.Min(strVal.Length, MaxLength)];
+          _value = strVal;
+        }
+      }
+      catch (Exception e) {
+        throw new ArgumentException("Cannot convert value to intended type.", e);
+      }
+    }
+
+    public int ValueAsInt() => Value == null || ValueType != DataType.Number ? 0 : (int)Value;
     public double ValueAsDbl() => Value == null ? double.NaN : (double)Value;
     public string ValueAsStr() => Value == null ? string.Empty : Value.ToString();
 

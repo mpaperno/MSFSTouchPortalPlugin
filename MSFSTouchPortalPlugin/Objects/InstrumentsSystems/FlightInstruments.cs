@@ -1,10 +1,11 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Constants;
-using MSFSTouchPortalPlugin.Enums;
 using TouchPortalExtension.Attributes;
 
-namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
+namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems 
+{
   [SimVarDataRequestGroup]
+  //[SimNotificationGroup(Groups.FlightInstruments)]
   [TouchPortalCategory("FlightInstruments", "MSFS - Flight Instruments")]
   internal static class FlightInstrumentsMapping {
 
@@ -87,12 +88,5 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems {
 
     #endregion
 
-  }
-
-  [SimNotificationGroup(Groups.FlightInstruments)]
-  [TouchPortalCategoryMapping("FlightInstruments")]
-  internal enum FlightInstruments {
-    // Placeholder to offset each enum for SimConnect
-    Init = 8000,
   }
 }

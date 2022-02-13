@@ -1,17 +1,17 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Objects.Plugin;
+using MSFSTouchPortalPlugin.Types;
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Reflection;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using TouchPortalExtension.Enums;
 using TouchPortalSDK;
 using TouchPortalSDK.Interfaces;
 using TouchPortalSDK.Messages.Events;
@@ -28,13 +28,13 @@ namespace MSFSTouchPortalPlugin.Services {
     private readonly ITouchPortalClient _client;
     private readonly ISimConnectService _simConnectService;
     private readonly IReflectionService _reflectionService;
+    private static readonly System.Data.DataTable _expressionEvaluator = new();  // used to evaluate basic math in action data
     private bool autoReconnectSimConnect = false;
 
     public string PluginId => "MSFSTouchPortalPlugin";
 
-    private Dictionary<string, Enum> actionsDictionary = new Dictionary<string, Enum>();
-    private Dictionary<Definition, SimVarItem> statesDictionary = new Dictionary<Definition, SimVarItem>();
-    private Dictionary<string, Enum> internalEventsDictionary = new Dictionary<string, Enum>();
+    private Dictionary<string, ActionEventType> actionsDictionary = new();
+    private Dictionary<Definition, SimVarItem> statesDictionary = new();
     private Dictionary<string, PluginSetting> pluginSettingsDictionary = new();
 
     private readonly ConcurrentDictionary<string, Timer> repeatingActionTimers = new();
@@ -170,9 +170,10 @@ namespace MSFSTouchPortalPlugin.Services {
       _client.StateUpdate("MSFSTouchPortalPlugin.Plugin.State.Connected", _simConnectService.IsConnected().ToString().ToLower());
 
       // Register Actions
-      foreach (var a in actionsDictionary) {
-        _simConnectService.MapClientEventToSimEvent(a.Value, a.Value.ToString());
-        _simConnectService.AddNotification(a.Value.GetType().GetCustomAttribute<SimNotificationGroupAttribute>().Group, a.Value);
+      var eventMap = _reflectionService.GetClientEventIdToNameMap();
+      foreach (var m in eventMap) {
+        _simConnectService.MapClientEventToSimEvent(m.Key, m.Value.EventName);
+        _simConnectService.AddNotification(m.Value.GroupId, m.Key);
       }
       // must be called after adding notifications
       _simConnectService.SetNotificationGroupPriorities();
@@ -226,7 +227,6 @@ namespace MSFSTouchPortalPlugin.Services {
     #endregion
 
     private void SetupEventLists() {
-      internalEventsDictionary = _reflectionService.GetInternalEvents();
       actionsDictionary = _reflectionService.GetActionEvents();
       statesDictionary = _reflectionService.GetStates();
       pluginSettingsDictionary = _reflectionService.GetSettings();
@@ -252,75 +252,107 @@ namespace MSFSTouchPortalPlugin.Services {
       return Task.CompletedTask;
     }
 
-    private void ProcessEvent(string actionId, string value = default) {
-      // Plugin Events
-      if (internalEventsDictionary.TryGetValue($"{actionId}:{value}", out var internalEventResult)) {
-        _logger.LogInformation($"{DateTime.Now} {internalEventResult} - Firing Internal Event");
-        Plugin typedResult = (Plugin)internalEventResult;
-
-        switch (typedResult) {
-          case Plugin.ToggleConnection:
-            if (_simConnectService.IsConnected()) {
-              autoReconnectSimConnect = false;
-              _simConnectService.Disconnect();
-            } else {
-              autoReconnectSimConnect = true;
-            }
-            break;
-          case Plugin.Connect:
-            if (!_simConnectService.IsConnected()) {
-              autoReconnectSimConnect = true;
-            }
-            break;
-          case Plugin.Disconnect:
-            if (_simConnectService.IsConnected()) {
-              autoReconnectSimConnect = false;
-              _simConnectService.Disconnect();
-            }
-            break;
-
-          case Plugin.ActionRepeatIntervalInc:
-          case Plugin.ActionRepeatIntervalDec: {
-              var interval = Settings.ActionRepeatInterval.ValueAsDbl();
-              if (typedResult == Plugin.ActionRepeatIntervalInc)
-                interval = Math.Min(interval + 50, Settings.ActionRepeatInterval.MaxValue);
-              else
-                interval = Math.Max(interval - 50, Settings.ActionRepeatInterval.MinValue);
-              if (interval != Settings.ActionRepeatInterval.ValueAsDbl())
-                _client.SettingUpdate(Settings.ActionRepeatInterval.Name, $"{interval:F0}");  // this will trigger the actual value update
-            }
-            break;
-
-          // FIXME when we can use freeform values in action data
-          case var n when (n >= Plugin.ActionRepeatInterval50 && n <= Plugin.ActionRepeatInterval1000):
-            _client.SettingUpdate(Settings.ActionRepeatInterval.Name, value);  // this will trigger the actual value update
-            break;
-
-          default:
-            // No other types of events supported right now.
-            break;
-        }
-
+    private void ProcessEvent(ActionEvent actionEvent) {
+      if (!actionsDictionary.TryGetValue(actionEvent.ActionId, out ActionEventType action))
         return;
-      }
 
-      // Sim Events
-      if (actionsDictionary.TryGetValue($"{actionId}:{value}", out var eventResult)) {
-        _logger.LogInformation($"{DateTime.Now} {eventResult} - Firing Event");
-        var group = eventResult.GetType().GetCustomAttribute<SimNotificationGroupAttribute>().Group;
-        _simConnectService.TransmitClientEvent(group, eventResult, 0);
+      var dataArry = actionEvent.Data.Select(x => x.Value).ToArray();
+      if (!action.TryGetEventMapping(in dataArry, out Enum eventId))
+        return;
+
+      if (action.InternalEvent)
+        ProcessInternalEvent(action, eventId, in dataArry);
+      else
+        ProcessSimEvent(action, eventId, in dataArry);
+    }
+
+    private void ProcessInternalEvent(ActionEventType action, Enum eventId, in string[] dataArry) {
+      Plugin pluginEventId = (Plugin)eventId;
+      _logger.LogInformation($"Firing Internal Event - action: {action.ActionId}; enum: {pluginEventId}; data: {string.Join(", ", dataArry)}");
+
+      switch (pluginEventId) {
+        case Plugin.ToggleConnection:
+          if (_simConnectService.IsConnected()) {
+            autoReconnectSimConnect = false;
+            _simConnectService.Disconnect();
+          }
+          else {
+            autoReconnectSimConnect = true;
+          }
+          break;
+        case Plugin.Connect:
+          if (!_simConnectService.IsConnected()) {
+            autoReconnectSimConnect = true;
+          }
+          break;
+        case Plugin.Disconnect:
+          if (_simConnectService.IsConnected()) {
+            autoReconnectSimConnect = false;
+            _simConnectService.Disconnect();
+          }
+          break;
+
+        case Plugin.ActionRepeatIntervalInc:
+        case Plugin.ActionRepeatIntervalDec:
+        case Plugin.ActionRepeatIntervalSet:
+          if (action.ValueIndex < dataArry.Length && double.TryParse(dataArry[action.ValueIndex], out var interval)) {
+            if (pluginEventId == Plugin.ActionRepeatIntervalInc)
+              interval = Settings.ActionRepeatInterval.ValueAsDbl() + interval;
+            else if (pluginEventId == Plugin.ActionRepeatIntervalDec)
+              interval = Settings.ActionRepeatInterval.ValueAsDbl() - interval;
+            interval = Math.Clamp(interval, Settings.ActionRepeatInterval.MinValue, Settings.ActionRepeatInterval.MaxValue);
+            if (interval != Settings.ActionRepeatInterval.ValueAsDbl())
+              _client.SettingUpdate(Settings.ActionRepeatInterval.Name, $"{interval:F0}");  // this will trigger the actual value update
+          }
+          break;
+
+        default:
+          // No other types of events supported right now.
+          break;
       }
     }
 
+    private void ProcessSimEvent(ActionEventType action, Enum eventId, in string[] dataArry) {
+      uint dataUint = 0;
+      string eventName = _reflectionService.GetSimEventNameById(eventId);  // just for logging
+      if (action.ValueIndex > -1 && action.ValueIndex < dataArry.Length) {
+        double dataReal = double.NaN;
+        var valStr = dataArry[action.ValueIndex];
+        try {
+          switch (action.ValueType) {
+            case DataType.Number:
+            case DataType.Text:
+              dataReal = Convert.ToDouble(_expressionEvaluator.Compute(valStr, null));
+              break;
+            case DataType.Switch:
+              dataReal = new BooleanString(valStr);
+              break;
+          }
+          if (!double.IsNaN(dataReal)) {
+            if (!double.IsNaN(action.MinValue))
+              dataReal = Math.Max(dataReal, action.MinValue);
+            if (!double.IsNaN(action.MaxValue))
+              dataReal = Math.Min(dataReal, action.MaxValue);
+            dataUint = Convert.ToUInt32(dataReal);
+          }
+        }
+        catch (Exception e) {
+          _logger.LogWarning(e, $"Action {action.ActionId} for sim event {eventName} with data string '{valStr}' - Failed to convert data to numeric value.");
+        }
+      }
+      _logger.LogInformation($"Firing Sim Event - action: {action.ActionId}; group: {action.SimConnectGroup}; name: {eventName}; data {dataUint}");
+      _simConnectService.TransmitClientEvent(action.SimConnectGroup, eventId, dataUint);
+    }
+
     private void CheckPendingRequests() {
-      foreach (var s in statesDictionary) {
+      foreach (var s in statesDictionary.Values) {
         // Expire pending if more than 30 seconds
-        s.Value.PendingTimeout();
+        s.PendingTimeout();
 
         // Check if Pending data request in paly
-        if (!s.Value.PendingRequest) {
-          _simConnectService.RequestDataOnSimObjectType(s.Value);
-          s.Value.SetPending(true);
+        if (!s.PendingRequest) {
+          s.SetPending(true);
+          _simConnectService.RequestDataOnSimObjectType(s);
         }
       }
     }
@@ -372,13 +404,7 @@ namespace MSFSTouchPortalPlugin.Services {
       ProcessPluginSettings(message.Values);
     }
 
-    public void OnActionEvent(ActionEvent message)
-    {
-      //_logger.LogInformation($"ACTION {message.Type}");
-      string values = default;
-      if (message.Data.Count > 0)
-        values = string.Join(",", message.Data.Select(x => x.Value));
-
+    public void OnActionEvent(ActionEvent message) {
       // Actions used in TP "On Hold" events will send "down" and "up" events, in that order (usually).
       // "On Pressed" actions will have an "action" event. These are all abstracted into TouchPortalSDK enums.
       // Note that an "On Hold" action ("down" event) is _not_ triggered upon initial press. This allow different
@@ -387,7 +413,7 @@ namespace MSFSTouchPortalPlugin.Services {
         case TouchPortalSDK.Messages.Models.Enums.Press.Down:
           // "On Hold" activated ("down" event). Try to add this action to the repeating/scheduled actions queue, unless it already exists.
           var timer = new Timer(Settings.ActionRepeatInterval.ValueAsInt());
-          timer.Elapsed += delegate { ProcessEvent(message.ActionId, values); };
+          timer.Elapsed += delegate { ProcessEvent(message); };
           if (repeatingActionTimers.TryAdd(message.ActionId, timer))
             timer.Start();
           else
@@ -403,7 +429,7 @@ namespace MSFSTouchPortalPlugin.Services {
 
         case TouchPortalSDK.Messages.Models.Enums.Press.Tap:
           // Process an "On Pressed" ("action" event) action.
-          ProcessEvent(message.ActionId, values);
+          ProcessEvent(message);
           break;
       }
     }

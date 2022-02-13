@@ -1,15 +1,22 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Types;
 using TouchPortalExtension.Attributes;
 
-namespace MSFSTouchPortalPlugin.Objects.Plugin {
+namespace MSFSTouchPortalPlugin.Objects.Plugin
+{
+  [InternalEvent]
   [TouchPortalCategory("Plugin", "MSFS - Plugin")]
   internal static class PluginMapping {
     [TouchPortalAction("Connection", "Connection", "MSFS", "Toggle/On/Off SimConnect Connection", "SimConnect Connection - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" }, "Toggle")]
+    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
+    [TouchPortalActionMapping("ToggleConnection", "Toggle")]
+    [TouchPortalActionMapping("Connect", "On")]
+    [TouchPortalActionMapping("Disconnect", "Off")]
     [TouchPortalState("Connected", "text", "The status of SimConnect", "false")]
     public static object Connection { get; }
   }
 
+  [InternalEvent]
   [TouchPortalCategory("Plugin", "MSFS - Plugin")]
   [TouchPortalSettingsContainer]
   public static class Settings {
@@ -25,58 +32,37 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin {
       Description = "Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Action Repeat Interval' action.",
       Type = "number", Default = "450", MinValue = 50, MaxValue = int.MaxValue, ReadOnly = true
     )]
-    [TouchPortalAction("ActionRepeatInterval", "Action Repeat Interval", "MSFS", "Held Action Repeat Rate (ms)", "Repeat Interval: {0} milliseconds", true)]
-    [TouchPortalActionChoice(new[] { "Increment 50ms", "Decrement 50ms", "50", "100", "200", "250", "300", "350", "400", "450", "500", "550", "600", "700", "800", "900", "1000" }, "450")]  // TODO replace with freeform value
+    [TouchPortalAction("ActionRepeatInterval", "Action Repeat Interval", "MSFS", "Held Action Repeat Rate (ms)", "Repeat Interval: {0} to/by: {1} ms", true)]
+    [TouchPortalActionChoice(new[] { "Set", "Increment", "Decrement" })]
+    [TouchPortalActionText("450", 50, int.MaxValue)]
+    [TouchPortalActionMapping("ActionRepeatIntervalSet", "Set")]
+    [TouchPortalActionMapping("ActionRepeatIntervalInc", "Increment")]
+    [TouchPortalActionMapping("ActionRepeatIntervalDec", "Decrement")]
     [TouchPortalState("ActionRepeatInterval", "text", "The current Held Action Repeat Rate (ms)", "450")]
     public static readonly PluginSetting ActionRepeatInterval = new PluginSetting("ActionRepeatInterval", 50, int.MaxValue);
   }
 
-  [InternalEvent]
-  [TouchPortalCategoryMapping("Plugin")]
+  // IDs for handling internal events
   internal enum Plugin : short {
     // Starting point
     Init = 255,
 
-    [TouchPortalActionMapping("Connection", "Toggle")]
     ToggleConnection,
-    [TouchPortalActionMapping("Connection", "On")]
     Connect,
-    [TouchPortalActionMapping("Connection", "Off")]
     Disconnect,
 
-    [TouchPortalActionMapping("ActionRepeatInterval", "Increment 50ms")]
     ActionRepeatIntervalInc,
-    [TouchPortalActionMapping("ActionRepeatInterval", "Decrement 50ms")]
     ActionRepeatIntervalDec,
-    [TouchPortalActionMapping("ActionRepeatInterval", "50")]
-    ActionRepeatInterval50,
-    [TouchPortalActionMapping("ActionRepeatInterval", "100")]
-    ActionRepeatInterval100,
-    [TouchPortalActionMapping("ActionRepeatInterval", "200")]
-    ActionRepeatInterval200,
-    [TouchPortalActionMapping("ActionRepeatInterval", "250")]
-    ActionRepeatInterval250,
-    [TouchPortalActionMapping("ActionRepeatInterval", "300")]
-    ActionRepeatInterval300,
-    [TouchPortalActionMapping("ActionRepeatInterval", "350")]
-    ActionRepeatInterval350,
-    [TouchPortalActionMapping("ActionRepeatInterval", "400")]
-    ActionRepeatInterval400,
-    [TouchPortalActionMapping("ActionRepeatInterval", "450")]
-    ActionRepeatInterval450,
-    [TouchPortalActionMapping("ActionRepeatInterval", "500")]
-    ActionRepeatInterval500,
-    [TouchPortalActionMapping("ActionRepeatInterval", "550")]
-    ActionRepeatInterval550,
-    [TouchPortalActionMapping("ActionRepeatInterval", "600")]
-    ActionRepeatInterval600,
-    [TouchPortalActionMapping("ActionRepeatInterval", "700")]
-    ActionRepeatInterval700,
-    [TouchPortalActionMapping("ActionRepeatInterval", "800")]
-    ActionRepeatInterval800,
-    [TouchPortalActionMapping("ActionRepeatInterval", "900")]
-    ActionRepeatInterval900,
-    [TouchPortalActionMapping("ActionRepeatInterval", "1000")]
-    ActionRepeatInterval1000,
+    ActionRepeatIntervalSet,
+  }
+
+  // Dynamicaly generated SimConnect client event IDs are "parented" to this enum type,
+  // meaning they become of this Type when they need to be cast to en Enum type (eg. for SimConnect C# API).
+  // This is done by the ReflectionService when generating the list of events for SimConnect.
+  // They really could be cast any any Enum type at all, so this is mostly for semantics.
+  internal enum SimEventClientId
+  {
+    // Starting point
+    Init = 1000,
   }
 }
