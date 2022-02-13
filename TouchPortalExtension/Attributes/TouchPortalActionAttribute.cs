@@ -1,8 +1,11 @@
 ﻿using System;
+using TouchPortalExtension.Enums;
 
-namespace TouchPortalExtension.Attributes {
+namespace TouchPortalExtension.Attributes
+{
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-  public class TouchPortalActionAttribute : Attribute {
+  public class TouchPortalActionAttribute : Attribute
+  {
     public string Id { get; set; }
     public string Name { get; set; }
     public string Prefix { get; set; }
@@ -26,15 +29,124 @@ namespace TouchPortalExtension.Attributes {
     }
   }
 
-
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
-  public class TouchPortalActionChoiceAttribute : Attribute {
-    public string[] ChoiceValues { get; set; }
-    public string DefaultValue { get; set; }
+  public class TouchPortalActionDataAttribute : Attribute
+  {
+    //public string Id { get; set; }
+    public DataType ValueType { get; set; }
+    public virtual string Label { get; set; } = "Action";
+    public virtual bool AllowDecimals { get; set; } = true;  // this default will prevent includsion in entry.tp by json generator
+    public virtual double MinValue { get; set; } = double.NaN;
+    public virtual double MaxValue { get; set; } = double.NaN;
+    public virtual string[] ChoiceValues { get; set; }
+    public string Type
+    {
+      get {
+        switch (ValueType) {
+          case DataType.Number:
+            return "number";
+          case DataType.Switch:
+            return "switch";
+          case DataType.Choice:
+            return "choice";
+          case DataType.Text:
+          default:
+            return "text";
+        }
+      }
+    }
 
-    public TouchPortalActionChoiceAttribute(string[] choiceValues, string defaultValue) {
+    protected dynamic _defaultValue;
+
+    public dynamic GetDefaultValue() {
+      try {
+        switch (ValueType) {
+          case DataType.Number:
+            return Convert.ToDouble(_defaultValue);
+          case DataType.Switch:
+            return Convert.ToBoolean(_defaultValue);
+          default:
+            return Convert.ToString(_defaultValue);
+        }
+      }
+      catch {
+        switch (ValueType) {
+          case DataType.Number:
+            return 0.0;
+          case DataType.Switch:
+            return false;
+          default:
+            return string.Empty;
+        }
+      }
+    }
+
+    protected TouchPortalActionDataAttribute(DataType type) {
+      ValueType = type;
+    }
+  }
+
+  public class TouchPortalActionTextAttribute : TouchPortalActionDataAttribute
+  {
+    public virtual string DefaultValue
+    {
+      get { return (string)GetDefaultValue(); }
+      set { _defaultValue = value; }
+    }
+
+    public TouchPortalActionTextAttribute(string defaultValue = "") : base(DataType.Text) {
+      DefaultValue = defaultValue;
+    }
+
+    public TouchPortalActionTextAttribute(string defaultValue, int minValue, int maxValue) : base(DataType.Text) {
+      DefaultValue = defaultValue;
+      MinValue = minValue;
+      MaxValue = maxValue;
+      AllowDecimals = false;
+    }
+
+    protected TouchPortalActionTextAttribute(DataType type, string defaultValue = "") : this(defaultValue) {
+      ValueType = type;
+    }
+  }
+
+  public class TouchPortalActionChoiceAttribute : TouchPortalActionTextAttribute
+  {
+
+    public TouchPortalActionChoiceAttribute(string[] choiceValues, string defaultValue = default) : base(DataType.Choice, defaultValue) {
       ChoiceValues = choiceValues;
+      if (defaultValue == default && choiceValues?.Length > 0)
+        DefaultValue = choiceValues[0];
+    }
+  }
+
+  public class TouchPortalActionSwitchAttribute : TouchPortalActionDataAttribute
+  {
+    public bool DefaultValue
+    {
+      get { return (bool)GetDefaultValue(); }
+      set { _defaultValue = value; }
+    }
+
+    public TouchPortalActionSwitchAttribute(bool defaultValue = false) : base(DataType.Switch) {
       DefaultValue = defaultValue;
     }
   }
+
+  public class TouchPortalActionNumericAttribute : TouchPortalActionDataAttribute
+  {
+    public double DefaultValue
+    {
+      get { return (double)GetDefaultValue(); }
+      set { _defaultValue = value; }
+    }
+
+    public TouchPortalActionNumericAttribute(double defaultValue = 0.0, double minValue = int.MinValue, double maxValue = int.MaxValue, bool allowDecimals = false) : base(DataType.Number) {
+      DefaultValue = defaultValue;
+      MinValue = minValue;
+      MaxValue = maxValue;
+      AllowDecimals = allowDecimals;
+    }
+  }
+
 }

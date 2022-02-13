@@ -3,20 +3,26 @@ using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
 using TouchPortalExtension.Attributes;
 
-namespace MSFSTouchPortalPlugin.Objects.SimSystem {
+namespace MSFSTouchPortalPlugin.Objects.SimSystem 
+{
   [SimVarDataRequestGroup]
+  [SimNotificationGroup(Groups.SimSystem)]
   [TouchPortalCategory("SimSystem", "MSFS - System")]
   internal static class SimSystemMapping {
     [SimVarDataRequest]
     [TouchPortalAction("SimulationRate", "Simulation Rate", "MSFS", "Simulation Rate", "Rate {0}", true)]
-    [TouchPortalActionChoice(new [] { "Increase", "Decrease" }, "Decrease")]
+    [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
+    [TouchPortalActionMapping("SIM_RATE_INCR", "Increase")]
+    [TouchPortalActionMapping("SIM_RATE_DECR", "Decrease")]
     [TouchPortalState("SimulationRate", "text", "The current simulation rate", "")]
     public static readonly SimVarItem SimulationRate =
       new SimVarItem { Def = Definition.SimulationRate, SimVarName = "SIMULATION RATE", Unit = Units.number, CanSet = false };
 
     [SimVarDataRequest]
     [TouchPortalAction("SelectedParameter", "Change Selected Value (+/-)", "MSFS", "Selected Value", "Value {0}", true)]
-    [TouchPortalActionChoice(new[] { "Increase", "Decrease" }, "Decrease")]
+    [TouchPortalActionChoice(new[] { "Increase", "Decrease" })]
+    [TouchPortalActionMapping("PLUS", "Increase")]
+    [TouchPortalActionMapping("MINUS", "Decrease")]
     public static object SELECTED_PARAMETER_CHANGE { get; }
 
     [SimVarDataRequest]
@@ -42,34 +48,5 @@ namespace MSFSTouchPortalPlugin.Objects.SimSystem {
     [SimVarDataRequest]
     [TouchPortalState("AircraftTitle", "text", "Aircraft Title", "")]
     public static readonly SimVarItem AircraftTitle = new SimVarItem { Def = Definition.AircraftTitle, SimVarName = "TITLE", Unit = Units.String, CanSet = false };
-  }
-
-  [SimNotificationGroup(Groups.SimSystem)]
-  [TouchPortalCategoryMapping("SimSystem")]
-  internal enum SimSystem {
-    // Placeholder to offset each enum for SimConnect
-    Init = 3000,
-
-    #region KeySelect
-
-    [SimActionEvent]
-    [TouchPortalActionMapping("SelectedParameter", "Increase")]
-    PLUS,
-    [SimActionEvent]
-    [TouchPortalActionMapping("SelectedParameter", "Decrease")]
-    MINUS,
-
-    #endregion
-
-    #region SimRate
-
-    [SimActionEvent]
-    [TouchPortalActionMapping("SimulationRate", "Increase")]
-    SIM_RATE_INCR,
-    [SimActionEvent]
-    [TouchPortalActionMapping("SimulationRate", "Decrease")]
-    SIM_RATE_DECR,
-
-    #endregion
   }
 }

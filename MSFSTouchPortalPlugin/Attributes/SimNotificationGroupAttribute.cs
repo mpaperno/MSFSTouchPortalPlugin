@@ -2,7 +2,7 @@
 using System;
 
 namespace MSFSTouchPortalPlugin.Attributes {
-  [AttributeUsage(AttributeTargets.Enum)]
+  [AttributeUsage(AttributeTargets.Enum | AttributeTargets.Class)]
   internal class SimNotificationGroupAttribute : Attribute {
     public Groups Group;
 

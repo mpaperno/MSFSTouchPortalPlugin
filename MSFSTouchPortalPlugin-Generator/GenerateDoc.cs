@@ -6,6 +6,7 @@ using MSFSTouchPortalPlugin_Generator.Model;
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Text;
 using TouchPortalExtension.Attributes;
@@ -65,7 +66,7 @@ namespace MSFSTouchPortalPlugin_Generator {
         // Loop through Actions
         var actions = cat.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalActionAttribute))).ToList();
         actions.ForEach(act => {
-          var actionAttribute = (TouchPortalActionAttribute)Attribute.GetCustomAttribute(act, typeof(TouchPortalActionAttribute));
+          var actionAttribute = act.GetCustomAttribute<TouchPortalActionAttribute>();
           var newAct = new DocAction {
             Name = actionAttribute.Name,
             Description = actionAttribute.Description,
@@ -75,17 +76,17 @@ namespace MSFSTouchPortalPlugin_Generator {
           };
 
           // Loop through Action Data
-          var choiceAttributes = act.GetCustomAttributes<TouchPortalActionChoiceAttribute>()?.ToList();
-
-          if (choiceAttributes?.Count > 0) {
-            for (int i = 0; i < choiceAttributes.Count; i++) {
-              var data = new DocActionData {
-                Type = "choice",
-                DefaultValue = choiceAttributes[i].DefaultValue,
-                Values = string.Join(",", choiceAttributes[i].ChoiceValues)
-              };
-              newAct.Data.Add(data);
-            }
+          var dataAttributes = act.GetCustomAttributes<TouchPortalActionDataAttribute>();
+          foreach (var attrib in dataAttributes) {
+            var data = new DocActionData {
+              Type = attrib.Type,
+              DefaultValue = attrib.GetDefaultValue()?.ToString(),
+              Values = attrib.ChoiceValues != null ? string.Join(", ", attrib.ChoiceValues) : "",
+              MinValue = attrib.MinValue,
+              MaxValue = attrib.MaxValue,
+              AllowDecimals = attrib.AllowDecimals
+            };
+            newAct.Data.Add(data);
           }
 
           newCat.Actions.Add(newAct);
@@ -183,13 +184,32 @@ namespace MSFSTouchPortalPlugin_Generator {
         // Loop Actions
         if (cat.Actions.Count > 0) {
           s.Append("### Actions\n\n");
-          s.Append("| Name | Description | Type | Format | Data (Default in bold) | Hold |\n");
-          s.Append("| --- | --- | --- | --- | --- | --- |\n");
+          s.Append("<table>\n");   // use HTML table for row valign attribute
+          s.Append("<tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>On<br/>Hold</sub></div></th></tr>\n");
           cat.Actions.ForEach(act => {
-            // TODO: Only supports showing a single line of data
-            s.Append($"| {act.Name} | {act.Description} | {act.Type} | {act.Format} | {(act.Data.Count > 0 ? act.Data[0].Values.Replace(act.Data[0].DefaultValue, $"**{act.Data[0].DefaultValue}**") : "")} | {act.HasHoldFunctionality} |\n");
+            s.Append($"<tr valign='top'><td>{act.Name}</td><td>{act.Description}</td><td>{act.Format}</td>");
+            // Loop action data
+            // I first tried by making a nested table to list the datas, but it looked like ass on GitHub due to their CSS which forces a table width and (as of Feb '22). -MP
+            s.Append("<td><ol start=0>\n");
+            act.Data.ForEach(ad => {
+              s.Append($"<li>[{ad.Type}] &nbsp; ");
+              if (ad.Type == "choice")
+                s.Append(new Regex(Regex.Escape(ad.DefaultValue)).Replace(ad.Values, $"<b>{ad.DefaultValue}</b>", 1));  // only replace 1st occurence of default string
+              else if (!string.IsNullOrWhiteSpace(ad.DefaultValue))
+                s.Append($"<b>{ad.DefaultValue}</b>");
+              else
+                s.Append("&lt;empty&gt;");
+              int prec = ad.AllowDecimals ? 2 : 0;
+              if (!double.IsNaN(ad.MinValue))
+                s.Append($" &nbsp; <sub>&lt;min: {ad.MinValue.ToString($"F{prec}")}&gt;</sub>");
+              if (!double.IsNaN(ad.MaxValue))
+                s.Append($" <sub>&lt;max: {ad.MaxValue.ToString($"F{prec}")}&gt;</sub>");  // seriously... printf("%.*f", prec, val) anyone?
+              s.Append("</li>\n");
+            });
+            s.Append($"</ol></td>\n");
+            s.Append($"<td align='center'>{(act.HasHoldFunctionality ? "&#9745;" : "")}</td></tr>\n");  // U+2611 Ballot Box with Check Emoji
           });
-          s.Append("\n\n");
+          s.Append("</table>\n\n\n");
         }
 
         if (cat.States.Count > 0) {
