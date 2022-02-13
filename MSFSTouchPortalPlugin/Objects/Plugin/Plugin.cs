@@ -1,4 +1,5 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Types;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.Plugin {
