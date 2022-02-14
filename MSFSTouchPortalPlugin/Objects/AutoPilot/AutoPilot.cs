@@ -236,7 +236,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     public static readonly SimVarItem AP_AIRSPEED_VAR =
       new SimVarItem { Def = Definition.AutoPilotAirSpeedVar, SimVarName = "AUTOPILOT AIRSPEED HOLD VAR", Unit = Units.knots, CanSet = false };
 
-    [TouchPortalAction("AutoPilotAirSpeedSet", "Airspeed Value Set", "MSFS", "Sets the airspeed value", "Set Airspeed Hold Value tp {0}")]
+    [TouchPortalAction("AutoPilotAirSpeedSet", "Airspeed Value Set", "MSFS", "Sets the airspeed value", "Set Airspeed Hold Value to {0}")]
     [TouchPortalActionText("1", 0, 5000)]
     [TouchPortalActionMapping("AP_SPD_VAR_SET")]
     public static object AP_AIRSPEED_SET { get; }
@@ -265,7 +265,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     #region AutoBrake
 
     [TouchPortalAction("AutoBrake", "Auto Brake", "MSFS", "Increase/Decrease the auto brake", "Auto Brake - {0}", true)]
-    [TouchPortalActionChoice(new [] { "Increaes", "Decrease" })]
+    [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
     [TouchPortalActionMapping("INCREASE_AUTOBRAKE_CONTROL", "Increase")]
     [TouchPortalActionMapping("DECREASE_AUTOBRAKE_CONTROL", "Decrease")]
     public static object AUTO_BRAKE { get; }
@@ -286,14 +286,14 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
 
     [SimVarDataRequest]
     [TouchPortalAction("AutoPilotMachVar", "Mach Hold Value", "MSFS", "Sets the mach hold value", "Mach Hold Value - {0}")]
-    [TouchPortalActionChoice(new [] { "Select", "Increase", "Decrease" })]
+    [TouchPortalActionChoice(new [] { "Select", "Increase", "Decrease" }, "Increase")]
     [TouchPortalActionMapping("AP_MACH_VAR_INC", "Increase")]
     [TouchPortalActionMapping("AP_MACH_VAR_DEC", "Decrease")]
     [TouchPortalState("AutoPilotMachVar", "text", "AutoPilot Mach Value", "")]
     public static readonly SimVarItem AP_MACH_VAR =
       new SimVarItem { Def = Definition.AutoPilotMachVar, SimVarName = "AUTOPILOT MACH HOLD VAR", Unit = Units.number, CanSet = false };
 
-    [TouchPortalAction("AutoPilotMachSet", "Mach Hold Value Set", "MSFS", "Sets the mach hold value", "Set Mach Hold Value tp {0}")]
+    [TouchPortalAction("AutoPilotMachSet", "Mach Hold Value Set", "MSFS", "Sets the mach hold value", "Set Mach Hold Value to {0}")]
     [TouchPortalActionText("0", 0, 20)]
     [TouchPortalActionMapping("AP_MACH_VAR_SET")]
     public static object AP_MACH_SET { get; }

@@ -272,24 +272,17 @@ namespace MSFSTouchPortalPlugin.Services {
 
       switch (pluginEventId) {
         case Plugin.ToggleConnection:
-          if (_simConnectService.IsConnected()) {
-            autoReconnectSimConnect = false;
+          autoReconnectSimConnect = !autoReconnectSimConnect;
+          if (_simConnectService.IsConnected())
             _simConnectService.Disconnect();
-          }
-          else {
-            autoReconnectSimConnect = true;
-          }
           break;
         case Plugin.Connect:
-          if (!_simConnectService.IsConnected()) {
-            autoReconnectSimConnect = true;
-          }
+          autoReconnectSimConnect = true;
           break;
         case Plugin.Disconnect:
-          if (_simConnectService.IsConnected()) {
-            autoReconnectSimConnect = false;
+          autoReconnectSimConnect = false;
+          if (_simConnectService.IsConnected())
             _simConnectService.Disconnect();
-          }
           break;
 
         case Plugin.ActionRepeatIntervalInc:

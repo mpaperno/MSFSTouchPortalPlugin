@@ -3,7 +3,7 @@ using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
 using TouchPortalExtension.Attributes;
 
-namespace MSFSTouchPortalPlugin.Objects.SimSystem 
+namespace MSFSTouchPortalPlugin.Objects.SimSystem
 {
   [SimVarDataRequestGroup]
   [SimNotificationGroup(Groups.SimSystem)]
@@ -11,7 +11,7 @@ namespace MSFSTouchPortalPlugin.Objects.SimSystem
   internal static class SimSystemMapping {
     [SimVarDataRequest]
     [TouchPortalAction("SimulationRate", "Simulation Rate", "MSFS", "Simulation Rate", "Rate {0}", true)]
-    [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
+    [TouchPortalActionChoice(new [] { "Increase", "Decrease" }, "Decrease")]
     [TouchPortalActionMapping("SIM_RATE_INCR", "Increase")]
     [TouchPortalActionMapping("SIM_RATE_DECR", "Decrease")]
     [TouchPortalState("SimulationRate", "text", "The current simulation rate", "")]
@@ -20,7 +20,7 @@ namespace MSFSTouchPortalPlugin.Objects.SimSystem
 
     [SimVarDataRequest]
     [TouchPortalAction("SelectedParameter", "Change Selected Value (+/-)", "MSFS", "Selected Value", "Value {0}", true)]
-    [TouchPortalActionChoice(new[] { "Increase", "Decrease" })]
+    [TouchPortalActionChoice(new[] { "Increase", "Decrease" }, "Decrease")]
     [TouchPortalActionMapping("PLUS", "Increase")]
     [TouchPortalActionMapping("MINUS", "Decrease")]
     public static object SELECTED_PARAMETER_CHANGE { get; }

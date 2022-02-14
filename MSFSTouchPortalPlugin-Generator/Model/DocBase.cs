@@ -22,9 +22,9 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
 
   public class DocCategory {
     public string Name { get; set; }
-    public List<DocAction> Actions { get; set; } = new List<DocAction>();
-    public List<DocState> States { get; set; } = new List<DocState>();
-    public List<object> Events { get; set; } = new List<object>();
+    public List<DocAction> Actions { get; set; } = new();
+    public List<DocState> States { get; set; } = new();
+    public List<object> Events { get; set; } = new();
   }
 
   public class DocAction {
@@ -33,7 +33,8 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string Type { get; set; }
     public string Format { get; set; }
     public bool HasHoldFunctionality { get; set; } = false;
-    public List<DocActionData> Data { get; set; } = new List<DocActionData>();
+    public List<DocActionData> Data { get; set; } = new();
+    public List<DocActionMapping> Mappings { get; set; } = new();
   }
 
   public class DocActionData {
@@ -45,10 +46,17 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public bool AllowDecimals { get; set; }
   }
 
+  public class DocActionMapping
+  {
+    public string ActionId { get; set; }
+    public string[] Values { get; set; }
+  }
+
   public class DocState {
     public string Id { get; set; }
     public string Type { get; set; }
     public string Description { get; set; }
     public string DefaultValue { get; set; }
+    public string SimVarName { get; set; }
   }
 }
