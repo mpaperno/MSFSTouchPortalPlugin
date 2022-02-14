@@ -20,6 +20,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
 
     [TouchPortalAction("AileronsSet", "Ailerons Set", "MSFS", " Set Ailerons", "Ailerons set to {0} (-16383 - +16383)")]
     [TouchPortalActionText("0", -16383, 16383)]
+    [TouchPortalActionMapping("AILERONS_SET")]
     public static object AileronsSet { get; }
 
     #endregion
@@ -42,7 +43,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     #region Brakes
 
     [TouchPortalAction("Brakes", "Brakes", "MSFS", "Brakes", "Brakes - {0}", true)]
-    [TouchPortalActionChoice(new [] { "All", "Left", "Right" }, "All")]
+    [TouchPortalActionChoice(new [] { "All", "Left", "Right" })]
     [TouchPortalActionMapping("BRAKES", "All")]
     [TouchPortalActionMapping("BRAKES_LEFT", "Left")]
     [TouchPortalActionMapping("BRAKES_RIGHT", "Right")]
@@ -74,6 +75,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
 
     [TouchPortalAction("FlapsSet", "Flaps Set", "MSFS", " Set Flaps", "Flaps set to {0} (0 - +16383)")]
     [TouchPortalActionText("0", 0, 16383)]
+    [TouchPortalActionMapping("FLAPS_SET")]
     public static object FlapsSet { get; }
 
 
@@ -131,15 +133,15 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     #region Rudder
 
     [TouchPortalAction("Rudder", "Rudder", "MSFS", "Rudder", "Rudder - {0}", true)]
-    [TouchPortalActionChoice(new [] { "Center", "Left", "Right", "Set" })]
-    [TouchPortalActionMapping("RUDDER_SET", "Set")]
-    [TouchPortalActionMapping("RUDDER_LEFT", "Left")]
+    [TouchPortalActionChoice(new [] { "Center", "Left", "Right" })]
     [TouchPortalActionMapping("RUDDER_CENTER", "Center")]
+    [TouchPortalActionMapping("RUDDER_LEFT", "Left")]
     [TouchPortalActionMapping("RUDDER_RIGHT", "Right")]
     public static object Rudder { get; }
 
     [TouchPortalAction("RudderSet", "Rudder Set", "MSFS", " Set Rudder", "Rudder set to {0} (-16383 - +16383)")]
     [TouchPortalActionText("0", -16383, 16383)]
+    [TouchPortalActionMapping("RUDDER_SET")]
     public static object RudderSet { get; }
 
     #endregion
