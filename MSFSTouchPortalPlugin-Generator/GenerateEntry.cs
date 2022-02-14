@@ -110,29 +110,32 @@ namespace MSFSTouchPortalPlugin_Generator {
             action.Format = string.Format(action.Format, action.Data.Select(d => $"{{${d.Id}$}}").ToArray());
           }
 
-          category.Actions.Add(action);
+          // validate unique ID
+          if (category.Actions.FirstOrDefault(a => a.Id == action.Id) == null)
+            category.Actions.Add(action);
+          else
+            _logger.LogWarning($"Duplicate action ID found: '{action.Id}', skipping.'");
         });
 
         // Ordering
         category.Actions = category.Actions.OrderBy(c => c.Name).ToList();
 
-        // TODO: Non-Choice Types
-
         // States
         var states = cat.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalStateAttribute))).ToList();
         states.ForEach(state => {
           var stateAttribute = state.GetCustomAttribute<TouchPortalStateAttribute>();
+          var newState = new TouchPortalState {
+            Id = $"{category.Id}.State.{stateAttribute.Id}",
+            Type = stateAttribute.Type,
+            Description = $"{category.Name} - {stateAttribute.Description}",
+            DefaultValue = stateAttribute.Default
+          };
 
-          if (stateAttribute != null) {
-            var newState = new TouchPortalState {
-              Id = $"{category.Id}.State.{stateAttribute.Id}",
-              Type = stateAttribute.Type,
-              Description = $"{category.Name} - {stateAttribute.Description}",
-              DefaultValue = stateAttribute.Default
-            };
-
+          // validate unique ID
+          if (category.States.FirstOrDefault(s => s.Id == newState.Id) == null)
             category.States.Add(newState);
-          }
+          else
+            _logger.LogWarning($"Duplicate state ID found: '{newState.Id}', skipping.'");
         });
 
         // Ordering
@@ -167,7 +170,11 @@ namespace MSFSTouchPortalPlugin_Generator {
           if (!double.IsNaN(att.MaxValue))
             setting.MaxValue = att.MaxValue;
 
-          model.Settings.Add(setting);
+          // validate unique Name
+          if (model.Settings.FirstOrDefault(s => s.Name == setting.Name) == null)
+            model.Settings.Add(setting);
+          else
+            _logger.LogWarning($"Duplicate Setting Name found: '{setting.Name}', skipping.'");
         });
       });
 

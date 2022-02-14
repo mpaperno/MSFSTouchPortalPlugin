@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Text;
 using TouchPortalExtension.Attributes;
+using MSFSTouchPortalPlugin.Constants;
 
 namespace MSFSTouchPortalPlugin_Generator {
   internal class GenerateDoc : IGenerateDoc {
@@ -89,6 +90,19 @@ namespace MSFSTouchPortalPlugin_Generator {
             newAct.Data.Add(data);
           }
 
+          // Loop through Action mappings
+          var mapAttribs = act.GetCustomAttributes<MSFSTouchPortalPlugin.Attributes.TouchPortalActionMappingAttribute>();
+          foreach (var attrib in mapAttribs) {
+            var map = new DocActionMapping {
+              ActionId = attrib.ActionId,
+              Values = attrib.Values,
+            };
+            newAct.Mappings.Add(map);
+          }
+          // Warn about missing mappings
+          if (!mapAttribs.Any())
+            _logger.LogWarning($"No event mappings found for action ID '{actionAttribute.Id}' in category '{catAttr.Name}'");
+
           newCat.Actions.Add(newAct);
         });
 
@@ -104,7 +118,8 @@ namespace MSFSTouchPortalPlugin_Generator {
               Id = $"{_options.Value.PluginName}.{catAttr.Id}.State.{stateAttribute.Id}",
               Type = stateAttribute.Type,
               Description = stateAttribute.Description,
-              DefaultValue = stateAttribute.Default
+              DefaultValue = stateAttribute.Default,
+              SimVarName = state.FieldType == typeof(SimVarItem) ? ((SimVarItem)state.GetValue(null)).SimVarName : ""
             };
 
             newCat.States.Add(newState);
@@ -156,14 +171,14 @@ namespace MSFSTouchPortalPlugin_Generator {
 
       // Table of Contents
       s.Append("## Table of Contents\n\n");
-      s.Append("[Plugin Settings](#pluginsettings)\n\n");
+      s.Append("[Plugin Settings](#plugin-settings)\n\n");
       model.Categories.ForEach(cat => {
-        s.Append($"[{cat.Name}](#{cat.Name.Replace(" ", "").ToLower()})\n\n");
+        s.Append($"[{cat.Name}](#{cat.Name.Replace(" ", "-").ToLower()})\n\n");
       });
       s.Append("---\n\n");
 
       // Show settings first
-      s.Append("## Plugin Settings\n\n");
+      s.Append("## Plugin Settings\n<details><summary><sub>Click to expand</sub></summary>\n\n");
       model.Settings.ForEach(setting => {
         s.Append($"### {setting.Name}\n\n");
         s.Append("| Read-only | Type | Default Value | Max. Length | Min. Value | Max. Value |\n");
@@ -175,17 +190,19 @@ namespace MSFSTouchPortalPlugin_Generator {
         s.Append("|\n\n");
         s.Append(setting.Description + "\n\n");
       });
-      s.Append("---\n\n");
+      s.Append("</details>\n\n---\n\n");
 
       // Loop Categories
       model.Categories.ForEach(cat => {
-        s.Append($"## {cat.Name}\n\n");
+        s.Append($"## {cat.Name}\n<details><summary><sub>Click to expand</sub></summary>\n\n");
 
         // Loop Actions
         if (cat.Actions.Count > 0) {
           s.Append("### Actions\n\n");
           s.Append("<table>\n");   // use HTML table for row valign attribute
-          s.Append("<tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>On<br/>Hold</sub></div></th></tr>\n");
+          s.Append("<tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th>" +
+            "<th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th>" +
+            "<th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>\n");
           cat.Actions.ForEach(act => {
             s.Append($"<tr valign='top'><td>{act.Name}</td><td>{act.Description}</td><td>{act.Format}</td>");
             // Loop action data
@@ -206,8 +223,19 @@ namespace MSFSTouchPortalPlugin_Generator {
                 s.Append($" <sub>&lt;max: {ad.MaxValue.ToString($"F{prec}")}&gt;</sub>");  // seriously... printf("%.*f", prec, val) anyone?
               s.Append("</li>\n");
             });
-            s.Append($"</ol></td>\n");
-            s.Append($"<td align='center'>{(act.HasHoldFunctionality ? "&#9745;" : "")}</td></tr>\n");  // U+2611 Ballot Box with Check Emoji
+            s.Append($"</ol></td>\n<td>");
+            if (act.Mappings.Count > 2)  // collapsible only if more than 2 items
+              s.Append($"<details><summary><sub>details</sub></summary>");
+            s.Append("<dl>");
+            act.Mappings.ForEach(am => {
+              if (am.Values?.Length > 0)
+                s.Append($"<dt>{string.Join("+", am.Values)}</dt>");
+              s.Append($"<dd>{am.ActionId}</dd>");
+            });
+            s.Append($"</dl>");
+            if (act.Mappings.Count > 2)
+              s.Append($"</details>");
+            s.Append($"</td>\n<td align='center'>{(act.HasHoldFunctionality ? "&#9745;" : "")}</td></tr>\n");  // U+2611 Ballot Box with Check Emoji
           });
           s.Append("</table>\n\n\n");
         }
@@ -215,17 +243,17 @@ namespace MSFSTouchPortalPlugin_Generator {
         if (cat.States.Count > 0) {
           // Loop States
           s.Append("### States\n\n");
-          s.Append("| Id | Type | Description | DefaultValue |\n");
+          s.Append("| Id | SimVar Name | Description | DefaultValue |\n");
           s.Append("| --- | --- | --- | --- |\n");
           cat.States.ForEach(state => {
-            s.Append($"| {state.Id} | {state.Type} | {state.Description} | {state.DefaultValue} |\n");
+            s.Append($"| {state.Id} | {state.SimVarName} | {state.Description} | {state.DefaultValue} |\n");
           });
           s.Append("\n\n");
         }
 
         // Loop Events
 
-        s.Append("---\n\n");
+        s.Append("</details>\n\n---\n\n");
       });
 
       return s.ToString();
