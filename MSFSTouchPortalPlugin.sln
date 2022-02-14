@@ -43,7 +43,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PULL_REQUEST_TEMPLATE", "PU
 		.github\PULL_REQUEST_TEMPLATE\pull-request-template.md = .github\PULL_REQUEST_TEMPLATE\pull-request-template.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSFSTouchPortalPlugin-Tests", "MSFSTouchPortalPlugin-Tests\MSFSTouchPortalPlugin-Tests.csproj", "{562A58FF-DD9A-4839-B503-4520D3BE96DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSFSTouchPortalPlugin-Tests", "MSFSTouchPortalPlugin-Tests\MSFSTouchPortalPlugin-Tests.csproj", "{562A58FF-DD9A-4839-B503-4520D3BE96DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
