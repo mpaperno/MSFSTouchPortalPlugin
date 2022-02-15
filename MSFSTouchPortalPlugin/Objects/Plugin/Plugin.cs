@@ -13,7 +13,7 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     [TouchPortalActionMapping("Connect", "On")]
     [TouchPortalActionMapping("Disconnect", "Off")]
     [TouchPortalState("Connected", "text", "The status of SimConnect", "false")]
-    public static object Connection { get; }
+    public static readonly object Connection;
   }
 
   [InternalEvent]
