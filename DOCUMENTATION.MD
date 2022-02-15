@@ -83,6 +83,7 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 | Name | Description | Type | Format | Data (Default in bold) |
 | --- | --- | --- | --- | --- |
 | Alternator - Specific | Toggle Specific Alternator | communicate | Toggle Altenator - {0} | **1**,2,3,4 |
+| Avionics Master | Toggle Avionics Master | communicate | Toggle Avionics Master |  |
 | Master Alternator | Toggle Master Alternator | communicate | Toggle Master Alternator |  |
 | Master Battery | Toggle Master Battery | communicate | Toggle Master Battery |  |
 | Master Battery & Alternator | Toggle Master Battery & Alternator | communicate | Toggle Master Battery & Alternator |  |

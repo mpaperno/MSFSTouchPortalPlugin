@@ -53,9 +53,14 @@ namespace MSFSTouchPortalPlugin_Generator {
       // Loop through categories
       classList.ForEach(cat => {
         var catAttr = (TouchPortalCategoryAttribute)Attribute.GetCustomAttribute(cat, typeof(TouchPortalCategoryAttribute));
-        var newCat = new DocCategory {
-          Name = catAttr.Name
-        };
+        bool newCatCreated = false;
+        var newCat = model.Categories.FirstOrDefault(c => c.Name == catAttr.Name);
+        if (newCat == null) {
+          newCat = new DocCategory {
+            Name = catAttr.Name
+          };
+          newCatCreated = true;
+        }
 
         // Loop through Actions
         var actions = cat.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalActionAttribute))).ToList();
@@ -65,7 +70,8 @@ namespace MSFSTouchPortalPlugin_Generator {
             Name = actionAttribute.Name,
             Description = actionAttribute.Description,
             Type = actionAttribute.Type,
-            Format = actionAttribute.Format
+            Format = actionAttribute.Format,
+            HasHoldFunctionality = actionAttribute.HasHoldFunctionality
           };
 
           // Loop through Action Data
@@ -88,7 +94,7 @@ namespace MSFSTouchPortalPlugin_Generator {
         newCat.Actions = newCat.Actions.OrderBy(c => c.Name).ToList();
 
         // Loop through States
-        var states = cat.GetFields().Where(m => m.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalState))).ToList();
+        var states = cat.GetFields().Where(m => m.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalStateAttribute))).ToList();
         states.ForEach(state => {
           var stateAttribute = state.GetCustomAttribute<TouchPortalStateAttribute>();
 
@@ -108,10 +114,34 @@ namespace MSFSTouchPortalPlugin_Generator {
 
         // Loop through Events
 
-        model.Categories.Add(newCat);
+        if (newCatCreated)
+          model.Categories.Add(newCat);
       });
 
       model.Categories = model.Categories.OrderBy(c => c.Name).ToList();
+
+      // Settings
+      var setContainers = assemblyList.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalSettingsContainerAttribute))).OrderBy(o => o.Name).ToList();
+      setContainers.ForEach(setCtr => {
+        var settingsList = setCtr.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalSettingAttribute))).ToList();
+        settingsList.ForEach(setType => {
+          var att = (TouchPortalSettingAttribute)Attribute.GetCustomAttribute(setType, typeof(TouchPortalSettingAttribute));
+          var setting = new DocSetting {
+            Name = att.Name,
+            Description = att.Description,
+            Type = att.Type,
+            DefaultValue = att.Default,
+            MaxLength = att.MaxLength,
+            MinValue = att.MinValue,
+            MaxValue = att.MaxValue,
+            IsPassword = att.IsPassword,
+            ReadOnly = att.ReadOnly
+          };
+
+          model.Settings.Add(setting);
+        });
+      });
+      model.Settings = model.Settings.OrderBy(c => c.Name).ToList();
 
       return model;
     }
@@ -125,8 +155,24 @@ namespace MSFSTouchPortalPlugin_Generator {
 
       // Table of Contents
       s.Append("## Table of Contents\n\n");
+      s.Append("[Plugin Settings](#pluginsettings)\n\n");
       model.Categories.ForEach(cat => {
         s.Append($"[{cat.Name}](#{cat.Name.Replace(" ", "").ToLower()})\n\n");
+      });
+      s.Append("---\n\n");
+
+      // Show settings first
+      s.Append("## Plugin Settings\n\n");
+      model.Settings.ForEach(setting => {
+        s.Append($"### {setting.Name}\n\n");
+        s.Append("| Read-only | Type | Default Value | Max. Length | Min. Value | Max. Value |\n");
+        s.Append("| --- | --- | --- | --- | --- | --- |\n");
+        s.Append($"| {setting.ReadOnly} | {setting.Type} | {setting.DefaultValue} ");
+        s.Append($"| {(setting.MaxLength > 0 ? setting.MaxLength : "N/A")} ");
+        s.Append($"| {(setting.MinValue != double.NaN ? setting.MinValue : "N/A")} ");
+        s.Append($"| {(setting.MaxValue != double.NaN ? setting.MaxValue : "N/A")} ");
+        s.Append("|\n\n");
+        s.Append(setting.Description + "\n\n");
       });
       s.Append("---\n\n");
 
@@ -137,11 +183,11 @@ namespace MSFSTouchPortalPlugin_Generator {
         // Loop Actions
         if (cat.Actions.Count > 0) {
           s.Append("### Actions\n\n");
-          s.Append("| Name | Description | Type | Format | Data (Default in bold) |\n");
-          s.Append("| --- | --- | --- | --- | --- |\n");
+          s.Append("| Name | Description | Type | Format | Data (Default in bold) | Hold |\n");
+          s.Append("| --- | --- | --- | --- | --- | --- |\n");
           cat.Actions.ForEach(act => {
             // TODO: Only supports showing a single line of data
-            s.Append($"| {act.Name} | {act.Description} | {act.Type} | {act.Format} | {(act.Data.Count > 0 ? act.Data[0].Values.Replace(act.Data[0].DefaultValue, $"**{act.Data[0].DefaultValue}**") :  "")} |\n");
+            s.Append($"| {act.Name} | {act.Description} | {act.Type} | {act.Format} | {(act.Data.Count > 0 ? act.Data[0].Values.Replace(act.Data[0].DefaultValue, $"**{act.Data[0].DefaultValue}**") : "")} | {act.HasHoldFunctionality} |\n");
           });
           s.Append("\n\n");
         }
