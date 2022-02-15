@@ -46,14 +46,19 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
       new SimVarItem { Def = Definition.AutoPilotAttitudeHold, SimVarName = "AUTOPILOT ATTITUDE HOLD", Unit = Units.Bool, CanSet = false };
 
     [SimVarDataRequest]
-    [TouchPortalAction("AutoPilotAttitudeVar", "Attitude Hold Value", "MSFS", "Sets the attitude hold value", "Attitude Hold Value - {0}", true)]
+    [TouchPortalAction("AutoPilotAttitudeVar", "Attitude Hold Pitch Value", "MSFS", "Sets the attitude hold pitch value", "Attitude Hold Pitch Value - {0}", true)]
     [TouchPortalActionChoice(new [] { "Select", "Increase", "Decrease" })]
     [TouchPortalActionMapping("AP_PITCH_REF_INC_UP", "Increase")]
     [TouchPortalActionMapping("AP_PITCH_REF_INC_DN", "Decrease")]
-    [TouchPortalActionMapping("AP_PITCH_REF_SELECT", "Set")]
+    [TouchPortalActionMapping("AP_PITCH_REF_SELECT", "Select")]
     [TouchPortalState("AutoPilotAttitudeVar", "text", "AutoPilot Pitch Reference Value", "")]
     public static readonly SimVarItem AP_ATTITUDE_PITCH =
       new SimVarItem { Def = Definition.AutoPilotAttitudeVar, SimVarName = "AUTOPILOT PITCH HOLD REF", Unit = Units.radians, CanSet = false };
+
+    [TouchPortalAction("AutoPilotAttitudeSet", "Attitude Hold Pitch Value Set", "MSFS", "Sets the airspeed value", "Set Attitude Hold Pitch Value to {0} (-16383 - +16383)")]
+    [TouchPortalActionText("0", -16383, 16383)]
+    [TouchPortalActionMapping("AP_PITCH_REF_SET")]
+    public static object AP_ATTITUDE_PITCH_SET { get; }
 
     #endregion
 
@@ -227,17 +232,16 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
 
     [SimVarDataRequest]
     [TouchPortalAction("AutoPilotAirSpeedVar", "Airspeed Hold Value", "MSFS", "Adjusts the airspeed hold value", "Airspeed Hold Value - {0}", true)]
-    [TouchPortalActionChoice(new [] { "Select", "Increase", "Decrease", "Set" })]
+    [TouchPortalActionChoice(new [] { "Select", "Increase", "Decrease" })]
     [TouchPortalActionMapping("AIRSPEED_BUG_SELECT", "Select")]
     [TouchPortalActionMapping("AP_SPD_VAR_INC", "Increase")]
     [TouchPortalActionMapping("AP_SPD_VAR_DEC", "Decrease")]
-    [TouchPortalActionMapping("AP_SPD_VAR_SET", "Set")]
     [TouchPortalState("AutoPilotAirSpeedVar", "text", "AutoPilot Air Speed Value", "")]
     public static readonly SimVarItem AP_AIRSPEED_VAR =
       new SimVarItem { Def = Definition.AutoPilotAirSpeedVar, SimVarName = "AUTOPILOT AIRSPEED HOLD VAR", Unit = Units.knots, CanSet = false };
 
     [TouchPortalAction("AutoPilotAirSpeedSet", "Airspeed Value Set", "MSFS", "Sets the airspeed value", "Set Airspeed Hold Value to {0}")]
-    [TouchPortalActionText("1", 0, 5000)]
+    [TouchPortalActionText("0", 0, 5000)]
     [TouchPortalActionMapping("AP_SPD_VAR_SET")]
     public static object AP_AIRSPEED_SET { get; }
 

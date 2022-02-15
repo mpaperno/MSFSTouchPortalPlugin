@@ -76,10 +76,11 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     [TouchPortalActionMapping("MAGNETO4_INCR", new[] { "4", "Increase" })]
     public static object MAGNETO_SPECIFIC { get; }
 
-    [TouchPortalAction("MagnetoSet", "Magnetos Set", "MSFS", "Set Magneto Switch Position", "Magneto Switch {0} to position {1}")]
-    [TouchPortalActionChoice(new[] { "All", "1", "2", "3", "4" })]
-    [TouchPortalActionNumeric(1, 1, 5)]
-    [TouchPortalActionMapping("MAGNETO_SET", "All")]
+    [TouchPortalAction("MagnetoSet", "Magnetos Set", "MSFS", "Set Magneto Switch Position", "Magneto Switch {0} to position {1} (0-4)")]
+    [TouchPortalActionChoice(new[] { "1", "2", "3", "4" })]
+    [TouchPortalActionNumeric(0, 0, 4)]
+    //[TouchPortalActionMapping("MAGNETO_SET", "All")]  // only value "1" works, same as MAGNETO_START
+    //[TouchPortalActionMapping("MAGNETO_SET_ACTUAL", "All")]  // Prepar3D
     [TouchPortalActionMapping("MAGNETO1_SET", "1")]
     [TouchPortalActionMapping("MAGNETO2_SET", "2")]
     [TouchPortalActionMapping("MAGNETO3_SET", "3")]
@@ -103,7 +104,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
 
     #region Throttle
 
-    [TouchPortalAction("Throttle", "Throttle", "MSFS", "Sets all throttles", "All Throttles - {0}")]
+    [TouchPortalAction("Throttle", "Throttle", "MSFS", "Sets all throttles", "All Throttles - {0}", true)]
     [TouchPortalActionChoice(new [] { "Full", "Increase", "Increase Small", "Decrease", "Decrease Small", "Cut", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%" })]
     [TouchPortalActionMapping("THROTTLE_FULL", "Full")]
     [TouchPortalActionMapping("THROTTLE_INCR", "Increase")]
@@ -133,9 +134,9 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     [TouchPortalActionMapping("THROTTLE1_CUT",        new[] { "1", "Cut" })]
     [TouchPortalActionMapping("THROTTLE2_FULL",       new[] { "2", "Full" })]
     [TouchPortalActionMapping("THROTTLE2_INCR",       new[] { "2", "Increase" })]
-    [TouchPortalActionMapping("THROTTLE2_INCR_SALL",  new[] { "2", "Increase Small" })]
+    [TouchPortalActionMapping("THROTTLE2_INCR_SMALL", new[] { "2", "Increase Small" })]
     [TouchPortalActionMapping("THROTTLE2_DECR",       new[] { "2", "Descrease" })]
-    [TouchPortalActionMapping("THROTTLE2_DECR_SALL",  new[] { "2", "Descrease Small" })]
+    [TouchPortalActionMapping("THROTTLE2_DECR_SMALL", new[] { "2", "Descrease Small" })]
     [TouchPortalActionMapping("THROTTLE2_CUT",        new[] { "2", "Cut" })]
     [TouchPortalActionMapping("THROTTLE3_FULL",       new[] { "3", "Full" })]
     [TouchPortalActionMapping("THROTTLE3_INCR",       new[] { "3", "Increase" })]
@@ -151,9 +152,9 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     [TouchPortalActionMapping("THROTTLE4_CUT",        new[] { "4", "Cut" })]
     public static object THROTTLE_SPECIFIC { get; }
 
-    [TouchPortalAction("ThrottleSet", "Throttle Set", "MSFS", "Sets all or specific Throttle(s) to specific value", "Set Throttle {0} to {1}%")]
+    [TouchPortalAction("ThrottleSet", "Throttle Set", "MSFS", "Sets all or specific Throttle(s) to specific value", "Set Throttle {0} to {1} (-16383 - +16383)")]
     [TouchPortalActionChoice(new[] { "All", "1", "2", "3", "4" }, "All")]
-    [TouchPortalActionText("0", 0, 100)]
+    [TouchPortalActionText("0", -16383, 16383)]
     [TouchPortalActionMapping("THROTTLE_SET",  new[] { "All" })]
     [TouchPortalActionMapping("THROTTLE1_SET", new[] { "1" })]
     [TouchPortalActionMapping("THROTTLE2_SET", new[] { "2" })]
