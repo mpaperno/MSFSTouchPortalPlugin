@@ -1,10 +1,11 @@
 name: build-nightly
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ $default-branch ]
+    branches: [ nightly-build ]
   pull_request:
-    branches: [ $default-branch ]
+    branches: [ nightly-build ]
 
 jobs:
   build:
