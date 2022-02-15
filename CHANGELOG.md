@@ -1,5 +1,48 @@
 # MSFS Touch Portal Plugin - MP fork
 
+## 0.6.0-mp (Feb-15-2022)
+* Added support for sending numeric data values to the simulator with the various "Set" actions.
+  * Most/all "Set" actions have been broken out into their own separate action types. Since they now have a data field, it doesn't make sense to pair them with actions which don't use them, such as "Increment."
+    * Buttons which did *not* use the old "Set" choices, such as "Increment," etc, will continue to work (although they will still show the old choices in existing TP buttons until replaced with the new versions). However any buttons which relied on the old behavior of the "Set" action value always being `0` (zero) will need to be updated.
+  * Simple arithmetic operations (`+`, `-`, `*`, `/`, `%`, precedence with `( )`, scientific notation) are supported in most of the data fields which can be sent to the sim. 
+That means you can do things like `25 * 30`, but more interestingly one could use states/variables, like:  
+    `"AP Set Alt. Hold to:" ${value:MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAltitudeVar} + 1000`  
+This evaluation could be expanded upon later if there is a need (to include higher math, rounding, etc).
+* Generated documentation updated to include all Action Data attributes and mappings to the actual SimConnect events. Also added SimVar names to the list of States.
+* New TP UI color for MSFS Plugin actions, "MSFS Blue."
+* Action-to-event mapping syntax/scheme somewhat simplified and consolidated, for easier additions and maintenance. Now also allows custom event names (with a dot).
+* Added new actions:
+  * AP Set Airspeed Hold Value
+  * AP Set Altitude Hold Value
+  * AP Set Heading Hold Value
+  * AP Set Mach Hold Value
+  * AP Set Vertical Speed Hold Value
+  * Magneto Switch 1/2/3/4 Set Position (0-4)
+  * Propeller All/1/2/3/4 Set Pitch Lever Value (0 to 16383)
+  * Throttle All/1/2/3/4 Set (-16383 - +16383)
+  * Engine 1/2/3/4 Anti-ice Switch Set On/Off
+  * Aileron Trim Set % (-100 - +100)
+  * Ailerons Position Set (-16383 - +16383)
+  * Elevator Trim Set (0 - 16383)
+  * Elevator Position Set (-16383 - +16383)
+  * Elevator Increment Up/Down
+  * Rudder Trim Set % (-100 - +100)
+  * Rudder Position Set (-16383 - +16383)
+  * Flaps Position Set (0 - 16383)
+  * Spoilers Position Set (0 - 16383)
+* Modified actions:
+  * Toggle Flight Director removed useless choice selector with the one "toggle" option (there are no SimConnect events for specific on/off), **BREAKS CURRENT BUTTONS**
+  * Vertical Speed Hold added On/Off choices (in addition to Toggle which was the only one)
+  * Vertical Speed Value removed "Set Current" choice since there's no such Sim event to map to
+  * AP Nav Mode Switch 1/2, which never worked, now takes a value of 1 or 2 (that's how we have to set it up for now)
+  * Toggle All Magnetos - added new "Select for +/-" choice
+  * Engine Anti Ice Toggle removed Set choice (new action, above) which left only Toggle as 2nd choice, so that was removed **BREAKS CURRENT BUTTONS**
+  * Held Action Repeat Rate changed entirely, can now be Set to a specific value or Increment/Decrement by any step amount (in ms)  **BREAKS CURRENT BUTTONS**
+* Modified states:
+  * Plugin.State.Connected added "connecting" status which is active while SimConnect is not connected but is trying to be. "false" now indicates that it is disconnected and no attempts are being made to connect.  **POSSIBLY BREAKS CURRENT BUTTONS** if they rely on the "false" status.
+
+For some hints on using the new Set commands, check out the wiki page [Tips And Tricks For Setting Simulator Values](https://github.com/tlewis17/MSFSTouchPortalPlugin/wiki/Tips-And-Tricks-For-Setting-Simulator-Values).
+
 ## 0.5.4-mp (Feb-08-2022)
 * Added support for "On Hold" type Touch Portal actions with a configurable repeat time. 
   All current actions which may make sense to repeat (such as for control surfaces or AP adjustments) should now be available in the "On Hold" TP button configuration page.

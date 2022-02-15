@@ -2,7 +2,7 @@
 
 [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/mpaperno/MSFSTouchPortalPlugin?include_prereleases)](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases)
 [![Downloads](https://img.shields.io/github/downloads/mpaperno/MSFSTouchPortalPlugin/total.svg)](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases)
-[![Downloads](https://img.shields.io/github/downloads/mpaperno/MSFSTouchPortalPlugin/0.5.4-mp/total)](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases/tag/0.5.4-mp)
+[![Downloads of latest release](https://img.shields.io/github/downloads/mpaperno/MSFSTouchPortalPlugin/latest/total)](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases/latest)
 [![Stars](https://img.shields.io/github/stars/mpaperno/MSFSTouchPortalPlugin)](https://github.com/Touch-Portal-MSFS/MSFSTouchPortalPlugin/stargazers)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
@@ -23,6 +23,8 @@ Another good page for use is created by TaxTips at: [FltSim-msfs2020-Control](ht
 
 Auto-generated documentation on all actions, states, and settings can be found in [DOCUMENTATION.MD](DOCUMENTATION.MD).
 
+A [nascent wiki](https://github.com/tlewis17/MSFSTouchPortalPlugin/wiki/) is available with some tips.
+
 ## Installation Guide
 
 Go to the releases:
@@ -41,10 +43,6 @@ https://github.com/FordMustang0288/MSFSTouchPortalPages
 ## Support and Discussion
 
 Please use the GitHub Issues pages for bug reports and concise feature requests. Use the Discussions pages for general conversation on any related topic like general support questions.
-
-## Known Issues
-
-* "Set" actions require data to be passed in and do not currently work.
 
 ## TODO
 
