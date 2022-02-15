@@ -834,6 +834,7 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 | Id | SimVar Name | Description | DefaultValue |
 | --- | --- | --- | --- |
 | MSFSTouchPortalPlugin.Plugin.State.ActionRepeatInterval |  | The current Held Action Repeat Rate (ms) | 450 |
+| MSFSTouchPortalPlugin.Plugin.State.Connected |  | The status of SimConnect (true/false/connecting) | false |
 
 
 </details>
