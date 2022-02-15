@@ -326,7 +326,7 @@ namespace MSFSTouchPortalPlugin.Services {
               dataReal = Math.Max(dataReal, action.MinValue);
             if (!double.IsNaN(action.MaxValue))
               dataReal = Math.Min(dataReal, action.MaxValue);
-            dataUint = Convert.ToUInt32(dataReal);
+            dataUint = (uint)Math.Round(dataReal);
           }
         }
         catch (Exception e) {
