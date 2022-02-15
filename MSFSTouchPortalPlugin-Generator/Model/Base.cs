@@ -25,7 +25,7 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     [Required, RegularExpression(@"^#[A-Fa-f0-9]{6}$")]
     public string ColorDark { get; set; } = "#000000";
     [Required, RegularExpression(@"^#[A-Fa-f0-9]{6}$")]
-    public string ColorLight { get; set; } = "#23CF5F";
+    public string ColorLight { get; set; } = "#00B4FF";
   }
 
   class TouchPortalCategory {
