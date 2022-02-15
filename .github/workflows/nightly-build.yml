@@ -24,3 +24,21 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Publish
+      run: dotnet publish "MSFSTouchPortalPlugin" --output ".\out\dist" --configuration Release -p:Platform=x64 $VersionSuffixCommand $VersionSuffix -r "win-x64" --self-contained true
+      run: dotnet run -p "MSFSTouchPortalPlugin-Generator" ".\out"
+      run: cp README.md ".\out"
+      run: cp CHANGELOG.md ".\out"
+      run: cp airplane_takeoff24.png ".\out"
+    - name: Create TPP
+      uses: papeloto/action-zip@v1
+      with:
+        files: dist/
+        recursive: true
+        dest: Test.tpp
+    - name: GH Release
+      uses: softprops/action-gh-release@v0.1.14
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: Release.txt
+
