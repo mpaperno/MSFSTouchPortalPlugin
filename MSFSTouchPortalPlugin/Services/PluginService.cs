@@ -167,7 +167,7 @@ namespace MSFSTouchPortalPlugin.Services {
     private void SimConnectEvent_OnConnect() {
       _simConnectCancellationTokenSource = new CancellationTokenSource();
 
-      _client.StateUpdate("MSFSTouchPortalPlugin.Plugin.State.Connected", _simConnectService.IsConnected().ToString().ToLower());
+      UpdateSimConnectState();
 
       // Register Actions
       var eventMap = _reflectionService.GetClientEventIdToNameMap();
@@ -221,7 +221,7 @@ namespace MSFSTouchPortalPlugin.Services {
     private void SimConnectEvent_OnDisconnect() {
       _simConnectCancellationTokenSource?.Cancel();
       ClearRepeatingActions();
-      _client.StateUpdate("MSFSTouchPortalPlugin.Plugin.State.Connected", _simConnectService.IsConnected().ToString().ToLower());
+      UpdateSimConnectState();
     }
 
     #endregion
@@ -275,14 +275,19 @@ namespace MSFSTouchPortalPlugin.Services {
           autoReconnectSimConnect = !autoReconnectSimConnect;
           if (_simConnectService.IsConnected())
             _simConnectService.Disconnect();
+          else
+            UpdateSimConnectState();
           break;
         case Plugin.Connect:
           autoReconnectSimConnect = true;
+          UpdateSimConnectState();
           break;
         case Plugin.Disconnect:
           autoReconnectSimConnect = false;
           if (_simConnectService.IsConnected())
             _simConnectService.Disconnect();
+          else
+            UpdateSimConnectState();
           break;
 
         case Plugin.ActionRepeatIntervalInc:
@@ -373,6 +378,13 @@ namespace MSFSTouchPortalPlugin.Services {
             _client.StateUpdate(setting.TouchPortalStateId, setting.ValueAsStr());
         }
       }
+    }
+
+    private void UpdateSimConnectState() {
+      string stat = "true";
+      if (!_simConnectService.IsConnected())
+        stat = autoReconnectSimConnect ? "connecting" : "false";
+      _client.StateUpdate("MSFSTouchPortalPlugin.Plugin.State.Connected", stat);
     }
 
     #region TouchPortalSDK Events
