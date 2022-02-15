@@ -20,7 +20,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
 
     [TouchPortalAction("AileronsSet", "Ailerons Set", "MSFS", " Set Ailerons", "Ailerons set to {0} (-16383 - +16383)")]
     [TouchPortalActionText("0", -16383, 16383)]
-    [TouchPortalActionMapping("AILERONS_SET")]
+    [TouchPortalActionMapping("AILERON_SET")]
     public static object AileronsSet { get; }
 
     #endregion
@@ -149,7 +149,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     #region Spoilers
 
     [TouchPortalAction("Spoilers", "Spoilers", "MSFS", "Spoilers", "Spoilers - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off", "Set" })]
+    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
     [TouchPortalActionMapping("SPOILERS_TOGGLE", "Toggle")]
     [TouchPortalActionMapping("SPOILERS_ON", "On")]
     [TouchPortalActionMapping("SPOILERS_OFF", "Off")]
@@ -180,8 +180,8 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     public static readonly SimVarItem AileronTrim =
       new SimVarItem { Def = Definition.AileronTrim, SimVarName = "AILERON TRIM", Unit = Units.degrees, CanSet = false, StringFormat = "{0:0.0#}" };
 
-    [TouchPortalAction("AileronTrimSet", "Aileron Trim Set", "MSFS", " Set Aileron Trim", "Aileron Trim set to {0} (0 - +16383)")]
-    [TouchPortalActionText("0", 0, 16383)]
+    [TouchPortalAction("AileronTrimSet", "Aileron Trim Set", "MSFS", " Set Aileron Trim", "Aileron Trim set to {0}% (-100 - +100)")]
+    [TouchPortalActionText("0", -100, 100)]
     [TouchPortalActionMapping("AILERON_TRIM_SET")]
     public static object AileronTrimSet { get; }
 
@@ -195,8 +195,8 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     public static readonly SimVarItem ElevatorTrim =
       new SimVarItem { Def = Definition.ElevatorTrim, SimVarName = "ELEVATOR TRIM POSITION", Unit = Units.degrees, CanSet = true, StringFormat = "{0:0.0#}" };
 
-    [TouchPortalAction("ElevatorTrimSet", "Elevator Trim Set", "MSFS", " Set Elevator Trim", "Elevator Trim set to {0} (0 - +16383)")]
-    [TouchPortalActionText("0", 0, 16383)]
+    [TouchPortalAction("ElevatorTrimSet", "Elevator Trim Set", "MSFS", " Set Elevator Trim", "Elevator Trim set to {0} (-16383 - +16383)")]
+    [TouchPortalActionText("0", -16383, 16383)]
     [TouchPortalActionMapping("ELEVATOR_TRIM_SET")]
     public static object ElevatorTrimSet { get; }
 
@@ -210,8 +210,8 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     public static readonly SimVarItem RudderTrim =
       new SimVarItem { Def = Definition.RudderTrim, SimVarName = "RUDDER TRIM", Unit = Units.degrees, CanSet = false, StringFormat = "{0:0.0#}" };
 
-    [TouchPortalAction("RudderTrimSet", "Rudder Trim Set", "MSFS", " Set Rudder Trim", "Rudder Trim set to {0} (0 - +16383)")]
-    [TouchPortalActionText("0", 0, 16383)]
+    [TouchPortalAction("RudderTrimSet", "Rudder Trim Set", "MSFS", " Set Rudder Trim", "Rudder Trim set to {0}% (-100 - +100)")]
+    [TouchPortalActionText("0", -100, 100)]
     [TouchPortalActionMapping("RUDDER_TRIM_SET")]
     public static object RudderTrimSet { get; }
 
