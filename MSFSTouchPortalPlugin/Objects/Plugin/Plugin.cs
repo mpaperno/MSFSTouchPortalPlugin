@@ -1,10 +1,11 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Types;
 using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.Plugin
 {
-  [InternalEvent]
+  [SimNotificationGroup(Groups.Plugin)]
   [TouchPortalCategory("Plugin", "MSFS - Plugin")]
   internal static class PluginMapping {
     [TouchPortalAction("Connection", "Connection", "MSFS", "Toggle/On/Off SimConnect Connection", "SimConnect Connection - {0}")]
@@ -16,7 +17,7 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     public static readonly object Connection;
   }
 
-  [InternalEvent]
+  [SimNotificationGroup(Groups.Plugin)]
   [TouchPortalCategory("Plugin", "MSFS - Plugin")]
   [TouchPortalSettingsContainer]
   public static class Settings {
@@ -56,10 +57,10 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     ActionRepeatIntervalSet,
   }
 
-  // Dynamicaly generated SimConnect client event IDs are "parented" to this enum type,
+  // Dynamically generated SimConnect client event IDs are "parented" to this enum type,
   // meaning they become of this Type when they need to be cast to en Enum type (eg. for SimConnect C# API).
   // This is done by the ReflectionService when generating the list of events for SimConnect.
-  // They really could be cast any any Enum type at all, so this is mostly for semantics.
+  // They really could be cast any Enum type at all, so this is mostly for semantics.
   internal enum SimEventClientId
   {
     // Starting point

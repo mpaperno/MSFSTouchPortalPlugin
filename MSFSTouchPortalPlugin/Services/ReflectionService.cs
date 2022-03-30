@@ -38,15 +38,15 @@ namespace MSFSTouchPortalPlugin.Services {
       int nextId = (int)SimEventClientId.Init + 1;
 
       // Get all types which have actions mapped to events, sim or internal.
-      var eventContainers = Assembly.GetExecutingAssembly().GetTypes().Where(
-        t => t.IsClass && (t.GetCustomAttribute<SimNotificationGroupAttribute>() != null || t.GetCustomAttribute<InternalEventAttribute>() != null)
-      ).ToList();
-      eventContainers.ForEach(notifyType => {
+      var eventContainers = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass && (t.GetCustomAttribute<SimNotificationGroupAttribute>() != null));
+      foreach (var notifyType in eventContainers) {
         // Get the TP Category ID for this type
-        var catName = notifyType.GetCustomAttribute<TouchPortalCategoryAttribute>().Id;
+        var catId = notifyType.GetCustomAttribute<TouchPortalCategoryAttribute>().Id;
         // And the SimConnect Group ID
         Groups simGroup = notifyType.GetCustomAttribute<SimNotificationGroupAttribute>()?.Group ?? default;
-        var internalEvent = simGroup == default;
+        if (simGroup == default)
+          continue;
+        var internalEvent = simGroup == Groups.Plugin;
         // Get all members which have an action mapping, which is some unique combination of value(s) mapped to a SimConnect event name or internal event enum
         List<MemberInfo> actionMembers = notifyType.GetMembers().Where(m => m.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalActionMappingAttribute))).ToList();
         actionMembers.ForEach(e => {
@@ -57,7 +57,7 @@ namespace MSFSTouchPortalPlugin.Services {
             ActionId = e.GetCustomAttribute<TouchPortalActionAttribute>().Id,
             //ActionObject = e
           };
-          // Loop over all the data attributes to find the "choice" types for mapping and also the index of any freeform data value field
+          // Loop over all the data attributes to find the "choice" types for mapping and also the index of any free-form data value field
           var dataAttribs = e.GetCustomAttributes<TouchPortalActionDataAttribute>().ToList() ?? new();
           for (var i = 0; i < dataAttribs.Count; ++i) {
             var dataAttrib = dataAttribs[i];
@@ -68,7 +68,7 @@ namespace MSFSTouchPortalPlugin.Services {
               act.KeyFormatStr += $"{{{i}}}";
             }
             else {
-              // we only support one freeform value per mapping, which is all SimConnect supports, and internal events can handle the data as necessary already.
+              // we only support one free-form value per mapping, which is all SimConnect supports, and internal events can handle the data as necessary already.
               act.ValueIndex = i;
               act.MinValue = dataAttrib.MinValue;
               act.MaxValue = dataAttrib.MaxValue;
@@ -87,10 +87,10 @@ namespace MSFSTouchPortalPlugin.Services {
               clientEventIdToNameMap[mapTarget] = new { EventName = ma.ActionId, GroupId = simGroup };
           });
           // Put into returned collection
-          if (!returnDict.TryAdd($"{rootName}.{catName}.Action.{act.ActionId}", act))
-            _logger.LogWarning($"Duplicate action ID found for action '{act.ActionId}' in category '{catName}', skipping.'");
+          if (!returnDict.TryAdd($"{rootName}.{catId}.Action.{act.ActionId}", act))
+            _logger.LogWarning($"Duplicate action ID found for action '{act.ActionId}' in category '{catId}', skipping.'");
         });
-      });
+      }
 
       return returnDict;
     }
