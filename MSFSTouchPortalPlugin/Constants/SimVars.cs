@@ -1,4 +1,5 @@
 ﻿using System;
+using Stopwatch = System.Diagnostics.Stopwatch;
 
 namespace MSFSTouchPortalPlugin.Constants {
   public enum Definition {
@@ -150,7 +151,6 @@ namespace MSFSTouchPortalPlugin.Constants {
   /// The SimVarItem which defines all data variables for SimConnect
   /// </summary>
   public class SimVarItem {
-    public bool PendingRequest { get; private set; }
     public Definition Def { get; set; }
     public string SimVarName { get; set; }
     public string Unit { get; set; }
@@ -159,6 +159,11 @@ namespace MSFSTouchPortalPlugin.Constants {
     public string Value { get; set; } = string.Empty;
     public string StringFormat { get; set; } = "{0}";
     public string TouchPortalStateId { get; set; } = "";
+    /// <summary>Indicates if a SimConnect request for this variable is already pending.</summary>
+    public bool PendingRequest { get; private set; }
+
+    private long _timeoutTicks;
+
 
     /// <summary>
     /// Updates the object to either set pending update or no longer pending
@@ -168,17 +173,20 @@ namespace MSFSTouchPortalPlugin.Constants {
       PendingRequest = val;
 
       if (val) {
-        LastPending = DateTime.Now;
+        _timeoutTicks = Stopwatch.GetTimestamp() + 30 * Stopwatch.Frequency;
       }
     }
 
     /// <summary>
     /// If pending for more than 30 seconds, timeout
     /// </summary>
-    public void PendingTimeout() {
-      if (PendingRequest && DateTime.Now > LastPending.AddSeconds(30)) {
+    /// <returns>true if a timeout occurred, false otherwise.</returns>
+    public bool PendingTimeout() {
+      if (PendingRequest && Stopwatch.GetTimestamp() > _timeoutTicks) {
         SetPending(false);
+        return true;
       }
+      return false;
     }
   }
 }

@@ -209,10 +209,8 @@ namespace MSFSTouchPortalPlugin.Services {
             valObj = (float)valObj * 100.0f;
           }
 
-          // Update if known id.
-          if (!string.IsNullOrWhiteSpace(value.TouchPortalStateId)) {
-            _client.StateUpdate(value.TouchPortalStateId, string.Format(value.StringFormat, valObj));
-          }
+          // Update TP state.
+          _client.StateUpdate(value.TouchPortalStateId, string.Format(value.StringFormat, valObj));
         }
 
         value.SetPending(false);
@@ -346,7 +344,8 @@ namespace MSFSTouchPortalPlugin.Services {
     private void CheckPendingRequests() {
       foreach (var s in statesDictionary.Values) {
         // Expire pending if more than 30 seconds
-        s.PendingTimeout();
+        if (s.PendingTimeout())
+          _logger.LogDebug($"Request for SimVar '{s.SimVarName}' timed out!");
 
         // Check if Pending data request in paly
         if (!s.PendingRequest) {
