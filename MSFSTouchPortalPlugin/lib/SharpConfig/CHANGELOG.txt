@@ -1,0 +1,4 @@
+v3.2.9.2-mp (from v3.2.9.1)
+* Fixed that ConfigurationReader wasn't setting the Setting.RawValue properly, instead relying on a redundant string to string conversion.
+* Added Configuration.AlwaysQuoteStringValues option.
+* EnumStringConverter is case insensitive, a little faster, and returns null for a null value string (instead of default(double)).

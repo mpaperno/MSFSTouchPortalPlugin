@@ -18,8 +18,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <NoWarn>1701;1702;S125;CS8032</NoWarn>
+    <AllowedReferenceRelatedFileExtensions>
+      <!-- Prevent .pdb, .xml, etc from being copied to output folder -->
+      .dll
+    </AllowedReferenceRelatedFileExtensions>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols> 
   </PropertyGroup>
-
+  
   <ItemGroup>
     <None Remove="appsettings.json" />
   </ItemGroup>
@@ -55,18 +61,35 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="SharpConfig">
+      <HintPath>.\lib\SharpConfig\SharpConfig.dll</HintPath>
+      <Private>true</Private>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
+    </Reference>
+    <!--<PackageReference Include="SharpConfig" Version="3.2.9.1" />-->
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
-      <HintPath>.\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
+      <HintPath>.\lib\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
       <EmbedInteropTypes>false</EmbedInteropTypes>
       <Private>true</Private>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="SimConnect.dll">
+    <ContentWithTargetPath Include=".\lib\SimConnect.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SimConnect.dll</TargetPath>
+    </ContentWithTargetPath>
+    <None Include=".\lib\SimConnect.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Configuration\PluginStates.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="SimConnect.lib">
+    <None Update="Configuration\States.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
