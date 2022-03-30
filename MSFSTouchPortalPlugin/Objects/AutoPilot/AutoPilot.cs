@@ -261,7 +261,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     [SimVarDataRequest]
     [TouchPortalState("AutoThrottleGoAround", "text", "Auto Throttle GoAround", "")]
     public static readonly SimVarItem AUTO_THROTTLE_GA =
-      new SimVarItem { Def = Definition.AutoThrottleGoAround, SimVarName = "AUTOPILOT TAKEOFF POWER ACTIVE", Unit = Units.Bool, CanSet = false };
+      new SimVarItem { Def = Definition.AutoThrottleGA, SimVarName = "AUTOPILOT TAKEOFF POWER ACTIVE", Unit = Units.Bool, CanSet = false };
 
 
     #endregion
@@ -320,7 +320,6 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     public static readonly SimVarItem SYNC_FLIGHT_DIRECTOR_PITCH =
       new SimVarItem { Def = Definition.AutoPilotFlightDirectorCurrentPitch, SimVarName = "AUTOPILOT FLIGHT DIRECTOR PITCH", Unit = Units.radians, CanSet = false };
 
-    [SimVarDataRequest]
     [TouchPortalState("AutoPilotFlightDirectorCurrentBank", "text", "Flight Director Current Bank", "")]
     public static readonly SimVarItem SYNC_FLIGHT_DIRECTOR_Bank =
       new SimVarItem { Def = Definition.AutoPilotFlightDirectorCurrentBank, SimVarName = "AUTOPILOT FLIGHT DIRECTOR BANK", Unit = Units.radians, CanSet = false };
