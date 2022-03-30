@@ -188,11 +188,11 @@ namespace MSFSTouchPortalPlugin.Services {
 
     private void SimConnectEvent_OnDataUpdateEvent(Definition def, Definition req, object data) {
       // Lookup State Mapping
-      if (statesDictionary.TryGetValue(def, out var value)) {
+      if (statesDictionary.TryGetValue(def, out SimVarItem value)) {
         var stringVal = data.ToString();
 
         // Only update state on changes
-        // TODO: Move these to after parsing due to fractional unnoticable changes.
+        // TODO: Move these to after parsing due to fractional unnoticeable changes.
         if (value.Value != stringVal) {
           value.Value = stringVal;
           object valObj = stringVal;
@@ -200,12 +200,13 @@ namespace MSFSTouchPortalPlugin.Services {
           // Handle conversions
           if (Units.ShouldConvertToFloat(value.Unit)) {
             valObj = float.Parse(stringVal);
-          } else if (value.Unit == Units.radians) {
+          }
+          if (value.Unit == Units.radians) {
             // Convert to Degrees
-            valObj = float.Parse(stringVal) * (180 / Math.PI);
+            valObj = (float)valObj * (180 / Math.PI);
           } else if (value.Unit == Units.percentover100) {
             // Convert to actual percentage (percentover100 range is 0 to 1)
-            valObj = float.Parse(stringVal) * 100.0f;
+            valObj = (float)valObj * 100.0f;
           }
 
           // Update if known id.

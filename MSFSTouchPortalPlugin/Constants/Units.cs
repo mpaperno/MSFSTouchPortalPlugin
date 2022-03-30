@@ -4,25 +4,26 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("MSFSTouchPortalPlugin-Tests")]
 namespace MSFSTouchPortalPlugin.Constants {
   internal static class Units {
+
+    private static readonly string[] _floatUnits = new string[] {
+        degrees,
+        radians,
+        knots,
+        feet,
+        MHz,
+        percent,
+        percentover100,
+        rpm,
+        mach,
+        feetminute,
+      };
+
     /// <summary>
     /// All the unit types that should convert to Float
     /// </summary>
     /// <param name="unitType">The unit type</param>
     /// <returns>True if it should be a float</returns>
-    internal static bool ShouldConvertToFloat(string unit) {
-      var floatUnits = new string[] {
-        Units.degrees,
-        Units.knots,
-        Units.feet,
-        Units.MHz,
-        Units.percent,
-        Units.rpm,
-        Units.mach,
-        Units.feetminute
-      };
-
-      return floatUnits.Contains(unit);
-    }
+    internal static bool ShouldConvertToFloat(string unit) => _floatUnits.Contains(unit);
 
     internal const string amp = "amp";
     internal const string ampere = "ampere";
