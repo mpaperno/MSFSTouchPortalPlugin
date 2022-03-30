@@ -85,6 +85,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalActionMapping("DEC_COWL_FLAPS", "Decrease")]
     public static object CowlFlapsAll { get; }
 
+    [SimVarDataRequest]
     [TouchPortalAction("CowlFlaps1", "Cowl Flaps 1", "MSFS", "Cowl Flaps 1", "Cowl Flaps 1 - {0}", true)]
     [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
     [TouchPortalActionMapping("INC_COWL_FLAPS1", "Increase")]
@@ -92,6 +93,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalState("CowlFlaps1Percent", "text", "Cowl Flaps 1 Opened Percentage", "")]
     public static readonly SimVarItem CowlFlaps1 = new SimVarItem { Def = Definition.CowlFlaps1Percent, SimVarName = "RECIP ENG COWL FLAP POSITION:1", Unit = Units.percent, CanSet = true, StringFormat = "{0:0.0#}" };
 
+    [SimVarDataRequest]
     [TouchPortalAction("CowlFlaps2", "Cowl Flaps 2", "MSFS", "Cowl Flaps 2", "Cowl Flaps 2 - {0}", true)]
     [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
     [TouchPortalActionMapping("INC_COWL_FLAPS2", "Increase")]
@@ -99,6 +101,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalState("CowlFlaps2Percent", "text", "Cowl Flaps 2 Opened Percentage", "")]
     public static readonly SimVarItem CowlFlaps2 = new SimVarItem { Def = Definition.CowlFlaps2Percent, SimVarName = "RECIP ENG COWL FLAP POSITION:2", Unit = Units.percent, CanSet = true, StringFormat = "{0:0.0#}" };
 
+    [SimVarDataRequest]
     [TouchPortalAction("CowlFlaps3", "Cowl Flaps 3", "MSFS", "Cowl Flaps 3", "Cowl Flaps 3 - {0}", true)]
     [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
     [TouchPortalActionMapping("INC_COWL_FLAPS3", "Increase")]
@@ -106,6 +109,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalState("CowlFlaps3Percent", "text", "Cowl Flaps 3 Opened Percentage", "")]
     public static readonly SimVarItem CowlFlaps3 = new SimVarItem { Def = Definition.CowlFlaps3Percent, SimVarName = "RECIP ENG COWL FLAP POSITION:3", Unit = Units.percent, CanSet = true, StringFormat = "{0:0.0#}" };
 
+    [SimVarDataRequest]
     [TouchPortalAction("CowlFlaps4", "Cowl Flaps 4", "MSFS", "Cowl Flaps 4", "Cowl Flaps 4 - {0}", true)]
     [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
     [TouchPortalActionMapping("INC_COWL_FLAPS4", "Increase")]
