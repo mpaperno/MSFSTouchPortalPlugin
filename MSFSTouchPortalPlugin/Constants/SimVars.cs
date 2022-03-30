@@ -50,7 +50,7 @@ namespace MSFSTouchPortalPlugin.Constants {
     AutoPilotWingLeveler,
     AutoPilotYawDampener,
     AutoThrottleArm,
-    AutoThrottleGA,
+    AutoThrottleGoAround,
     AvionicsMasterSwitch,
     Com1ActiveFrequency,
     Com1StandbyFrequency,

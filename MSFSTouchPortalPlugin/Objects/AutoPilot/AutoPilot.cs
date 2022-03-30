@@ -238,7 +238,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     [TouchPortalActionMapping("AP_SPD_VAR_DEC", "Decrease")]
     [TouchPortalState("AutoPilotAirSpeedVar", "text", "AutoPilot Air Speed Value", "")]
     public static readonly SimVarItem AP_AIRSPEED_VAR =
-      new SimVarItem { Def = Definition.AutoPilotAirSpeedVar, SimVarName = "AUTOPILOT AIRSPEED HOLD VAR", Unit = Units.knots, CanSet = false };
+      new SimVarItem { Def = Definition.AutoPilotAirSpeedVar, SimVarName = "AUTOPILOT AIRSPEED HOLD VAR", Unit = Units.knots, CanSet = false, StringFormat = "{0:0.0#}" };
 
     [TouchPortalAction("AutoPilotAirSpeedSet", "Airspeed Value Set", "MSFS", "Sets the airspeed value", "Set Airspeed Hold Value to {0}")]
     [TouchPortalActionText("0", 0, 5000)]
@@ -261,7 +261,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     [SimVarDataRequest]
     [TouchPortalState("AutoThrottleGoAround", "text", "Auto Throttle GoAround", "")]
     public static readonly SimVarItem AUTO_THROTTLE_GA =
-      new SimVarItem { Def = Definition.AutoThrottleGA, SimVarName = "AUTOPILOT TAKEOFF POWER ACTIVE", Unit = Units.Bool, CanSet = false };
+      new SimVarItem { Def = Definition.AutoThrottleGoAround, SimVarName = "AUTOPILOT TAKEOFF POWER ACTIVE", Unit = Units.Bool, CanSet = false };
 
 
     #endregion
