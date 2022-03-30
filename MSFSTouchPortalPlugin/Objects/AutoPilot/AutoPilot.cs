@@ -320,6 +320,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     public static readonly SimVarItem SYNC_FLIGHT_DIRECTOR_PITCH =
       new SimVarItem { Def = Definition.AutoPilotFlightDirectorCurrentPitch, SimVarName = "AUTOPILOT FLIGHT DIRECTOR PITCH", Unit = Units.radians, CanSet = false };
 
+    [SimVarDataRequest]
     [TouchPortalState("AutoPilotFlightDirectorCurrentBank", "text", "Flight Director Current Bank", "")]
     public static readonly SimVarItem SYNC_FLIGHT_DIRECTOR_Bank =
       new SimVarItem { Def = Definition.AutoPilotFlightDirectorCurrentBank, SimVarName = "AUTOPILOT FLIGHT DIRECTOR BANK", Unit = Units.radians, CanSet = false };
