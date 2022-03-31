@@ -160,7 +160,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalActionMapping("SPOILERS_ON", "On")]
     [TouchPortalActionMapping("SPOILERS_OFF", "Off")]
     [TouchPortalState("SpoilersAvailable", "text", "Spoilers Available (0/1)", "0")]
-    public static readonly SimVarItem SpoilersAvailable = new SimVarItem { Def = Definition.SpoilersAvailable, SimVarName = "SPOILERS AVAILABLE", Unit = Units.Bool, CanSet = false };
+    public static readonly SimVarItem SpoilersAvailable = new SimVarItem { Def = Definition.SpoilersAvailable, SimVarName = "SPOILER AVAILABLE", Unit = Units.Bool, CanSet = false };
 
     [SimVarDataRequest]
     [TouchPortalAction("SpoilersSet", "Spoilers Set", "MSFS", " Set Spoilers", "Set Spoilers handle position to {0} (0 - 16383)")]
@@ -168,7 +168,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalActionMapping("SPOILERS_SET")]
     [TouchPortalState("SpoilersHandlePosition", "text", "Spoilers Handle Position (0 - 16383)", "0")]
     public static readonly SimVarItem SpoilersHandlePosition =
-      new SimVarItem { Def = Definition.SpoilersHandlePosition, SimVarName = "SPOILERS HANDLE POSITION", Unit = Units.position, CanSet = true };
+      new SimVarItem { Def = Definition.SpoilersHandlePosition, SimVarName = "SPOILERS HANDLE POSITION", Unit = Units.position16k, CanSet = true, StringFormat = "{0:0}" };
 
     [SimVarDataRequest]
     [TouchPortalState("SpoilersLeftPosition", "text", "Spoilers Left Position Percent", "0")]
