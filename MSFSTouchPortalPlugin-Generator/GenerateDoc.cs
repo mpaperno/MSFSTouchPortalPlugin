@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MSFSTouchPortalPlugin.Configuration;
+using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin_Generator.Configuration;
 using MSFSTouchPortalPlugin_Generator.Interfaces;
 using MSFSTouchPortalPlugin_Generator.Model;
@@ -12,7 +14,8 @@ using System.Text;
 using TouchPortalExtension.Attributes;
 using MSFSTouchPortalPlugin.Constants;
 
-namespace MSFSTouchPortalPlugin_Generator {
+namespace MSFSTouchPortalPlugin_Generator
+{
   internal class GenerateDoc : IGenerateDoc {
     private readonly ILogger<GenerateDoc> _logger;
     private readonly IOptions<GeneratorOptions> _options;
@@ -49,19 +52,32 @@ namespace MSFSTouchPortalPlugin_Generator {
       var assembly = Assembly.Load(a);
       var assemblyList = assembly.GetTypes().ToList();
 
+      // read default states config
+      // TODO: Allow configuration of which state config file(s) to read.
+      var pc = PluginConfig.Instance;
+      var configStates = pc.LoadSimVarItems(false);
+      if (pc.HaveErrors) {
+        foreach (var e in pc.ErrorsList)
+          _logger.LogError(e, "Configuration reader error:");
+      }
+
       // Get all classes with the TouchPortalCategory
-      var classList = assemblyList.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalCategoryAttribute))).OrderBy(o => o.Name).ToList();
+      var classList = assemblyList.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalCategoryAttribute))).OrderBy(o => o.Name);
 
       // Loop through categories
-      classList.ForEach(cat => {
+      foreach (var cat in classList) {
         var catAttr = (TouchPortalCategoryAttribute)Attribute.GetCustomAttribute(cat, typeof(TouchPortalCategoryAttribute));
-        bool newCatCreated = false;
+        // FIXME: the Split() is necessary due to legacy mis-named category InstrumentsSystems.Fuel
+        if (!Enum.TryParse(catAttr.Id.Split('.').Last(), false, out Groups catId)) {
+          _logger.LogWarning($"Could not parse category ID: '{catAttr.Id}', skipping.'");
+          continue;
+        }
         var newCat = model.Categories.FirstOrDefault(c => c.Name == catAttr.Name);
         if (newCat == null) {
           newCat = new DocCategory {
             Name = catAttr.Name
           };
-          newCatCreated = true;
+          model.Categories.Add(newCat);
         }
 
         // Loop through Actions
@@ -109,32 +125,30 @@ namespace MSFSTouchPortalPlugin_Generator {
         newCat.Actions = newCat.Actions.OrderBy(c => c.Name).ToList();
 
         // Loop through States
-        var states = cat.GetFields().Where(m => m.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalStateAttribute))).ToList();
-        states.ForEach(state => {
-          var stateAttribute = state.GetCustomAttribute<TouchPortalStateAttribute>();
+        if (newCat.States.Any())
+          continue;  // skip if already added for this category
 
-          if (stateAttribute != null) {
-            var newState = new DocState {
-              Id = $"{_options.Value.PluginName}.{catAttr.Id}.State.{stateAttribute.Id}",
-              Type = stateAttribute.Type,
-              Description = stateAttribute.Description,
-              DefaultValue = stateAttribute.Default,
-              SimVarName = state.FieldType == typeof(SimVarItem) ? ((SimVarItem)state.GetValue(null)).SimVarName : ""
-            };
+        System.Collections.Generic.IEnumerable<SimVarItem> categoryStates;
+        // Plugin (non SimConnect) states are stored in a separate config file.
+        if (catId == Groups.Plugin)
+          categoryStates = pc.LoadPluginStates();
+        else
+          categoryStates = configStates.Where(s => s.CategoryId == catId);
 
-            newCat.States.Add(newState);
-          }
-        });
+        foreach (SimVarItem state in categoryStates) {
+          var newState = new DocState {
+            Id = state.TouchPortalStateId,
+            Type = state.TouchPortalValueType,
+            Description = state.Name,
+            DefaultValue = state.DefaultValue ?? string.Empty,
+            SimVarName = state.SimVarName
+          };
+          newCat.States.Add(newState);
+        }
 
+        // Sort the states
         newCat.States = newCat.States.OrderBy(c => c.Description).ToList();
-
-        // Loop through Events
-
-        if (newCatCreated)
-          model.Categories.Add(newCat);
-      });
-
-      model.Categories = model.Categories.OrderBy(c => c.Name).ToList();
+      }  // categories loop
 
       // Settings
       var setContainers = assemblyList.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalSettingsContainerAttribute))).OrderBy(o => o.Name).ToList();
@@ -206,12 +220,12 @@ namespace MSFSTouchPortalPlugin_Generator {
           cat.Actions.ForEach(act => {
             s.Append($"<tr valign='top'><td>{act.Name}</td><td>{act.Description}</td><td>{act.Format}</td>");
             // Loop action data
-            // I first tried by making a nested table to list the datas, but it looked like ass on GitHub due to their CSS which forces a table width and (as of Feb '22). -MP
+            // I first tried by making a nested table to list the data, but it looked like ass on GitHub due to their CSS which forces a table width and (as of Feb '22). -MP
             s.Append("<td><ol start=0>\n");
             act.Data.ForEach(ad => {
               s.Append($"<li>[{ad.Type}] &nbsp; ");
               if (ad.Type == "choice")
-                s.Append(new Regex(Regex.Escape(ad.DefaultValue)).Replace(ad.Values, $"<b>{ad.DefaultValue}</b>", 1));  // only replace 1st occurence of default string
+                s.Append(new Regex(Regex.Escape(ad.DefaultValue)).Replace(ad.Values, $"<b>{ad.DefaultValue}</b>", 1));  // only replace 1st occurrence of default string
               else if (!string.IsNullOrWhiteSpace(ad.DefaultValue))
                 s.Append($"<b>{ad.DefaultValue}</b>");
               else

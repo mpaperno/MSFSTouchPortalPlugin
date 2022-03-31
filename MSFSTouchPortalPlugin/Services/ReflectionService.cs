@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Interfaces;
@@ -12,7 +13,9 @@ using System.Reflection;
 using TouchPortalExtension.Attributes;
 using TouchPortalExtension.Enums;
 
-namespace MSFSTouchPortalPlugin.Services {
+namespace MSFSTouchPortalPlugin.Services
+{
+
   internal class ReflectionService : IReflectionService {
     private readonly string rootName = Assembly.GetExecutingAssembly().GetName().Name;
     private readonly ILogger<ReflectionService> _logger;
@@ -95,24 +98,50 @@ namespace MSFSTouchPortalPlugin.Services {
       return returnDict;
     }
 
+    // TODO: not needed here anymore, move to main plugin code
     public Dictionary<Definition, SimVarItem> GetStates() {
+      var pc = PluginConfig.Instance;
+#if False
       var returnDict = new Dictionary<Definition, SimVarItem>();
-
       var stateFieldList = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass && t.GetCustomAttribute<SimVarDataRequestGroupAttribute>() != null).ToList();
       stateFieldList.ForEach(stateFieldClass => {
+
+        // Find the category info
+        var cat = stateFieldClass.GetCustomAttribute<TouchPortalCategoryAttribute>();
+        if (!Enum.TryParse(cat.Id.Split('.').Last(), true, out Groups groupId))
+          _logger.LogError($"Can't parse category '{cat.Id}' to Groups enum.");
+
         // Get all States and register to SimConnect
         var states = stateFieldClass.GetFields().Where(m => m.CustomAttributes.Any(att => att.AttributeType == typeof(SimVarDataRequestAttribute))).ToList();
         states.ForEach(s => {
           // Evaluate and setup the Touch Portal State ID
-          string catId = stateFieldClass.GetCustomAttribute<TouchPortalCategoryAttribute>().Id;
           var item = (SimVarItem)s.GetValue(null);
-          item.TouchPortalStateId = $"{rootName}.{catId}.State.{item.Def}";
+
+          var stateAttribute = s.GetCustomAttribute<TouchPortalStateAttribute>();
+          if (stateAttribute != null) {
+            item.Name = stateAttribute.Description;
+            item.DefaultValue = stateAttribute.Default;
+          }
+
+          item.CategoryId = groupId;
+          item.TouchPortalStateId = $"{rootName}.{item.CategoryId}.State.{item.Id}";
 
           returnDict.TryAdd(item.Def, item);
         });
       });
 
-      return returnDict;
+      if (!pc.SaveSimVarItems(returnDict.Values)) {
+        foreach (var e in pc.ErrorsList)
+          _logger.LogError(e, "Configuration writer error:");
+      }
+#endif
+      // read default states config
+      var configStates = pc.LoadSimVarItems(false);
+      if (pc.HaveErrors) {
+        foreach (var e in pc.ErrorsList)
+          _logger.LogError(e, "Configuration reader error:");
+      }
+      return configStates.ToDictionary(s => s.Def, s => s);
     }
 
     public Dictionary<string, PluginSetting> GetSettings() {
@@ -139,4 +168,5 @@ namespace MSFSTouchPortalPlugin.Services {
       return returnDict;
     }
   }
+
 }
