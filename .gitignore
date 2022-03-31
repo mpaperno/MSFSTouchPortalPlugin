@@ -3,6 +3,7 @@
 bin/
 obj/
 dist/
+build/
 packages-dist/
 MSFSTouchPortalPlugin-Tests/TestResults/
 .sonarqube/

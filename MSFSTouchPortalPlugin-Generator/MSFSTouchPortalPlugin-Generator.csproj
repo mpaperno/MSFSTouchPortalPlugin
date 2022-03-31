@@ -7,10 +7,11 @@
     <CodeAnalysisRuleSet>..\.sonarlint\msfstouchportalplugincsharp.ruleset</CodeAnalysisRuleSet>
     <Platforms>x64</Platforms>
     <Version>1.1.0</Version>
+    <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <NoWarn>1701;1702;S125;CS8032</NoWarn>
+    <NoWarn>1701;1702</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +25,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MSFSTouchPortalPlugin\MSFSTouchPortalPlugin.csproj" />
+    <Reference Include="TouchPortalSDK, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\MSFSTouchPortalPlugin\lib\TouchPortalSDK\TouchPortalSDK.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
   </ItemGroup>
 
 </Project>

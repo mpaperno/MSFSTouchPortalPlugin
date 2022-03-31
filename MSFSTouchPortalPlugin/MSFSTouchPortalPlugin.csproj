@@ -9,6 +9,7 @@
     <FileVersion>0.6.0.0</FileVersion>
     <CodeAnalysisRuleSet>..\.sonarlint\msfstouchportalplugincsharp.ruleset</CodeAnalysisRuleSet>
     <Platforms>x64</Platforms>
+    <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath> 
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -25,7 +26,7 @@
     </AllowedReferenceRelatedFileExtensions>
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
-    <DefineConstants /> 
+    <DefineConstants />
   </PropertyGroup>
 
   <ItemGroup>
@@ -62,7 +63,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="TouchPortalSDK">
+    <Reference Include="TouchPortalSDK, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>.\lib\TouchPortalSDK\TouchPortalSDK.dll</HintPath>
       <Private>true</Private>
       <EmbedInteropTypes>false</EmbedInteropTypes>
@@ -71,7 +72,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="SharpConfig">
+    <Reference Include="SharpConfig, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>.\lib\SharpConfig\SharpConfig.dll</HintPath>
       <Private>true</Private>
       <EmbedInteropTypes>false</EmbedInteropTypes>
