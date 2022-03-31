@@ -262,7 +262,7 @@ namespace MSFSTouchPortalPlugin.Services
       if (!actionsDictionary.TryGetValue(actionEvent.ActionId, out ActionEventType action))
         return;
 
-      var dataArry = actionEvent.Data.Select(x => x.Value).ToArray();
+      var dataArry = actionEvent.Data.Values.ToArray();
       if (!action.TryGetEventMapping(in dataArry, out Enum eventId))
         return;
 
