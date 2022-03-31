@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using TouchPortalExtension.Enums;
@@ -31,6 +30,7 @@ namespace MSFSTouchPortalPlugin.Services
     private readonly IReflectionService _reflectionService;
     private static readonly System.Data.DataTable _expressionEvaluator = new();  // used to evaluate basic math in action data
     private bool autoReconnectSimConnect = false;
+    private bool _quitting;
 
     public string PluginId => "MSFSTouchPortalPlugin";
 
@@ -108,9 +108,21 @@ namespace MSFSTouchPortalPlugin.Services
 
       _hostApplicationLifetime.ApplicationStopping.Register(() => {
         // Disconnect from SimConnect
+        _quitting = true;
         autoReconnectSimConnect = false;
         _simConnectService.Disconnect();
+        if (_client?.IsConnected ?? false) {
+          try { _client.Close(); }  // exits the event loop keeping us alive
+          catch (Exception) { /* ignore */ }
+        }
       });
+
+      // register ctrl-c exit handler
+      Console.CancelKeyPress += (_, _) => {
+        _logger.LogInformation("Quitting due to keyboard interrupt.");
+        _hostApplicationLifetime.StopApplication();
+        //Environment.Exit(0);
+      };
 
       return Task.CompletedTask;
     }
@@ -391,14 +403,6 @@ namespace MSFSTouchPortalPlugin.Services
       autoReconnectSimConnect = (Settings.ConnectSimOnStartup.ValueAsInt() != 0);
     }
 
-    public void OnListChangedEvent(ListChangeEvent message) {
-      // not implemented yet
-    }
-
-    public void OnBroadcastEvent(BroadcastEvent message) {
-      // not implemented yet
-    }
-
     public void OnSettingsEvent(SettingsEvent message) {
       ProcessPluginSettings(message.Values);
     }
@@ -434,16 +438,38 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     public void OnClosedEvent(string message) {
-      _logger?.LogInformation("TouchPortal Disconnected.");
+      _logger?.LogInformation($"TouchPortal Disconnected with message: {message}");
 
-      //Optional force exits this plugin.
-      Environment.Exit(0);
+      if (!_quitting) {
+        _hostApplicationLifetime.StopApplication();
+        //Environment.Exit(0);
+      }
+    }
+
+    public void OnListChangedEvent(ListChangeEvent message) {
+      // not implemented yet
+    }
+
+    public void OnConnecterChangeEvent(ConnectorChangeEvent message) {
+      // not implemented yet
+    }
+
+    public void OnShortConnectorIdNotificationEvent(ShortConnectorIdNotificationEvent message) {
+      // not implemented yet
+    }
+
+    public void OnNotificationOptionClickedEvent(NotificationOptionClickedEvent message) {
+      // not implemented yet
+    }
+
+    public void OnBroadcastEvent(BroadcastEvent message) {
+      // not implemented yet
     }
 
     public void OnUnhandledEvent(string jsonMessage) {
-      var jsonDocument = JsonSerializer.Deserialize<JsonDocument>(jsonMessage);
-      _logger?.LogWarning($"Unhandled message: {jsonDocument}");
+      _logger?.LogDebug($"Unhandled message: {jsonMessage}");
     }
+
     #endregion
   }
 }
