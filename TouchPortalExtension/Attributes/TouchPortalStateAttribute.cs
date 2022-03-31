@@ -1,6 +1,9 @@
 ﻿using System;
 
-namespace TouchPortalExtension.Attributes {
+namespace TouchPortalExtension.Attributes
+{
+  // Currently unused, preserved for posterity (or possible future use).
+
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
   public class TouchPortalStateAttribute : Attribute {
     public string Id { get; set; }
