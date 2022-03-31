@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
-using MSFSTouchPortalPlugin.Constants;
+using System.Runtime.Serialization;
 //using SharpConfig;
 
 namespace MSFSTouchPortalPlugin.Configuration
@@ -77,7 +78,7 @@ namespace MSFSTouchPortalPlugin.Configuration
         simVar.Id = item.Name;
         // check unique
         if (ret.FirstOrDefault(s => s.Id == simVar.Id) != null) {
-          _errorsList.Add(new Exception($"Duplicate SimVar ID found for '{simVar.Id}'"));
+          _errorsList.Add(new DuplicateIdException($"Duplicate SimVar ID found for '{simVar.Id}'"));
           continue;
         }
         simVar.TouchPortalStateId = $"{RootName}.{simVar.CategoryId}.State.{simVar.Id}";
@@ -143,6 +144,16 @@ namespace MSFSTouchPortalPlugin.Configuration
       }
     }
 
+  }
+
+  [Serializable]
+  public class DuplicateIdException : Exception
+  {
+    public DuplicateIdException() : base() { }
+    public DuplicateIdException(string message) : base(message) { }
+    protected DuplicateIdException(SerializationInfo info, StreamingContext context)
+        : base(info, context) {
+    }
   }
 
 }
