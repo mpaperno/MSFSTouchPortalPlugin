@@ -14,6 +14,7 @@ namespace TouchPortalExtension.Attributes
     public double MaxValue { get; set; } = double.NaN;
     public bool ReadOnly { get; set; } = false;
     public bool IsPassword { get; set; } = false;
+    public string StateId { get; set; } = default;
 
     public TouchPortalSettingAttribute() { }
     public TouchPortalSettingAttribute(string name, string description = default, string type = "text", string dflt = default, bool readOnly = false) {

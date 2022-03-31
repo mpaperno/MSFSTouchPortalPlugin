@@ -112,8 +112,8 @@ namespace MSFSTouchPortalPlugin.Services
               settingsObj.Name = settingAttr.Name;
             if (settingsObj.Default == null)
               settingsObj.Default = settingAttr.Default;
-            if (settingsObj.TouchPortalStateId == null && settingField.GetCustomAttribute<TouchPortalStateAttribute>()?.Id is var stateId && stateId != null)
-              settingsObj.TouchPortalStateId = $"{rootName}.Plugin.State.{stateId}";
+            if (settingsObj.TouchPortalStateId == null && !string.IsNullOrWhiteSpace(settingAttr.StateId))
+              settingsObj.TouchPortalStateId = $"{rootName}.Plugin.State.{settingAttr.StateId}";
             returnDict.TryAdd(settingAttr.Name, settingsObj);
           }
         });

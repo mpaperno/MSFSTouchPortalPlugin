@@ -31,7 +31,8 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     [TouchPortalSetting(
       Name = "Held Action Repeat Rate (ms)",
       Description = "Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Action Repeat Interval' action.",
-      Type = "number", Default = "450", MinValue = 50, MaxValue = int.MaxValue, ReadOnly = true
+      Type = "number", Default = "450", MinValue = 50, MaxValue = int.MaxValue, ReadOnly = true,
+      StateId = "ActionRepeatInterval"
     )]
     [TouchPortalAction("ActionRepeatInterval", "Action Repeat Interval", "MSFS", "Held Action Repeat Rate (ms)", "Repeat Interval: {0} to/by: {1} ms", true)]
     [TouchPortalActionChoice(new[] { "Set", "Increment", "Decrement" })]
