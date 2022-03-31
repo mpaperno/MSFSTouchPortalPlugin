@@ -30,7 +30,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     [TouchPortalActionMapping("TOGGLE_MASTER_BATTERY_ALTERNATOR")]
     public static readonly object MASTER_BATTERY_ALTERNATOR;
 
-    [TouchPortalAction("AlternatorIndex", "Alternator - Specific", "MSFS", "Toggle Specific Alternator", "Toggle Altenator - {0}")]
+    [TouchPortalAction("AlternatorIndex", "Alternator - Specific", "MSFS", "Toggle Specific Alternator", "Toggle Alternator - {0}")]
     [TouchPortalActionChoice(new[] { "1", "2", "3", "4" })]
     [TouchPortalActionMapping("TOGGLE_ALTERNATOR1", "1")]
     [TouchPortalActionMapping("TOGGLE_ALTERNATOR2", "2")]
