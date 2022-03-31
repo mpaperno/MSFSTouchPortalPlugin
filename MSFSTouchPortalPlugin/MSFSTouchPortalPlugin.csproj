@@ -13,19 +13,21 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
+    <DefineConstants>DEBUG;TRACE;DEBUG_REQUESTS</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
-    <NoWarn>1701;1702;S125;CS8032</NoWarn>
+    <NoWarn>1701;1702</NoWarn>
     <AllowedReferenceRelatedFileExtensions>
       <!-- Prevent .pdb, .xml, etc from being copied to output folder -->
       .dll
     </AllowedReferenceRelatedFileExtensions>
     <DebugType>none</DebugType>
-    <DebugSymbols>false</DebugSymbols> 
+    <DebugSymbols>false</DebugSymbols>
+    <DefineConstants /> 
   </PropertyGroup>
-  
+
   <ItemGroup>
     <None Remove="appsettings.json" />
   </ItemGroup>
