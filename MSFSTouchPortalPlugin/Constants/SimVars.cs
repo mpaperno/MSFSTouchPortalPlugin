@@ -1,157 +1,15 @@
-﻿using MSFSTouchPortalPlugin.Enums;
-using MSFSTouchPortalPlugin.Types;
+﻿using MSFSTouchPortalPlugin.Constants;
+using MSFSTouchPortalPlugin.Enums;
 using Stopwatch = System.Diagnostics.Stopwatch;
 using SIMCONNECT_DATATYPE = Microsoft.FlightSimulator.SimConnect.SIMCONNECT_DATATYPE;
 
-namespace MSFSTouchPortalPlugin.Constants
+namespace MSFSTouchPortalPlugin.Types
 {
-  // TODO: Remove all values except Init, move to Enums folder/namespace
+  /// <summary> Dynamically generated SimConnect definition IDs are "parented" to this enum type,
+  /// meaning they become of this Type when they need to be cast to en Enum type (eg. for SimConnect C# API). </summary>
   public enum Definition
   {
-    None = 0,
-    AileronTrimPct,
-    AircraftTitle,
-    AirSpeedIndicated,
-    AirSpeedMach,
-    AirSpeedTrue,
-    AntiIceEng1,
-    AntiIceEng2,
-    AntiIceEng3,
-    AntiIceEng4,
-    AntiIcePanelSwitch,
-    AntiIcePropeller1Switch,
-    AntiIcePropeller2Switch,
-    AntiIcePropeller3Switch,
-    AntiIcePropeller4Switch,
-    AntiIceStructuralSwitch,
-    AntiIceWindshieldSwitch,
-    AtcAirline,
-    AtcFlightNumber,
-    AtcId,
-    AtcModel,
-    AtcType,
-    AutoPilotAirSpeedHold,
-    AutoPilotAirSpeedVar,
-    AutoPilotAltitudeHold,
-    AutoPilotAltitudeVar,
-    AutoPilotApproachHold,
-    AutoPilotAttitudeHold,
-    AutoPilotAttitudeVar,
-    AutoPilotAvailable,
-    AutoPilotBackCourseHold,
-    AutoPilotBanking,
-    AutoPilotFlightDirector,
-    AutoPilotFlightDirectorCurrentBank,
-    AutoPilotFlightDirectorCurrentPitch,
-    AutoPilotHeadingHold,
-    AutoPilotHeadingVar,
-    AutoPilotMach,
-    AutoPilotMachVar,
-    AutoPilotMaster,
-    AutoPilotNav1Hold,
-    AutoPilotNavSelected,
-    AutoPilotPitchHold,
-    AutoPilotVerticalSpeedHold,
-    AutoPilotVerticalSpeedVar,
-    AutoPilotWingLeveler,
-    AutoPilotYawDampener,
-    AutoThrottleArm,
-    AutoThrottleGoAround,
-    AvionicsMasterSwitch,
-    Com1ActiveFrequency,
-    Com1StandbyFrequency,
-    Com2ActiveFrequency,
-    Com2StandbyFrequency,
-    CowlFlaps1Percent,
-    CowlFlaps2Percent,
-    CowlFlaps3Percent,
-    CowlFlaps4Percent,
-    ElevatorTrimPct,
-    FlapsHandlePercent,
-    FlapSpeedExceeeded,
-    GroundAltitude,
-    GroundVelocity,
-    LightBeaconOn,
-    LightBrakeOn,
-    LightCabinOn,
-    LightHeadOn,
-    LightLandingOn,
-    LightLogoOn,
-    LightNavOn,
-    LightPanelOn,
-    LightRecognitionOn,
-    LightStrobeOn,
-    LightTaxiOn,
-    LightWingOn,
-    MasterAlternator,
-    MasterBattery,
-    MasterIgnitionSwitch,
-    MixtureEngine1,
-    MixtureEngine2,
-    MixtureEngine3,
-    MixtureEngine4,
-    Nav1ActiveFrequency,
-    Nav1StandbyFrequency,
-    Nav2ActiveFrequency,
-    Nav2StandbyFrequency,
-    OverspeedWarning,
-    ParkingBrakeIndicator,
-    PitotHeat,
-    PitotHeatSwitch1,
-    PitotHeatSwitch2,
-    PitotHeatSwitch3,
-    PitotHeatSwitch4,
-    PlaneAltitude,
-    PlaneAltitudeAGL,
-    PlaneBankAngle,
-    PlaneHeadingTrue,
-    PlaneHeadingMagnetic,
-    PlanePitchAngle,
-    Propeller1Feathered,
-    Propeller2Feathered,
-    Propeller3Feathered,
-    Propeller4Feathered,
-    Propeller1FeatherSw,
-    Propeller2FeatherSw,
-    Propeller3FeatherSw,
-    Propeller4FeatherSw,
-    PropellerEngine1,
-    PropellerEngine2,
-    PropellerEngine3,
-    PropellerEngine4,
-    RPMN1Engine1,
-    RPMN1Engine2,
-    RPMN1Engine3,
-    RPMN1Engine4,
-    RPMPropeller1,
-    RPMPropeller2,
-    RPMPropeller3,
-    RPMPropeller4,
-    RudderTrimPct,
-    SimulationRate,
-    SpoilersArmed,
-    SpoilersAvailable,
-    SpoilersHandlePosition,
-    SpoilersLeftPosition,
-    SpoilersRightPosition,
-    StallWarning,
-    ThrottleEngine1,
-    ThrottleEngine2,
-    ThrottleEngine3,
-    ThrottleEngine4,
-    VerticalSpeed,
-
-    #region Landing Gear
-    GearTotalExtended,
-    #endregion
-
-    #region Trimming
-    AileronTrim,
-    ElevatorTrim,
-    RudderTrim,
-    #endregion
-
-    Init = 1000,
+    None = 0
   }
 
   /// <summary>
@@ -273,7 +131,7 @@ namespace MSFSTouchPortalPlugin.Constants
     public bool IsBooleanType { get; private set; }
 
     /// <summary> Unique Definition ID for SimConnect </summary>
-    public Definition Def { get; set; }  // TODO: make read-only
+    public Definition Def { get; private set; }
     /// <summary> The SimConnect data type for registering this var. </summary>
     public SIMCONNECT_DATATYPE SimConnectDataType { get; private set; }
     /// <summary> Indicates if a SimConnect request for this variable is already pending. </summary>
@@ -287,7 +145,7 @@ namespace MSFSTouchPortalPlugin.Constants
     private string _formatString;
     private long _timeoutTicks;
 
-    private static Definition _nextDefinionId = Definition.Init;
+    private static Definition _nextDefinionId = Definition.None;
     private static Definition NextId() => ++_nextDefinionId;
 
     public SimVarItem() {
@@ -354,7 +212,7 @@ namespace MSFSTouchPortalPlugin.Constants
       }
     }
 
-    public double ConvertValueIfNeeded(double value) {
+    private double ConvertValueIfNeeded(double value) {
       // Convert to Degrees
       if (Unit == Units.radians)
         return value * (180.0 / System.Math.PI);

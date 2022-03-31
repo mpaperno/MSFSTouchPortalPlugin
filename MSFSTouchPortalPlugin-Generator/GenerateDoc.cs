@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Text;
 using TouchPortalExtension.Attributes;
-using MSFSTouchPortalPlugin.Constants;
+using MSFSTouchPortalPlugin.Types;
 
 namespace MSFSTouchPortalPlugin_Generator
 {

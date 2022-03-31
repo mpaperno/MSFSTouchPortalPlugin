@@ -1,5 +1,5 @@
-﻿using MSFSTouchPortalPlugin.Constants;
-using MSFSTouchPortalPlugin.Enums;
+﻿using MSFSTouchPortalPlugin.Enums;
+using MSFSTouchPortalPlugin.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
