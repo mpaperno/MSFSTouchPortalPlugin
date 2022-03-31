@@ -14,11 +14,11 @@ namespace MSFSTouchPortalPlugin_Generator {
         .AddLogging()
         .Configure<GeneratorOptions>((opt) => {
           opt.PluginName = "MSFSTouchPortalPlugin";
-          opt.TargetPath = "..\\..\\..\\..\\";
-
-          if (args.Length >= 1) {
+          opt.PluginFolder = "MSFS-TouchPortal-Plugin";
+          if (args.Length >= 1)
             opt.TargetPath = args[0];
-          }
+          else
+            opt.TargetPath = "..\\..\\..\\";  // assumes it is being run from the build output folder
         })
         .AddHostedService<RunService>()
         .AddSingleton<IPluginService, PluginService>() // Force load of assembly for generation

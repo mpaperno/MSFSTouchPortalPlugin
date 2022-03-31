@@ -15,6 +15,7 @@ using TouchPortalSDK;
 using TouchPortalSDK.Interfaces;
 using TouchPortalSDK.Messages.Events;
 using Timer = MSFSTouchPortalPlugin.Helpers.UnthreadedTimer;
+using MSFSTouchPortalPlugin.Helpers;
 
 namespace MSFSTouchPortalPlugin.Services
 {
@@ -396,9 +397,11 @@ namespace MSFSTouchPortalPlugin.Services
     #region TouchPortalSDK Events
 
     public void OnInfoEvent(InfoEvent message) {
-      _logger.LogInformation(
-        $"[Info] VersionCode: '{message.TpVersionCode}', VersionString: '{message.TpVersionString}', SDK: '{message.SdkVersion}', PluginVersion: '{message.PluginVersion}', Status: '{message.Status}'"
+      _logger?.LogInformation(
+        $"Touch Portal Connected with: TP v{message.TpVersionString}, SDK v{message.SdkVersion}, {PluginId} entry.tp v{message.PluginVersion}, " +
+        $"{VersionInfo.AssemblyName} running v{VersionInfo.GetProductVersionString()} ({VersionInfo.GetProductVersionNumber():X})"
       );
+
       ProcessPluginSettings(message.Settings);
       autoReconnectSimConnect = (Settings.ConnectSimOnStartup.ValueAsInt() != 0);
     }

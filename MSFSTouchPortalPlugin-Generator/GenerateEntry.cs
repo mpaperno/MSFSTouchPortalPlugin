@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Enums;
+using MSFSTouchPortalPlugin.Helpers;
 using MSFSTouchPortalPlugin.Types;
 using MSFSTouchPortalPlugin_Generator.Configuration;
 using MSFSTouchPortalPlugin_Generator.Interfaces;
@@ -40,25 +41,7 @@ namespace MSFSTouchPortalPlugin_Generator
       }
 
       var assembly = Assembly.Load(a);
-
-      var fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
-      var version = fvi.FileVersion;
-
-      // Setup Base Model
-      var model = new Base {
-        Sdk = 3,
-        Version = int.Parse(version.Replace(".", "")),
-        Name = _options.Value.PluginName,
-        Id = _options.Value.PluginName
-      };
-
-      // Add Configuration
-      // Add Plugin Start Command
-      model.Plugin_start_cmd = Path.Combine("%TP_PLUGIN_FOLDER%", "MSFS-TouchPortal-Plugin\\dist", "MSFSTouchPortalPlugin.exe");
-      // Load assembly
-      _ = MSFSTouchPortalPlugin.Objects.Plugin.Plugin.Init;
-
-      var q = assembly.GetTypes().ToList();
+      string basePath = $"%TP_PLUGIN_FOLDER%{_options.Value.PluginFolder}";
 
       // read default states config
       // TODO: Allow configuration of which state config file(s) to read.
@@ -68,6 +51,20 @@ namespace MSFSTouchPortalPlugin_Generator
         foreach (var e in pc.ErrorsList)
           _logger.LogError(e, "Configuration reader error:");
       }
+
+      // Load assembly
+      _ = MSFSTouchPortalPlugin.Objects.Plugin.Plugin.Init;
+      var q = assembly.GetTypes().ToList();
+
+      // Setup Base Model
+      VersionInfo.Assembly = assembly;
+      var model = new Base {
+        Sdk = 3,
+        Version = VersionInfo.GetProductVersionNumber(),
+        Name = _options.Value.PluginName,
+        Id = _options.Value.PluginName,
+        Plugin_start_cmd = $"{basePath}/dist/{_options.Value.PluginName}.exe"
+      };
 
       // Get all classes with the TouchPortalCategory
       var categoryClasses = q.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalCategoryAttribute))).OrderBy(o => o.Name);
@@ -88,7 +85,7 @@ namespace MSFSTouchPortalPlugin_Generator
             Id = $"{_options.Value.PluginName}.{att.Id}",
             Name = att.Name,
             // Imagepath = att.ImagePath
-            Imagepath = Path.Combine("%TP_PLUGIN_FOLDER%", "MSFS-TouchPortal-Plugin", "airplane_takeoff24.png")
+            Imagepath = basePath + "/airplane_takeoff24.png"
           };
           model.Categories.Add(category);
         }

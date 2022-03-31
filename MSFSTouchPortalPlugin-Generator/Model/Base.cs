@@ -7,8 +7,9 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
   class Base {
     [Required, Range(1, int.MaxValue)]
     public int Sdk { get; set; } = 3;
+    [JsonConverter(typeof(VersionNumberJsonConverter))]
     [Required, Range(1, int.MaxValue)]
-    public int Version { get; set; }
+    public uint Version { get; set; }
     [Required, MinLength(5)]
     public string Name { get; set; } = string.Empty;
     [Required, MinLength(5)]
@@ -143,6 +144,21 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
 
     public void AddResult(ValidationResult validationResult) {
       _results.Add(validationResult);
+    }
+  }
+
+  public sealed class VersionNumberJsonConverter : JsonConverter
+  {
+    public override bool CanConvert(System.Type objectType) {
+      return typeof(uint).Equals(objectType);
+    }
+
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) {
+      writer.WriteValue(uint.Parse($"{value:X}"));
+    }
+
+    public override object ReadJson(JsonReader reader, System.Type objectType, object existingValue, JsonSerializer serializer) {
+      throw new System.NotImplementedException();
     }
   }
 }

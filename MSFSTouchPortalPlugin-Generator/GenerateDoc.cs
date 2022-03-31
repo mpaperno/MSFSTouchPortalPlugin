@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Options;
 using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Enums;
+using MSFSTouchPortalPlugin.Helpers;
+using MSFSTouchPortalPlugin.Types;
 using MSFSTouchPortalPlugin_Generator.Configuration;
 using MSFSTouchPortalPlugin_Generator.Interfaces;
 using MSFSTouchPortalPlugin_Generator.Model;
@@ -12,7 +14,6 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Text;
 using TouchPortalExtension.Attributes;
-using MSFSTouchPortalPlugin.Types;
 
 namespace MSFSTouchPortalPlugin_Generator
 {
@@ -44,13 +45,16 @@ namespace MSFSTouchPortalPlugin_Generator
         throw new FileNotFoundException("Unable to load assembly for reflection.");
       }
 
-      var model = new DocBase {
-        Title = "MSFS 2020 TouchPortal Plugin",
-        Overview = "This plugin will provide a two way interface between Touch Portal and Microsoft Flight Simulator 2020 through SimConnect."
-      };
-
       var assembly = Assembly.Load(a);
       var assemblyList = assembly.GetTypes().ToList();
+
+      VersionInfo.Assembly = assembly;
+
+      var model = new DocBase {
+        Title = "MSFS 2020 Touch Portal Plugin",
+        Overview = "This plugin will provide a two-way interface between Touch Portal and Microsoft Flight Simulator 2020 through SimConnect.",
+        Version = VersionInfo.GetProductVersionString()
+      };
 
       // read default states config
       // TODO: Allow configuration of which state config file(s) to read.
@@ -182,6 +186,7 @@ namespace MSFSTouchPortalPlugin_Generator
 
       s.Append($"# {model.Title}\n\n");
       s.Append($"{model.Overview}\n\n");
+      s.Append($"Docuemntation generated for plugin version {model.Version}\n\n");
       s.Append("---\n\n");
 
       // Table of Contents
