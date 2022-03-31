@@ -15,7 +15,7 @@ namespace MSFSTouchPortalPlugin.Types
   /// <summary>
   /// The SimVarItem which defines all data variables for SimConnect
   /// </summary>
-  public class SimVarItem  // TODO: Move to Types folder/namespace
+  public class SimVarItem
   {
     /// <summary> Unique ID string, used to generate TouchPortal state ID (and possibly other uses). </summary>
     public string Id { get; set; }
