@@ -1,4 +1,5 @@
 ﻿using MSFSTouchPortalPlugin.Enums;
+using MSFSTouchPortalPlugin.Types;
 using Stopwatch = System.Diagnostics.Stopwatch;
 using SIMCONNECT_DATATYPE = Microsoft.FlightSimulator.SimConnect.SIMCONNECT_DATATYPE;
 
@@ -197,8 +198,8 @@ namespace MSFSTouchPortalPlugin.Constants
         IsBooleanType = !IsStringType && Units.IsBooleantype(_unit);
         IsIntegralType = !IsStringType && !IsBooleanType && Units.IsIntegraltype(_unit);
         IsRealType = !IsStringType && !IsBooleanType && !IsIntegralType;
-        SimConnectDataType = IsStringType ? SIMCONNECT_DATATYPE.STRING64 : IsIntegralType ? SIMCONNECT_DATATYPE.INT64 : IsBooleanType ? SIMCONNECT_DATATYPE.INT32 : SIMCONNECT_DATATYPE.FLOAT64;
-        StorageDataType = IsStringType ? typeof(string) : IsIntegralType ? typeof(long) : IsBooleanType ? typeof(uint) : typeof(double);
+        SimConnectDataType = IsStringType ? SIMCONNECT_DATATYPE.STRING256 : IsIntegralType ? SIMCONNECT_DATATYPE.INT64 : IsBooleanType ? SIMCONNECT_DATATYPE.INT32 : SIMCONNECT_DATATYPE.FLOAT64;
+        StorageDataType = IsStringType ? typeof(StringVal) : IsIntegralType ? typeof(long) : IsBooleanType ? typeof(uint) : typeof(double);
       }
     }
 
@@ -241,7 +242,7 @@ namespace MSFSTouchPortalPlugin.Constants
           double v => string.Format(StringFormat, v),
           uint v => string.Format(StringFormat, v),
           long v => string.Format(StringFormat, v),
-          string v => string.Format(StringFormat, v),
+          StringVal v => string.Format(StringFormat, v.ToString()),
           _ => string.Empty,
         };
       }
@@ -256,7 +257,7 @@ namespace MSFSTouchPortalPlugin.Constants
       get => Value?.GetType();
       private set {
         if (Value == null || Value.GetType() != value) {
-          _value = value == typeof(string) ? string.Empty : System.Activator.CreateInstance(value);
+          _value = value == typeof(StringVal) ? new StringVal() : System.Activator.CreateInstance(value);
           _valInit = false;
         }
       }
@@ -293,10 +294,10 @@ namespace MSFSTouchPortalPlugin.Constants
       Def = NextId();
     }
 
-    public bool ValueEquals(string value) => _valInit && IsStringType && value == (string)Value;
+    public bool ValueEquals(string value) => _valInit && IsStringType && value == Value.ToString();
     public bool ValueEquals(double value) => _valInit && IsRealType && System.Math.Abs((double)Value - ConvertValueIfNeeded(value)) <= DeltaEpsilon;
-    public bool ValueEquals(long value) => _valInit && IsIntegralType && System.Math.Abs((long)Value - value) <= (long)DeltaEpsilon;
-    public bool ValueEquals(uint value) => _valInit && IsBooleanType && System.Math.Abs((uint)Value - value) <= (uint)DeltaEpsilon;
+    public bool ValueEquals(long value)   => _valInit && IsIntegralType && System.Math.Abs((long)Value - value) <= (long)DeltaEpsilon;
+    public bool ValueEquals(uint value)   => _valInit && IsBooleanType && System.Math.Abs((uint)Value - value) <= (uint)DeltaEpsilon;
 
     public bool ValueEquals(object value) {
       if (!_valInit)
@@ -314,37 +315,38 @@ namespace MSFSTouchPortalPlugin.Constants
       }
     }
 
-    public bool SetValue(string value) {
+    internal bool SetValue(StringVal value) {
       if (IsStringType)
         Value = value;
       return IsStringType;
     }
 
-    public bool SetValue(double value) {
+    internal bool SetValue(double value) {
       if (!IsStringType)
         Value = ConvertValueIfNeeded(value);
       return !IsStringType;
     }
 
-    public bool SetValue(long value) {
+    internal bool SetValue(long value) {
       if (IsIntegralType)
         Value = value;
       return IsIntegralType;
     }
 
-    public bool SetValue(uint value) {
+    internal bool SetValue(uint value) {
       if (IsBooleanType)
         Value = value;
       return IsBooleanType;
     }
 
-    public bool SetValue(object value) {
+    internal bool SetValue(object value) {
       try {
         return value switch {
           double v => SetValue(v),
           uint v => SetValue(v),
           long v => SetValue(v),
-          _ => SetValue(value.ToString()),
+          StringVal v => SetValue(v),
+          _ => false
         };
       }
       catch {
@@ -388,7 +390,7 @@ namespace MSFSTouchPortalPlugin.Constants
     }
 
     public string ToDebugString() {
-      return $"{GetType()}: {{Def: {Def}; SimVarName: {SimVarName}; Unit: {Unit}; Cat: {CategoryId}; Name: {Name}}}";
+      return $"{GetType().Name}: {{Def: {Def}; SimVarName: {SimVarName}; Unit: {Unit}; Cat: {CategoryId}; Name: {Name}}}";
     }
 
   }

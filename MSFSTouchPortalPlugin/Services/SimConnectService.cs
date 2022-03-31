@@ -7,6 +7,7 @@ using Microsoft.FlightSimulator.SimConnect;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Interfaces;
+using MSFSTouchPortalPlugin.Types;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -151,6 +152,11 @@ namespace MSFSTouchPortalPlugin.Services
       }
     }
 
+    private void ClearDataDefinition(Definition def) {
+      _simConnect.ClearDataDefinition(def);
+      DbgAddSendRecord($"ClearDataDefinition({def})");
+    }
+
     public bool RegisterToSimConnect(SimVarItem simVar) {
       if (_connected) {
         string unitName = simVar.IsStringType ? null : simVar.Unit;
@@ -167,11 +173,12 @@ namespace MSFSTouchPortalPlugin.Services
           case long:
             _simConnect.RegisterDataDefineStruct<long>(simVar.Def);
             break;
-          case string:
-            _simConnect.RegisterDataDefineStruct<StringVal64>(simVar.Def);
+          case StringVal:
+            _simConnect.RegisterDataDefineStruct<StringVal>(simVar.Def);
             break;
           default:
             _logger.LogError($"Unable to register storage type for '{simVar.StorageDataType}'");
+            ClearDataDefinition(simVar.Def);
             return false;
         }
         DbgAddSendRecord($"RegisterDataDefineStruct<{simVar.StorageDataType}>({simVar.ToDebugString()})");
@@ -274,7 +281,9 @@ namespace MSFSTouchPortalPlugin.Services
 
     private void DbgSetupRequestTracking() {
       // Get direct access to the SimConnect handle, to use functions otherwise not supported.
+#pragma warning disable S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
       System.Reflection.FieldInfo fiSimConnect = typeof(SimConnect).GetField("hSimConnect", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+#pragma warning restore S3011
       hSimConnect = (IntPtr)fiSimConnect.GetValue(_simConnect);
     }
 
@@ -298,25 +307,11 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
 #else
-#pragma warning disable S1172 // Unused method parameters should be removed
     [System.Diagnostics.Conditional("DEBUG_REQUESTS")]  // prevents any parameters being passed to this method from being evaluated
-    private static void DbgAddSendRecord(string _) { /* no-op when request tracking disabled */ }
-    private static string DbgGetSendRecord(uint _) => "Request tracking disabled.";
-#pragma warning restore S1172
+    private static void DbgAddSendRecord(string record) { _ = record; /* no-op when request tracking disabled */ }
+    private static string DbgGetSendRecord(uint sendId) { _ = sendId; return "Request tracking disabled."; }
 #endif  // DEBUG_REQUESTS
 
     #endregion
-  }
-
-  internal readonly struct StringVal64 : IEquatable<StringVal64> {
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
-    public readonly string Value;
-
-    public bool Equals(StringVal64 other) => other.Value == Value;
-    public override bool Equals(object obj) => (obj is StringVal64 && Equals((StringVal64)obj));
-    public override string ToString() => Value;
-    public override int GetHashCode() => Value.GetHashCode();
-    public static bool operator ==(StringVal64 obj1, StringVal64 obj2) => obj1.Equals(obj2);
-    public static bool operator !=(StringVal64 obj1, StringVal64 obj2) => !obj1.Equals(obj2);
   }
 }
