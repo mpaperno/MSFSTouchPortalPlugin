@@ -111,7 +111,7 @@ namespace MSFSTouchPortalPlugin.Services
     public Task WaitForMessage(CancellationToken cancellationToken) {
       while (_connected && !cancellationToken.IsCancellationRequested) {
         try {
-          if (_scReady.WaitOne(5000))
+          if (_scReady.WaitOne(1000))
             _simConnect?.ReceiveMessage();
         }
         catch (Exception e) {
