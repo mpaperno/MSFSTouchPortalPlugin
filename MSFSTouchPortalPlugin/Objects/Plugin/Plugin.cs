@@ -13,7 +13,6 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     [TouchPortalActionMapping("ToggleConnection", "Toggle")]
     [TouchPortalActionMapping("Connect", "On")]
     [TouchPortalActionMapping("Disconnect", "Off")]
-    [TouchPortalState("Connected", "text", "The status of SimConnect (true/false/connecting)", "false")]
     public static readonly object Connection;
   }
 
@@ -40,7 +39,6 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     [TouchPortalActionMapping("ActionRepeatIntervalSet", "Set")]
     [TouchPortalActionMapping("ActionRepeatIntervalInc", "Increment")]
     [TouchPortalActionMapping("ActionRepeatIntervalDec", "Decrement")]
-    [TouchPortalState("ActionRepeatInterval", "text", "The current Held Action Repeat Rate (ms)", "450")]
     public static readonly PluginSetting ActionRepeatInterval = new PluginSetting("ActionRepeatInterval", 50, int.MaxValue);
   }
 
