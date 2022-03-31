@@ -83,15 +83,20 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     public void Disconnect() {
-      _logger.LogInformation("Disconnect SimConnect");
-
-      if (_simConnect != null) {
-        /// Dispose serves the same purpose as SimConnect_Close()
-        _simConnect.Dispose();
-        _simConnect = null;
-      }
+      if (!_connected)
+        return;
 
       _connected = false;
+
+      // Dispose serves the same purpose as SimConnect_Close()
+      try {
+        _simConnect?.Dispose();
+        _logger.LogInformation("SimConnect Disconnected");
+      }
+      catch (Exception e) {
+        _logger.LogWarning(e, "Exception while trying to dispose SimConnect client.");
+      }
+      _simConnect = null;
 
       // Invoke Handler
       OnDisconnect?.Invoke();
