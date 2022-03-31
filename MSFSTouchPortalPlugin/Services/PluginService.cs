@@ -277,7 +277,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     private void ProcessInternalEvent(ActionEventType action, Enum eventId, in string[] dataArry) {
       Plugin pluginEventId = (Plugin)eventId;
-      _logger.LogInformation($"Firing Internal Event - action: {action.ActionId}; enum: {pluginEventId}; data: {string.Join(", ", dataArry)}");
+      _logger.LogDebug($"Firing Internal Event - action: {action.ActionId}; enum: {pluginEventId}; data: {string.Join(", ", dataArry)}");
 
       switch (pluginEventId) {
         case Plugin.ToggleConnection:
@@ -347,7 +347,7 @@ namespace MSFSTouchPortalPlugin.Services
           _logger.LogWarning(e, $"Action {action.ActionId} for sim event {eventName} with data string '{valStr}' - Failed to convert data to numeric value.");
         }
       }
-      _logger.LogInformation($"Firing Sim Event - action: {action.ActionId}; group: {action.SimConnectGroup}; name: {eventName}; data {dataUint}");
+      _logger.LogDebug($"Firing Sim Event - action: {action.ActionId}; group: {action.SimConnectGroup}; name: {eventName}; data {dataUint}");
       _simConnectService.TransmitClientEvent(action.SimConnectGroup, eventId, dataUint);
     }
 

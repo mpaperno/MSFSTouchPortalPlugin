@@ -231,7 +231,7 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     private void Simconnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data) {
-      _logger.LogInformation("Quit");
+      _logger.LogInformation("Received shutdown command from SimConnect, disconnecting.");
       Disconnect();
     }
 
@@ -243,13 +243,13 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     private void Simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data) {
-      _logger.LogInformation("Opened");
+      _logger.LogInformation("SimConnect Connected");
     }
 
     private void Simconnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data) {
       SIMCONNECT_EXCEPTION eException = (SIMCONNECT_EXCEPTION)data.dwException;
       string request = DbgGetSendRecord(data.dwSendID);
-      _logger.LogInformation($"SimConnect_OnRecvException: {eException}; SendID: {data.dwSendID}; Index: {data.dwIndex}; Request: {request}");
+      _logger.LogWarning($"SimConnect_OnRecvException: {eException}; SendID: {data.dwSendID}; Index: {data.dwIndex}; Request: {request}");
     }
 
     /// <summary>
@@ -264,7 +264,7 @@ namespace MSFSTouchPortalPlugin.Services
         grpName = ((Groups)data.uGroupID).ToString();
         eventId = _reflectionService.GetSimEventNameById(data.uEventID);
       }
-      _logger.LogInformation($"Simconnect_OnRecvEvent Recieved: Group: {grpName}; Event: {eventId}");
+      _logger.LogDebug($"Simconnect_OnRecvEvent Recieved: Group: {grpName}; Event: {eventId}");
     }
 
     //private void Simconnect_OnRecvSimObjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data) {
