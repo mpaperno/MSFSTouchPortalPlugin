@@ -55,8 +55,8 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     public static readonly SimVarItem AP_ATTITUDE_PITCH =
       new SimVarItem { Def = Definition.AutoPilotAttitudeVar, SimVarName = "AUTOPILOT PITCH HOLD REF", Unit = Units.radians, CanSet = false };
 
-    [TouchPortalAction("AutoPilotAttitudeSet", "Attitude Hold Pitch Value Set", "MSFS", "Sets the airspeed value", "Set Attitude Hold Pitch Value to {0} (-16383 - +16383)")]
-    [TouchPortalActionText("0", -16383, 16383)]
+    [TouchPortalAction("AutoPilotAttitudeSet", "Attitude Hold Pitch Value Set", "MSFS", "Sets the airspeed value", "Set Attitude Hold Pitch Value to {0} (-16384 to +16384)")]
+    [TouchPortalActionText("0", -16384, 16384)]
     [TouchPortalActionMapping("AP_PITCH_REF_SET")]
     public static object AP_ATTITUDE_PITCH_SET { get; }
 

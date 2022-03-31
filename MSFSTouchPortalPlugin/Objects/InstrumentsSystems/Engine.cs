@@ -152,9 +152,9 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     [TouchPortalActionMapping("THROTTLE4_CUT",        new[] { "4", "Cut" })]
     public static object THROTTLE_SPECIFIC { get; }
 
-    [TouchPortalAction("ThrottleSet", "Throttle Set", "MSFS", "Sets all or specific Throttle(s) to specific value", "Set Throttle {0} to {1} (-16383 - +16383)")]
+    [TouchPortalAction("ThrottleSet", "Throttle Set", "MSFS", "Sets all or specific Throttle(s) to specific value", "Set Throttle {0} to {1} (-16384 to +16384)")]
     [TouchPortalActionChoice(new[] { "All", "1", "2", "3", "4" }, "All")]
-    [TouchPortalActionText("0", -16383, 16383)]
+    [TouchPortalActionText("0", -16384, 16384)]
     [TouchPortalActionMapping("THROTTLE_SET",  new[] { "All" })]
     [TouchPortalActionMapping("THROTTLE1_SET", new[] { "1" })]
     [TouchPortalActionMapping("THROTTLE2_SET", new[] { "2" })]
@@ -290,9 +290,9 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     [TouchPortalActionMapping("TOGGLE_FEATHER_SWITCH_4", new[] { "4", "Toggle Feather Switch" })]
     public static object PROPELLER_PITCH { get; }
 
-    [TouchPortalAction("PropellerPitchSet", "Propeller Pitch Set", "MSFS", "Sets propeller pitch lever to value", "Set Propeller {0} Pitch to {1} (0 to 16383)")]
+    [TouchPortalAction("PropellerPitchSet", "Propeller Pitch Set", "MSFS", "Sets propeller pitch lever to value", "Set Propeller {0} Pitch to {1} (0 to 16384)")]
     [TouchPortalActionChoice(new[] { "All", "1", "2", "3", "4" })]
-    [TouchPortalActionText("0", 0, 16383)]
+    [TouchPortalActionText("0", 0, 16384)]
     [TouchPortalActionMapping("PROP_PITCH_SET", "All")]
     [TouchPortalActionMapping("PROP_PITCH1_SET", "1")]
     [TouchPortalActionMapping("PROP_PITCH2_SET", "2")]
