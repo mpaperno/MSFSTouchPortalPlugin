@@ -394,19 +394,23 @@ namespace MSFSTouchPortalPlugin.Services
       string stat = "true";
       if (!_simConnectService.IsConnected())
         stat = autoReconnectSimConnect ? "connecting" : "false";
-      _client.StateUpdate("MSFSTouchPortalPlugin.Plugin.State.Connected", stat);
+      _client.StateUpdate(PluginId + ".Plugin.State.Connected", stat);
     }
 
     #region TouchPortalSDK Events
 
     public void OnInfoEvent(InfoEvent message) {
+      var runtimeVer = string.Format("{0:X}", VersionInfo.GetProductVersionNumber());
       _logger?.LogInformation(
         $"Touch Portal Connected with: TP v{message.TpVersionString}, SDK v{message.SdkVersion}, {PluginId} entry.tp v{message.PluginVersion}, " +
-        $"{VersionInfo.AssemblyName} running v{VersionInfo.GetProductVersionString()} ({VersionInfo.GetProductVersionNumber():X})"
+        $"{VersionInfo.AssemblyName} running v{VersionInfo.GetProductVersionString()} ({runtimeVer})"
       );
 
       ProcessPluginSettings(message.Settings);
       autoReconnectSimConnect = (Settings.ConnectSimOnStartup.ValueAsInt() != 0);
+
+      _client.StateUpdate(PluginId + ".Plugin.State.RunningVersion", runtimeVer);
+      _client.StateUpdate(PluginId + ".Plugin.State.EntryVersion", $"{message.PluginVersion}");
     }
 
     public void OnSettingsEvent(SettingsEvent message) {
