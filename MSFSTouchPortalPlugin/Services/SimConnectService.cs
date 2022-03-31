@@ -31,8 +31,9 @@ namespace MSFSTouchPortalPlugin.Services
     private static readonly bool DEBUG_NOTIFICATIONS = false;
 
     SimConnect _simConnect;
-    readonly EventWaitHandle _scReady = new EventWaitHandle(false, EventResetMode.AutoReset);
     private bool _connected;
+    private readonly EventWaitHandle _scReady = new EventWaitHandle(false, EventResetMode.AutoReset);
+    private readonly System.Collections.Generic.List<Definition> _addedDefinitions = new();
 
     public event DataUpdateEventHandler OnDataUpdateEvent;
     public event ConnectEventHandler OnConnect;
@@ -183,10 +184,19 @@ namespace MSFSTouchPortalPlugin.Services
         }
         DbgAddSendRecord($"RegisterDataDefineStruct<{simVar.StorageDataType}>({simVar.ToDebugString()})");
 
+        _addedDefinitions.Add(simVar.Def);
         return true;
       }
 
       return false;
+    }
+
+    public void ClearAllDataDefinitions() {
+      if (_connected) {
+        foreach (var def in _addedDefinitions)
+          ClearDataDefinition(def);
+      }
+      _addedDefinitions.Clear();
     }
 
     public bool RequestDataOnSimObjectType(SimVarItem simVar) {

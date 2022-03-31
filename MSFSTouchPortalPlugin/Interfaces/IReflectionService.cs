@@ -7,7 +7,6 @@ namespace MSFSTouchPortalPlugin.Interfaces
 {
   internal interface IReflectionService {
     Dictionary<string, ActionEventType> GetActionEvents();
-    Dictionary<Definition, SimVarItem> GetStates();
     Dictionary<string, PluginSetting> GetSettings();
     ref readonly Dictionary<Enum, dynamic> GetClientEventIdToNameMap();
     string GetSimEventNameById(Enum id);

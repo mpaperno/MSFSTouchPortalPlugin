@@ -22,6 +22,7 @@ namespace MSFSTouchPortalPlugin.Interfaces {
     void Disconnect();
     bool MapClientEventToSimEvent(Enum eventId, string eventName);
     void SetNotificationGroupPriorities();
+    void ClearAllDataDefinitions();
     bool RegisterToSimConnect(SimVarItem simVar);
     bool RequestDataOnSimObjectType(SimVarItem simVar);
     bool TransmitClientEvent(Groups group, Enum eventId, uint data);

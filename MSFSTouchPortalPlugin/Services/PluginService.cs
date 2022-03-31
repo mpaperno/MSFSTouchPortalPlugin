@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Objects.Plugin;
@@ -179,10 +180,7 @@ namespace MSFSTouchPortalPlugin.Services
       // must be called after adding notifications
       _simConnectService.SetNotificationGroupPriorities();
 
-      // Register SimVars
-      foreach (var s in statesDictionary) {
-        _simConnectService.RegisterToSimConnect(s.Value);
-      }
+      SetupSimVars();
 
       Task.WhenAll(RunPluginServices(_simConnectCancellationTokenSource.Token));
     }
@@ -211,8 +209,21 @@ namespace MSFSTouchPortalPlugin.Services
 
     private void SetupEventLists() {
       actionsDictionary = _reflectionService.GetActionEvents();
-      statesDictionary = _reflectionService.GetStates();
       pluginSettingsDictionary = _reflectionService.GetSettings();
+    }
+
+    private void SetupSimVars() {
+      var pc = PluginConfig.Instance;
+      var configStates = pc.LoadSimVarItems(false);
+      if (pc.HaveErrors) {
+        foreach (var e in pc.ErrorsList)
+          _logger.LogWarning(e, "Configuration reader error:");
+      }
+      statesDictionary = configStates.ToDictionary(s => s.Def, s => s);
+      // Register SimVars
+      _simConnectService.ClearAllDataDefinitions();
+      foreach (var s in statesDictionary)
+        _simConnectService.RegisterToSimConnect(s.Value);
     }
 
     private Task TryConnect() {
