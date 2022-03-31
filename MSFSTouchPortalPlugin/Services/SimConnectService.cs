@@ -31,6 +31,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     SimConnect _simConnect;
     private bool _connected;
+    private bool _connecting;
     private readonly EventWaitHandle _scReady = new EventWaitHandle(false, EventResetMode.AutoReset);
     private readonly System.Collections.Generic.List<Definition> _addedDefinitions = new();
 
@@ -46,7 +47,11 @@ namespace MSFSTouchPortalPlugin.Services
     public bool IsConnected() => (_connected && _simConnect != null);
 
     public bool Connect() {
-      _logger.LogInformation("Connect SimConnect");
+      if (_connecting || _simConnect != null)
+        return _connected;
+
+      _connecting = true;
+      _logger.LogInformation("Connecting to SimConnect...");
 
       try {
         _simConnect = new SimConnect("Touch Portal Plugin", GetConsoleWindow(), WM_USER_SIMCONNECT, _scReady, 0);
@@ -69,17 +74,18 @@ namespace MSFSTouchPortalPlugin.Services
 #if DEBUG_REQUESTS
         DbgSetupRequestTracking();
 #endif
-        _simConnect.Text(SIMCONNECT_TEXT_TYPE.PRINT_BLACK, 5, Events.StartupMessage, "TouchPortal Connected");
+        //_simConnect.Text(SIMCONNECT_TEXT_TYPE.PRINT_BLACK, 5, Events.StartupMessage, "TouchPortal Connected");  // not currently supported in MSFS SDK
 
         // Invoke Handler
         OnConnect?.Invoke();
 
-        return true;
       } catch (COMException ex) {
+        _connected = false;
         _logger.LogInformation("Connection to Sim failed: {exception}", ex.Message);
       }
 
-      return false;
+      _connecting = false;
+      return _connected;
     }
 
     public void Disconnect() {
@@ -91,21 +97,26 @@ namespace MSFSTouchPortalPlugin.Services
       // Dispose serves the same purpose as SimConnect_Close()
       try {
         _simConnect?.Dispose();
+        _simConnect = null;
         _logger.LogInformation("SimConnect Disconnected");
       }
       catch (Exception e) {
         _logger.LogWarning(e, "Exception while trying to dispose SimConnect client.");
       }
-      _simConnect = null;
-
+      _addedDefinitions.Clear();
       // Invoke Handler
       OnDisconnect?.Invoke();
     }
 
     public Task WaitForMessage(CancellationToken cancellationToken) {
       while (_connected && !cancellationToken.IsCancellationRequested) {
-        if (_scReady.WaitOne(5000)) {
-          _simConnect?.ReceiveMessage();
+        try {
+          if (_scReady.WaitOne(5000))
+            _simConnect?.ReceiveMessage();
+        }
+        catch (Exception e) {
+          _logger.LogError(e, $"WaitForMessage() failed, disconnecting.");
+          Disconnect();
         }
       }
 

@@ -250,6 +250,9 @@ namespace MSFSTouchPortalPlugin.Services
             --i;
           }
         }
+        else if (i != 0) {
+          i = 0;
+        }
 
         // SimConnect is typically available even before loading into a flight. This should connect and be ready by the time a flight is started.
         Thread.Sleep(1000);
