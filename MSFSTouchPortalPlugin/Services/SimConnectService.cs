@@ -12,7 +12,8 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MSFSTouchPortalPlugin.Services {
+namespace MSFSTouchPortalPlugin.Services
+{
   /// <summary>
   /// Wrapper for SimConnect
   /// </summary>
@@ -152,17 +153,28 @@ namespace MSFSTouchPortalPlugin.Services {
 
     public bool RegisterToSimConnect(SimVarItem simVar) {
       if (_connected) {
-        bool isStrType = simVar.Unit == Units.String;
-        string unitName = isStrType ? null : simVar.Unit;
-        SIMCONNECT_DATATYPE scType = isStrType ? SIMCONNECT_DATATYPE.STRING64 : SIMCONNECT_DATATYPE.FLOAT64;
-        _simConnect.AddToDataDefinition(simVar.Def, simVar.SimVarName, unitName, scType, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-        DbgAddSendRecord($"AddToDataDefinition(simVar.Def: {simVar.Def}; simVar.SimVarName: {simVar.SimVarName}; simVar.Unit: {simVar.Unit};");
+        string unitName = simVar.IsStringType ? null : simVar.Unit;
+        _simConnect.AddToDataDefinition(simVar.Def, simVar.SimVarName, unitName, simVar.SimConnectDataType, simVar.DeltaEpsilon, SimConnect.SIMCONNECT_UNUSED);
+        DbgAddSendRecord($"AddToDataDefinition({simVar.ToDebugString()}, {unitName}, {simVar.SimConnectDataType})");
 
-        if (isStrType)
-          _simConnect.RegisterDataDefineStruct<StringVal64>(simVar.Def);
-        else
-          _simConnect.RegisterDataDefineStruct<double>(simVar.Def);
-        DbgAddSendRecord($"RegisterDataDefineStruct<{(isStrType ? "String64" : "double")}>(simVar.Def: {simVar.Def}");
+        switch (simVar.Value) {
+          case double:
+            _simConnect.RegisterDataDefineStruct<double>(simVar.Def);
+            break;
+          case uint:
+            _simConnect.RegisterDataDefineStruct<uint>(simVar.Def);
+            break;
+          case long:
+            _simConnect.RegisterDataDefineStruct<long>(simVar.Def);
+            break;
+          case string:
+            _simConnect.RegisterDataDefineStruct<StringVal64>(simVar.Def);
+            break;
+          default:
+            _logger.LogError($"Unable to register storage type for '{simVar.StorageDataType}'");
+            return false;
+        }
+        DbgAddSendRecord($"RegisterDataDefineStruct<{simVar.StorageDataType}>({simVar.ToDebugString()})");
 
         return true;
       }
@@ -174,7 +186,7 @@ namespace MSFSTouchPortalPlugin.Services {
       if (_connected) {
         try {
           _simConnect.RequestDataOnSimObjectType(simVar.Def, simVar.Def, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
-          DbgAddSendRecord($"RequestDataOnSimObjectType(simVar.Def: {simVar.Def})");
+          DbgAddSendRecord($"RequestDataOnSimObjectType({simVar.ToDebugString()})");
           return true;
         }
         catch (Exception ex) {

@@ -17,7 +17,8 @@ using TouchPortalSDK.Interfaces;
 using TouchPortalSDK.Messages.Events;
 using Timer = MSFSTouchPortalPlugin.Helpers.UnthreadedTimer;
 
-namespace MSFSTouchPortalPlugin.Services {
+namespace MSFSTouchPortalPlugin.Services
+{
   /// <inheritdoc cref="IPluginService" />
   internal class PluginService : IPluginService, IDisposable, ITouchPortalEventHandler {
     private CancellationToken _cancellationToken;
@@ -187,34 +188,17 @@ namespace MSFSTouchPortalPlugin.Services {
     }
 
     private void SimConnectEvent_OnDataUpdateEvent(Definition def, Definition req, object data) {
-      // Lookup State Mapping
-      if (statesDictionary.TryGetValue(def, out SimVarItem value)) {
-        var stringVal = data.ToString();
+      // Lookup State Mapping.
+      if (!statesDictionary.TryGetValue(def, out SimVarItem simVar))
+        return;
 
-        // Only update state on changes
-        // TODO: Move these to after parsing due to fractional unnoticeable changes.
-        if (value.Value != stringVal) {
-          value.Value = stringVal;
-          object valObj = stringVal;
-
-          // Handle conversions
-          if (Units.ShouldConvertToFloat(value.Unit)) {
-            valObj = float.Parse(stringVal);
-          }
-          if (value.Unit == Units.radians) {
-            // Convert to Degrees
-            valObj = (float)valObj * (180 / Math.PI);
-          } else if (value.Unit == Units.percentover100) {
-            // Convert to actual percentage (percentover100 range is 0 to 1)
-            valObj = (float)valObj * 100.0f;
-          }
-
-          // Update TP state.
-          _client.StateUpdate(value.TouchPortalStateId, string.Format(value.StringFormat, valObj));
-        }
-
-        value.SetPending(false);
-      }
+      // Update SimVarItem value and TP state on changes.
+      // TODO: sim vars on a regular request interval will only be sent when changed, so skip the equality check.
+      // SimVarItem.SetValue() takes care of setting the correct value type and also any unit conversions as needed. Returns false if conversion failed.
+      if (!simVar.ValueEquals(data) && simVar.SetValue(data))
+        _client.StateUpdate(simVar.TouchPortalStateId, simVar.FormattedValue);
+      // clear pending flag last
+      simVar.SetPending(false);
     }
 
     private void SimConnectEvent_OnDisconnect() {
@@ -347,7 +331,7 @@ namespace MSFSTouchPortalPlugin.Services {
         if (s.PendingTimeout())
           _logger.LogDebug($"Request for SimVar '{s.SimVarName}' timed out!");
 
-        // Check if Pending data request in paly
+        // Check if Pending data request in play
         if (!s.PendingRequest) {
           s.SetPending(true);
           _simConnectService.RequestDataOnSimObjectType(s);

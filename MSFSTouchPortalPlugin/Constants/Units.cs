@@ -5,25 +5,28 @@ using System.Runtime.CompilerServices;
 namespace MSFSTouchPortalPlugin.Constants {
   internal static class Units {
 
-    private static readonly string[] _floatUnits = new string[] {
-        degrees,
-        radians,
-        knots,
-        feet,
-        MHz,
-        percent,
-        percentover100,
-        rpm,
-        mach,
-        feetminute,
-      };
+    private static readonly string[] _integralUnits = new string[] {
+      Enum, mask, flags, position16k, position32k, position128, Bco16, second, seconds, minute, minutes, hour, hours, day, days, hourover10, hoursover10, year, years
+    };
+
+    private static readonly string[] _booleanUnits = new string[] { Bool, Boolean };
 
     /// <summary>
-    /// All the unit types that should convert to Float
+    /// Returns true if the unit string corresponds to a string type.
     /// </summary>
-    /// <param name="unitType">The unit type</param>
-    /// <returns>True if it should be a float</returns>
-    internal static bool ShouldConvertToFloat(string unit) => _floatUnits.Contains(unit);
+    internal static bool IsStringType(string unit) => unit == String;
+    /// <summary>
+    /// Returns true if the unit string corresponds to an integer type.
+    /// </summary>
+    internal static bool IsIntegraltype(string unit) => _integralUnits.Contains(unit);
+    /// <summary>
+    /// Returns true if the unit string corresponds to a boolean type.
+    /// </summary>
+    internal static bool IsBooleantype(string unit) => _booleanUnits.Contains(unit);
+    /// <summary>
+    /// Returns true if the unit string corresponds to a real (float/double) type.
+    /// </summary>
+    internal static bool IsRealType(string unit) => !IsStringType(unit) && !IsIntegraltype(unit);
 
     internal const string amp = "amp";
     internal const string ampere = "ampere";
@@ -357,7 +360,7 @@ namespace MSFSTouchPortalPlugin.Constants {
     internal const string squareyard = "square yard";
     internal const string squareyards = "square yards";
     internal const string sqyd = "sq yd";
-    internal const string String = "String";
+    internal const string String = "string";
     internal const string third = "third";
     internal const string thirds = "thirds";
     internal const string times = "times";

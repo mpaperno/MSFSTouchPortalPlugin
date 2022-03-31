@@ -7,7 +7,7 @@ namespace MSFSTouchPortalPlugin_Tests.Constants {
     public void ShouldConvertToFloat_ShouldReturnTrue() {
       // arrange
       // act
-      var result = Units.ShouldConvertToFloat(Units.degrees);
+      var result = Units.IsRealType(Units.degrees);
       // assert
       Assert.True(result);
     }
@@ -16,7 +16,7 @@ namespace MSFSTouchPortalPlugin_Tests.Constants {
     public void ShouldConvertToFloat_ShouldReturnFalse() {
       // arrange
       // act
-      var result = Units.ShouldConvertToFloat(Units.Boolean);
+      var result = Units.IsRealType(Units.Boolean);
       // assert
       Assert.False(result);
     }
