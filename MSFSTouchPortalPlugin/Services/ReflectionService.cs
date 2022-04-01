@@ -95,23 +95,17 @@ namespace MSFSTouchPortalPlugin.Services
     public Dictionary<string, PluginSetting> GetSettings() {
       Dictionary<string, PluginSetting> returnDict = new();
 
-      var setContainers = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass && t.GetCustomAttribute<TouchPortalSettingsContainerAttribute>() != null).ToList();
-      setContainers.ForEach(setCtr => {
-        var fieldList = setCtr.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public).ToList();
-        fieldList.ForEach(settingField => {
-          var settingAttr = settingField.GetCustomAttribute<TouchPortalSettingAttribute>();
-          var settingsObj = (PluginSetting)settingField.GetValue(null);
-          if (settingAttr != null && settingsObj != null) {
-            if (settingsObj.Name == null)
-              settingsObj.Name = settingAttr.Name;
-            if (settingsObj.Default == null)
-              settingsObj.Default = settingAttr.Default;
-            if (settingsObj.TouchPortalStateId == null && !string.IsNullOrWhiteSpace(settingAttr.StateId))
-              settingsObj.TouchPortalStateId = $"{rootName}.Plugin.State.{settingAttr.StateId}";
-            returnDict.TryAdd(settingAttr.Name, settingsObj);
+      var setContainers = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass && t.GetCustomAttribute<TouchPortalSettingsContainerAttribute>() != null);
+      foreach (Type setCtr in setContainers) {
+        var settingFields = setCtr.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+        foreach (FieldInfo field in settingFields) {
+          if (field.FieldType == typeof(PluginSetting) && ((PluginSetting)field.GetValue(null) is var setting && setting != null)) {
+            if (!string.IsNullOrWhiteSpace(setting.TouchPortalStateId))
+              setting.TouchPortalStateId = $"{rootName}.Plugin.State.{setting.TouchPortalStateId}";
+            returnDict.TryAdd(setting.Name, setting);
           }
-        });
-      });
+        }
+      }
 
       return returnDict;
     }

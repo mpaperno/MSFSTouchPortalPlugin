@@ -7,14 +7,20 @@ namespace MSFSTouchPortalPlugin.Types
   {
     public string SettingID { get; set; }
     public string Name { get; set; } = null;
+    public string Description { get; set; }  // for generated docs
     public string Default { get; set; } = null;
-    public DataType ValueType { get; set; } = DataType.Text;
     public int MaxLength { get; set; } = int.MinValue;
     public double MinValue { get; set; } = double.NaN;
     public double MaxValue { get; set; } = double.NaN;
-    public string TouchPortalStateId { get; set; } = null;
+
+    public bool ReadOnly { get; set; } = false;    // for TP definition (maybe also future use)
+    public bool IsPassword { get; set; } = false;  // for TP definition
+    public string TouchPortalStateId { get; set; } = null;  // Id of corresponding TP State, if any
+    public string TouchPortalType { get; private set; } = "text";     // TP definition type equivalent, "text" or "number".
 
     private dynamic _value = null;
+    private DataType _type = DataType.Text;
+
     public dynamic Value
     {
       get {
@@ -27,13 +33,33 @@ namespace MSFSTouchPortalPlugin.Types
       }
     }
 
-    public void SetValueFromString(string value) {
-      if (ValueType == DataType.Number) {
-        if (double.TryParse(value, out var numVal))
-          Value = numVal;
+    public DataType ValueType {
+      get => _type;
+      set {
+        _type = value;
+        TouchPortalType = _type == DataType.Text ? "text" : "number";  // treat Switch as numeric and Choice is not supported
+        if (_type == DataType.Switch) {
+          MinValue = 0;
+          MaxValue = 1;
+        }
       }
-      else {
-        Value = value;
+    }
+
+    public void SetValueFromString(string value) {
+      switch (ValueType) {
+        case DataType.Number: {
+            if (double.TryParse(value, out var numVal))
+              Value = numVal;
+            break;
+          }
+
+        case DataType.Switch:
+          Value = (bool)new BooleanString(value);
+          break;
+
+        default:
+          Value = value;
+          break;
       }
     }
 
@@ -47,12 +73,15 @@ namespace MSFSTouchPortalPlugin.Types
             realVal = Math.Min(realVal, MaxValue);
           _value = realVal;
         }
-        // string
+        // string or "switch" bool
         else {
           string strVal = Convert.ToString(value);
           if (MaxLength > 0 && !string.IsNullOrEmpty(strVal))
             strVal = strVal[..Math.Min(strVal.Length, MaxLength)];
-          _value = strVal;
+          if (ValueType == DataType.Switch)
+            _value = (bool)new BooleanString(strVal);
+          else
+            _value = strVal;
         }
       }
       catch (Exception e) {
@@ -60,7 +89,8 @@ namespace MSFSTouchPortalPlugin.Types
       }
     }
 
-    public int ValueAsInt() => Value == null || ValueType != DataType.Number ? 0 : (int)Value;
+    public int ValueAsInt() => Value == null || ValueType == DataType.Text ? 0 : (int)Value;
+    public bool ValueAsBool() => Value == null ? false : ValueType == DataType.Text ? new BooleanString(ValueAsStr()) : ValueType == DataType.Number ? ValueAsInt() != 0 : (bool)Value;
     public double ValueAsDbl() => Value == null ? double.NaN : (double)Value;
     public string ValueAsStr() => Value == null ? string.Empty : Value.ToString();
 
@@ -75,10 +105,10 @@ namespace MSFSTouchPortalPlugin.Types
       ValueType = type;
       Name = name;
       Default = defaultValue;
-      ValueType = type;
       MinValue = min;
       MaxValue = max;
       MaxLength = maxLen;
+      ValueType = type;   // after min/max
       if (Value == null && defaultValue != null)
         SetValueFromString(defaultValue);
     }
