@@ -5,6 +5,7 @@ using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Helpers;
+using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Types;
 using MSFSTouchPortalPlugin_Generator.Configuration;
 using MSFSTouchPortalPlugin_Generator.Interfaces;
@@ -23,10 +24,12 @@ namespace MSFSTouchPortalPlugin_Generator
   internal class GenerateEntry : IGenerateEntry {
     private readonly ILogger<GenerateEntry> _logger;
     private readonly IOptions<GeneratorOptions> _options;
+    private readonly IReflectionService _reflectionSvc;
 
-    public GenerateEntry(ILogger<GenerateEntry> logger, IOptions<GeneratorOptions> options) {
+    public GenerateEntry(ILogger<GenerateEntry> logger, IOptions<GeneratorOptions> options, IReflectionService reflectionSvc) {
       _logger = logger;
       _options = options;
+      _reflectionSvc = reflectionSvc ?? throw new ArgumentNullException(nameof(reflectionSvc));
 
       JsonConvert.DefaultSettings = () => new JsonSerializerSettings {
         ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -41,6 +44,7 @@ namespace MSFSTouchPortalPlugin_Generator
         throw new FileNotFoundException("Unable to load assembly for reflection.");
       }
 
+      // Load assembly
       var assembly = Assembly.Load(a);
       string basePath = $"%TP_PLUGIN_FOLDER%{_options.Value.PluginFolder}/";
 
@@ -53,8 +57,6 @@ namespace MSFSTouchPortalPlugin_Generator
           _logger.LogError(e, "Configuration reader error:");
       }
 
-      // Load assembly
-      _ = MSFSTouchPortalPlugin.Objects.Plugin.Plugin.Init;
       var q = assembly.GetTypes().ToList();
 
       // Setup Base Model
@@ -164,32 +166,28 @@ namespace MSFSTouchPortalPlugin_Generator
       }  // categories loop
 
       // Settings
-      var setContainers = q.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalSettingsContainerAttribute))).OrderBy(o => o.Name).ToList();
-      setContainers.ForEach(setCtr => {
-        var settingsList = setCtr.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalSettingAttribute))).ToList();
-        settingsList.ForEach(setType => {
-          var att = (TouchPortalSettingAttribute)Attribute.GetCustomAttribute(setType, typeof(TouchPortalSettingAttribute));
-          var setting = new TouchPortalSetting {
-            Name = att.Name,
-            Type = att.Type,
-            DefaultValue = att.Default,
-            IsPassword = att.IsPassword,
-            ReadOnly = att.ReadOnly
-          };
-          if (att.MaxLength > 0)
-            setting.MaxLength = att.MaxLength;
-          if (!double.IsNaN(att.MinValue))
-            setting.MinValue = att.MinValue;
-          if (!double.IsNaN(att.MaxValue))
-            setting.MaxValue = att.MaxValue;
+      var settings = _reflectionSvc.GetSettings().Values;
+      foreach (var s in settings) {
+        var setting = new TouchPortalSetting {
+          Name = s.Name,
+          Type = s.TouchPortalType,
+          DefaultValue = s.Default,
+          IsPassword = s.IsPassword,
+          ReadOnly = s.ReadOnly
+        };
+        if (s.MaxLength > 0)
+          setting.MaxLength = s.MaxLength;
+        if (!double.IsNaN(s.MinValue))
+          setting.MinValue = s.MinValue;
+        if (!double.IsNaN(s.MaxValue))
+          setting.MaxValue = s.MaxValue;
 
-          // validate unique Name
-          if (model.Settings.FirstOrDefault(s => s.Name == setting.Name) == null)
-            model.Settings.Add(setting);
-          else
-            _logger.LogWarning($"Duplicate Setting Name found: '{setting.Name}', skipping.'");
-        });
-      });
+        // validate unique Name
+        if (model.Settings.FirstOrDefault(s => s.Name == setting.Name) == null)
+          model.Settings.Add(setting);
+        else
+          _logger.LogWarning($"Duplicate Setting Name found: '{setting.Name}', skipping.'");
+      }
 
       var context = new ValidationContext(model, null, null);
       var errors = new Collection<ValidationResult>();

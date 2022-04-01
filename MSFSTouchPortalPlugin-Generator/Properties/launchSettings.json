@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MSFSTouchPortalPlugin-Generator": {
+      "commandName": "Project",
+      "commandLineArgs": "$(SolutionDir)"
+    }
+  }
+}

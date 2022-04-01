@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace MSFSTouchPortalPlugin_Generator {
   static class Program {
     static async Task Main(string[] args) {
+      System.Environment.SetEnvironmentVariable("Logging:LogLevel:Microsoft", "Warning");
       await Host.CreateDefaultBuilder(args).ConfigureServices((context, services) => {
         services
         .AddLogging()
@@ -18,10 +19,10 @@ namespace MSFSTouchPortalPlugin_Generator {
           if (args.Length >= 1)
             opt.TargetPath = args[0];
           else
-            opt.TargetPath = "..\\..\\..\\";  // assumes it is being run from the build output folder
+            opt.TargetPath = ".\\";  // cwd
         })
         .AddHostedService<RunService>()
-        .AddSingleton<IPluginService, PluginService>() // Force load of assembly for generation
+        .AddSingleton<IReflectionService, ReflectionService>()
         .AddSingleton<IGenerateDoc, GenerateDoc>()
         .AddSingleton<IGenerateEntry, GenerateEntry>();
       }).RunConsoleAsync();

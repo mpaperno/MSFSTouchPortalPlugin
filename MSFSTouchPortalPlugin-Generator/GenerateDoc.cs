@@ -5,6 +5,7 @@ using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Helpers;
+using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Types;
 using MSFSTouchPortalPlugin_Generator.Configuration;
 using MSFSTouchPortalPlugin_Generator.Interfaces;
@@ -21,10 +22,12 @@ namespace MSFSTouchPortalPlugin_Generator
   internal class GenerateDoc : IGenerateDoc {
     private readonly ILogger<GenerateDoc> _logger;
     private readonly IOptions<GeneratorOptions> _options;
+    private readonly IReflectionService _reflectionSvc;
 
-    public GenerateDoc(ILogger<GenerateDoc> logger, IOptions<GeneratorOptions> options) {
+    public GenerateDoc(ILogger<GenerateDoc> logger, IOptions<GeneratorOptions> options, IReflectionService reflectionSvc) {
       _logger = logger;
       _options = options;
+      _reflectionSvc = reflectionSvc ?? throw new ArgumentNullException(nameof(reflectionSvc));
     }
 
     public void Generate() {
@@ -157,26 +160,21 @@ namespace MSFSTouchPortalPlugin_Generator
       }  // categories loop
 
       // Settings
-      var setContainers = assemblyList.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalSettingsContainerAttribute))).OrderBy(o => o.Name).ToList();
-      setContainers.ForEach(setCtr => {
-        var settingsList = setCtr.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalSettingAttribute))).ToList();
-        settingsList.ForEach(setType => {
-          var att = (TouchPortalSettingAttribute)Attribute.GetCustomAttribute(setType, typeof(TouchPortalSettingAttribute));
-          var setting = new DocSetting {
-            Name = att.Name,
-            Description = att.Description,
-            Type = att.Type,
-            DefaultValue = att.Default,
-            MaxLength = att.MaxLength,
-            MinValue = att.MinValue,
-            MaxValue = att.MaxValue,
-            IsPassword = att.IsPassword,
-            ReadOnly = att.ReadOnly
-          };
-
-          model.Settings.Add(setting);
-        });
-      });
+      var settings = _reflectionSvc.GetSettings().Values;
+      foreach (var s in settings) {
+        var setting = new DocSetting {
+          Name = s.Name,
+          Description = s.Description,
+          Type = s.TouchPortalType,
+          DefaultValue = s.Default,
+          MaxLength = s.MaxLength,
+          MinValue = s.MinValue,
+          MaxValue = s.MaxValue,
+          IsPassword = s.IsPassword,
+          ReadOnly = s.ReadOnly
+        };
+        model.Settings.Add(setting);
+      }
       model.Settings = model.Settings.OrderBy(c => c.Name).ToList();
 
       return model;
