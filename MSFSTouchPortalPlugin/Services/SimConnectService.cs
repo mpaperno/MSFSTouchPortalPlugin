@@ -69,7 +69,7 @@ namespace MSFSTouchPortalPlugin.Services
 
         // Sim Data
         _simConnect.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(Simconnect_OnRecvSimobjectDataBytype);
-        //_simConnect.OnRecvSimobjectData += new SimConnect.RecvSimobjectDataEventHandler(Simconnect_OnRecvSimObjectData);  // unused for now
+        _simConnect.OnRecvSimobjectData += new SimConnect.RecvSimobjectDataEventHandler(Simconnect_OnRecvSimObjectData);
 
 #if DEBUG_REQUESTS
         DbgSetupRequestTracking();
@@ -199,6 +199,11 @@ namespace MSFSTouchPortalPlugin.Services
         }
         DbgAddSendRecord($"RegisterDataDefineStruct<{simVar.StorageDataType}>({simVar.ToDebugString()})");
 
+        if (!simVar.NeedsScheduledRequest) {
+          _simConnect.RequestDataOnSimObject(simVar.Def, simVar.Def, (uint)SIMCONNECT_SIMOBJECT_TYPE.USER, (SIMCONNECT_PERIOD)simVar.UpdatePeriod, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, simVar.UpdateInterval, 0);
+          DbgAddSendRecord($"RequestDataOnSimObject({simVar.ToDebugString()})");
+        }
+
         _addedDefinitions.Add(simVar.Def);
         return true;
       }
@@ -236,10 +241,13 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     private void Simconnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data) {
-      if (data.dwData.Length > 0) {
+      if (data.dwData.Length > 0)
         OnDataUpdateEvent?.Invoke((Definition)data.dwDefineID, (Definition)data.dwRequestID, data.dwData[0]);
-      }
+    }
 
+    private void Simconnect_OnRecvSimObjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data) {
+      if (data.dwData.Length > 0)
+        OnDataUpdateEvent?.Invoke((Definition)data.dwDefineID, (Definition)data.dwRequestID, data.dwData[0]);
     }
 
     private void Simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data) {
@@ -266,10 +274,6 @@ namespace MSFSTouchPortalPlugin.Services
       }
       _logger.LogDebug($"Simconnect_OnRecvEvent Recieved: Group: {grpName}; Event: {eventId}");
     }
-
-    //private void Simconnect_OnRecvSimObjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data) {
-    //  // Empty method for now, not implemented
-    //}
 
     #region IDisposable Support
     private bool disposedValue; // To detect redundant calls

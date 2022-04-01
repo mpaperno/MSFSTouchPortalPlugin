@@ -114,11 +114,10 @@ namespace MSFSTouchPortalPlugin.Configuration
             sect.Add("StringFormat", item.FormattingString);
           if (item.CanSet)
             sect.Add("CanSet", item.CanSet);
-          if (item.UpdateFreqency != UpdateFreq.Default) {
-            sect.Add("UpdateFreqency", item.UpdateFreqency);
-            if (item.UpdateFreqency == UpdateFreq.Milliseconds)
-              sect.Add("UpdateInterval", item.UpdateInterval);
-          }
+          if (item.UpdatePeriod != UpdatePeriod.Default)
+            sect.Add("UpdateFreqency", item.UpdatePeriod);
+          if (item.UpdateInterval != 0)
+            sect.Add("UpdateInterval", item.UpdateInterval);
           if (item.DeltaEpsilon != 0.0f)
             sect.Add("DeltaEpsilon", item.DeltaEpsilon);
         }

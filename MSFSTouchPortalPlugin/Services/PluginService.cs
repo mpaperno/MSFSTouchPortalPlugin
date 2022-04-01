@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MSFSTouchPortalPlugin.Configuration;
+using MSFSTouchPortalPlugin.Enums;
+using MSFSTouchPortalPlugin.Helpers;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Objects.Plugin;
 using MSFSTouchPortalPlugin.Types;
@@ -15,7 +17,6 @@ using TouchPortalSDK;
 using TouchPortalSDK.Interfaces;
 using TouchPortalSDK.Messages.Events;
 using Timer = MSFSTouchPortalPlugin.Helpers.UnthreadedTimer;
-using MSFSTouchPortalPlugin.Helpers;
 
 namespace MSFSTouchPortalPlugin.Services
 {
@@ -38,6 +39,7 @@ namespace MSFSTouchPortalPlugin.Services
     private Dictionary<string, ActionEventType> actionsDictionary = new();
     private Dictionary<Definition, SimVarItem> statesDictionary = new();
     private Dictionary<string, PluginSetting> pluginSettingsDictionary = new();
+    private readonly ConcurrentBag<Definition> customIntervalStates = new();
 
     private readonly ConcurrentDictionary<string, Timer> repeatingActionTimers = new();
 
@@ -76,19 +78,12 @@ namespace MSFSTouchPortalPlugin.Services
     /// </summary>
     /// <param name="cancellationToken">The Cancellation Token</param>
     private async Task RunTimedEventsTask(CancellationToken cancellationToken) {
-      // Run Data Polling
-      var dataPollTimer = new Timer(250);
-      dataPollTimer.Elapsed += delegate { CheckPendingRequests(); };
-      dataPollTimer.Start();
-
       while (_simConnectService.IsConnected() && !cancellationToken.IsCancellationRequested) {
-        dataPollTimer.Tick();
         foreach (Timer tim in repeatingActionTimers.Values)
           tim.Tick();
+        CheckPendingRequests();
         await Task.Delay(25, cancellationToken);
       }
-
-      dataPollTimer.Dispose();
     }
 
     /// <summary>
@@ -113,7 +108,7 @@ namespace MSFSTouchPortalPlugin.Services
         autoReconnectSimConnect = false;
         _simConnectService.Disconnect();
         if (_client?.IsConnected ?? false) {
-          try { _client.Close(); }  // exits the event loop keeping us alive
+          try { _client.Close(); }
           catch (Exception) { /* ignore */ }
         }
       });
@@ -203,12 +198,10 @@ namespace MSFSTouchPortalPlugin.Services
         return;
 
       // Update SimVarItem value and TP state on changes.
-      // TODO: sim vars on a regular request interval will only be sent when changed, so skip the equality check.
-      // SimVarItem.SetValue() takes care of setting the correct value type and also any unit conversions as needed. Returns false if conversion failed.
-      if (!simVar.ValueEquals(data) && simVar.SetValue(data))
+      // Sim vars sent on a standard SimConnect request period will only be sent when changed by > simVar.DeltaEpsilon anyway, so skip the equality check.
+      // SimVarItem.SetValue() takes care of setting the correct value type, any unit conversions needed, and resets any expiry timers. Returns false if value is of the wrong type.
+      if ((!simVar.NeedsScheduledRequest || !simVar.ValueEquals(data)) && simVar.SetValue(data))
         _client.StateUpdate(simVar.TouchPortalStateId, simVar.FormattedValue);
-      // clear pending flag last
-      simVar.SetPending(false);
     }
 
     private void SimConnectEvent_OnDisconnect() {
@@ -232,10 +225,14 @@ namespace MSFSTouchPortalPlugin.Services
           _logger.LogWarning(e, "Configuration reader error:");
       }
       statesDictionary = configStates.ToDictionary(s => s.Def, s => s);
+      customIntervalStates.Clear();
       // Register SimVars
       _simConnectService.ClearAllDataDefinitions();
-      foreach (var s in statesDictionary)
-        _simConnectService.RegisterToSimConnect(s.Value);
+      foreach (var simVar in statesDictionary.Values) {
+        if (simVar.NeedsScheduledRequest)
+          customIntervalStates.Add(simVar.Def);
+        _simConnectService.RegisterToSimConnect(simVar);
+      }
     }
 
     private Task TryConnect() {
@@ -259,6 +256,16 @@ namespace MSFSTouchPortalPlugin.Services
       }
 
       return Task.CompletedTask;
+    }
+
+    private void CheckPendingRequests() {
+      foreach (var def in customIntervalStates) {
+        // Check if a value update is required based on the SimVar's internal tracking mechanism.
+        if (statesDictionary.TryGetValue(def, out var s) && s.UpdateRequired) {
+          s.SetPending(true);
+          _simConnectService.RequestDataOnSimObjectType(s);
+        }
+      }
     }
 
     private void ProcessEvent(ActionEvent actionEvent) {
@@ -349,20 +356,6 @@ namespace MSFSTouchPortalPlugin.Services
       }
       _logger.LogDebug($"Firing Sim Event - action: {action.ActionId}; group: {action.SimConnectGroup}; name: {eventName}; data {dataUint}");
       _simConnectService.TransmitClientEvent(action.SimConnectGroup, eventId, dataUint);
-    }
-
-    private void CheckPendingRequests() {
-      foreach (var s in statesDictionary.Values) {
-        // Expire pending if more than 30 seconds
-        if (s.PendingTimeout())
-          _logger.LogDebug($"Request for SimVar '{s.SimVarName}' timed out!");
-
-        // Check if Pending data request in play
-        if (!s.PendingRequest) {
-          s.SetPending(true);
-          _simConnectService.RequestDataOnSimObjectType(s);
-        }
-      }
     }
 
     private void ClearRepeatingActions() {
