@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
@@ -16,7 +17,6 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin_Generator
 {

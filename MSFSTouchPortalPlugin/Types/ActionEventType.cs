@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TouchPortalExtension.Enums;
 
 namespace MSFSTouchPortalPlugin.Types
 {

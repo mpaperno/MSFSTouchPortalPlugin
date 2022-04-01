@@ -1,5 +1,5 @@
-﻿using System;
-using TouchPortalExtension.Enums;
+﻿using MSFSTouchPortalPlugin.Enums;
+using System;
 
 namespace MSFSTouchPortalPlugin.Types
 {

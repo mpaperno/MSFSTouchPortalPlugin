@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using MSFSTouchPortalPlugin.Attributes;
-using MSFSTouchPortalPlugin.Configuration;
-using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Objects.Plugin;
@@ -10,8 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using TouchPortalExtension.Attributes;
-using TouchPortalExtension.Enums;
 
 namespace MSFSTouchPortalPlugin.Services
 {

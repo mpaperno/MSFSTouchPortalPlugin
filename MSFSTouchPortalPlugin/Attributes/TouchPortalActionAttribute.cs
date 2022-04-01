@@ -1,7 +1,7 @@
-﻿using System;
-using TouchPortalExtension.Enums;
+﻿using MSFSTouchPortalPlugin.Enums;
+using System;
 
-namespace TouchPortalExtension.Attributes
+namespace MSFSTouchPortalPlugin.Attributes
 {
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
   public class TouchPortalActionAttribute : Attribute

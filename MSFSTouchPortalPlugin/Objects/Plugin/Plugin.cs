@@ -1,7 +1,6 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Types;
-using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.Plugin
 {

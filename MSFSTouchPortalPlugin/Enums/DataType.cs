@@ -1,4 +1,4 @@
-﻿namespace TouchPortalExtension.Enums
+﻿namespace MSFSTouchPortalPlugin.Enums
 {
   public enum DataType
   {

@@ -60,10 +60,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TouchPortalExtension\TouchPortalExtension.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="TouchPortalSDK, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>.\lib\TouchPortalSDK\TouchPortalSDK.dll</HintPath>
       <Private>true</Private>

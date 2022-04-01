@@ -1,6 +1,5 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Enums;
-using TouchPortalExtension.Attributes;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
 {
