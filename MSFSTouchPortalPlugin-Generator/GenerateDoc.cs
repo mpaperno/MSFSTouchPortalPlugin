@@ -147,6 +147,7 @@ namespace MSFSTouchPortalPlugin_Generator
             DefaultValue = state.DefaultValue ?? string.Empty,
             SimVarName = state.SimVarName,
             Unit = state.Unit,
+            FormattingString = state.FormattingString
           };
           newCat.States.Add(newState);
         }
@@ -263,10 +264,10 @@ namespace MSFSTouchPortalPlugin_Generator
         if (cat.States.Count > 0) {
           // Loop States
           s.Append("### States\n\n");
-          s.Append("| Id | SimVar Name | Description | Unit | DefaultValue |\n");
-          s.Append("| --- | --- | --- | --- | --- |\n");
+          s.Append("| Id | SimVar Name | Description | Unit | Format | DefaultValue |\n");
+          s.Append("| --- | --- | --- | --- | --- | --- |\n");
           cat.States.ForEach(state => {
-            s.Append($"| {state.Id} | {state.SimVarName} | {state.Description} | {state.Unit} | {state.DefaultValue} |\n");
+            s.Append($"| {state.Id} | {state.SimVarName} | {state.Description} | {state.Unit} | {state.FormattingString} | {state.DefaultValue} |\n");
           });
           s.Append("\n\n");
         }

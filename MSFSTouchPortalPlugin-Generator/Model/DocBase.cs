@@ -60,5 +60,6 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string DefaultValue { get; set; }
     public string SimVarName { get; set; }
     public string Unit { get; set; }
+    public string FormattingString { get; set; }
   }
 }
