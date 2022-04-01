@@ -3,8 +3,7 @@ using MSFSTouchPortalPlugin.Enums;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
 {
-  [SimNotificationGroup(Groups.Communication)]
-  [TouchPortalCategory("Communication", "MSFS - Communication")]
+  [TouchPortalCategory(Groups.Communication)]
   internal static class CommunicationMapping {
 
     [TouchPortalAction("Radios", "Radio Interaction", "MSFS", "Radio Interaction", "Radio {0} - {1}", true)]

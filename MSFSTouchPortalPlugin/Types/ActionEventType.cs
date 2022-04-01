@@ -8,7 +8,7 @@ namespace MSFSTouchPortalPlugin.Types
   internal class ActionEventType
   {
     public bool InternalEvent = false;
-    public Groups SimConnectGroup;
+    public Groups CategoryId;
     public string ActionId;
     public int ValueIndex = -1;
     public string KeyFormatStr = string.Empty;

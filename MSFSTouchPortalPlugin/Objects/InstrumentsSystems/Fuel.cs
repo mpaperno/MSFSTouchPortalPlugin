@@ -3,8 +3,7 @@ using MSFSTouchPortalPlugin.Enums;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
 {
-  [SimNotificationGroup(Groups.Fuel)]
-  [TouchPortalCategory("InstrumentsSystems.Fuel", "MSFS - Fuel")]
+  [TouchPortalCategory(Groups.Fuel)]
   internal static class FuelMapping {
 
     [TouchPortalAction("AddFuel", "Add Fuel", "MSFS", "Adds 25% amount of Fuel", "Add 25% amount of fuel")]

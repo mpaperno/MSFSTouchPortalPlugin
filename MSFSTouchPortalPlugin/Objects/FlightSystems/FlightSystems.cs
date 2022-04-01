@@ -3,8 +3,7 @@ using MSFSTouchPortalPlugin.Enums;
 
 namespace MSFSTouchPortalPlugin.Objects.FlightSystems
 {
-  [SimNotificationGroup(Groups.FlightSystems)]
-  [TouchPortalCategory("FlightSystems", "MSFS - Flight Systems")]
+  [TouchPortalCategory(Groups.FlightSystems)]
   internal static class FlightSystemsMapping {
     #region Ailerons
 

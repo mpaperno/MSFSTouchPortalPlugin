@@ -37,22 +37,20 @@ namespace MSFSTouchPortalPlugin.Services
       int nextId = (int)SimEventClientId.Init + 1;
 
       // Get all types which have actions mapped to events, sim or internal.
-      var eventContainers = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass && (t.GetCustomAttribute<SimNotificationGroupAttribute>() != null));
+      var eventContainers = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass && (t.GetCustomAttribute<TouchPortalCategoryAttribute>() != null));
       foreach (var notifyType in eventContainers) {
         // Get the TP Category ID for this type
-        var catId = notifyType.GetCustomAttribute<TouchPortalCategoryAttribute>().Id;
-        // And the SimConnect Group ID
-        Groups simGroup = notifyType.GetCustomAttribute<SimNotificationGroupAttribute>()?.Group ?? default;
-        if (simGroup == default)
+        Groups catId = notifyType.GetCustomAttribute<TouchPortalCategoryAttribute>()?.Id ?? default;
+        if (catId == default)
           continue;
-        var internalEvent = simGroup == Groups.Plugin;
+        var internalEvent = catId == Groups.Plugin;
         // Get all members which have an action mapping, which is some unique combination of value(s) mapped to a SimConnect event name or internal event enum
         List<MemberInfo> actionMembers = notifyType.GetMembers().Where(m => m.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalActionMappingAttribute))).ToList();
         actionMembers.ForEach(e => {
           // Create the action data object to store in the return dict, using the meta data we've collected so far.
           ActionEventType act = new ActionEventType {
             InternalEvent = internalEvent,
-            SimConnectGroup = simGroup,
+            CategoryId = catId,
             ActionId = e.GetCustomAttribute<TouchPortalActionAttribute>().Id,
             //ActionObject = e
           };
@@ -83,7 +81,7 @@ namespace MSFSTouchPortalPlugin.Services
               _logger.LogWarning($"Duplicate action-to-event mapping found for action {act.ActionId} with choices '{string.Join(",", ma.Values)} for event '{ma.ActionId}'!'");
             // keep track of generated event IDs for Sim actions (for registering to SimConnect, and debug)
             if (!internalEvent)
-              clientEventIdToNameMap[mapTarget] = new { EventName = ma.ActionId, GroupId = simGroup };
+              clientEventIdToNameMap[mapTarget] = new { EventName = ma.ActionId, GroupId = catId };
           });
           // Put into returned collection
           if (!returnDict.TryAdd($"{rootName}.{catId}.Action.{act.ActionId}", act))

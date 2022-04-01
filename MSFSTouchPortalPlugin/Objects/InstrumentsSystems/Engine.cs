@@ -3,8 +3,7 @@ using MSFSTouchPortalPlugin.Enums;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
 {
-  [SimNotificationGroup(Groups.Engine)]
-  [TouchPortalCategory("Engine", "MSFS - Engine")]
+  [TouchPortalCategory(Groups.Engine)]
   internal static class EngineMapping {
 
     #region Ignition

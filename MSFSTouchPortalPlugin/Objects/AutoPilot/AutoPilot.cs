@@ -3,8 +3,7 @@ using MSFSTouchPortalPlugin.Enums;
 
 namespace MSFSTouchPortalPlugin.Objects.AutoPilot
 {
-  [SimNotificationGroup(Groups.AutoPilot)]
-  [TouchPortalCategory("AutoPilot", "MSFS - AutoPilot")]
+  [TouchPortalCategory(Groups.AutoPilot)]
   internal static class AutoPilotMapping {
 
     #region AutoPilot Master

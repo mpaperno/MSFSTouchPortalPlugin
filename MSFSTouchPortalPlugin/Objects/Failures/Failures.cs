@@ -3,8 +3,7 @@ using MSFSTouchPortalPlugin.Enums;
 
 namespace MSFSTouchPortalPlugin.Objects.Failures
 {
-  [SimNotificationGroup(Groups.Failures)]
-  [TouchPortalCategory("Failures", "MSFS - Failures")]
+  [TouchPortalCategory(Groups.Failures)]
   internal static class FailuresMapping {
 
     [TouchPortalAction("Failures", "Failures", "MSFS", "Toggle Failures", "Toggle Failures - {0}")]

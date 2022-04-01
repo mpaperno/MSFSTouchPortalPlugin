@@ -3,8 +3,7 @@ using MSFSTouchPortalPlugin.Enums;
 
 namespace MSFSTouchPortalPlugin.Objects.SimSystem
 {
-  [SimNotificationGroup(Groups.SimSystem)]
-  [TouchPortalCategory("SimSystem", "MSFS - System")]
+  [TouchPortalCategory(Groups.SimSystem)]
   internal static class SimSystemMapping {
     [TouchPortalAction("SimulationRate", "Simulation Rate", "MSFS", "Simulation Rate", "Rate {0}", true)]
     [TouchPortalActionChoice(new [] { "Increase", "Decrease" }, "Decrease")]

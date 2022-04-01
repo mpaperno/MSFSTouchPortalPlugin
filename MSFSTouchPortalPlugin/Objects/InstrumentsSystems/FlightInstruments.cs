@@ -1,10 +1,9 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
-//using MSFSTouchPortalPlugin.Enums;
+using MSFSTouchPortalPlugin.Enums;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
 {
-  //[SimNotificationGroup(Groups.FlightInstruments)]
-  [TouchPortalCategory("FlightInstruments", "MSFS - Flight Instruments")]
+  [TouchPortalCategory(Groups.FlightInstruments)]
   internal static class FlightInstrumentsMapping {
 
   }

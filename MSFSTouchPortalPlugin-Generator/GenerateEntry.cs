@@ -73,12 +73,7 @@ namespace MSFSTouchPortalPlugin_Generator
       // For each category, add to model
       foreach (var cat in categoryClasses) {
         var att = (TouchPortalCategoryAttribute)Attribute.GetCustomAttribute(cat, typeof(TouchPortalCategoryAttribute));
-        // FIXME: the Split() is necessary due to legacy mis-named category InstrumentsSystems.Fuel
-        if (!Enum.TryParse(att.Id.Split('.').Last(), false, out Groups catId)) {
-          _logger.LogWarning($"Could not parse category ID: '{att.Id}', skipping.'");
-          continue;
-        }
-
+        Groups catId = att.Id;
         string catIdStr = $"{_options.Value.PluginName}.{catId}";
         var category = model.Categories.FirstOrDefault(c => c.Id == catIdStr);
         if (category == null) {

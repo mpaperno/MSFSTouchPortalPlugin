@@ -1,22 +1,15 @@
-﻿using System;
+﻿using MSFSTouchPortalPlugin.Enums;
+using System;
 
 namespace MSFSTouchPortalPlugin.Attributes
 {
-  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Enum)]
+  [AttributeUsage(AttributeTargets.All)]
   public class TouchPortalCategoryAttribute : Attribute
   {
-    public string Id { get; set; }
-    public string Name { get; set; }
-    public string ImagePath { get; set; }
+    public Groups Id;
 
-    public TouchPortalCategoryAttribute(string id, string name) {
-      SetupProperties(id, name, string.Empty);
-    }
-
-    private void SetupProperties(string id, string name, string imagePath) {
+    public TouchPortalCategoryAttribute(Groups id) {
       Id = id;
-      Name = name;
-      ImagePath = imagePath;
     }
   }
 }

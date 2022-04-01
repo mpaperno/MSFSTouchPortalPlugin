@@ -12,7 +12,6 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using TouchPortalExtension.Enums;
 using TouchPortalSDK;
 using TouchPortalSDK.Interfaces;
 using TouchPortalSDK.Messages.Events;
@@ -354,8 +353,8 @@ namespace MSFSTouchPortalPlugin.Services
           _logger.LogWarning(e, $"Action {action.ActionId} for sim event {eventName} with data string '{valStr}' - Failed to convert data to numeric value.");
         }
       }
-      _logger.LogDebug($"Firing Sim Event - action: {action.ActionId}; group: {action.SimConnectGroup}; name: {eventName}; data {dataUint}");
-      _simConnectService.TransmitClientEvent(action.SimConnectGroup, eventId, dataUint);
+      _logger.LogDebug($"Firing Sim Event - action: {action.ActionId}; category: {action.CategoryId}; name: {eventName}; data {dataUint}");
+      _simConnectService.TransmitClientEvent(action.CategoryId, eventId, dataUint);
     }
 
     private void ClearRepeatingActions() {

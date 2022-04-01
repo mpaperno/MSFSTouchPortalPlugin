@@ -74,11 +74,7 @@ namespace MSFSTouchPortalPlugin_Generator
       // Loop through categories
       foreach (var cat in classList) {
         var catAttr = (TouchPortalCategoryAttribute)Attribute.GetCustomAttribute(cat, typeof(TouchPortalCategoryAttribute));
-        // FIXME: the Split() is necessary due to legacy mis-named category InstrumentsSystems.Fuel
-        if (!Enum.TryParse(catAttr.Id.Split('.').Last(), false, out Groups catId)) {
-          _logger.LogWarning($"Could not parse category ID: '{catAttr.Id}', skipping.'");
-          continue;
-        }
+        Groups catId = catAttr.Id;
         var newCat = model.Categories.FirstOrDefault(c => c.Id == catId);
         if (newCat == null) {
           newCat = new DocCategory {

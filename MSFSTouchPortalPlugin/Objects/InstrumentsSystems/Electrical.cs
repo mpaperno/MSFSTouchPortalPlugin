@@ -3,8 +3,7 @@ using MSFSTouchPortalPlugin.Enums;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
 {
-  [SimNotificationGroup(Groups.Electrical)]
-  [TouchPortalCategory("Electrical", "MSFS - Electrical")]
+  [TouchPortalCategory(Groups.Electrical)]
   internal static class ElectricalMapping {
     #region Avionics
 

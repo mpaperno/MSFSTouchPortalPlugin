@@ -3,8 +3,7 @@ using MSFSTouchPortalPlugin.Enums;
 
 namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
 {
-  [SimNotificationGroup(Groups.Environment)]
-  [TouchPortalCategory("Environment", "MSFS - Environment")]
+  [TouchPortalCategory(Groups.Environment)]
   internal static class EnvironmentMapping {
     #region Anti-Ice
 

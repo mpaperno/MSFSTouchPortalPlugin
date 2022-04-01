@@ -4,8 +4,7 @@ using MSFSTouchPortalPlugin.Types;
 
 namespace MSFSTouchPortalPlugin.Objects.Plugin
 {
-  [SimNotificationGroup(Groups.Plugin)]
-  [TouchPortalCategory("Plugin", "MSFS - Plugin")]
+  [TouchPortalCategory(Groups.Plugin)]
   internal static class PluginMapping {
     [TouchPortalAction("Connection", "Connection", "MSFS", "Toggle/On/Off SimConnect Connection", "SimConnect Connection - {0}")]
     [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
@@ -15,8 +14,7 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     public static readonly object Connection;
   }
 
-  [SimNotificationGroup(Groups.Plugin)]
-  [TouchPortalCategory("Plugin", "MSFS - Plugin")]
+  [TouchPortalCategory(Groups.Plugin)]
   [TouchPortalSettingsContainer]
   public static class Settings {
     [TouchPortalSetting(
