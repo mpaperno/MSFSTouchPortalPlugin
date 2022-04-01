@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MSFSTouchPortalPlugin.Configuration;
+using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Helpers;
 using MSFSTouchPortalPlugin.Types;
@@ -41,7 +42,7 @@ namespace MSFSTouchPortalPlugin_Generator
       }
 
       var assembly = Assembly.Load(a);
-      string basePath = $"%TP_PLUGIN_FOLDER%{_options.Value.PluginFolder}";
+      string basePath = $"%TP_PLUGIN_FOLDER%{_options.Value.PluginFolder}/";
 
       // read default states config
       // TODO: Allow configuration of which state config file(s) to read.
@@ -63,7 +64,7 @@ namespace MSFSTouchPortalPlugin_Generator
         Version = VersionInfo.GetProductVersionNumber(),
         Name = _options.Value.PluginName,
         Id = _options.Value.PluginName,
-        Plugin_start_cmd = $"{basePath}/dist/{_options.Value.PluginName}.exe"
+        Plugin_start_cmd = $"{basePath}dist/{_options.Value.PluginName}.exe"
       };
 
       // Get all classes with the TouchPortalCategory
@@ -78,24 +79,26 @@ namespace MSFSTouchPortalPlugin_Generator
           continue;
         }
 
-        var category = model.Categories.FirstOrDefault(c => c.Name == att.Name);
+        string catIdStr = $"{_options.Value.PluginName}.{catId}";
+        var category = model.Categories.FirstOrDefault(c => c.Id == catIdStr);
         if (category == null) {
           category = new TouchPortalCategory {
-            // FIXME: For now use attribute Id (att.Id) instead of actual parsed Groups enum (catId) for backwards compat with mis-named actions in category InstrumentsSystems.Fuel
-            Id = $"{_options.Value.PluginName}.{att.Id}",
-            Name = att.Name,
-            // Imagepath = att.ImagePath
-            Imagepath = basePath + "/airplane_takeoff24.png"
+            Id = catIdStr,
+            Name = Categories.FullCategoryName(catId),
+            Imagepath = basePath + Categories.CategoryImage(catId)
           };
           model.Categories.Add(category);
         }
+
+        // workaround for backwards compat with mis-named actions in category InstrumentsSystems.Fuel
+        string actionCatId = _options.Value.PluginName + "." + Categories.ActionCategoryId(catId);
 
         // Add actions
         var actions = cat.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalActionAttribute))).ToList();
         actions.ForEach(act => {
           var actionAttribute = (TouchPortalActionAttribute)Attribute.GetCustomAttribute(act, typeof(TouchPortalActionAttribute));
           var action = new TouchPortalAction {
-            Id = $"{category.Id}.Action.{actionAttribute.Id}",
+            Id = $"{actionCatId}.Action.{actionAttribute.Id}",
             Name = actionAttribute.Name,
             Prefix = actionAttribute.Prefix,
             Type = actionAttribute.Type,
@@ -203,8 +206,9 @@ namespace MSFSTouchPortalPlugin_Generator
       }
 
       var result = JsonConvert.SerializeObject(model, Formatting.Indented);
-      File.WriteAllText(Path.Combine(_options.Value.TargetPath, "entry.tp"), result);
-      _logger.LogInformation("entry.tp generated.");
+      var dest = Path.Combine(_options.Value.TargetPath, "entry.tp");
+      File.WriteAllText(dest, result);
+      _logger.LogInformation($"Generated '{dest}'.");
     }
   }
 }

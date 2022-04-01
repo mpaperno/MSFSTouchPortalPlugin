@@ -22,6 +22,7 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
   }
 
   public class DocCategory {
+    public MSFSTouchPortalPlugin.Enums.Groups Id { get; set; }
     public string Name { get; set; }
     public List<DocAction> Actions { get; set; } = new();
     public List<DocState> States { get; set; } = new();

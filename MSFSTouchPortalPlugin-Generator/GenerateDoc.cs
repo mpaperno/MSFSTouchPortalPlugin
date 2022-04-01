@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Text;
 using TouchPortalExtension.Attributes;
+using MSFSTouchPortalPlugin.Constants;
 
 namespace MSFSTouchPortalPlugin_Generator
 {
@@ -33,8 +34,10 @@ namespace MSFSTouchPortalPlugin_Generator
       // Create Markdown
       var result = CreateMarkdown(model);
 
-      File.WriteAllText(Path.Combine(_options.Value.TargetPath, "DOCUMENTATION.md"), result);
-      _logger.LogInformation("DOCUMENTATION.md generated.");
+      // Save
+      var dest = Path.Combine(_options.Value.TargetPath, "DOCUMENTATION.md");
+      File.WriteAllText(dest, result);
+      _logger.LogInformation($"Generated '{dest}'.");
     }
 
     private DocBase CreateModel() {
@@ -76,10 +79,11 @@ namespace MSFSTouchPortalPlugin_Generator
           _logger.LogWarning($"Could not parse category ID: '{catAttr.Id}', skipping.'");
           continue;
         }
-        var newCat = model.Categories.FirstOrDefault(c => c.Name == catAttr.Name);
+        var newCat = model.Categories.FirstOrDefault(c => c.Id == catId);
         if (newCat == null) {
           newCat = new DocCategory {
-            Name = catAttr.Name
+            Id = catId,
+            Name = Categories.FullCategoryName(catId),
           };
           model.Categories.Add(newCat);
         }
@@ -121,7 +125,7 @@ namespace MSFSTouchPortalPlugin_Generator
           }
           // Warn about missing mappings
           if (!mapAttribs.Any())
-            _logger.LogWarning($"No event mappings found for action ID '{actionAttribute.Id}' in category '{catAttr.Name}'");
+            _logger.LogWarning($"No event mappings found for action ID '{actionAttribute.Id}' in category '{cat.Name}'");
 
           newCat.Actions.Add(newAct);
         });
