@@ -1,4 +1,5 @@
 ﻿using System;
+using Stopwatch = System.Diagnostics.Stopwatch;
 
 namespace MSFSTouchPortalPlugin.Helpers
 {
@@ -16,17 +17,26 @@ namespace MSFSTouchPortalPlugin.Helpers
     public int Interval
     {
       get { return interval; }
-      set { interval = Math.Max(value, 1); UpdateNextTick(); }
+      set {
+        interval = Math.Max(value, 1);
+        tickInterval = interval * (int)(Stopwatch.Frequency / 1000L);
+        UpdateNextTick();
+      }
     }
     public bool Enabled
     {
       get { return enabled; }
-      set { enabled = value; UpdateNextTick(); }
+      set {
+        enabled = value;
+        if (enabled)
+          UpdateNextTick();
+      }
     }
 
     private bool enabled = false;
     private int interval = 1000;
-    private int nextTick = 0;
+    private long tickInterval;
+    private long nextTick = 0;
 
     public UnthreadedTimer() { }
     public UnthreadedTimer(int interval) {
@@ -34,7 +44,7 @@ namespace MSFSTouchPortalPlugin.Helpers
     }
 
     public void Tick() {
-      if (enabled && Environment.TickCount >= nextTick) {
+      if (enabled && Stopwatch.GetTimestamp() >= nextTick) {
         enabled = false;
         if (Elapsed != null)
           Elapsed.Invoke(this, EventArgs.Empty);
@@ -52,7 +62,7 @@ namespace MSFSTouchPortalPlugin.Helpers
     }
 
     private void UpdateNextTick() {
-      nextTick = Environment.TickCount + interval;
+      nextTick = Stopwatch.GetTimestamp() + tickInterval;
     }
 
     public void Dispose() {
