@@ -172,7 +172,7 @@ namespace MSFSTouchPortalPlugin.Types
     }
 
     public bool ValueEquals(string value) => ValInit && IsStringType && value == Value.ToString();
-    public bool ValueEquals(double value) => ValInit && IsRealType && System.Math.Abs((double)Value - ConvertValueIfNeeded(value)) <= DeltaEpsilon;
+    public bool ValueEquals(double value) => ValInit && IsRealType && System.Math.Abs((double)Value - value) <= DeltaEpsilon;
     public bool ValueEquals(long value)   => ValInit && IsIntegralType && System.Math.Abs((long)Value - value) <= (long)DeltaEpsilon;
     public bool ValueEquals(uint value)   => ValInit && IsBooleanType && System.Math.Abs((uint)Value - value) <= (uint)DeltaEpsilon;
 
@@ -204,7 +204,7 @@ namespace MSFSTouchPortalPlugin.Types
 
     internal bool SetValue(double value) {
       if (!IsStringType)
-        Value = ConvertValueIfNeeded(value);
+        Value = value;
       return !IsStringType;
     }
 
@@ -246,17 +246,6 @@ namespace MSFSTouchPortalPlugin.Types
     /// <param name="val">True/False</param>
     public void SetPending(bool val) {
       _requestTimeout = val ? Stopwatch.GetTimestamp() + REQ_TIMEOUT_SEC * Stopwatch.Frequency : 0;
-    }
-
-    private double ConvertValueIfNeeded(double value) {
-      // Convert to Degrees
-      if (Unit == Units.radians)
-        return value * (180.0 / System.Math.PI);
-      // Convert to actual percentage (percentover100 range is 0 to 1)
-      if (Unit == Units.percentover100)
-        return value * 100.0;
-      // no conversion
-      return value;
     }
 
     private bool CheckPending() {
