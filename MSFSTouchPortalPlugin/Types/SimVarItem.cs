@@ -34,8 +34,9 @@ namespace MSFSTouchPortalPlugin.Types
     /// <summary> The number of UpdatePeriod events that should elapse between data updates. Default is 0, which means the data is transmitted every Period.
     /// Note that when UpdatePeriod = Millisecond, there is an effective minimum of ~25ms. </summary>
     public uint UpdateInterval { get; set; } = 0;
-    /// <summary> Only report change if it is greater than the value of this parameter (not greater than or equal to). Default is any change. </summary>
-    public float DeltaEpsilon { get; set; } = 0.0f;
+    /// <summary> Only report change if it is greater than the value of this parameter (not greater than or equal to).
+    /// Default is 0.0099999f limits changes to 2 decimal places which is suitable for most unit types (except perhaps MHz and "percent over 100"). </summary>
+    public float DeltaEpsilon { get; set; } = 0.0099999f;
     /// <summary> Could also be "choice" but we don't use that (yet?) </summary>
     public string TouchPortalValueType { get; set; } = "text";
     /// <summary> This could/should be populated by whatever is creating the SimVarItem instance </summary>
@@ -176,7 +177,7 @@ namespace MSFSTouchPortalPlugin.Types
     public bool ValueEquals(uint value)   => ValInit && IsBooleanType && System.Math.Abs((uint)Value - value) <= (uint)DeltaEpsilon;
 
     /// <summary>
-    /// Compare this instance's value to the given object's value.
+    /// Compare this instance's value to the given object's value. For numeric types, it takes the DeltaEpsilon property into account.
     /// Uses strict type matching for double, long, uint, and falls back to string compare for all other types.
     /// </summary>
     public bool ValueEquals(object value) {
