@@ -20,13 +20,18 @@ namespace MSFSTouchPortalPlugin {
   public static class Program {
     private static async Task Main(string[] args) {
       // Logger
+#if DEBUG
+      // always debug logging in debug build
+      Environment.SetEnvironmentVariable("Serilog__MinimumLevel__Override__MSFSTouchPortalPlugin", "Debug");
+#endif
       var logFactory = new LoggerFactory();
       var logger = logFactory.CreateLogger("Program");
 
       //Build configuration:
       var configurationRoot = new ConfigurationBuilder()
           .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
-          .AddJsonFile("appsettings.json", false, true)
+          .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+          .AddEnvironmentVariables()  // inject env. vars
           .Build();
 
       // Ensure only one running instance
