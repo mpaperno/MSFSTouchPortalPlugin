@@ -2,8 +2,6 @@
 using MSFSTouchPortalPlugin.Types;
 using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 namespace MSFSTouchPortalPlugin.Interfaces
@@ -27,6 +25,5 @@ namespace MSFSTouchPortalPlugin.Interfaces
     bool RegisterToSimConnect(SimVarItem simVar);
     bool RequestDataOnSimObjectType(SimVarItem simVar);
     bool TransmitClientEvent(Groups group, Enum eventId, uint data);
-    Task WaitForMessage(CancellationToken cancellationToken);
   }
 }

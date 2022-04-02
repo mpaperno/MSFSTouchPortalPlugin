@@ -32,6 +32,7 @@ namespace MSFSTouchPortalPlugin.Services
     SimConnect _simConnect;
     private bool _connected;
     private bool _connecting;
+    private Task _messageWaitTask;
     private readonly EventWaitHandle _scReady = new EventWaitHandle(false, EventResetMode.AutoReset);
     private readonly System.Collections.Generic.List<Definition> _addedDefinitions = new();
 
@@ -76,16 +77,18 @@ namespace MSFSTouchPortalPlugin.Services
 #endif
         //_simConnect.Text(SIMCONNECT_TEXT_TYPE.PRINT_BLACK, 5, Events.StartupMessage, "TouchPortal Connected");  // not currently supported in MSFS SDK
 
-        // Invoke Handler
-        OnConnect?.Invoke();
+        _messageWaitTask = Task.Run(ReceiveMessages);
 
       } catch (COMException ex) {
         _connected = false;
         _logger.LogInformation("Connection to Sim failed: {exception}", ex.Message);
+        return false;
       }
 
       _connecting = false;
-      return _connected;
+      // Invoke Handler
+      OnConnect?.Invoke();
+      return true;
     }
 
     public void Disconnect() {
@@ -93,34 +96,46 @@ namespace MSFSTouchPortalPlugin.Services
         return;
 
       _connected = false;
+      _scReady.Set();  // trigger message wait task to exit
+      var sw = System.Diagnostics.Stopwatch.StartNew();
+      while (_messageWaitTask.Status == TaskStatus.Running && sw.ElapsedMilliseconds <= 5000) {
+        Thread.Sleep(2);
+        _scReady.Set();
+      }
+      if (sw.ElapsedMilliseconds > 5000)
+        _logger.LogWarning("Message wait task timed out while stopping.");
+      try { _messageWaitTask.Dispose(); }
+      catch { /* ignore in case it hung */ }
 
       // Dispose serves the same purpose as SimConnect_Close()
       try {
         _simConnect?.Dispose();
-        _simConnect = null;
         _logger.LogInformation("SimConnect Disconnected");
       }
       catch (Exception e) {
         _logger.LogWarning(e, "Exception while trying to dispose SimConnect client.");
       }
+      _simConnect = null;
+      _messageWaitTask = null;
       _addedDefinitions.Clear();
       // Invoke Handler
       OnDisconnect?.Invoke();
     }
 
-    public Task WaitForMessage(CancellationToken cancellationToken) {
-      while (_connected && !cancellationToken.IsCancellationRequested) {
-        try {
-          if (_scReady.WaitOne(1000))
+    public void ReceiveMessages() {
+      _logger.LogDebug("ReceiveMessages task started.");
+      try {
+        while (_connected) {
+          if (_scReady.WaitOne(5000) && _connected)
             _simConnect?.ReceiveMessage();
         }
-        catch (Exception e) {
-          _logger.LogError(e, $"WaitForMessage() failed, disconnecting.");
-          Disconnect();
-        }
       }
-
-      return Task.CompletedTask;
+      catch (ObjectDisposedException) { /* ignore but exit */ }
+      catch (Exception e) {
+        _logger.LogError(e, "ReceiveMessages task exception, disconnecting.");
+        Task.Run(Disconnect);  // async to avoid deadlock
+      }
+      _logger.LogDebug("ReceiveMessages task stopped.");
     }
 
     public bool MapClientEventToSimEvent(Enum eventId, string eventName) {
@@ -282,7 +297,10 @@ namespace MSFSTouchPortalPlugin.Services
       if (!disposedValue) {
         if (disposing) {
           // Dispose managed state (managed objects).
-          _scReady.Dispose();
+          if (_connected)
+            Disconnect();
+          _scReady?.Dispose();
+          _messageWaitTask?.Dispose();
         }
 
         disposedValue = true;

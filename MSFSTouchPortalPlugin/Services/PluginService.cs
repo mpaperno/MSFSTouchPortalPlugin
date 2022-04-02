@@ -20,27 +20,31 @@ using Timer = MSFSTouchPortalPlugin.Helpers.UnthreadedTimer;
 namespace MSFSTouchPortalPlugin.Services
 {
   /// <inheritdoc cref="IPluginService" />
-  internal class PluginService : IPluginService, IDisposable, ITouchPortalEventHandler {
-    private CancellationToken _cancellationToken;
-    private CancellationTokenSource _simConnectCancellationTokenSource;
+  internal class PluginService : IPluginService, ITouchPortalEventHandler
+  {
+    public string PluginId => "MSFSTouchPortalPlugin";  // for ITouchPortalEventHandler
 
     private readonly IHostApplicationLifetime _hostApplicationLifetime;
     private readonly ILogger<PluginService> _logger;
     private readonly ITouchPortalClient _client;
     private readonly ISimConnectService _simConnectService;
     private readonly IReflectionService _reflectionService;
-    private static readonly System.Data.DataTable _expressionEvaluator = new();  // used to evaluate basic math in action data
+
+    private CancellationToken _cancellationToken;
+    private CancellationTokenSource _simTasksCTS;
+    private CancellationToken _simTasksCancelToken;
+    private Task _timerEventsTask;
+    private readonly ManualResetEventSlim _simConnectionRequest = new(false);
     private bool autoReconnectSimConnect = false;
     private bool _quitting;
-
-    public string PluginId => "MSFSTouchPortalPlugin";
 
     private Dictionary<string, ActionEventType> actionsDictionary = new();
     private Dictionary<Definition, SimVarItem> statesDictionary = new();
     private Dictionary<string, PluginSetting> pluginSettingsDictionary = new();
     private readonly ConcurrentBag<Definition> customIntervalStates = new();
-
     private readonly ConcurrentDictionary<string, Timer> repeatingActionTimers = new();
+
+    private static readonly System.Data.DataTable _expressionEvaluator = new();  // used to evaluate basic math in action data
 
     /// <summary>
     /// Constructor
@@ -56,61 +60,21 @@ namespace MSFSTouchPortalPlugin.Services
       _client = clientFactory?.Create(this) ?? throw new ArgumentNullException(nameof(clientFactory));
     }
 
-    /// <summary>
-    /// Runs the plugin services
-    /// </summary>
-    /// <param name="simConnectCancelToken">The Cancellation Token</param>
-    public async Task RunPluginServices(CancellationToken simConnectCancelToken) {
-      // Run Data Polling and repeating actions timers
-      var runTimersTask = RunTimedEventsTask(simConnectCancelToken);
-
-      await Task.WhenAll(new Task[] {
-        runTimersTask,
-        // Run Listen and pairing
-        _simConnectService.WaitForMessage(simConnectCancelToken)
-      }).ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Async task for running various timed SimConnect events on one thread.
-    /// This is primarily used for data polling and repeating (held) actions.
-    /// </summary>
-    /// <param name="cancellationToken">The Cancellation Token</param>
-    private async Task RunTimedEventsTask(CancellationToken cancellationToken) {
-      while (_simConnectService.IsConnected() && !cancellationToken.IsCancellationRequested) {
-        foreach (Timer tim in repeatingActionTimers.Values)
-          tim.Tick();
-        CheckPendingRequests();
-        await Task.Delay(25, cancellationToken);
-      }
-    }
+    #region Startup, Shutdown and Processing Tasks      //////////////////
 
     /// <summary>
     /// Starts the plugin service
     /// </summary>
     /// <param name="cancellationToken">The cancellation token</param>
     public Task StartAsync(CancellationToken cancellationToken) {
+      _logger.LogDebug("Starting up...");
+
       _cancellationToken = cancellationToken;
 
-      _hostApplicationLifetime.ApplicationStarted.Register(() => {
-        if (!Initialize()) {
-          _hostApplicationLifetime.StopApplication();
-          return;
-        }
-
-        Task.WhenAll(TryConnect());
-      });
-
-      _hostApplicationLifetime.ApplicationStopping.Register(() => {
-        // Disconnect from SimConnect
-        _quitting = true;
-        autoReconnectSimConnect = false;
-        _simConnectService.Disconnect();
-        if (_client?.IsConnected ?? false) {
-          try { _client.Close(); }
-          catch (Exception) { /* ignore */ }
-        }
-      });
+      if (!Initialize()) {
+        _hostApplicationLifetime.StopApplication();
+        return Task.CompletedTask;
+      }
 
       // register ctrl-c exit handler
       Console.CancelKeyPress += (_, _) => {
@@ -119,7 +83,9 @@ namespace MSFSTouchPortalPlugin.Services
         //Environment.Exit(0);
       };
 
-      return Task.CompletedTask;
+      if (autoReconnectSimConnect)
+        _simConnectionRequest.Set();  // enable connection attempts
+      return Task.WhenAll(SimConnectionMonitor());
     }
 
     /// <summary>
@@ -127,30 +93,19 @@ namespace MSFSTouchPortalPlugin.Services
     /// </summary>
     /// <param name="cancellationToken">The cancellation token</param>
     public Task StopAsync(CancellationToken cancellationToken) {
+      if (_quitting)
+        return Task.CompletedTask;
+      // Shut down
+      _quitting = true;
+      _logger.LogDebug("Shutting down...");
+      _simConnectionRequest.Reset();  // just in case
+      _simConnectService?.Disconnect();
+      if (_client?.IsConnected ?? false) {
+        try { _client.Close(); }
+        catch (Exception) { /* ignore */ }
+      }
       return Task.CompletedTask;
     }
-
-    #region IDisposable Support
-    private bool disposedValue; // To detect redundant calls
-
-    protected virtual void Dispose(bool disposing) {
-      if (!disposedValue) {
-        if (disposing) {
-          // Dispose managed state (managed objects).
-          _simConnectCancellationTokenSource?.Dispose();
-        }
-
-        disposedValue = true;
-      }
-    }
-
-    // This code added to correctly implement the disposable pattern.
-    public void Dispose() {
-      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-      Dispose(true);
-      GC.SuppressFinalize(this);
-    }
-    #endregion
 
     /// <summary>
     /// Initialized the Touch Portal Message Processor
@@ -170,10 +125,53 @@ namespace MSFSTouchPortalPlugin.Services
       return true;
     }
 
-    #region SimConnect Events
+    private async Task SimConnectionMonitor() {
+      _logger.LogDebug("SimConnectionMonitor task started.");
+      try {
+        while (!_cancellationToken.IsCancellationRequested) {
+          _simConnectionRequest.Wait(_cancellationToken);
+          if (!_simConnectService.IsConnected() && !_simConnectService.Connect())
+            await Task.Delay(10000, _cancellationToken);  // delay 10s on connection error
+        }
+      }
+      catch (OperationCanceledException) { /* ignore but exit */ }
+      catch (ObjectDisposedException) { /* ignore but exit */ }
+      catch (Exception e) {
+        _logger.LogError("Exception in SimConnectionMonitor task, cannot continue.", e);
+      }
+      _logger.LogDebug("SimConnectionMonitor task stopped.");
+    }
+
+    /// <summary>
+    /// Task for running various timed SimConnect events on one thread.
+    /// This is primarily used for data polling and repeating (held) actions.
+    /// </summary>
+    private async Task PluginEventsTask() {
+      _logger.LogDebug("PluginEventsTask task started.");
+      try {
+        while (_simConnectService.IsConnected() && !_simTasksCancelToken.IsCancellationRequested) {
+          foreach (Timer tim in repeatingActionTimers.Values)
+            tim.Tick();
+          CheckPendingRequests();
+          await Task.Delay(25, _simTasksCancelToken);
+        }
+      }
+      catch (OperationCanceledException) { /* ignore but exit */ }
+      catch (ObjectDisposedException) { /* ignore but exit */ }
+      catch (Exception e) {
+        _logger.LogError("Exception in PluginEventsTask task, cannot continue.", e);
+      }
+      _logger.LogDebug("PluginEventsTask task stopped.");
+    }
+
+    #endregion Startup, Shutdown and Processing Tasks
+
+    #region SimConnect Events   /////////////////////////////////////
 
     private void SimConnectEvent_OnConnect() {
-      _simConnectCancellationTokenSource = new CancellationTokenSource();
+      _simConnectionRequest.Reset();
+      _simTasksCTS = new CancellationTokenSource();
+      _simTasksCancelToken = _simTasksCTS.Token;
 
       UpdateSimConnectState();
 
@@ -188,7 +186,9 @@ namespace MSFSTouchPortalPlugin.Services
 
       SetupSimVars();
 
-      Task.WhenAll(RunPluginServices(_simConnectCancellationTokenSource.Token));
+      // start checking timer events
+      _timerEventsTask = Task.Run(PluginEventsTask);
+      _timerEventsTask.ConfigureAwait(false);  // needed?
     }
 
     private void SimConnectEvent_OnDataUpdateEvent(Definition def, Definition req, object data) {
@@ -204,12 +204,26 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     private void SimConnectEvent_OnDisconnect() {
-      _simConnectCancellationTokenSource?.Cancel();
+      _simTasksCTS?.Cancel();
+      if (_timerEventsTask.Status == TaskStatus.Running && !_timerEventsTask.Wait(5000))
+        _logger.LogWarning("Timed events task timed out while stopping.");
+      try { _timerEventsTask.Dispose(); }
+      catch { /* ignore in case it hung */ }
+
       ClearRepeatingActions();
       UpdateSimConnectState();
+
+      _timerEventsTask = null;
+      _simTasksCTS?.Dispose();
+      _simTasksCTS = null;
+
+      if (autoReconnectSimConnect && !_quitting)
+        _simConnectionRequest.Set();  // re-enable connection attempts
     }
 
-    #endregion
+    #endregion SimConnect Events
+
+    #region Plugin Events and Handlers   /////////////////////////////////////
 
     private void SetupEventLists() {
       actionsDictionary = _reflectionService.GetActionEvents();
@@ -225,36 +239,13 @@ namespace MSFSTouchPortalPlugin.Services
       }
       statesDictionary = configStates.ToDictionary(s => s.Def, s => s);
       customIntervalStates.Clear();
-      // Register SimVars
+      // Register SimVars, but first clear out any old ones.
       _simConnectService.ClearAllDataDefinitions();
       foreach (var simVar in statesDictionary.Values) {
         if (simVar.NeedsScheduledRequest)
           customIntervalStates.Add(simVar.Def);
         _simConnectService.RegisterToSimConnect(simVar);
       }
-    }
-
-    private Task TryConnect() {
-      short i = 0;
-      while (!_cancellationToken.IsCancellationRequested) {
-        if (autoReconnectSimConnect && !_simConnectService.IsConnected()) {
-          if (i == 0) {
-            if (!_simConnectService.Connect())
-              i = 10;  // delay reconnect attempt on error
-          }
-          else {
-            --i;
-          }
-        }
-        else if (i != 0) {
-          i = 0;
-        }
-
-        // SimConnect is typically available even before loading into a flight. This should connect and be ready by the time a flight is started.
-        Thread.Sleep(1000);
-      }
-
-      return Task.CompletedTask;
     }
 
     private void CheckPendingRequests() {
@@ -277,7 +268,7 @@ namespace MSFSTouchPortalPlugin.Services
 
       if (action.InternalEvent)
         ProcessInternalEvent(action, eventId, in dataArry);
-      else
+      else if (_simConnectService.IsConnected())
         ProcessSimEvent(action, eventId, in dataArry);
     }
 
@@ -288,17 +279,24 @@ namespace MSFSTouchPortalPlugin.Services
       switch (pluginEventId) {
         case Plugin.ToggleConnection:
           autoReconnectSimConnect = !autoReconnectSimConnect;
-          if (_simConnectService.IsConnected())
+          if (_simConnectService.IsConnected()) {
+            _simConnectionRequest.Reset();
             _simConnectService.Disconnect();
-          else
+          }
+          else {
+            _simConnectionRequest.Set();
             UpdateSimConnectState();
+          }
           break;
         case Plugin.Connect:
           autoReconnectSimConnect = true;
+          if (!_simConnectService.IsConnected())
+            _simConnectionRequest.Set();
           UpdateSimConnectState();
           break;
         case Plugin.Disconnect:
           autoReconnectSimConnect = false;
+          _simConnectionRequest.Reset();
           if (_simConnectService.IsConnected())
             _simConnectService.Disconnect();
           else
@@ -385,11 +383,13 @@ namespace MSFSTouchPortalPlugin.Services
     private void UpdateSimConnectState() {
       string stat = "true";
       if (!_simConnectService.IsConnected())
-        stat = autoReconnectSimConnect ? "connecting" : "false";
+        stat = _simConnectionRequest.IsSet ? "connecting" : "false";
       _client.StateUpdate(PluginId + ".Plugin.State.Connected", stat);
     }
 
-    #region TouchPortalSDK Events
+    #endregion Plugin Events and Handlers
+
+    #region TouchPortalSDK Events       ///////////////////////////////
 
     public void OnInfoEvent(InfoEvent message) {
       var runtimeVer = string.Format("{0:X}", VersionInfo.GetProductVersionNumber());
@@ -399,7 +399,7 @@ namespace MSFSTouchPortalPlugin.Services
       );
 
       ProcessPluginSettings(message.Settings);
-      autoReconnectSimConnect = (Settings.ConnectSimOnStartup.ValueAsInt() != 0);
+      autoReconnectSimConnect = Settings.ConnectSimOnStartup.ValueAsBool();  // we only care about this at startup
 
       _client.StateUpdate(PluginId + ".Plugin.State.RunningVersion", runtimeVer);
       _client.StateUpdate(PluginId + ".Plugin.State.EntryVersion", $"{message.PluginVersion}");
