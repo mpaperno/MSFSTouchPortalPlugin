@@ -37,6 +37,22 @@ namespace MSFSTouchPortalPlugin.Configuration
       SharpConfig.Configuration.AlwaysQuoteStringValues = true;  // custom SharpConfig v3.2.9.2-mp feature
     }
 
+    public bool CopySimConnectConfig() {
+      string filename = "SimConnect.cfg";
+      string srcFile = Path.Combine(UserConfigFolder, filename);
+      if (File.Exists(srcFile)) {
+        try {
+          File.Copy(srcFile, Path.Combine(AppRootFolder, filename), true);
+          return true;
+        }
+        catch (Exception e) {
+          _logger.LogWarning(e, "Error trying to copy SimConnect.cfg file from user's AppData folder:");
+          return false;
+        }
+      }
+      return false;
+    }
+
     public IReadOnlyCollection<SimVarItem> LoadSimVarItems(bool isUserConfig = true, string filename = default) {
       List<SimVarItem> ret = new();
       if (filename == default)

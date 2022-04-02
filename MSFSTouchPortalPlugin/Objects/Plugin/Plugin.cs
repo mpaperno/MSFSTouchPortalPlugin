@@ -23,6 +23,21 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
       Description = "Set to 1 to automatically attempt connection to flight simulator upon Touch Portal startup. Set to 0 to only connect manually via the provided Action.",
     };
 
+    public static readonly PluginSetting SimConnectConfigIndex = new PluginSetting("SimConnectConfigIndex", DataType.Number) {
+      Name = "SimConnect.cfg Index (0 for MSFS, 1 for FSX, or custom)",
+      Description = @"A default SimConnect.cfg is included with this plugin (in the installation folder). " +
+      "You may also use a custom configuration file stored in your 'C:\\Users\\<UserName>\\AppData\\Roaming\\MSFSTouchPortalPlugin' folder. \n\n" +
+      "The SimConnect.cfg file can contain a number of configurations, identified in sections with the [SimConnect.N] title. " +
+      "The index number can be specified in this setting. This is useful for \n" +
+      "  1. compatibility with FSX, and/or \n" +
+      "  2. custom configurations over network connections (running Touch Portal on a different computer than the sim). \n" +
+      "The default configuration index is zero, which (in the included default SimConnect.cfg) is suitable for MSFS (2020). Use the index 1 for compatibility with FSX (or perhaps other sims). \n\n" +
+      "See here for more info: https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_CFG_Definition.htm",
+      Default = "0",
+      MinValue = 0,
+      MaxValue = 20
+    };
+
     [TouchPortalAction("ActionRepeatInterval", "Action Repeat Interval", "MSFS", "Held Action Repeat Rate (ms)", "Repeat Interval: {0} to/by: {1} ms", true)]
     [TouchPortalActionChoice(new[] { "Set", "Increment", "Decrement" })]
     [TouchPortalActionText("450", 50, int.MaxValue)]
@@ -38,6 +53,7 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
       ReadOnly = true,
       TouchPortalStateId = "ActionRepeatInterval"
     };
+
   }
 
   // IDs for handling internal events

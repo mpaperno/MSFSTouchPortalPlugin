@@ -59,6 +59,20 @@
     <PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" />
   </ItemGroup>
 
+  <!-- SimConnect libs -->
+  <ItemGroup>
+    <Reference Include="Microsoft.FlightSimulator.SimConnect">
+      <HintPath>.\lib\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
+      <Private>true</Private>
+    </Reference>
+    <ContentWithTargetPath Include=".\lib\SimConnect.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SimConnect.dll</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
+
+  <!-- Custom TouchPortalSDK lib -->
   <ItemGroup>
     <Reference Include="TouchPortalSDK, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>.\lib\TouchPortalSDK\TouchPortalSDK.dll</HintPath>
@@ -68,6 +82,7 @@
     <!--<PackageReference Include="TouchPortalSDK" Version="0.23.1" />-->
   </ItemGroup>
 
+  <!-- Custom SharpConfig lib -->
   <ItemGroup>
     <Reference Include="SharpConfig, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>.\lib\SharpConfig\SharpConfig.dll</HintPath>
@@ -77,22 +92,7 @@
     <!--<PackageReference Include="SharpConfig" Version="3.2.9.1" />-->
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Microsoft.FlightSimulator.SimConnect">
-      <HintPath>.\lib\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
-      <EmbedInteropTypes>false</EmbedInteropTypes>
-      <Private>true</Private>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ContentWithTargetPath Include=".\lib\SimConnect.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>SimConnect.dll</TargetPath>
-    </ContentWithTargetPath>
-    <None Include=".\lib\SimConnect.dll" />
-  </ItemGroup>
-
+  <!-- Config files to copy to output -->
   <ItemGroup>
     <None Update="Configuration\PluginStates.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -100,6 +100,11 @@
     <None Update="Configuration\States.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <!-- SimConnect.cfg needs to go into the root -->
+    <ContentWithTargetPath Include="Configuration\SimConnect.cfg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SimConnect.cfg</TargetPath>
+    </ContentWithTargetPath>
   </ItemGroup>
 
 </Project>

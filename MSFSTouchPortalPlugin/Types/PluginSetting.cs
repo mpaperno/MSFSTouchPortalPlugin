@@ -89,10 +89,11 @@ namespace MSFSTouchPortalPlugin.Types
       }
     }
 
-    public int ValueAsInt() => Value == null || ValueType == DataType.Text ? 0 : (int)Value;
-    public bool ValueAsBool() => Value == null ? false : ValueType == DataType.Text ? new BooleanString(ValueAsStr()) : ValueType == DataType.Number ? ValueAsInt() != 0 : (bool)Value;
-    public double ValueAsDbl() => Value == null ? double.NaN : (double)Value;
-    public string ValueAsStr() => Value == null ? string.Empty : Value.ToString();
+    public int IntValue => Value == null || ValueType == DataType.Text ? 0 : (int)Value;
+    public uint UIntValue => (uint)IntValue;
+    public bool BoolValue => Value == null ? false : ValueType == DataType.Text ? new BooleanString(StringValue) : ValueType == DataType.Number ? IntValue != 0 : (bool)Value;
+    public double RealValue => Value == null ? double.NaN : (double)Value;
+    public string StringValue => Value == null ? string.Empty : Value.ToString();
 
     public PluginSetting(string id, DataType type = DataType.Text) { SetProperties(id, null, null, type); }
     public PluginSetting(string id, double minValue, double maxValue, string defaultValue = null) { SetProperties(id, null, defaultValue, DataType.Number, minValue, maxValue); }

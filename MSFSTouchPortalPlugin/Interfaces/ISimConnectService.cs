@@ -17,7 +17,7 @@ namespace MSFSTouchPortalPlugin.Interfaces
 
     bool IsConnected();
     bool AddNotification(Groups group, Enum eventId);
-    bool Connect();
+    bool Connect(uint configIndex = 0);
     void Disconnect();
     bool MapClientEventToSimEvent(Enum eventId, string eventName);
     void SetNotificationGroupPriorities();

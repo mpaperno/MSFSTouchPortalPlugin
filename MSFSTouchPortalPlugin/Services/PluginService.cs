@@ -126,6 +126,10 @@ namespace MSFSTouchPortalPlugin.Services
       _simConnectService.OnConnect += SimConnectEvent_OnConnect;
       _simConnectService.OnDisconnect += SimConnectEvent_OnDisconnect;
 
+      // Check for custom SimConnect.cfg and try copy it to application dir (may require elevated privileges)
+      if (_pluginConfig.CopySimConnectConfig())
+        _logger.LogInformation("Using custom SimConnect.cfg file from user's AppData folder.");
+
       return true;
     }
 
@@ -134,7 +138,7 @@ namespace MSFSTouchPortalPlugin.Services
       try {
         while (!_cancellationToken.IsCancellationRequested) {
           _simConnectionRequest.Wait(_cancellationToken);
-          if (!_simConnectService.IsConnected() && !_simConnectService.Connect())
+          if (!_simConnectService.IsConnected() && !_simConnectService.Connect(Settings.SimConnectConfigIndex.UIntValue))
             await Task.Delay(10000, _cancellationToken);  // delay 10s on connection error
         }
       }
@@ -307,11 +311,11 @@ namespace MSFSTouchPortalPlugin.Services
         case Plugin.ActionRepeatIntervalSet:
           if (action.ValueIndex < dataArry.Length && double.TryParse(dataArry[action.ValueIndex], out var interval)) {
             if (pluginEventId == Plugin.ActionRepeatIntervalInc)
-              interval = Settings.ActionRepeatInterval.ValueAsDbl() + interval;
+              interval = Settings.ActionRepeatInterval.RealValue + interval;
             else if (pluginEventId == Plugin.ActionRepeatIntervalDec)
-              interval = Settings.ActionRepeatInterval.ValueAsDbl() - interval;
+              interval = Settings.ActionRepeatInterval.RealValue - interval;
             interval = Math.Clamp(interval, Settings.ActionRepeatInterval.MinValue, Settings.ActionRepeatInterval.MaxValue);
-            if (interval != Settings.ActionRepeatInterval.ValueAsDbl())
+            if (interval != Settings.ActionRepeatInterval.RealValue)
               _client.SettingUpdate(Settings.ActionRepeatInterval.Name, $"{interval:F0}");  // this will trigger the actual value update
           }
           break;
@@ -374,7 +378,7 @@ namespace MSFSTouchPortalPlugin.Services
         if (pluginSettingsDictionary.TryGetValue(s.Name, out PluginSetting setting)) {
           setting.SetValueFromString(s.Value);
           if (!string.IsNullOrWhiteSpace(setting.TouchPortalStateId))
-            _client.StateUpdate(setting.TouchPortalStateId, setting.ValueAsStr());
+            _client.StateUpdate(setting.TouchPortalStateId, setting.StringValue);
         }
       }
     }
@@ -398,7 +402,7 @@ namespace MSFSTouchPortalPlugin.Services
       );
 
       ProcessPluginSettings(message.Settings);
-      autoReconnectSimConnect = Settings.ConnectSimOnStartup.ValueAsBool();  // we only care about this at startup
+      autoReconnectSimConnect = Settings.ConnectSimOnStartup.BoolValue;  // we only care about this at startup
 
       _client.StateUpdate(PluginId + ".Plugin.State.RunningVersion", runtimeVer);
       _client.StateUpdate(PluginId + ".Plugin.State.EntryVersion", $"{message.PluginVersion}");
@@ -416,7 +420,7 @@ namespace MSFSTouchPortalPlugin.Services
       switch (message.GetPressState()) {
         case TouchPortalSDK.Messages.Models.Enums.Press.Down:
           // "On Hold" activated ("down" event). Try to add this action to the repeating/scheduled actions queue, unless it already exists.
-          var timer = new Timer(Settings.ActionRepeatInterval.ValueAsInt());
+          var timer = new Timer(Settings.ActionRepeatInterval.IntValue);
           timer.Elapsed += delegate { ProcessEvent(message); };
           if (repeatingActionTimers.TryAdd(message.ActionId, timer))
             timer.Start();

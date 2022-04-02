@@ -47,7 +47,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     public bool IsConnected() => (_connected && _simConnect != null);
 
-    public bool Connect() {
+    public bool Connect(uint configIndex = 0) {
       if (_connecting || _simConnect != null)
         return _connected;
 
@@ -55,7 +55,7 @@ namespace MSFSTouchPortalPlugin.Services
       _logger.LogInformation("Connecting to SimConnect...");
 
       try {
-        _simConnect = new SimConnect("Touch Portal Plugin", GetConsoleWindow(), WM_USER_SIMCONNECT, _scReady, 0);
+        _simConnect = new SimConnect("Touch Portal Plugin", GetConsoleWindow(), WM_USER_SIMCONNECT, _scReady, configIndex);
 
         _connected = true;
 
