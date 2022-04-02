@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Services;
 using MSFSTouchPortalPlugin_Generator.Configuration;
@@ -23,6 +24,7 @@ namespace MSFSTouchPortalPlugin_Generator {
         })
         .AddHostedService<RunService>()
         .AddSingleton<IReflectionService, ReflectionService>()
+        .AddSingleton(typeof(PluginConfig))
         .AddSingleton<IGenerateDoc, GenerateDoc>()
         .AddSingleton<IGenerateEntry, GenerateEntry>();
       }).RunConsoleAsync();

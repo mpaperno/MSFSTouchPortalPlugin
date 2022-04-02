@@ -6,6 +6,7 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using System.Runtime.Serialization;
+using Microsoft.Extensions.Logging;
 //using SharpConfig;
 
 namespace MSFSTouchPortalPlugin.Configuration
@@ -13,14 +14,6 @@ namespace MSFSTouchPortalPlugin.Configuration
 
   internal class PluginConfig
   {
-
-    public static PluginConfig Instance {
-      get {
-        if (_instance == null)
-          _instance = new PluginConfig();
-        return _instance;
-      }
-    }
 
     /// <summary>
     /// RootName is used as the basis for the user folder name and TP State ID generation.
@@ -30,17 +23,15 @@ namespace MSFSTouchPortalPlugin.Configuration
     public static string StatesConfigFile { get; set; } = "States.ini";
     public static string PluginStatesConfigFile { get; set; } = "PluginStates.ini";
 
-    public static string AppConfigFolder  { get; set; } = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Configuration");
+    public static string AppRootFolder    { get; set; } = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+    public static string AppConfigFolder  { get; set; } = Path.Combine(AppRootFolder, "Configuration");
     public static string UserConfigFolder { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), RootName);
 
-    public IReadOnlyCollection<Exception> ErrorsList => _errorsList;
-    public bool HaveErrors => _errorsList.Any();
+    private readonly ILogger<PluginConfig> _logger;
 
-    private static PluginConfig _instance;
-    private readonly List<Exception> _errorsList = new();
+    public PluginConfig(ILogger<PluginConfig> logger) {
+      _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-    private PluginConfig()
-    {
       // set SC writing options
       SharpConfig.Configuration.SpaceBetweenEquals = true;
       SharpConfig.Configuration.AlwaysQuoteStringValues = true;  // custom SharpConfig v3.2.9.2-mp feature
@@ -50,10 +41,9 @@ namespace MSFSTouchPortalPlugin.Configuration
       List<SimVarItem> ret = new();
       if (filename == default)
         filename = StatesConfigFile;
-      _errorsList.Clear();
       string filepath = Path.Combine(isUserConfig ? UserConfigFolder : AppConfigFolder, filename);
       if (!File.Exists(filepath)) {
-        _errorsList.Add(new FileNotFoundException("Configuration file not found.", filepath));
+        _logger.LogWarning($"Cannot load SimVar states, file '{filename}' not found at '{filepath}'");
         return ret;
       }
       SharpConfig.Configuration cfg;
@@ -61,7 +51,7 @@ namespace MSFSTouchPortalPlugin.Configuration
         cfg = SharpConfig.Configuration.LoadFromFile(filepath, Encoding.UTF8);
       }
       catch (Exception e) {
-        _errorsList.Add(e);
+        _logger.LogWarning(e, $"Configuration LoadFromFile error in '{filepath}':");
         return ret;
       }
       foreach (SharpConfig.Section item in cfg) {
@@ -72,13 +62,17 @@ namespace MSFSTouchPortalPlugin.Configuration
           simVar = item.ToObject<SimVarItem>();
         }
         catch (Exception e) {
-          _errorsList.Add(e);
+          _logger.LogWarning(e, $"Deserialize exception for section '{item}':");
+          continue;
+        }
+        if (simVar == null) {
+          _logger.LogWarning($"Produced SimVar is null from section '{item}':");
           continue;
         }
         simVar.Id = item.Name;
         // check unique
         if (ret.FirstOrDefault(s => s.Id == simVar.Id) != null) {
-          _errorsList.Add(new DuplicateIdException($"Duplicate SimVar ID found for '{simVar.Id}'"));
+          _logger.LogWarning($"Duplicate SimVar ID found for '{simVar.Id}', skipping.");
           continue;
         }
         simVar.TouchPortalStateId = $"{RootName}.{simVar.CategoryId}.State.{simVar.Id}";
@@ -94,9 +88,10 @@ namespace MSFSTouchPortalPlugin.Configuration
     public bool SaveSimVarItems(IReadOnlyCollection<SimVarItem> items, bool isUserConfig = true, string filename = default) {
       var cfg = new SharpConfig.Configuration();
       Groups lastCatId = default;
-      _errorsList.Clear();
 
       foreach (SimVarItem item in items) {
+        if (item == null)
+          continue;
         try {
           var sect = cfg.Add(item.Id);
           if (item.CategoryId != lastCatId) {
@@ -122,25 +117,25 @@ namespace MSFSTouchPortalPlugin.Configuration
             sect.Add("DeltaEpsilon", item.DeltaEpsilon);
         }
         catch (Exception e) {
-          _errorsList.Add(e);
+          _logger.LogWarning(e, $"Serialize exception for {item.ToDebugString()}:");
         }
       }
 
       if (filename == default)
         filename = StatesConfigFile;
-      SaveToFile(cfg, isUserConfig ? UserConfigFolder : AppConfigFolder, filename);
-
-      return HaveErrors;
+      return SaveToFile(cfg, isUserConfig ? UserConfigFolder : AppConfigFolder, filename);
     }
 
-    private void SaveToFile(SharpConfig.Configuration cfg, string folder, string filename) {
+    private bool SaveToFile(SharpConfig.Configuration cfg, string folder, string filename) {
       try {
         Directory.CreateDirectory(folder);
         cfg.SaveToFile(Path.Combine(folder, filename), Encoding.UTF8);
+        return true;
       }
       catch (Exception e) {
-        _errorsList.Add(e);
+        _logger.LogWarning(e, $"Error trying to write config file '{filename}' to folder '{folder}'");
       }
+      return false;
     }
 
   }

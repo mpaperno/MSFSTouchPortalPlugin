@@ -29,6 +29,7 @@ namespace MSFSTouchPortalPlugin.Services
     private readonly ITouchPortalClient _client;
     private readonly ISimConnectService _simConnectService;
     private readonly IReflectionService _reflectionService;
+    private readonly PluginConfig _pluginConfig;
 
     private CancellationToken _cancellationToken;
     private CancellationTokenSource _simTasksCTS;
@@ -51,13 +52,16 @@ namespace MSFSTouchPortalPlugin.Services
     /// </summary>
     /// <param name="messageProcessor">Message Processor Object</param>
     public PluginService(IHostApplicationLifetime hostApplicationLifetime, ILogger<PluginService> logger,
-      ITouchPortalClientFactory clientFactory, ISimConnectService simConnectService, IReflectionService reflectionService) {
+      ITouchPortalClientFactory clientFactory, ISimConnectService simConnectService, IReflectionService reflectionService,
+      PluginConfig pluginConfig)
+    {
       _hostApplicationLifetime = hostApplicationLifetime ?? throw new ArgumentNullException(nameof(hostApplicationLifetime));
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
       _simConnectService = simConnectService ?? throw new ArgumentNullException(nameof(simConnectService));
       _reflectionService = reflectionService ?? throw new ArgumentNullException(nameof(reflectionService));
 
       _client = clientFactory?.Create(this) ?? throw new ArgumentNullException(nameof(clientFactory));
+      _pluginConfig = pluginConfig ?? throw new ArgumentNullException(nameof(pluginConfig));
     }
 
     #region Startup, Shutdown and Processing Tasks      //////////////////
@@ -231,12 +235,7 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     private void SetupSimVars() {
-      var pc = PluginConfig.Instance;
-      var configStates = pc.LoadSimVarItems(false);
-      if (pc.HaveErrors) {
-        foreach (var e in pc.ErrorsList)
-          _logger.LogWarning(e, "Configuration reader error:");
-      }
+      var configStates = _pluginConfig.LoadSimVarItems(false);
       statesDictionary = configStates.ToDictionary(s => s.Def, s => s);
       customIntervalStates.Clear();
       // Register SimVars, but first clear out any old ones.

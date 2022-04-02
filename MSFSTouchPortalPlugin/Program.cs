@@ -40,7 +40,7 @@ namespace MSFSTouchPortalPlugin {
 
       try {
         await Host.CreateDefaultBuilder(args)
-          .ConfigureLogging((hostContext, loggingBuilder) => { 
+          .ConfigureLogging((hostContext, loggingBuilder) => {
             loggingBuilder
               .ClearProviders()
               .AddSerilog(logger: new LoggerConfiguration().ReadFrom.Configuration(configurationRoot).CreateLogger(), dispose: true);
@@ -51,6 +51,7 @@ namespace MSFSTouchPortalPlugin {
               .AddHostedService<PluginService>()
               .AddSingleton<ISimConnectService, SimConnectService>()
               .AddSingleton<IReflectionService, ReflectionService>()
+              .AddSingleton(typeof(PluginConfig))
               .AddTouchPortalSdk(configurationRoot);
           })
           .RunConsoleAsync();

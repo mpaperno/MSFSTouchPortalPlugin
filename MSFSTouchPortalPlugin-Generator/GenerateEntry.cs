@@ -25,11 +25,13 @@ namespace MSFSTouchPortalPlugin_Generator
     private readonly ILogger<GenerateEntry> _logger;
     private readonly IOptions<GeneratorOptions> _options;
     private readonly IReflectionService _reflectionSvc;
+    private readonly PluginConfig _pluginConfig;
 
-    public GenerateEntry(ILogger<GenerateEntry> logger, IOptions<GeneratorOptions> options, IReflectionService reflectionSvc) {
+    public GenerateEntry(ILogger<GenerateEntry> logger, IOptions<GeneratorOptions> options, IReflectionService reflectionSvc, PluginConfig pluginConfig) {
       _logger = logger;
       _options = options;
       _reflectionSvc = reflectionSvc ?? throw new ArgumentNullException(nameof(reflectionSvc));
+      _pluginConfig = pluginConfig ?? throw new ArgumentNullException(nameof(pluginConfig));
 
       JsonConvert.DefaultSettings = () => new JsonSerializerSettings {
         ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -50,12 +52,7 @@ namespace MSFSTouchPortalPlugin_Generator
 
       // read default states config
       // TODO: Allow configuration of which state config file(s) to read.
-      var pc = PluginConfig.Instance;
-      var configStates = pc.LoadSimVarItems(false);
-      if (pc.HaveErrors) {
-        foreach (var e in pc.ErrorsList)
-          _logger.LogError(e, "Configuration reader error:");
-      }
+      SimVarItem[] simVars = _pluginConfig.LoadSimVarItems(false).Concat(_pluginConfig.LoadPluginStates()).ToArray();
 
       var q = assembly.GetTypes().ToList();
 
@@ -140,13 +137,7 @@ namespace MSFSTouchPortalPlugin_Generator
         if (category.States.Any())
           continue;  // skip if already added for this category
 
-        System.Collections.Generic.IEnumerable<SimVarItem> categoryStates;
-        // Plugin (non SimConnect) states are stored in a separate config file.
-        if (catId == Groups.Plugin)
-          categoryStates = pc.LoadPluginStates();
-        else
-          categoryStates = configStates.Where(s => s.CategoryId == catId);
-
+        var categoryStates = simVars.Where(s => s.CategoryId == catId);
         foreach (SimVarItem state in categoryStates) {
           var newState = new TouchPortalState {
             Id = state.TouchPortalStateId,
