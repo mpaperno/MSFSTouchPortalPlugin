@@ -19,9 +19,10 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
   [TouchPortalSettingsContainer]
   public static class Settings
   {
-    public static readonly PluginSetting ConnectSimOnStartup = new PluginSetting("ConnectSimOnStartup", "1", DataType.Switch) {
+    public static readonly PluginSetting ConnectSimOnStartup = new PluginSetting("ConnectSimOnStartup", DataType.Switch) {
       Name = "Connect To Flight Sim on Startup (0/1)",
       Description = "Set to 1 to automatically attempt connection to flight simulator upon Touch Portal startup. Set to 0 to only connect manually via the provided Action.",
+      Default = "0",
     };
 
     public static readonly PluginSetting UserStateFiles = new PluginSetting("UserStateFiles", DataType.Text) {

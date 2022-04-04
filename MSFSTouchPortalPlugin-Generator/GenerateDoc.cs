@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Constants;
@@ -16,16 +15,17 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Text;
+using System.Collections.Generic;
 
 namespace MSFSTouchPortalPlugin_Generator
 {
   internal class GenerateDoc : IGenerateDoc {
     private readonly ILogger<GenerateDoc> _logger;
-    private readonly IOptions<GeneratorOptions> _options;
+    private readonly GeneratorOptions _options;
     private readonly IReflectionService _reflectionSvc;
     private readonly PluginConfig _pluginConfig;
 
-    public GenerateDoc(ILogger<GenerateDoc> logger, IOptions<GeneratorOptions> options, IReflectionService reflectionSvc, PluginConfig pluginConfig) {
+    public GenerateDoc(ILogger<GenerateDoc> logger, GeneratorOptions options, IReflectionService reflectionSvc, PluginConfig pluginConfig) {
       _logger = logger;
       _options = options;
       _reflectionSvc = reflectionSvc ?? throw new ArgumentNullException(nameof(reflectionSvc));
@@ -35,22 +35,25 @@ namespace MSFSTouchPortalPlugin_Generator
     public void Generate() {
       // Create reflection model
       var model = CreateModel();
+      if (model == null)
+        return;
 
       // Create Markdown
       var result = CreateMarkdown(model);
 
       // Save
-      var dest = Path.Combine(_options.Value.TargetPath, "DOCUMENTATION.md");
+      var dest = Path.Combine(_options.OutputPath, "DOCUMENTATION.md");
       File.WriteAllText(dest, result);
       _logger.LogInformation($"Generated '{dest}'.");
     }
 
     private DocBase CreateModel() {
       // Find assembly
-      var a = Assembly.GetExecutingAssembly().GetReferencedAssemblies().FirstOrDefault(a => a.Name == _options.Value.PluginName);
+      var a = Assembly.GetExecutingAssembly().GetReferencedAssemblies().FirstOrDefault(a => a.Name == _options.PluginId);
 
       if (a == null) {
-        throw new FileNotFoundException("Unable to load assembly for reflection.");
+        _logger.LogError($"Unable to load assembly '{_options.PluginId}' for reflection.'");
+        return null;
       }
 
       var assembly = Assembly.Load(a);
@@ -59,26 +62,39 @@ namespace MSFSTouchPortalPlugin_Generator
       VersionInfo.Assembly = assembly;
 
       var model = new DocBase {
-        Title = "MSFS 2020 Touch Portal Plugin",
-        Overview = "This plugin will provide a two-way interface between Touch Portal and Microsoft Flight Simulator 2020 through SimConnect.",
+        Title = _options.PluginName + " Documentation",
+        Overview = "This plugin will provide a two-way interface between Touch Portal and Flight Simulators which use SimConnect, such as Microsoft Flight Simulator 2020 and FS-X.",
         Version = VersionInfo.GetProductVersionString()
       };
 
-      // read default states config
-      // TODO: Allow configuration of which state config file(s) to read.
-      SimVarItem[] simVars = _pluginConfig.LoadSimVarItems(false).Concat(_pluginConfig.LoadPluginStates()).ToArray();
+      // read states config
+      IEnumerable<SimVarItem> simVars;
+      if (_options.StateFiles.Any()) {
+        if (!string.IsNullOrWhiteSpace(_options.StateFilesPath))
+          PluginConfig.UserConfigFolder = _options.StateFilesPath;
+        simVars = _pluginConfig.LoadCustomSimVars(_options.StateFiles);
+        model.Version += "<br/>" +
+          $"Custom configuration version {_options.ConfigVersion}<br/>" +
+          $"Custom State Definitions Source(s): {string.Join(", ", _options.StateFiles)}";
+      }
+      else {
+        simVars = _pluginConfig.LoadSimVarItems(false);
+      }
+      // always include the internal plugin states
+      simVars = simVars.Concat(_pluginConfig.LoadPluginStates());
 
-      // Get all classes with the TouchPortalCategory
+      // Get all classes with the TouchPortalCategory Attribute
       var classList = assemblyList.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalCategoryAttribute))).OrderBy(o => o.Name);
 
       // Loop through categories
       foreach (var cat in classList) {
         var catAttr = (TouchPortalCategoryAttribute)Attribute.GetCustomAttribute(cat, typeof(TouchPortalCategoryAttribute));
         Groups catId = catAttr.Id;
-        var newCat = model.Categories.FirstOrDefault(c => c.Id == catId);
+        var newCat = model.Categories.FirstOrDefault(c => c.CategoryId == catId);
         if (newCat == null) {
           newCat = new DocCategory {
-            Id = catId,
+            CategoryId = catId,
+            Id = $"{_options.PluginId}.{catId}",
             Name = Categories.FullCategoryName(catId),
           };
           model.Categories.Add(newCat);
@@ -135,7 +151,7 @@ namespace MSFSTouchPortalPlugin_Generator
         var categoryStates = simVars.Where(s => s.CategoryId == catId);
         foreach (SimVarItem state in categoryStates) {
           var newState = new DocState {
-            Id = state.TouchPortalStateId,
+            Id = state.TouchPortalStateId.Split('.').Last(),
             Type = state.TouchPortalValueType,
             Description = state.Name,
             DefaultValue = state.DefaultValue ?? string.Empty,
@@ -166,7 +182,6 @@ namespace MSFSTouchPortalPlugin_Generator
         };
         model.Settings.Add(setting);
       }
-      model.Settings = model.Settings.OrderBy(c => c.Name).ToList();
 
       return model;
     }
@@ -190,14 +205,22 @@ namespace MSFSTouchPortalPlugin_Generator
       // Show settings first
       s.Append("## Plugin Settings\n<details><summary><sub>Click to expand</sub></summary>\n\n");
       model.Settings.ForEach(setting => {
+        bool[] f = new[] { setting.MaxLength > 0, !double.IsNaN(setting.MinValue), !double.IsNaN(setting.MaxValue) };
         s.Append($"### {setting.Name}\n\n");
-        s.Append("| Read-only | Type | Default Value | Max. Length | Min. Value | Max. Value |\n");
-        s.Append("| --- | --- | --- | --- | --- | --- |\n");
-        s.Append($"| {setting.ReadOnly} | {setting.Type} | {setting.DefaultValue} ");
-        s.Append($"| {(setting.MaxLength > 0 ? setting.MaxLength : "N/A")} ");
-        s.Append($"| {(double.IsNaN(setting.MinValue) ? "N/A" : setting.MinValue)} ");
-        s.Append($"| {(double.IsNaN(setting.MaxValue) ? "N/A" : setting.MaxValue)} ");
-        s.Append("|\n\n");
+        s.Append("| Read-only | Type | Default Value");
+        if (f[0]) s.Append(" | Max. Length");
+        if (f[1]) s.Append(" | Min. Value");
+        if (f[2]) s.Append(" | Max. Value");
+        s.Append(" |\n");
+        s.Append("| --- | --- | ---");
+        for (var i = 0; i < 3; ++i)
+          if (f[i]) s.Append(" | ---");
+        s.Append(" |\n");
+        s.Append($"| {setting.ReadOnly} | {setting.Type} | {setting.DefaultValue}");
+        if (f[0]) s.Append(" | ").Append(setting.MaxLength);
+        if (f[1]) s.Append(" | ").Append(setting.MinValue);
+        if (f[2]) s.Append(" | ").Append(setting.MaxValue);
+        s.Append(" |\n\n");
         s.Append(setting.Description + "\n\n");
       });
       s.Append("</details>\n\n---\n\n");
@@ -253,6 +276,7 @@ namespace MSFSTouchPortalPlugin_Generator
         if (cat.States.Count > 0) {
           // Loop States
           s.Append("### States\n\n");
+          s.Append($" **Base Id:** {cat.Id}.State.\n\n");
           s.Append("| Id | SimVar Name | Description | Unit | Format | DefaultValue |\n");
           s.Append("| --- | --- | --- | --- | --- | --- |\n");
           cat.States.ForEach(state => {

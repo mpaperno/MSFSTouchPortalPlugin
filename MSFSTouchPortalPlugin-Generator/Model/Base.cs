@@ -8,7 +8,7 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     [Required, Range(1, int.MaxValue)]
     public int Sdk { get; set; } = 3;
     [JsonConverter(typeof(VersionNumberJsonConverter))]
-    [Required, Range(1, int.MaxValue)]
+    [Required, Range(1, uint.MaxValue)]
     public uint Version { get; set; }
     [Required, MinLength(5)]
     public string Name { get; set; } = string.Empty;

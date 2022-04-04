@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Constants;
@@ -13,6 +12,7 @@ using MSFSTouchPortalPlugin_Generator.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -23,13 +23,13 @@ namespace MSFSTouchPortalPlugin_Generator
 {
   internal class GenerateEntry : IGenerateEntry {
     private readonly ILogger<GenerateEntry> _logger;
-    private readonly IOptions<GeneratorOptions> _options;
+    private readonly GeneratorOptions _options;
     private readonly IReflectionService _reflectionSvc;
     private readonly PluginConfig _pluginConfig;
 
-    public GenerateEntry(ILogger<GenerateEntry> logger, IOptions<GeneratorOptions> options, IReflectionService reflectionSvc, PluginConfig pluginConfig) {
-      _logger = logger;
-      _options = options;
+    public GenerateEntry(ILogger<GenerateEntry> logger, GeneratorOptions options, IReflectionService reflectionSvc, PluginConfig pluginConfig) {
+      _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+      _options = options ?? throw new ArgumentNullException(nameof(options));
       _reflectionSvc = reflectionSvc ?? throw new ArgumentNullException(nameof(reflectionSvc));
       _pluginConfig = pluginConfig ?? throw new ArgumentNullException(nameof(pluginConfig));
 
@@ -40,30 +40,55 @@ namespace MSFSTouchPortalPlugin_Generator
 
     public void Generate() {
       // Find assembly
-      var a = Assembly.GetExecutingAssembly().GetReferencedAssemblies().FirstOrDefault(a => a.Name == _options.Value.PluginName);
+      var a = Assembly.GetExecutingAssembly().GetReferencedAssemblies().FirstOrDefault(a => a.Name == _options.PluginId);
 
       if (a == null) {
-        throw new FileNotFoundException("Unable to load assembly for reflection.");
+        _logger.LogError($"Unable to load assembly '{_options.PluginId}' for reflection.'");
+        return;
       }
 
       // Load assembly
       var assembly = Assembly.Load(a);
-      string basePath = $"%TP_PLUGIN_FOLDER%{_options.Value.PluginFolder}/";
 
-      // read default states config
-      // TODO: Allow configuration of which state config file(s) to read.
-      SimVarItem[] simVars = _pluginConfig.LoadSimVarItems(false).Concat(_pluginConfig.LoadPluginStates()).ToArray();
+      string basePath = $"%TP_PLUGIN_FOLDER%{_options.PluginFolder}/";
+      bool useCustomConfigs = _options.StateFiles.Any();
+
+      // Get version and see if we need a custom version number
+      VersionInfo.Assembly = assembly;
+      uint vNum = VersionInfo.GetProductVersionNumber() >> 8;  // strip the patch level
+      // add custom config version if using custom files
+      if (useCustomConfigs) {
+        uint cVer = _options.ConfigVersion << PluginConfig.ENTRY_FILE_CONF_VER_SHIFT;
+        if (cVer > PluginConfig.ENTRY_FILE_VER_MASK_CUSTOM)
+          cVer = PluginConfig.ENTRY_FILE_VER_MASK_CUSTOM;
+        vNum |= cVer;
+      }
+
+      // read states config
+      IEnumerable<SimVarItem> simVars = Array.Empty<SimVarItem>();
+      if (useCustomConfigs) {
+        if (!string.IsNullOrWhiteSpace(_options.StateFilesPath))
+          PluginConfig.UserConfigFolder = _options.StateFilesPath;
+        simVars = _pluginConfig.LoadCustomSimVars(_options.StateFiles);
+        _logger.LogInformation($"Generating entry.tp v{vNum:X} to '{_options.OutputPath}' with Custom states from file(s): {string.Join(", ", _options.StateFiles)}");
+      }
+      else {
+        simVars = _pluginConfig.LoadSimVarItems(false);
+        _logger.LogInformation($"Generating entry.tp v{vNum:X} to '{_options.OutputPath}' with Default states.");
+      }
+      // always include the internal plugin states
+      simVars = simVars.Concat(_pluginConfig.LoadPluginStates());
+
 
       var q = assembly.GetTypes().ToList();
 
       // Setup Base Model
-      VersionInfo.Assembly = assembly;
       var model = new Base {
         Sdk = 3,
-        Version = VersionInfo.GetProductVersionNumber(),
-        Name = _options.Value.PluginName,
-        Id = _options.Value.PluginName,
-        Plugin_start_cmd = $"{basePath}dist/{_options.Value.PluginName}.exe"
+        Version = vNum,
+        Name = _options.PluginName,
+        Id = _options.PluginId,
+        Plugin_start_cmd = $"{basePath}dist/{_options.PluginId}.exe"
       };
 
       // Get all classes with the TouchPortalCategory
@@ -73,7 +98,7 @@ namespace MSFSTouchPortalPlugin_Generator
       foreach (var cat in categoryClasses) {
         var att = (TouchPortalCategoryAttribute)Attribute.GetCustomAttribute(cat, typeof(TouchPortalCategoryAttribute));
         Groups catId = att.Id;
-        string catIdStr = $"{_options.Value.PluginName}.{catId}";
+        string catIdStr = $"{_options.PluginId}.{catId}";
         var category = model.Categories.FirstOrDefault(c => c.Id == catIdStr);
         if (category == null) {
           category = new TouchPortalCategory {
@@ -85,7 +110,7 @@ namespace MSFSTouchPortalPlugin_Generator
         }
 
         // workaround for backwards compat with mis-named actions in category InstrumentsSystems.Fuel
-        string actionCatId = _options.Value.PluginName + "." + Categories.ActionCategoryId(catId);
+        string actionCatId = _options.PluginId + "." + Categories.ActionCategoryId(catId);
 
         // Add actions
         var actions = cat.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalActionAttribute))).ToList();
@@ -190,7 +215,20 @@ namespace MSFSTouchPortalPlugin_Generator
       }
 
       var result = JsonConvert.SerializeObject(model, Formatting.Indented);
-      var dest = Path.Combine(_options.Value.TargetPath, "entry.tp");
+      var dest = Path.Combine(_options.OutputPath, "entry.tp");
+      File.WriteAllText(dest, result);
+      _logger.LogInformation($"Generated '{dest}'.");
+
+      if (useCustomConfigs)
+        return;
+
+      // Generate the entry.tp version with no states; use version as runtime indicator for plugin
+      model.Version |= PluginConfig.ENTRY_FILE_VER_MASK_NOSTATES;
+      foreach (var cat in model.Categories)
+        if (!cat.Id.EndsWith(".Plugin"))
+          cat.States.Clear();
+      result = JsonConvert.SerializeObject(model, Formatting.Indented);
+      dest = Path.Combine(_options.OutputPath, "entry_no-states.tp");
       File.WriteAllText(dest, result);
       _logger.LogInformation($"Generated '{dest}'.");
     }
