@@ -7,7 +7,6 @@ using System.IO;
 using System.Text;
 using System.Runtime.Serialization;
 using Microsoft.Extensions.Logging;
-//using SharpConfig;
 
 namespace MSFSTouchPortalPlugin.Configuration
 {
@@ -25,7 +24,23 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     public static string AppRootFolder    { get; set; } = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
     public static string AppConfigFolder  { get; set; } = Path.Combine(AppRootFolder, "Configuration");
-    public static string UserConfigFolder { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), RootName);
+
+    public static string UserConfigFolder {
+      get => _currentUserCfgFolder;
+      set {
+        if (string.IsNullOrWhiteSpace(value))
+          _currentUserCfgFolder = _defaultUserCfgFolder;
+        else
+          _currentUserCfgFolder = value;
+      }
+    }
+
+    private static readonly string _defaultUserCfgFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), RootName);
+    private static string _currentUserCfgFolder = _defaultUserCfgFolder;
+
+    public const uint ENTRY_FILE_VER_MASK_NOSTATES = 0x80000000;  // leading bit indicates an entry file with no static SimVar states at all (create all states dynamically)
+    public const uint ENTRY_FILE_VER_MASK_CUSTOM   = 0x7F000000;  // any of the other 7 bits indicates an entry file generated from custom config files (do not create any dynamic states)
+    public const ushort ENTRY_FILE_CONF_VER_SHIFT = 24;           // bit position of custom config version number, used as the last 7 bits of file version
 
     private readonly ILogger<PluginConfig> _logger;
 
@@ -55,19 +70,27 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     public IReadOnlyCollection<SimVarItem> LoadSimVarItems(bool isUserConfig = true, string filename = default) {
       List<SimVarItem> ret = new();
+
+      // qualify the file name and path
       if (filename == default)
         filename = StatesConfigFile;
-      string filepath = Path.Combine(isUserConfig ? UserConfigFolder : AppConfigFolder, filename);
-      if (!File.Exists(filepath)) {
-        _logger.LogWarning($"Cannot load SimVar states, file '{filename}' not found at '{filepath}'");
+      else if (string.IsNullOrWhiteSpace(Path.GetExtension(filename)))
+        filename += ".ini";
+      if (filename.IndexOfAny(new char[] { '\\', '/' }) < 0)
+        filename = Path.Combine(isUserConfig ? UserConfigFolder : AppConfigFolder, filename);
+
+      if (!File.Exists(filename)) {
+        _logger.LogError($"Cannot load SimVar states, file not found at '{filename}'");
         return ret;
       }
+
+      _logger.LogDebug($"Loading SimVars from file '{filename}'...");
       SharpConfig.Configuration cfg;
       try {
-        cfg = SharpConfig.Configuration.LoadFromFile(filepath, Encoding.UTF8);
+        cfg = SharpConfig.Configuration.LoadFromFile(filename, Encoding.UTF8);
       }
       catch (Exception e) {
-        _logger.LogWarning(e, $"Configuration LoadFromFile error in '{filepath}':");
+        _logger.LogWarning(e, $"Configuration LoadFromFile error in '{filename}':");
         return ret;
       }
       foreach (SharpConfig.Section item in cfg) {
@@ -86,15 +109,30 @@ namespace MSFSTouchPortalPlugin.Configuration
           continue;
         }
         simVar.Id = item.Name;
-        // check unique
-        if (ret.FirstOrDefault(s => s.Id == simVar.Id) != null) {
-          _logger.LogWarning($"Duplicate SimVar ID found for '{simVar.Id}', skipping.");
-          continue;
-        }
         simVar.TouchPortalStateId = $"{RootName}.{simVar.CategoryId}.State.{simVar.Id}";
-        ret.Add(simVar);
+        // check unique
+        if (ret.FindIndex(s => s.Id == simVar.Id) is int idx && idx > -1) {
+          _logger.LogWarning($"Duplicate SimVar ID found for '{simVar.Id}', overwriting.");
+          ret[idx] = simVar;
+        }
+        else {
+          ret.Add(simVar);
+        }
       }
 
+      _logger.LogDebug($"Loaded {ret.Count} SimVars from '{filename}'");
+      return ret;
+    }
+
+    public IReadOnlyCollection<SimVarItem> LoadCustomSimVars(IEnumerable<string> fileNames) {
+      SimVarItem[] ret = Array.Empty<SimVarItem>();
+      foreach (var file in fileNames) {
+        // special case for anything named "default" which indicates the States.ini file in the plugin's install folder
+        if (file.ToLower()[0..7] == "default")
+          ret = ret.Concat(LoadSimVarItems(false)).ToArray();
+        else
+          ret = ret.Concat(LoadSimVarItems(true, file)).ToArray();
+      }
       return ret;
     }
 
