@@ -45,6 +45,7 @@ namespace MSFSTouchPortalPlugin.Services
     private Dictionary<Definition, SimVarItem> statesDictionary = new();
     private Dictionary<string, PluginSetting> pluginSettingsDictionary = new();
     private readonly ConcurrentBag<Definition> _customIntervalStates = new();  // IDs of SimVars which need periodic value polling; concurrent because the polling happens in separate task from setter.
+    private readonly Dictionary<string, Definition> _settableSimVarIds = new();   // mapping of settable SimVar IDs for lookup in statesDictionary
     private readonly List<string> _dynamicStateIds = new();  // keep track of dynamically created states for clearing them if/when reloading sim var state files
     private readonly ConcurrentDictionary<string, Timer> _repeatingActionTimers = new();
 
@@ -177,6 +178,17 @@ namespace MSFSTouchPortalPlugin.Services
       _logger.LogDebug("PluginEventsTask task stopped.");
     }
 
+    // runs in PluginEventsTask
+    private void CheckPendingRequests() {
+      foreach (var def in _customIntervalStates) {
+        // Check if a value update is required based on the SimVar's internal tracking mechanism.
+        if (statesDictionary.TryGetValue(def, out var s) && s.UpdateRequired) {
+          s.SetPending(true);
+          _simConnectService.RequestDataOnSimObjectType(s);
+        }
+      }
+    }
+
     #endregion Startup, Shutdown and Processing Tasks
 
     #region SimConnect Events   /////////////////////////////////////
@@ -273,6 +285,7 @@ namespace MSFSTouchPortalPlugin.Services
 
       // clear out any old data
       _customIntervalStates.Clear();
+      _settableSimVarIds.Clear();
       RemoveDynamicStates();  // if any
       _simConnectService.ClearAllDataDefinitions();  // if any (SimConnectService keeps track of this internally)
 
@@ -281,6 +294,8 @@ namespace MSFSTouchPortalPlugin.Services
         // Does this var need value polling?
         if (simVar.NeedsScheduledRequest)
           _customIntervalStates.Add(simVar.Def);
+        if (simVar.CanSet)
+          _settableSimVarIds.Add(simVar.Id, simVar.Def);
         // Need a dynamic state?
         if (allStatesDynamic || (someStateDynamic && !defaultStates.Contains(simVar.Id))) {
           _dynamicStateIds.Add(simVar.TouchPortalStateId);  // keep track for removing them later if needed
@@ -290,6 +305,8 @@ namespace MSFSTouchPortalPlugin.Services
         // Register it. If the SimVar gets regular updates (not custom polling) then this also starts the data requests for this value.
         _simConnectService.RegisterToSimConnect(simVar);
       }
+
+      UpdateSettableStatesList();
     }
 
     private void RemoveDynamicStates() {
@@ -297,12 +314,15 @@ namespace MSFSTouchPortalPlugin.Services
         _client.RemoveState(id);
     }
 
-    private void CheckPendingRequests() {
-      foreach (var def in _customIntervalStates) {
-        // Check if a value update is required based on the SimVar's internal tracking mechanism.
-        if (statesDictionary.TryGetValue(def, out var s) && s.UpdateRequired) {
-          s.SetPending(true);
-          _simConnectService.RequestDataOnSimObjectType(s);
+    private void UpdateSettableStatesList() {
+      var list = (from s in statesDictionary.Values where s.CanSet select Categories.PrependCategoryName(s.CategoryId, s.Name) + $"  [{s.Id}]").OrderBy(n => n).ToArray();
+      _client.ChoiceUpdate(PluginId + ".Plugin.Action.SetSimVar.Data.0", list);
+    }
+
+    private void ClearRepeatingActions() {
+      foreach (var act in _repeatingActionTimers) {
+        if (_repeatingActionTimers.TryRemove(act.Key, out var tim)) {
+          tim.Dispose();
         }
       }
     }
@@ -369,6 +389,29 @@ namespace MSFSTouchPortalPlugin.Services
           }
           break;
 
+        case Plugin.SetSimVar:
+          if (dataArry.Length > 2 && dataArry[0].EndsWith(']') && (dataArry[0].IndexOf('[') is var brIdx && brIdx++ > -1)) {
+            var varId = dataArry[0][brIdx..^1];
+            if (!_settableSimVarIds.TryGetValue(varId, out Definition def) || !statesDictionary.TryGetValue(def, out SimVarItem simVar)) {
+              _logger.LogWarning($"Could not find definition for settable SimVar Id: '{varId}' Name: '{dataArry[0]}'");
+              break;
+            }
+            if (simVar.IsStringType) {
+              if (!simVar.SetValue(new StringVal(dataArry[1]))) {
+                _logger.LogWarning($"Could not set string value '{dataArry[1]}' for SimVar Id: '{varId}' Name: '{dataArry[0]}'");
+                break;
+              }
+            }
+            else if (!TryEvaluateValue(dataArry[1], out double dVal) || !simVar.SetValue(dVal)) {
+              _logger.LogWarning($"Could not set numeric value '{dataArry[1]}' for SimVar Id: '{varId}' Name: '{dataArry[0]}'");
+              break;
+            }
+            if (new BooleanString(dataArry[2]) && !_simConnectService.ReleaseAIControl(simVar.Def))
+              break;
+            _simConnectService.SetSimVar(simVar);
+          }
+          break;
+
         default:
           // No other types of events supported right now.
           break;
@@ -377,42 +420,32 @@ namespace MSFSTouchPortalPlugin.Services
 
     private void ProcessSimEvent(ActionEventType action, Enum eventId, in string[] dataArry) {
       uint dataUint = 0;
-      string eventName = _reflectionService.GetSimEventNameById(eventId);  // just for logging
       if (action.ValueIndex > -1 && action.ValueIndex < dataArry.Length) {
         double dataReal = double.NaN;
         var valStr = dataArry[action.ValueIndex];
-        try {
-          switch (action.ValueType) {
-            case DataType.Number:
-            case DataType.Text:
-              dataReal = Convert.ToDouble(_expressionEvaluator.Compute(valStr, null));
-              break;
-            case DataType.Switch:
-              dataReal = new BooleanString(valStr);
-              break;
-          }
-          if (!double.IsNaN(dataReal)) {
-            if (!double.IsNaN(action.MinValue))
-              dataReal = Math.Max(dataReal, action.MinValue);
-            if (!double.IsNaN(action.MaxValue))
-              dataReal = Math.Min(dataReal, action.MaxValue);
-            dataUint = (uint)Math.Round(dataReal);
-          }
+        switch (action.ValueType) {
+          case DataType.Number:
+          case DataType.Text:
+            if (!TryEvaluateValue(valStr, out dataReal)) {
+              _logger.LogWarning($"Data conversion failed for action '{action.ActionId}' on sim event '{_reflectionService.GetSimEventNameById(eventId)}'.");
+              return;
+            }
+            dataReal = Convert.ToDouble(_expressionEvaluator.Compute(valStr, null));
+            break;
+          case DataType.Switch:
+            dataReal = new BooleanString(valStr);
+            break;
         }
-        catch (Exception e) {
-          _logger.LogWarning(e, $"Action {action.ActionId} for sim event {eventName} with data string '{valStr}' - Failed to convert data to numeric value.");
+        if (!double.IsNaN(dataReal)) {
+          if (!double.IsNaN(action.MinValue))
+            dataReal = Math.Max(dataReal, action.MinValue);
+          if (!double.IsNaN(action.MaxValue))
+            dataReal = Math.Min(dataReal, action.MaxValue);
+          dataUint = (uint)Math.Round(dataReal);
         }
       }
-      _logger.LogDebug($"Firing Sim Event - action: {action.ActionId}; category: {action.CategoryId}; name: {eventName}; data {dataUint}");
+      _logger.LogDebug($"Firing Sim Event - action: {action.ActionId}; category: {action.CategoryId}; name: {_reflectionService.GetSimEventNameById(eventId)}; data {dataUint}");
       _simConnectService.TransmitClientEvent(action.CategoryId, eventId, dataUint);
-    }
-
-    private void ClearRepeatingActions() {
-      foreach (var act in _repeatingActionTimers) {
-        if (_repeatingActionTimers.TryRemove(act.Key, out var tim)) {
-          tim.Dispose();
-        }
-      }
     }
 
     /// <summary>
@@ -445,6 +478,18 @@ namespace MSFSTouchPortalPlugin.Services
       if (!_simConnectService.IsConnected())
         stat = _simConnectionRequest.IsSet ? "connecting" : "false";
       _client.StateUpdate(PluginId + ".Plugin.State.Connected", stat);
+    }
+
+    private bool TryEvaluateValue(string strValue, out double value) {
+      value = double.NaN;
+      try {
+        value = Convert.ToDouble(_expressionEvaluator.Compute(strValue, null));
+      }
+      catch (Exception e) {
+        _logger.LogWarning(e, $"Failed to convert data value '{strValue}' to numeric.");
+        return false;
+      }
+      return true;
     }
 
     #endregion Plugin Events and Handlers

@@ -14,19 +14,19 @@ namespace MSFSTouchPortalPlugin.Constants {
     /// <summary>
     /// Returns true if the unit string corresponds to a string type.
     /// </summary>
-    internal static bool IsStringType(string unit) => unit == String;
+    internal static bool IsStringType(string unit) => unit.ToLower() == String;
     /// <summary>
     /// Returns true if the unit string corresponds to an integer type.
     /// </summary>
-    internal static bool IsIntegraltype(string unit) => _integralUnits.Contains(unit);
+    internal static bool IsIntegralType(string unit) => _integralUnits.Contains(unit);
     /// <summary>
     /// Returns true if the unit string corresponds to a boolean type.
     /// </summary>
-    internal static bool IsBooleantype(string unit) => _booleanUnits.Contains(unit);
+    internal static bool IsBooleanType(string unit) => _booleanUnits.Contains(unit);
     /// <summary>
     /// Returns true if the unit string corresponds to a real (float/double) type.
     /// </summary>
-    internal static bool IsRealType(string unit) => !IsStringType(unit) && !IsIntegraltype(unit);
+    internal static bool IsRealType(string unit) => !IsStringType(unit) && !IsBooleanType(unit) && !IsIntegralType(unit);
 
     internal const string amp = "amp";
     internal const string ampere = "ampere";

@@ -1,4 +1,5 @@
-﻿using MSFSTouchPortalPlugin.Enums;
+﻿using Microsoft.FlightSimulator.SimConnect;
+using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Types;
 using System;
 using System.Runtime.CompilerServices;
@@ -23,7 +24,9 @@ namespace MSFSTouchPortalPlugin.Interfaces
     void SetNotificationGroupPriorities();
     void ClearAllDataDefinitions();
     bool RegisterToSimConnect(SimVarItem simVar);
-    bool RequestDataOnSimObjectType(SimVarItem simVar);
+    bool RequestDataOnSimObjectType(SimVarItem simVar, SIMCONNECT_SIMOBJECT_TYPE objectType = SIMCONNECT_SIMOBJECT_TYPE.USER);
     bool TransmitClientEvent(Groups group, Enum eventId, uint data);
+    bool SetSimVar(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER);
+    bool ReleaseAIControl(Definition def, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER);
   }
 }

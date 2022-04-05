@@ -13,6 +13,15 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     [TouchPortalActionMapping("Disconnect", "Off")]
     [TouchPortalActionMapping("ReloadStates", "Reload States")]
     public static readonly object Connection;
+
+
+    [TouchPortalAction("SetSimVar", "Set Simulator Variable Value", "MSFS", "Sets a value on any loaded State which is marked as settable.", "Set Variable {0} to {1} (release AI: {2})")]
+    [TouchPortalActionChoice(new[] { "<not connected>" }, "")]
+    [TouchPortalActionText("0")]
+    //[TouchPortalActionChoice(new[] { "No", "Yes" })]
+    [TouchPortalActionSwitch(false)]
+    [TouchPortalActionMapping("SetSimVar")]
+    public static readonly object SetSimVar;
   }
 
   [TouchPortalCategory(Groups.Plugin)]
@@ -94,6 +103,8 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     ActionRepeatIntervalInc,
     ActionRepeatIntervalDec,
     ActionRepeatIntervalSet,
+
+    SetSimVar,
   }
 
   // Dynamically generated SimConnect client event IDs are "parented" to this enum type,

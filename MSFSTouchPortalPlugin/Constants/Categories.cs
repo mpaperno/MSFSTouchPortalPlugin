@@ -36,6 +36,13 @@ namespace MSFSTouchPortalPlugin.Constants
     }
 
     /// <summary>
+    /// Returns value with the category name prepended to it using the common separator string.
+    /// </summary>
+    internal static string PrependCategoryName(Groups catId, string value) {
+      return CategoryName(catId) + NameSeparator + value;
+    }
+
+    /// <summary>
     /// Returns category name with the CategoryPrefix added. Or just the CategoryPrefix if the category id is invalid.
     /// </summary>
     internal static string FullCategoryName(Groups catId) {
@@ -47,9 +54,6 @@ namespace MSFSTouchPortalPlugin.Constants
     /// <summary>
     /// Returns value with the full category name prepended to it using the common separator string.
     /// </summary>
-    /// <param name="catId"></param>
-    /// <param name="value"></param>
-    /// <returns></returns>
     internal static string PrependFullCategoryName(Groups catId, string value) {
       return FullCategoryName(catId) + NameSeparator + value;
     }

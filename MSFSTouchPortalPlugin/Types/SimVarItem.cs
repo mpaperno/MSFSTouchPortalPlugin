@@ -55,8 +55,8 @@ namespace MSFSTouchPortalPlugin.Types
         _unit = value;
         // set up type information based on the new Unit.
         IsStringType = Units.IsStringType(_unit);
-        IsBooleanType = !IsStringType && Units.IsBooleantype(_unit);
-        IsIntegralType = !IsStringType && !IsBooleanType && Units.IsIntegraltype(_unit);
+        IsBooleanType = !IsStringType && Units.IsBooleanType(_unit);
+        IsIntegralType = !IsStringType && !IsBooleanType && Units.IsIntegralType(_unit);
         IsRealType = !IsStringType && !IsBooleanType && !IsIntegralType;
         SimConnectDataType = IsStringType ? SIMCONNECT_DATATYPE.STRING256 : IsIntegralType ? SIMCONNECT_DATATYPE.INT64 : IsBooleanType ? SIMCONNECT_DATATYPE.INT32 : SIMCONNECT_DATATYPE.FLOAT64;
         StorageDataType = IsStringType ? typeof(StringVal) : IsIntegralType ? typeof(long) : IsBooleanType ? typeof(uint) : typeof(double);
@@ -203,9 +203,15 @@ namespace MSFSTouchPortalPlugin.Types
     }
 
     internal bool SetValue(double value) {
-      if (!IsStringType)
+      if (IsStringType)
+        return false;
+      if (IsRealType)
         Value = value;
-      return !IsStringType;
+      else if (IsBooleanType)
+        Value = ((long)value != 0);
+      else
+        Value = (long)value;
+      return true;
     }
 
     internal bool SetValue(long value) {
@@ -220,6 +226,19 @@ namespace MSFSTouchPortalPlugin.Types
       return IsBooleanType;
     }
 
+    internal bool SetValue(string value) {
+      switch (Value) {
+        case string:
+          return SetValue(new StringVal(value));
+        case uint:
+          return SetValue((uint)new BooleanString(value));
+        case double:
+        case long:
+          return double.TryParse(value, out var dVal) && SetValue(dVal);
+      }
+      return false;
+    }
+
     /// <summary>
     /// Prefer using this method, or one of the type-specific SetValue() overloads to
     /// to set the Value property, vs. direct access. Returns false if the given object's
@@ -232,7 +251,7 @@ namespace MSFSTouchPortalPlugin.Types
           uint v => SetValue(v),
           long v => SetValue(v),
           StringVal v => SetValue(v),
-          _ => false
+          _ => SetValue(value.ToString())
         };
       }
       catch {

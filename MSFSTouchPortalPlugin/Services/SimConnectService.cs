@@ -122,7 +122,7 @@ namespace MSFSTouchPortalPlugin.Services
       OnDisconnect?.Invoke();
     }
 
-    public void ReceiveMessages() {
+    private void ReceiveMessages() {
       _logger.LogDebug("ReceiveMessages task started.");
       try {
         while (_connected) {
@@ -184,8 +184,13 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     private void ClearDataDefinition(Definition def) {
-      _simConnect.ClearDataDefinition(def);
-      DbgAddSendRecord($"ClearDataDefinition({def})");
+      try {
+        _simConnect.ClearDataDefinition(def);
+        DbgAddSendRecord($"ClearDataDefinition({def})");
+      }
+      catch (Exception e) {
+        _logger.LogError(e, $"ClearDataDefinition({def}) failed.");
+      }
     }
 
     public bool RegisterToSimConnect(SimVarItem simVar) {
@@ -234,10 +239,10 @@ namespace MSFSTouchPortalPlugin.Services
       _addedDefinitions.Clear();
     }
 
-    public bool RequestDataOnSimObjectType(SimVarItem simVar) {
+    public bool RequestDataOnSimObjectType(SimVarItem simVar, SIMCONNECT_SIMOBJECT_TYPE objectType = SIMCONNECT_SIMOBJECT_TYPE.USER) {
       if (_connected) {
         try {
-          _simConnect.RequestDataOnSimObjectType(simVar.Def, simVar.Def, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
+          _simConnect.RequestDataOnSimObjectType(simVar.Def, simVar.Def, 0, objectType);
           DbgAddSendRecord($"RequestDataOnSimObjectType({simVar.ToDebugString()})");
           return true;
         }
@@ -249,6 +254,44 @@ namespace MSFSTouchPortalPlugin.Services
 
       return false;
     }
+
+    /// <summary>
+    /// Set the value associated with a SimVar
+    /// </summary>
+    public bool SetSimVar(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER) {
+      if (!_connected)
+        return false;
+      try {
+        _simConnect.SetDataOnSimObject(simVar.Def, objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, simVar.Value);
+        DbgAddSendRecord($"SetDataOnSimObject({simVar.ToDebugString()})");
+        return true;
+      }
+      catch (Exception e) {
+        _logger.LogError(e, $"SetSimVar({simVar.ToDebugString()}) failed.");
+      }
+      return false;
+    }
+
+    /// <summary>
+    /// Clear the AI control of a simulated object, typically an aircraft, in order for it to be controlled by a SimConnect client.
+    /// </summary>
+    /// <param name="def">The previously-registered data definition ID of the variable to release.</param>
+    /// <returns>True on request success, false otherwise (this is the status of transmitting the command, not whether control was actually released).</returns>
+    public bool ReleaseAIControl(Definition def, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER) {
+      if (!_connected)
+        return false;
+      try {
+        _simConnect.AIReleaseControl(objectId, def);
+        DbgAddSendRecord($"AIReleaseControl({def})");
+        return true;
+      }
+      catch (Exception e) {
+        _logger.LogError(e, $"ReleaseAIControl({def}) failed.");
+      }
+      return false;
+    }
+
+    #region SimConnect Event Handlers
 
     private void Simconnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data) {
       _logger.LogInformation("Received shutdown command from SimConnect, disconnecting.");
@@ -290,6 +333,8 @@ namespace MSFSTouchPortalPlugin.Services
       _logger.LogDebug($"Simconnect_OnRecvEvent Recieved: Group: {grpName}; Event: {eventId}");
     }
 
+    #endregion SimConnect Event Handlers
+
     #region IDisposable Support
     private bool disposedValue; // To detect redundant calls
 
@@ -313,7 +358,7 @@ namespace MSFSTouchPortalPlugin.Services
       Dispose(true);
       GC.SuppressFinalize(this);
     }
-    #endregion
+    #endregion IDisposable Support
 
     #region Request Debugging
 
