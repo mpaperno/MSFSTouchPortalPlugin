@@ -430,7 +430,6 @@ namespace MSFSTouchPortalPlugin.Services
               _logger.LogWarning($"Data conversion failed for action '{action.ActionId}' on sim event '{_reflectionService.GetSimEventNameById(eventId)}'.");
               return;
             }
-            dataReal = Convert.ToDouble(_expressionEvaluator.Compute(valStr, null));
             break;
           case DataType.Switch:
             dataReal = new BooleanString(valStr);
