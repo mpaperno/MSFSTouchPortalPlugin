@@ -3,9 +3,10 @@
 namespace MSFSTouchPortalPlugin.Attributes
 {
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
-  internal class TouchPortalActionMappingAttribute : Attribute {
-    public string ActionId;
-    public string[] Values;
+  public class TouchPortalActionMappingAttribute : Attribute
+  {
+    public string ActionId { get; set; }
+    public string[] Values { get; set; } = Array.Empty<string>();
 
     public TouchPortalActionMappingAttribute(string actionId, string value) :
       this(actionId, new [] { value }) { }

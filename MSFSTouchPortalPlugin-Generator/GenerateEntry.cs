@@ -39,22 +39,12 @@ namespace MSFSTouchPortalPlugin_Generator
     }
 
     public void Generate() {
-      // Find assembly
-      var a = Assembly.GetExecutingAssembly().GetReferencedAssemblies().FirstOrDefault(a => a.Name == _options.PluginId);
-
-      if (a == null) {
-        _logger.LogError($"Unable to load assembly '{_options.PluginId}' for reflection.'");
-        return;
-      }
-
-      // Load assembly
-      var assembly = Assembly.Load(a);
 
       string basePath = $"%TP_PLUGIN_FOLDER%{_options.PluginFolder}/";
       bool useCustomConfigs = _options.StateFiles.Any();
 
       // Get version and see if we need a custom version number
-      VersionInfo.Assembly = assembly;
+      VersionInfo.AssemblyLocation = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _options.PluginId + ".dll");
       uint vNum = VersionInfo.GetProductVersionNumber() >> 8;  // strip the patch level
       // add custom config version if using custom files
       if (useCustomConfigs) {
@@ -79,9 +69,6 @@ namespace MSFSTouchPortalPlugin_Generator
       // always include the internal plugin states
       simVars = simVars.Concat(_pluginConfig.LoadPluginStates());
 
-
-      var q = assembly.GetTypes().ToList();
-
       // Setup Base Model
       var model = new Base {
         Sdk = 3,
@@ -92,50 +79,35 @@ namespace MSFSTouchPortalPlugin_Generator
       if (!_options.Debug)
         model.Plugin_start_cmd = $"{basePath}dist/{_options.PluginId}.exe";
 
-
-      // Get all classes with the TouchPortalCategory
-      var categoryClasses = q.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalCategoryAttribute))).OrderBy(o => o.Name);
-
-      // For each category, add to model
-      foreach (var cat in categoryClasses) {
-        var att = (TouchPortalCategoryAttribute)Attribute.GetCustomAttribute(cat, typeof(TouchPortalCategoryAttribute));
-        Groups catId = att.Id;
-        string catIdStr = $"{_options.PluginId}.{catId}";
-        var category = model.Categories.FirstOrDefault(c => c.Id == catIdStr);
-        if (category == null) {
-          category = new TouchPortalCategory {
-            Id = catIdStr,
-            Name = Categories.FullCategoryName(catId),
-            Imagepath = basePath + Categories.CategoryImage(catId)
-          };
-          model.Categories.Add(category);
-        }
+      var categegoryAttribs = _reflectionSvc.GetCategoryAttributes();
+      foreach (var catAttrib in categegoryAttribs) {
+        var category = new TouchPortalCategory {
+          Id = $"{_options.PluginId}.{catAttrib.Id}",
+          Name = Categories.FullCategoryName(catAttrib.Id),
+          Imagepath = basePath + catAttrib.Imagepath
+        };
+        model.Categories.Add(category);
 
         // workaround for backwards compat with mis-named actions in category InstrumentsSystems.Fuel
-        string actionCatId = _options.PluginId + "." + Categories.ActionCategoryId(catId);
+        string actionCatId = _options.PluginId + "." + Categories.ActionCategoryId(catAttrib.Id);
 
-        // Add actions
-        var actions = cat.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalActionAttribute))).ToList();
-        actions.ForEach(act => {
-          var actionAttribute = (TouchPortalActionAttribute)Attribute.GetCustomAttribute(act, typeof(TouchPortalActionAttribute));
+        foreach (var actionAttrib in catAttrib.Actions) {
           var action = new TouchPortalAction {
-            Id = $"{actionCatId}.Action.{actionAttribute.Id}",
-            Name = actionAttribute.Name,
-            Prefix = actionAttribute.Prefix,
-            Type = actionAttribute.Type,
-            Description = actionAttribute.Description,
+            Id = $"{actionCatId}.Action.{actionAttrib.Id}",
+            Name = actionAttrib.Name,
+            Prefix = actionAttrib.Prefix,
+            Type = actionAttrib.Type,
+            Description = actionAttrib.Description,
             TryInline = true,
-            Format = actionAttribute.Format,
-            HasHoldFunctionality = actionAttribute.HasHoldFunctionality,
+            Format = actionAttrib.Format,
+            HasHoldFunctionality = actionAttrib.HasHoldFunctionality,
           };
 
-          // Action Data
-          var dataAttributes = act.GetCustomAttributes<TouchPortalActionDataAttribute>();
-          if (dataAttributes.Any()) {
-            for (int i = 0, e = dataAttributes.Count(); i < e; ++i) {
-              var attrib = dataAttributes.ElementAt(i);
+          if (actionAttrib.Data.Any()) {
+            int i = 0;
+            foreach (var attrib in actionAttrib.Data) {
               var data = new TouchPortalActionData {
-                Id = $"{action.Id}.Data.{i}",
+                Id = $"{action.Id}.Data.{i++}",
                 Type = attrib.Type,
                 Label = attrib.Label ?? "Action",
                 DefaultValue = attrib.GetDefaultValue(),
@@ -148,23 +120,20 @@ namespace MSFSTouchPortalPlugin_Generator
               action.Data.Add(data);
             }
             action.Format = string.Format(action.Format, action.Data.Select(d => $"{{${d.Id}$}}").ToArray());
-          }
+          }  // action data
 
           // validate unique ID
           if (category.Actions.FirstOrDefault(a => a.Id == action.Id) == null)
             category.Actions.Add(action);
           else
             _logger.LogWarning($"Duplicate action ID found: '{action.Id}', skipping.'");
-        });
+
+        }  // actions
 
         // Sort the actions
         category.Actions = category.Actions.OrderBy(c => c.Name).ToList();
 
-        // States
-        if (category.States.Any())
-          continue;  // skip if already added for this category
-
-        var categoryStates = simVars.Where(s => s.CategoryId == catId);
+        var categoryStates = simVars.Where(s => s.CategoryId == catAttrib.Id);
         foreach (SimVarItem state in categoryStates) {
           var newState = new TouchPortalState {
             Id = state.TouchPortalStateId,
@@ -181,6 +150,7 @@ namespace MSFSTouchPortalPlugin_Generator
 
         // Sort the states
         category.States = category.States.OrderBy(c => c.Description).ToList();
+
       }  // categories loop
 
       // Settings

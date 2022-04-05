@@ -48,19 +48,11 @@ namespace MSFSTouchPortalPlugin_Generator
     }
 
     private DocBase CreateModel() {
-      // Find assembly
-      var a = Assembly.GetExecutingAssembly().GetReferencedAssemblies().FirstOrDefault(a => a.Name == _options.PluginId);
 
-      if (a == null) {
-        _logger.LogError($"Unable to load assembly '{_options.PluginId}' for reflection.'");
-        return null;
-      }
+      // set plugin file location for version info
+      VersionInfo.AssemblyLocation = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _options.PluginId + ".dll");
 
-      var assembly = Assembly.Load(a);
-      var assemblyList = assembly.GetTypes().ToList();
-
-      VersionInfo.Assembly = assembly;
-
+      // create the base model
       var model = new DocBase {
         Title = _options.PluginName + " Documentation",
         Overview = "This plugin will provide a two-way interface between Touch Portal and Flight Simulators which use SimConnect, such as Microsoft Flight Simulator 2020 and FS-X.",
@@ -83,72 +75,59 @@ namespace MSFSTouchPortalPlugin_Generator
       // always include the internal plugin states
       simVars = simVars.Concat(_pluginConfig.LoadPluginStates());
 
-      // Get all classes with the TouchPortalCategory Attribute
-      var classList = assemblyList.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalCategoryAttribute))).OrderBy(o => o.Name);
+      var categegoryAttribs = _reflectionSvc.GetCategoryAttributes();
+      foreach (var catAttrib in categegoryAttribs) {
+        var category = new DocCategory {
+          CategoryId = catAttrib.Id,
+          Id = $"{_options.PluginId}.{catAttrib.Id}",
+          Name = catAttrib.Name
+        };
+        model.Categories.Add(category);
 
-      // Loop through categories
-      foreach (var cat in classList) {
-        var catAttr = (TouchPortalCategoryAttribute)Attribute.GetCustomAttribute(cat, typeof(TouchPortalCategoryAttribute));
-        Groups catId = catAttr.Id;
-        var newCat = model.Categories.FirstOrDefault(c => c.CategoryId == catId);
-        if (newCat == null) {
-          newCat = new DocCategory {
-            CategoryId = catId,
-            Id = $"{_options.PluginId}.{catId}",
-            Name = Categories.FullCategoryName(catId),
+        // workaround for backwards compat with mis-named actions in category InstrumentsSystems.Fuel
+        string actionCatId = _options.PluginId + "." + Categories.ActionCategoryId(catAttrib.Id);
+
+        foreach (var actionAttrib in catAttrib.Actions) {
+          var action = new DocAction {
+            Name = actionAttrib.Name,
+            Description = actionAttrib.Description,
+            Type = actionAttrib.Type,
+            Format = actionAttrib.Format,
+            HasHoldFunctionality = actionAttrib.HasHoldFunctionality,
           };
-          model.Categories.Add(newCat);
-        }
+          category.Actions.Add(action);
 
-        // Loop through Actions
-        var actions = cat.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalActionAttribute))).ToList();
-        actions.ForEach(act => {
-          var actionAttribute = act.GetCustomAttribute<TouchPortalActionAttribute>();
-          var newAct = new DocAction {
-            Name = actionAttribute.Name,
-            Description = actionAttribute.Description,
-            Type = actionAttribute.Type,
-            Format = actionAttribute.Format,
-            HasHoldFunctionality = actionAttribute.HasHoldFunctionality
-          };
+          if (actionAttrib.Data.Any()) {
+            foreach (var attrib in actionAttrib.Data) {
+              var data = new DocActionData {
+                Type = attrib.Type,
+                DefaultValue = attrib.GetDefaultValue()?.ToString(),
+                Values = attrib.ChoiceValues != null ? string.Join(", ", attrib.ChoiceValues) : "",
+                MinValue = attrib.MinValue,
+                MaxValue = attrib.MaxValue,
+                AllowDecimals = attrib.AllowDecimals,
+              };
 
-          // Loop through Action Data
-          var dataAttributes = act.GetCustomAttributes<TouchPortalActionDataAttribute>();
-          foreach (var attrib in dataAttributes) {
-            var data = new DocActionData {
-              Type = attrib.Type,
-              DefaultValue = attrib.GetDefaultValue()?.ToString(),
-              Values = attrib.ChoiceValues != null ? string.Join(", ", attrib.ChoiceValues) : "",
-              MinValue = attrib.MinValue,
-              MaxValue = attrib.MaxValue,
-              AllowDecimals = attrib.AllowDecimals
-            };
-            newAct.Data.Add(data);
-          }
+              action.Data.Add(data);
+            }
+          }  // action data
 
-          // Loop through Action mappings
-          var mapAttribs = act.GetCustomAttributes<MSFSTouchPortalPlugin.Attributes.TouchPortalActionMappingAttribute>();
-          foreach (var attrib in mapAttribs) {
+          foreach (var attrib in actionAttrib.Mappings) {
             var map = new DocActionMapping {
               ActionId = attrib.ActionId,
               Values = attrib.Values,
             };
-            newAct.Mappings.Add(map);
+            action.Mappings.Add(map);
           }
           // Warn about missing mappings
-          if (!mapAttribs.Any())
-            _logger.LogWarning($"No event mappings found for action ID '{actionAttribute.Id}' in category '{cat.Name}'");
+          if (!actionAttrib.Mappings.Any())
+            _logger.LogWarning($"No event mappings found for action ID '{actionAttrib.Id}' in category '{category.Name}'");
+        }  // actions
 
-          newCat.Actions.Add(newAct);
-        });
-
-        newCat.Actions = newCat.Actions.OrderBy(c => c.Name).ToList();
+        category.Actions = category.Actions.OrderBy(c => c.Name).ToList();
 
         // Loop through States
-        if (newCat.States.Any())
-          continue;  // skip if already added for this category
-
-        var categoryStates = simVars.Where(s => s.CategoryId == catId);
+        var categoryStates = simVars.Where(s => s.CategoryId == catAttrib.Id);
         foreach (SimVarItem state in categoryStates) {
           var newState = new DocState {
             Id = state.TouchPortalStateId.Split('.').Last(),
@@ -160,11 +139,11 @@ namespace MSFSTouchPortalPlugin_Generator
             FormattingString = state.FormattingString,
             CanSet = state.CanSet,
           };
-          newCat.States.Add(newState);
+          category.States.Add(newState);
         }
 
         // Sort the states
-        newCat.States = newCat.States.OrderBy(c => c.Id).ToList();
+        category.States = category.States.OrderBy(c => c.Id).ToList();
       }  // categories loop
 
       // Settings
@@ -198,8 +177,9 @@ namespace MSFSTouchPortalPlugin_Generator
       // Table of Contents
       s.Append("## Table of Contents\n\n");
       s.Append("[Plugin Settings](#plugin-settings)\n\n");
+      s.Append("[Actions and States by Category](#actions-and-states-by-category)\n\n");
       model.Categories.ForEach(cat => {
-        s.Append($"[{cat.Name}](#{cat.Name.Replace(" ", "-").ToLower()})\n\n");
+        s.Append($"* [{cat.Name}](#{cat.Name.Replace(" ", "-").ToLower()})\n\n");
       });
       s.Append("---\n\n");
 
@@ -226,17 +206,24 @@ namespace MSFSTouchPortalPlugin_Generator
       });
       s.Append("</details>\n\n---\n\n");
 
+      s.Append("## Actions and States by Category\n\n");
+
       // Loop Categories
       model.Categories.ForEach(cat => {
-        s.Append($"## {cat.Name}\n<details><summary><sub>Click to expand</sub></summary>\n\n");
+        s.Append($"### {cat.Name}\n<details><summary><sub>Click to expand</sub></summary>\n\n");
 
         // Loop Actions
         if (cat.Actions.Count > 0) {
-          s.Append("### Actions\n\n");
+          s.Append("#### Actions\n\n");
           s.Append("<table>\n");   // use HTML table for row valign attribute
-          s.Append("<tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th>" +
+          s.Append("<tr valign='bottom'>" +
+            "<th>Name</th>" +
+            "<th>Description</th>" +
+            "<th>Format</th>" +
             "<th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th>" +
-            "<th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>\n");
+            (cat.CategoryId != Groups.Plugin ? "<th>Sim Event(s)</th>" : "") +
+            "<th>On<br/>Hold</sub></div></th>" +
+            "</tr>\n");
           cat.Actions.ForEach(act => {
             s.Append($"<tr valign='top'><td>{act.Name}</td><td>{act.Description}</td><td>{act.Format}</td>");
             // Loop action data
@@ -257,26 +244,32 @@ namespace MSFSTouchPortalPlugin_Generator
                 s.Append($" <sub>&lt;max: {ad.MaxValue.ToString($"F{prec}")}&gt;</sub>");  // seriously... printf("%.*f", prec, val) anyone?
               s.Append("</li>\n");
             });
-            s.Append($"</ol></td>\n<td>");
-            if (act.Mappings.Count > 2)  // collapsible only if more than 2 items
-              s.Append($"<details><summary><sub>details</sub></summary>");
-            s.Append("<dl>");
-            act.Mappings.ForEach(am => {
-              if (am.Values?.Length > 0)
-                s.Append($"<dt>{string.Join("+", am.Values)}</dt>");
-              s.Append($"<dd>{am.ActionId}</dd>");
-            });
-            s.Append($"</dl>");
-            if (act.Mappings.Count > 2)
-              s.Append($"</details>");
-            s.Append($"</td>\n<td align='center'>{(act.HasHoldFunctionality ? "&#9745;" : "")}</td></tr>\n");  // U+2611 Ballot Box with Check Emoji
+            s.Append("</ol></td>\n");
+            // mappings (only for SimConnect events)
+            if (cat.CategoryId != Groups.Plugin) {
+              s.Append("<td>");
+              if (act.Mappings.Count > 2)  // collapsible only if more than 2 items
+                s.Append("<details><summary><sub>details</sub></summary>");
+              s.Append("<dl>");
+              act.Mappings.ForEach(am => {
+                if (am.Values?.Length > 0)
+                  s.Append($"<dt>{string.Join("+", am.Values)}</dt>");
+                s.Append($"<dd>{am.ActionId}</dd>");
+              });
+              s.Append($"</dl>");
+              if (act.Mappings.Count > 2)
+                s.Append($"</details>");
+              s.Append("</td>\n");
+            }
+            // has hold
+            s.Append($"<td align='center'>{(act.HasHoldFunctionality ? "&#9745;" : "")}</td></tr>\n");  // U+2611 Ballot Box with Check Emoji
           });
           s.Append("</table>\n\n\n");
         }
 
         if (cat.States.Count > 0) {
           // Loop States
-          s.Append("### States\n\n");
+          s.Append("#### States\n\n");
           s.Append($" **Base Id:** {cat.Id}.State.\n\n");
           s.Append("| Id | SimVar Name | Description | Unit | Format | DefaultValue | Can Set |\n");
           s.Append("| --- | --- | --- | --- | --- | --- | --- |\n");

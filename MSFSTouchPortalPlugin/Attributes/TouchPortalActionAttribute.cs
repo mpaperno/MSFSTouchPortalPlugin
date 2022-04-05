@@ -13,6 +13,8 @@ namespace MSFSTouchPortalPlugin.Attributes
     public string Format { get; set; }
     public string Type { get; set; }
     public bool HasHoldFunctionality { get; set; }
+    public TouchPortalActionDataAttribute[] Data { get; set; } = Array.Empty<TouchPortalActionDataAttribute>();
+    public TouchPortalActionMappingAttribute[] Mappings { get; set; } = Array.Empty<TouchPortalActionMappingAttribute>();
 
     public TouchPortalActionAttribute(string id, string name, string prefix, string description, string format, bool holdable = false) {
       SetupProperties(id, name, prefix, description, format, holdable, "communicate");
@@ -35,24 +37,19 @@ namespace MSFSTouchPortalPlugin.Attributes
     //public string Id { get; set; }
     public DataType ValueType { get; set; }
     public virtual string Label { get; set; } = "Action";
-    public virtual bool AllowDecimals { get; set; } = true;  // this default will prevent includsion in entry.tp by json generator
+    public virtual bool AllowDecimals { get; set; } = true;  // this default will prevent inclusion in entry.tp by json generator
     public virtual double MinValue { get; set; } = double.NaN;
     public virtual double MaxValue { get; set; } = double.NaN;
     public virtual string[] ChoiceValues { get; set; }
     public string Type
     {
       get {
-        switch (ValueType) {
-          case DataType.Number:
-            return "number";
-          case DataType.Switch:
-            return "switch";
-          case DataType.Choice:
-            return "choice";
-          case DataType.Text:
-          default:
-            return "text";
-        }
+        return ValueType switch {
+          DataType.Number => "number",
+          DataType.Switch => "switch",
+          DataType.Choice => "choice",
+          _               => "text",
+        };
       }
     }
 
@@ -60,24 +57,18 @@ namespace MSFSTouchPortalPlugin.Attributes
 
     public dynamic GetDefaultValue() {
       try {
-        switch (ValueType) {
-          case DataType.Number:
-            return Convert.ToDouble(_defaultValue);
-          case DataType.Switch:
-            return Convert.ToBoolean(_defaultValue);
-          default:
-            return Convert.ToString(_defaultValue);
-        }
+        return ValueType switch {
+          DataType.Number => Convert.ToDouble(_defaultValue),
+          DataType.Switch => Convert.ToBoolean(_defaultValue),
+          _               => Convert.ToString(_defaultValue),
+        };
       }
       catch {
-        switch (ValueType) {
-          case DataType.Number:
-            return 0.0;
-          case DataType.Switch:
-            return false;
-          default:
-            return string.Empty;
-        }
+        return ValueType switch {
+          DataType.Number => 0.0,
+          DataType.Switch => false,
+          _               => string.Empty,
+        };
       }
     }
 

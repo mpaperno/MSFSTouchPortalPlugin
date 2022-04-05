@@ -1,4 +1,6 @@
-﻿using MSFSTouchPortalPlugin.Constants;
+﻿using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Constants;
+using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Types;
 using System;
 using System.Collections.Generic;
@@ -12,5 +14,7 @@ namespace MSFSTouchPortalPlugin.Interfaces
     string GetSimEventNameById(Enum id);
     string GetSimEventNameById(uint id);
     string GetSimEventNameById(int id);
+    IEnumerable<TouchPortalActionAttribute> GetActionAttributes(Groups catId);
+    IEnumerable<TouchPortalCategoryAttribute> GetCategoryAttributes();
   }
 }
