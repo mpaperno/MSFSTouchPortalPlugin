@@ -87,9 +87,11 @@ namespace MSFSTouchPortalPlugin_Generator
         Sdk = 3,
         Version = vNum,
         Name = _options.PluginName,
-        Id = _options.PluginId,
-        Plugin_start_cmd = $"{basePath}dist/{_options.PluginId}.exe"
+        Id = _options.PluginId
       };
+      if (!_options.Debug)
+        model.Plugin_start_cmd = $"{basePath}dist/{_options.PluginId}.exe";
+
 
       // Get all classes with the TouchPortalCategory
       var categoryClasses = q.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalCategoryAttribute))).OrderBy(o => o.Name);

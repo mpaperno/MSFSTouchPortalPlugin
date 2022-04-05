@@ -16,7 +16,9 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string Id { get; set; } = string.Empty;
     [Required, ValidateObject]
     public Configuration Configuration { get; set; } = new Configuration();
-    public string Plugin_start_cmd { get; set; } = string.Empty;
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [DefaultValue(null)]
+    public string Plugin_start_cmd { get; set; } = null;
     [ValidateObject]
     public List<TouchPortalCategory> Categories { get; set; } = new();
     public List<TouchPortalSetting> Settings { get; set; } = new();

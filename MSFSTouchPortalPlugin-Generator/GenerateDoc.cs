@@ -157,7 +157,8 @@ namespace MSFSTouchPortalPlugin_Generator
             DefaultValue = state.DefaultValue ?? string.Empty,
             SimVarName = state.SimVarName,
             Unit = state.Unit,
-            FormattingString = state.FormattingString
+            FormattingString = state.FormattingString,
+            CanSet = state.CanSet,
           };
           newCat.States.Add(newState);
         }
@@ -277,10 +278,11 @@ namespace MSFSTouchPortalPlugin_Generator
           // Loop States
           s.Append("### States\n\n");
           s.Append($" **Base Id:** {cat.Id}.State.\n\n");
-          s.Append("| Id | SimVar Name | Description | Unit | Format | DefaultValue |\n");
-          s.Append("| --- | --- | --- | --- | --- | --- |\n");
+          s.Append("| Id | SimVar Name | Description | Unit | Format | DefaultValue | Can Set |\n");
+          s.Append("| --- | --- | --- | --- | --- | --- | --- |\n");
           cat.States.ForEach(state => {
-            s.Append($"| {state.Id} | {state.SimVarName} | {state.Description} | {state.Unit} | {state.FormattingString} | {state.DefaultValue} |\n");
+            s.Append($"| {state.Id} | {state.SimVarName} | {state.Description} | {state.Unit} | {state.FormattingString} | {state.DefaultValue}");
+            s.Append($"| {(state.CanSet ? "&#9745;" : "")} |\n");  // U+2611 Ballot Box with Check Emoji
           });
           s.Append("\n\n");
         }
