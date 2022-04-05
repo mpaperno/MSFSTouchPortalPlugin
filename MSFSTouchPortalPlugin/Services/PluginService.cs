@@ -408,7 +408,7 @@ namespace MSFSTouchPortalPlugin.Services
             }
             if (new BooleanString(dataArry[2]) && !_simConnectService.ReleaseAIControl(simVar.Def))
               break;
-            _simConnectService.SetSimVar(simVar);
+            _simConnectService.SetDataOnSimObject(simVar);
           }
           break;
 
