@@ -227,16 +227,12 @@ namespace MSFSTouchPortalPlugin.Types
     }
 
     internal bool SetValue(string value) {
-      switch (Value) {
-        case string:
-          return SetValue(new StringVal(value));
-        case uint:
-          return SetValue((uint)new BooleanString(value));
-        case double:
-        case long:
-          return double.TryParse(value, out var dVal) && SetValue(dVal);
-      }
-      return false;
+      return Value switch {
+        string         => SetValue(new StringVal(value)),
+        uint           => SetValue((uint)new BooleanString(value)),
+        double or long => double.TryParse(value, out var dVal) && SetValue(dVal),
+        _              => false,
+      };
     }
 
     /// <summary>
