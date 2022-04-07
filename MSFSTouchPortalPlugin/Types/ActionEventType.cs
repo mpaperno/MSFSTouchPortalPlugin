@@ -1,4 +1,5 @@
-﻿using MSFSTouchPortalPlugin.Enums;
+﻿using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ namespace MSFSTouchPortalPlugin.Types
 {
   internal class ActionEventType
   {
-    public bool InternalEvent = false;
+    public Enum Id;
     public Groups CategoryId;
     public string ActionId;
     public int ValueIndex = -1;
@@ -23,7 +24,7 @@ namespace MSFSTouchPortalPlugin.Types
 
     // possible future use
     //public object ActionObject = null;  // the member to which all action attributes are assigned to
-    //public IReadOnlyCollection<TouchPortalActionDataAttribute> DataAttributes;  // list of all data type attributes
+    public IReadOnlyDictionary<string, TouchPortalActionDataAttribute> DataAttributes;  // list of all data type attributes
 
     // Get a unique event ID for this action, possibly based on data values
     // in the \c data array. Certain combination of values, eg. from choices,

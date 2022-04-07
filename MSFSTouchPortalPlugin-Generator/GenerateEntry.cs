@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Constants;
-using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Helpers;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Types;
@@ -91,6 +89,7 @@ namespace MSFSTouchPortalPlugin_Generator
         // workaround for backwards compat with mis-named actions in category InstrumentsSystems.Fuel
         string actionCatId = _options.PluginId + "." + Categories.ActionCategoryId(catAttrib.Id);
 
+        // Actions
         foreach (var actionAttrib in catAttrib.Actions) {
           var action = new TouchPortalAction {
             Id = $"{actionCatId}.Action.{actionAttrib.Id}",
@@ -103,11 +102,13 @@ namespace MSFSTouchPortalPlugin_Generator
             HasHoldFunctionality = actionAttrib.HasHoldFunctionality,
           };
 
+          // Action Data
           if (actionAttrib.Data.Any()) {
             int i = 0;
             foreach (var attrib in actionAttrib.Data) {
+              string dataId = (string.IsNullOrWhiteSpace(attrib.Id) ? i.ToString() : attrib.Id);
               var data = new TouchPortalActionData {
-                Id = $"{action.Id}.Data.{i++}",
+                Id = $"{action.Id}.Data.{dataId}",
                 Type = attrib.Type,
                 Label = attrib.Label ?? "Action",
                 DefaultValue = attrib.GetDefaultValue(),
@@ -116,7 +117,7 @@ namespace MSFSTouchPortalPlugin_Generator
                 MaxValue = attrib.MaxValue,
                 AllowDecimals = attrib.AllowDecimals,
               };
-
+              ++i;
               action.Data.Add(data);
             }
             action.Format = string.Format(action.Format, action.Data.Select(d => $"{{${d.Id}$}}").ToArray());
@@ -133,6 +134,7 @@ namespace MSFSTouchPortalPlugin_Generator
         // Sort the actions
         category.Actions = category.Actions.OrderBy(c => c.Name).ToList();
 
+        // States
         var categoryStates = simVars.Where(s => s.CategoryId == catAttrib.Id);
         foreach (SimVarItem state in categoryStates) {
           var newState = new TouchPortalState {

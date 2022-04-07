@@ -16,6 +16,10 @@ namespace MSFSTouchPortalPlugin.Attributes
     public TouchPortalActionDataAttribute[] Data { get; set; } = Array.Empty<TouchPortalActionDataAttribute>();
     public TouchPortalActionMappingAttribute[] Mappings { get; set; } = Array.Empty<TouchPortalActionMappingAttribute>();
 
+    public TouchPortalActionAttribute(string id, string name, string description, string format, bool holdable = false) {
+      SetupProperties(id, name, "MSFS", description, format, holdable, "communicate");
+    }
+
     public TouchPortalActionAttribute(string id, string name, string prefix, string description, string format, bool holdable = false) {
       SetupProperties(id, name, prefix, description, format, holdable, "communicate");
     }
@@ -36,22 +40,13 @@ namespace MSFSTouchPortalPlugin.Attributes
   {
     //public string Id { get; set; }
     public DataType ValueType { get; set; }
+    public string Type => ValueType.ToString().ToLower();
+    public virtual string Id { get; set; }
     public virtual string Label { get; set; } = "Action";
     public virtual bool AllowDecimals { get; set; } = true;  // this default will prevent inclusion in entry.tp by json generator
     public virtual double MinValue { get; set; } = double.NaN;
     public virtual double MaxValue { get; set; } = double.NaN;
     public virtual string[] ChoiceValues { get; set; }
-    public string Type
-    {
-      get {
-        return ValueType switch {
-          DataType.Number => "number",
-          DataType.Switch => "switch",
-          DataType.Choice => "choice",
-          _               => "text",
-        };
-      }
-    }
 
     protected dynamic _defaultValue;
 
@@ -99,6 +94,21 @@ namespace MSFSTouchPortalPlugin.Attributes
     protected TouchPortalActionTextAttribute(DataType type, string defaultValue = "") : this(defaultValue) {
       ValueType = type;
     }
+  }
+
+  public class TouchPortalActionFileAttribute : TouchPortalActionTextAttribute
+  {
+    public TouchPortalActionFileAttribute(string defaultValue = default) : base(DataType.File, defaultValue) { }
+  }
+
+  public class TouchPortalActionFolderAttribute : TouchPortalActionTextAttribute
+  {
+    public TouchPortalActionFolderAttribute(string defaultValue = default) : base(DataType.Folder, defaultValue) { }
+  }
+
+  public class TouchPortalActionColorAttribute : TouchPortalActionTextAttribute
+  {
+    public TouchPortalActionColorAttribute(string defaultValue = default) : base(DataType.Color, defaultValue) { }
   }
 
   public class TouchPortalActionChoiceAttribute : TouchPortalActionTextAttribute

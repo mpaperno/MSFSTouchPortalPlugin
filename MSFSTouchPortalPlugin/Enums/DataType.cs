@@ -6,6 +6,9 @@
     Text,
     Number,
     Switch,
-    Choice
+    Choice,
+    File,
+    Folder,
+    Color
   }
 }

@@ -68,6 +68,8 @@ namespace MSFSTouchPortalPlugin.Services
 
       _client = clientFactory?.Create(this) ?? throw new ArgumentNullException(nameof(clientFactory));
       _pluginConfig = pluginConfig ?? throw new ArgumentNullException(nameof(pluginConfig));
+
+      TouchPortalOptions.ActionDataIdSeparator = '.';  // split up action Data Ids
     }
 
     #region Startup, Shutdown and Processing Tasks      //////////////////
@@ -316,7 +318,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     private void UpdateSettableStatesList() {
       var list = (from s in statesDictionary.Values where s.CanSet select Categories.PrependCategoryName(s.CategoryId, s.Name) + $"  [{s.Id}]").OrderBy(n => n).ToArray();
-      _client.ChoiceUpdate(PluginId + ".Plugin.Action.SetSimVar.Data.0", list);
+      _client.ChoiceUpdate(PluginId + ".Plugin.Action.SetSimVar.Data.VarName", list);
     }
 
     private void ClearRepeatingActions() {
@@ -327,25 +329,8 @@ namespace MSFSTouchPortalPlugin.Services
       }
     }
 
-    private void ProcessEvent(ActionEvent actionEvent) {
-      if (!actionsDictionary.TryGetValue(actionEvent.ActionId, out ActionEventType action))
-        return;
-
-      var dataArry = actionEvent.Data.Values.ToArray();
-      if (!action.TryGetEventMapping(in dataArry, out Enum eventId))
-        return;
-
-      if (action.InternalEvent)
-        ProcessInternalEvent(action, eventId, in dataArry);
-      else if (_simConnectService.IsConnected())
-        ProcessSimEvent(action, eventId, in dataArry);
-    }
-
-    private void ProcessInternalEvent(ActionEventType action, Enum eventId, in string[] dataArry) {
-      Plugin pluginEventId = (Plugin)eventId;
-      _logger.LogDebug($"Firing Internal Event - action: {action.ActionId}; enum: {pluginEventId}; data: {string.Join(", ", dataArry)}");
-
-      switch (pluginEventId) {
+    private void ProcessPluginCommandAction(Plugin actionId) {
+      switch (actionId) {
         case Plugin.ToggleConnection:
           autoReconnectSimConnect = !autoReconnectSimConnect;
           if (_simConnectService.IsConnected()) {
@@ -357,12 +342,14 @@ namespace MSFSTouchPortalPlugin.Services
             UpdateSimConnectState();
           }
           break;
+
         case Plugin.Connect:
           autoReconnectSimConnect = true;
           if (!_simConnectService.IsConnected())
             _simConnectionRequest.Set();
           UpdateSimConnectState();
           break;
+
         case Plugin.Disconnect:
           autoReconnectSimConnect = false;
           _simConnectionRequest.Reset();
@@ -371,46 +358,97 @@ namespace MSFSTouchPortalPlugin.Services
           else
             UpdateSimConnectState();
           break;
+
         case Plugin.ReloadStates:
           SetupSimVars();
           break;
+      }
+    }
 
+    private void ProcessPluginCommandAction(Plugin actionId, double value) {
+      switch (actionId) {
         case Plugin.ActionRepeatIntervalInc:
         case Plugin.ActionRepeatIntervalDec:
         case Plugin.ActionRepeatIntervalSet:
-          if (action.ValueIndex < dataArry.Length && double.TryParse(dataArry[action.ValueIndex], out var interval)) {
-            if (pluginEventId == Plugin.ActionRepeatIntervalInc)
-              interval = Settings.ActionRepeatInterval.RealValue + interval;
-            else if (pluginEventId == Plugin.ActionRepeatIntervalDec)
-              interval = Settings.ActionRepeatInterval.RealValue - interval;
-            interval = Math.Clamp(interval, Settings.ActionRepeatInterval.MinValue, Settings.ActionRepeatInterval.MaxValue);
-            if (interval != Settings.ActionRepeatInterval.RealValue)
-              _client.SettingUpdate(Settings.ActionRepeatInterval.Name, $"{interval:F0}");  // this will trigger the actual value update
-          }
-          break;
+          if (actionId == Plugin.ActionRepeatIntervalInc)
+            value = Settings.ActionRepeatInterval.RealValue + value;
+          else if (actionId == Plugin.ActionRepeatIntervalDec)
+            value = Settings.ActionRepeatInterval.RealValue - value;
+          value = Math.Clamp(value, Settings.ActionRepeatInterval.MinValue, Settings.ActionRepeatInterval.MaxValue);
+          if (value != Settings.ActionRepeatInterval.RealValue)
+            _client.SettingUpdate(Settings.ActionRepeatInterval.Name, $"{value:F0}");  // this will trigger the actual value update
+        break;
+      }
+    }
 
-        case Plugin.SetSimVar:
-          if (dataArry.Length > 2 && dataArry[0].EndsWith(']') && (dataArry[0].IndexOf('[') is var brIdx && brIdx++ > -1)) {
-            var varId = dataArry[0][brIdx..^1];
-            if (!_settableSimVarIds.TryGetValue(varId, out Definition def) || !statesDictionary.TryGetValue(def, out SimVarItem simVar)) {
-              _logger.LogWarning($"Could not find definition for settable SimVar Id: '{varId}' Name: '{dataArry[0]}'");
-              break;
-            }
-            if (simVar.IsStringType) {
-              if (!simVar.SetValue(new StringVal(dataArry[1]))) {
-                _logger.LogWarning($"Could not set string value '{dataArry[1]}' for SimVar Id: '{varId}' Name: '{dataArry[0]}'");
-                break;
-              }
-            }
-            else if (!TryEvaluateValue(dataArry[1], out double dVal) || !simVar.SetValue(dVal)) {
-              _logger.LogWarning($"Could not set numeric value '{dataArry[1]}' for SimVar Id: '{varId}' Name: '{dataArry[0]}'");
-              break;
-            }
-            if (new BooleanString(dataArry[2]) && !_simConnectService.ReleaseAIControl(simVar.Def))
-              break;
-            _simConnectService.SetDataOnSimObject(simVar);
-          }
+    private void SetSimVarValueFromActionData(string varName, string value, bool releaseAi) {
+      if (!varName.EndsWith(']') || (varName.IndexOf('[') is var brIdx && brIdx++ < 0)) {
+        _logger.LogWarning($"Could not find ID in SimVar Name: '{varName}'");
+        return;
+      }
+
+      var varId = varName[brIdx..^1];
+      if (!_settableSimVarIds.TryGetValue(varId, out Definition def) || !statesDictionary.TryGetValue(def, out SimVarItem simVar)) {
+        _logger.LogWarning($"Could not find definition for settable SimVar Id: '{varId}' Name: '{varName}'");
+        return;
+      }
+      if (simVar.IsStringType) {
+        if (!simVar.SetValue(new StringVal(value))) {
+          _logger.LogWarning($"Could not set string value '{value}' for SimVar Id: '{varId}' Name: '{varName}'");
+          return;
+        }
+      }
+      else if (!TryEvaluateValue(value, out double dVal) || !simVar.SetValue(dVal)) {
+        _logger.LogWarning($"Could not set numeric value '{value}' for SimVar Id: '{varId}' Name: '{varName}'");
+        return;
+      }
+      if (releaseAi && !_simConnectService.ReleaseAIControl(simVar.Def))
+        return;
+
+      _simConnectService.SetDataOnSimObject(simVar);
+    }
+
+    private void ProcessEvent(ActionEvent actionEvent) {
+      if (!actionsDictionary.TryGetValue(actionEvent.ActionId, out ActionEventType action))
+        return;
+
+      if (action.CategoryId == Groups.Plugin) {
+        ProcessInternalEvent(action, actionEvent.Data);
+        return;
+      }
+
+      if (!_simConnectService.IsConnected())
+        return;
+
+      var dataArry = actionEvent.Data.Values.ToArray();
+      if (action.TryGetEventMapping(in dataArry, out Enum eventId))
+        ProcessSimEvent(action, eventId, in dataArry);
+    }
+
+    private void ProcessInternalEvent(ActionEventType action, TouchPortalSDK.Messages.Models.ActionData data) {
+      Plugin pluginEventId = (Plugin)action.Id;
+      _logger.LogDebug($"Firing Internal Event - action: {action.ActionId}; enum: {pluginEventId}; data: {string.Join(", ", data.Select(d => $"{d.Key}={d.Value}"))}");
+      switch (pluginEventId) {
+        case Plugin.Connection: {
+          // preserve backwards compatibility with old actions which used indexed data IDs
+          if (action.TryGetEventMapping(new string[] { data.GetValueOrDefault("Action", data.GetValueOrDefault("0")) }, out Enum eventId))
+            ProcessPluginCommandAction((Plugin)eventId);
           break;
+        }
+
+        case Plugin.ActionRepeatInterval: {
+          // preserve backwards compatibility with old actions which used indexed data IDs
+          if (action.TryGetEventMapping(new string[] { data.GetValueOrDefault("Action", data.GetValueOrDefault("0")) }, out Enum eventId) &&
+              double.TryParse(data.GetValueOrDefault("Interval", data.GetValueOrDefault("1")), out var interval))
+            ProcessPluginCommandAction((Plugin)eventId, interval);
+          break;
+        }
+
+        case Plugin.SetSimVar: {
+          if (data.TryGetValue("VarName", out var varName) && data.TryGetValue("Value", out var value) && data.TryGetValue("RelAi", out var relAi))
+            SetSimVarValueFromActionData(varName, value, new BooleanString(relAi));
+          break;
+        }
 
         default:
           // No other types of events supported right now.

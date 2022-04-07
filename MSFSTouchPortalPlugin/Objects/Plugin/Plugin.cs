@@ -6,8 +6,8 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
 {
   [TouchPortalCategory(Groups.Plugin)]
   internal static class PluginMapping {
-    [TouchPortalAction("Connection", "Connection", "MSFS", "Toggle/On/Off SimConnect Connection", "SimConnect Connection - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off", "Reload States" })]
+    [TouchPortalAction("Connection", "Connection", "Toggle/On/Off SimConnect Connection", "SimConnect Connection - {0}")]
+    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off", "Reload States" }, Id = "Action")]
     [TouchPortalActionMapping("ToggleConnection", "Toggle")]
     [TouchPortalActionMapping("Connect", "On")]
     [TouchPortalActionMapping("Disconnect", "Off")]
@@ -15,12 +15,10 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     public static readonly object Connection;
 
 
-    [TouchPortalAction("SetSimVar", "Set Simulator Variable Value", "MSFS", "Sets a value on any loaded State which is marked as settable.", "Set Variable {0} to {1} (release AI: {2})")]
-    [TouchPortalActionChoice(new[] { "<not connected>" }, "")]
-    [TouchPortalActionText("0")]
-    //[TouchPortalActionChoice(new[] { "No", "Yes" })]
-    [TouchPortalActionSwitch(false)]
-    [TouchPortalActionMapping("SetSimVar")]
+    [TouchPortalAction("SetSimVar", "Set Simulator Variable Value", "Sets a value on any loaded State which is marked as settable.", "Set Variable {0} to {1} (release AI: {2})")]
+    [TouchPortalActionChoice(new[] { "<not connected>" }, "", Id = "VarName", Label = "Simulator Variable")]
+    [TouchPortalActionText("0", Id = "Value", Label = "Value")]
+    [TouchPortalActionSwitch(false, Id = "RelAI", Label = "Release AI")]
     public static readonly object SetSimVar;
   }
 
@@ -72,9 +70,9 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
       MaxLength = 255
     };
 
-    [TouchPortalAction("ActionRepeatInterval", "Action Repeat Interval", "MSFS", "Held Action Repeat Rate (ms)", "Repeat Interval: {0} to/by: {1} ms", true)]
-    [TouchPortalActionChoice(new[] { "Set", "Increment", "Decrement" })]
-    [TouchPortalActionText("450", 50, int.MaxValue)]
+    [TouchPortalAction("ActionRepeatInterval", "Action Repeat Interval", "Held Action Repeat Rate (ms)", "Repeat Interval: {0} to/by: {1} ms", true)]
+    [TouchPortalActionChoice(new[] { "Set", "Increment", "Decrement" }, Id = "Action")]
+    [TouchPortalActionText("450", 50, int.MaxValue, Id = "Interval")]
     [TouchPortalActionMapping("ActionRepeatIntervalSet", "Set")]
     [TouchPortalActionMapping("ActionRepeatIntervalInc", "Increment")]
     [TouchPortalActionMapping("ActionRepeatIntervalDec", "Decrement")]
@@ -92,9 +90,14 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
 
   // IDs for handling internal events
   internal enum Plugin : short {
-    // Starting point
-    Init = 255,
+    None = 0,
 
+    // Action IDs
+    Connection,
+    ActionRepeatInterval,
+    SetSimVar,
+
+    // Action choice mapping IDs
     ToggleConnection,
     Connect,
     Disconnect,
@@ -104,7 +107,6 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     ActionRepeatIntervalDec,
     ActionRepeatIntervalSet,
 
-    SetSimVar,
   }
 
   // Dynamically generated SimConnect client event IDs are "parented" to this enum type,

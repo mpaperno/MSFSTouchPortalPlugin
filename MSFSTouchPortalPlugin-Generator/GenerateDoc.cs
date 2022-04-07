@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
@@ -87,6 +86,7 @@ namespace MSFSTouchPortalPlugin_Generator
         // workaround for backwards compat with mis-named actions in category InstrumentsSystems.Fuel
         string actionCatId = _options.PluginId + "." + Categories.ActionCategoryId(catAttrib.Id);
 
+        // Add Actions
         foreach (var actionAttrib in catAttrib.Actions) {
           var action = new DocAction {
             Name = actionAttrib.Name,
@@ -97,21 +97,28 @@ namespace MSFSTouchPortalPlugin_Generator
           };
           category.Actions.Add(action);
 
-          if (actionAttrib.Data.Any()) {
-            foreach (var attrib in actionAttrib.Data) {
-              var data = new DocActionData {
-                Type = attrib.Type,
-                DefaultValue = attrib.GetDefaultValue()?.ToString(),
-                Values = attrib.ChoiceValues != null ? string.Join(", ", attrib.ChoiceValues) : "",
-                MinValue = attrib.MinValue,
-                MaxValue = attrib.MaxValue,
-                AllowDecimals = attrib.AllowDecimals,
-              };
+          // Action data
+          foreach (var attrib in actionAttrib.Data) {
+            var data = new DocActionData {
+              Type = attrib.Type,
+              DefaultValue = attrib.GetDefaultValue()?.ToString(),
+              Values = attrib.ChoiceValues != null ? string.Join(", ", attrib.ChoiceValues) : "",
+              MinValue = attrib.MinValue,
+              MaxValue = attrib.MaxValue,
+              AllowDecimals = attrib.AllowDecimals,
+            };
+            action.Data.Add(data);
+          }
 
-              action.Data.Add(data);
-            }
-          }  // action data
+          // Action data mappings, but Plugin category doesn't show them anyway
+          if (catAttrib.Id == Groups.Plugin)
+            continue;
 
+          // Warn about missing mappings
+          if (!actionAttrib.Mappings.Any()) {
+            _logger.LogWarning($"No event mappings found for action ID '{actionAttrib.Id}' in category '{category.Name}'");
+            continue;
+          }
           foreach (var attrib in actionAttrib.Mappings) {
             var map = new DocActionMapping {
               ActionId = attrib.ActionId,
@@ -119,14 +126,11 @@ namespace MSFSTouchPortalPlugin_Generator
             };
             action.Mappings.Add(map);
           }
-          // Warn about missing mappings
-          if (!actionAttrib.Mappings.Any())
-            _logger.LogWarning($"No event mappings found for action ID '{actionAttrib.Id}' in category '{category.Name}'");
         }  // actions
 
         category.Actions = category.Actions.OrderBy(c => c.Name).ToList();
 
-        // Loop through States
+        // Add States
         var categoryStates = simVars.Where(s => s.CategoryId == catAttrib.Id);
         foreach (SimVarItem state in categoryStates) {
           var newState = new DocState {
