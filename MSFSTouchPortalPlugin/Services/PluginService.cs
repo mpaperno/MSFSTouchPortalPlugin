@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using TouchPortalSDK;
 using TouchPortalSDK.Interfaces;
 using TouchPortalSDK.Messages.Events;
+using TouchPortalSDK.Messages.Models;
 using Timer = MSFSTouchPortalPlugin.Helpers.UnthreadedTimer;
 
 namespace MSFSTouchPortalPlugin.Services
@@ -35,7 +36,7 @@ namespace MSFSTouchPortalPlugin.Services
     private CancellationToken _cancellationToken;
     private CancellationTokenSource _simTasksCTS;
     private CancellationToken _simTasksCancelToken;
-    private Task _timerEventsTask;
+    private Task _pluginEventsTask;
     private readonly ManualResetEventSlim _simConnectionRequest = new(false);
     private bool autoReconnectSimConnect = false;
     private EntryFileType _entryFileType = EntryFileType.Default;
@@ -126,6 +127,7 @@ namespace MSFSTouchPortalPlugin.Services
       SetupEventLists();  // set these up first to have access to defined plugin settings
 
       if (!_client.Connect()) {
+        _logger.LogCritical("Failed to connect to Touch Portal! Quitting.");
         return false;
       }
 
@@ -146,14 +148,16 @@ namespace MSFSTouchPortalPlugin.Services
       try {
         while (!_cancellationToken.IsCancellationRequested) {
           _simConnectionRequest.Wait(_cancellationToken);
-          if (!_simConnectService.IsConnected() && !_simConnectService.Connect(Settings.SimConnectConfigIndex.UIntValue))
+          if (!_simConnectService.IsConnected() && !_simConnectService.Connect(Settings.SimConnectConfigIndex.UIntValue)) {
+            _logger.LogWarning("Connection to Simulator failed, retrying in 10 seconds...");
             await Task.Delay(10000, _cancellationToken);  // delay 10s on connection error
+          }
         }
       }
       catch (OperationCanceledException) { /* ignore but exit */ }
       catch (ObjectDisposedException) { /* ignore but exit */ }
       catch (Exception e) {
-        _logger.LogError("Exception in SimConnectionMonitor task, cannot continue.", e);
+        _logger.LogError(e, "Exception in SimConnectionMonitor task, cannot continue.");
       }
       _logger.LogDebug("SimConnectionMonitor task stopped.");
     }
@@ -175,7 +179,7 @@ namespace MSFSTouchPortalPlugin.Services
       catch (OperationCanceledException) { /* ignore but exit */ }
       catch (ObjectDisposedException) { /* ignore but exit */ }
       catch (Exception e) {
-        _logger.LogError("Exception in PluginEventsTask task, cannot continue.", e);
+        _logger.LogError(e, "Exception in PluginEventsTask task, cannot continue.");
       }
       _logger.LogDebug("PluginEventsTask task stopped.");
     }
@@ -214,8 +218,8 @@ namespace MSFSTouchPortalPlugin.Services
       SetupSimVars();
 
       // start checking timer events
-      _timerEventsTask = Task.Run(PluginEventsTask);
-      _timerEventsTask.ConfigureAwait(false);  // needed?
+      _pluginEventsTask = Task.Run(PluginEventsTask);
+      _pluginEventsTask.ConfigureAwait(false);  // needed?
     }
 
     private void SimConnectEvent_OnDataUpdateEvent(Definition def, Definition req, object data) {
@@ -232,15 +236,15 @@ namespace MSFSTouchPortalPlugin.Services
 
     private void SimConnectEvent_OnDisconnect() {
       _simTasksCTS?.Cancel();
-      if (_timerEventsTask.Status == TaskStatus.Running && !_timerEventsTask.Wait(5000))
-        _logger.LogWarning("Timed events task timed out while stopping.");
-      try { _timerEventsTask.Dispose(); }
+      if (_pluginEventsTask.Status == TaskStatus.Running && !_pluginEventsTask.Wait(5000))
+        _logger.LogWarning("PluginEventsTask timed out while stopping.");
+      try { _pluginEventsTask.Dispose(); }
       catch { /* ignore in case it hung */ }
 
       ClearRepeatingActions();
       UpdateSimConnectState();
 
-      _timerEventsTask = null;
+      _pluginEventsTask = null;
       _simTasksCTS?.Dispose();
       _simTasksCTS = null;
 
@@ -252,26 +256,14 @@ namespace MSFSTouchPortalPlugin.Services
 
     #region Plugin Events and Handlers   /////////////////////////////////////
 
-    private void SetupEventLists() {
-      actionsDictionary = _reflectionService.GetActionEvents();
-      pluginSettingsDictionary = _reflectionService.GetSettings();
-    }
-
     private void SetupSimVars() {
       // We may need to generate all, some, or no states dynamically.
       bool allStatesDynamic = (_entryFileType == EntryFileType.NoStates);
       bool someStateDynamic = false;
       IEnumerable<string> defaultStates = Array.Empty<string>();  // in case we need to create _some_ custom states dynamically
 
-      // First we figure out which file(s) to load.
-      bool useCustomCfg = !string.IsNullOrWhiteSpace(Settings.UserStateFiles.StringValue) && Settings.UserStateFiles.StringValue.ToLower() != "default";
-      if (useCustomCfg) {
-        // Create the file(s) list
-        string[] cfgFiles = Settings.UserStateFiles.StringValue.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        _logger.LogInformation($"Loading custom state file(s) '{string.Join(", ", cfgFiles)}' from folder '{PluginConfig.UserConfigFolder}'.");
-        // load the file(s); the special file name "default" (if present) will actually use the one from plugin's install folder.
-        statesDictionary = _pluginConfig.LoadCustomSimVars(cfgFiles).ToDictionary(s => s.Def, s => s);
-
+      // First check if we're using a custom config.
+      if (PluginConfig.HaveUserStateFiles) {
         // if the user is NOT using dynamic states for everything (entry_no-states.tp) nor a custom entry.tp file,
         // then lets figure out what the default states are so we can create any missing ones dynamically if needed.
         if (_entryFileType == EntryFileType.Default) {
@@ -279,11 +271,14 @@ namespace MSFSTouchPortalPlugin.Services
           defaultStates = _pluginConfig.LoadSimVarItems(false).Select(s => s.Id);
           someStateDynamic = defaultStates.Any();
         }
+        _logger.LogInformation($"Loading custom state file(s) '{PluginConfig.UserStateFiles}' from '{PluginConfig.UserConfigFolder}'.");
       }
       else {  // Default config
-        _logger.LogInformation($"Loading default SimVar state file '{PluginConfig.AppConfigFolder}/{PluginConfig.StatesConfigFile}'.");
-        statesDictionary = _pluginConfig.LoadSimVarItems(false).ToDictionary(s => s.Def, s => s);
+        _logger.LogInformation($"Loading default SimVar State file '{PluginConfig.AppConfigFolder}/{PluginConfig.StatesConfigFile}'.");
       }
+      // Load the vars.  PluginConfig tracks which files should be loaded, defaults or custom.
+      statesDictionary = _pluginConfig.LoadSimVarStateConfigs().ToDictionary(s => s.Def, s => s);
+      _logger.LogInformation($"Loaded {simVars.Count} SimVars from file(s).");
 
       // clear out any old data
       _customIntervalStates.Clear();
@@ -329,50 +324,42 @@ namespace MSFSTouchPortalPlugin.Services
       }
     }
 
-    private void ProcessPluginCommandAction(Plugin actionId) {
+    private void ProcessPluginCommandAction(PluginActions actionId, double value = double.NaN) {
       switch (actionId) {
-        case Plugin.ToggleConnection:
-          autoReconnectSimConnect = !autoReconnectSimConnect;
-          if (_simConnectService.IsConnected()) {
-            _simConnectionRequest.Reset();
-            _simConnectService.Disconnect();
-          }
-          else {
-            _simConnectionRequest.Set();
-            UpdateSimConnectState();
-          }
+        case PluginActions.ToggleConnection:
+          ProcessPluginCommandAction(autoReconnectSimConnect ? PluginActions.Disconnect : PluginActions.Connect);
           break;
 
-        case Plugin.Connect:
+        case PluginActions.Connect:
           autoReconnectSimConnect = true;
           if (!_simConnectService.IsConnected())
             _simConnectionRequest.Set();
           UpdateSimConnectState();
           break;
 
-        case Plugin.Disconnect:
+        case PluginActions.Disconnect:
           autoReconnectSimConnect = false;
+          bool wasSet = _simConnectionRequest.IsSet;
           _simConnectionRequest.Reset();
           if (_simConnectService.IsConnected())
             _simConnectService.Disconnect();
-          else
-            UpdateSimConnectState();
+          else if (wasSet)
+            _logger.LogInformation("Connection attempts to Simulator were canceled.");
+          UpdateSimConnectState();
           break;
 
-        case Plugin.ReloadStates:
+        case PluginActions.ReloadStates:
           SetupSimVars();
           break;
-      }
-    }
 
-    private void ProcessPluginCommandAction(Plugin actionId, double value) {
-      switch (actionId) {
-        case Plugin.ActionRepeatIntervalInc:
-        case Plugin.ActionRepeatIntervalDec:
-        case Plugin.ActionRepeatIntervalSet:
-          if (actionId == Plugin.ActionRepeatIntervalInc)
+        case PluginActions.ActionRepeatIntervalInc:
+        case PluginActions.ActionRepeatIntervalDec:
+        case PluginActions.ActionRepeatIntervalSet:
+          if (double.IsNaN(value))
+            break;
+          if (actionId == PluginActions.ActionRepeatIntervalInc)
             value = Settings.ActionRepeatInterval.RealValue + value;
-          else if (actionId == Plugin.ActionRepeatIntervalDec)
+          else if (actionId == PluginActions.ActionRepeatIntervalDec)
             value = Settings.ActionRepeatInterval.RealValue - value;
           value = Math.Clamp(value, Settings.ActionRepeatInterval.MinValue, Settings.ActionRepeatInterval.MaxValue);
           if (value != Settings.ActionRepeatInterval.RealValue)
@@ -425,33 +412,28 @@ namespace MSFSTouchPortalPlugin.Services
         ProcessSimEvent(action, eventId, in dataArry);
     }
 
-    private void ProcessInternalEvent(ActionEventType action, TouchPortalSDK.Messages.Models.ActionData data) {
-      Plugin pluginEventId = (Plugin)action.Id;
+    private void ProcessInternalEvent(ActionEventType action, ActionData data) {
+      PluginActions pluginEventId = (PluginActions)action.Id;
       _logger.LogDebug($"Firing Internal Event - action: {action.ActionId}; enum: {pluginEventId}; data: {string.Join(", ", data.Select(d => $"{d.Key}={d.Value}"))}");
       switch (pluginEventId) {
-        case Plugin.Connection: {
+        case PluginActions.Connection:
+        case PluginActions.ActionRepeatInterval: {
           // preserve backwards compatibility with old actions which used indexed data IDs
-          if (action.TryGetEventMapping(new string[] { data.GetValueOrDefault("Action", data.GetValueOrDefault("0")) }, out Enum eventId))
-            ProcessPluginCommandAction((Plugin)eventId);
+          if ((data.TryGetValue("Action", out var actId) || data.TryGetValue("0", out actId)) && action.TryGetEventMapping(actId, out Enum eventId)) {
+            if (!(data.TryGetValue("Value", out var sVal) || data.TryGetValue("1", out sVal)) || !double.TryParse(sVal, out var value))
+              value = double.NaN;
+            ProcessPluginCommandAction((PluginActions)eventId, value);
+          }
           break;
         }
 
-        case Plugin.ActionRepeatInterval: {
-          // preserve backwards compatibility with old actions which used indexed data IDs
-          if (action.TryGetEventMapping(new string[] { data.GetValueOrDefault("Action", data.GetValueOrDefault("0")) }, out Enum eventId) &&
-              double.TryParse(data.GetValueOrDefault("Interval", data.GetValueOrDefault("1")), out var interval))
-            ProcessPluginCommandAction((Plugin)eventId, interval);
-          break;
-        }
-
-        case Plugin.SetSimVar: {
-          if (data.TryGetValue("VarName", out var varName) && data.TryGetValue("Value", out var value) && data.TryGetValue("RelAi", out var relAi))
-            SetSimVarValueFromActionData(varName, value, new BooleanString(relAi));
+        case PluginActions.SetSimVar: {
+          if (data.TryGetValue("VarName", out var varName) && data.TryGetValue("Value", out var value))
+            SetSimVarValueFromActionData(varName, value, data.TryGetValue("RelAi", out var relAi) && new BooleanString(relAi));
           break;
         }
 
         default:
-          // No other types of events supported right now.
           break;
       }
     }
@@ -485,17 +467,11 @@ namespace MSFSTouchPortalPlugin.Services
       _simConnectService.TransmitClientEvent(action.CategoryId, eventId, dataUint);
     }
 
-    /// <summary>
-    /// Handles an array of `Setting` types sent from TP. This could come from either the
-    /// initial `OnInfoEvent` message, or the dedicated `OnSettingsEvent` message.
-    /// </summary>
-    /// <param name="settings"></param>
-    private void ProcessPluginSettings(IReadOnlyCollection<TouchPortalSDK.Messages.Models.Setting> settings) {
+    // Handles an array of `Setting` types sent from TP/API. This could come from either the
+    // initial `OnInfoEvent` message, or the dedicated `OnSettingsEvent` message.
+    private void ProcessPluginSettings(IReadOnlyCollection<Setting> settings) {
       if (settings == null)
         return;
-      // change tracking
-      string oldCfgPath = Settings.UserConfigFilesPath.StringValue;
-      string oldCfgFiles = Settings.UserStateFiles.StringValue;
       // loop over incoming new settings
       foreach (var s in settings) {
         if (pluginSettingsDictionary.TryGetValue(s.Name, out PluginSetting setting)) {
@@ -504,9 +480,13 @@ namespace MSFSTouchPortalPlugin.Services
             _client.StateUpdate(setting.TouchPortalStateId, setting.StringValue);
         }
       }
-      PluginConfig.UserConfigFolder = Settings.UserConfigFilesPath.StringValue;  // will (re-)set to default if blank.
-      bool stateReload = oldCfgPath != Settings.UserConfigFilesPath.StringValue || oldCfgFiles != Settings.UserStateFiles.StringValue;
-      if (stateReload && _simConnectService.IsConnected())
+      // change tracking
+      string[] p = new[] { PluginConfig.UserConfigFolder, PluginConfig.UserStateFiles };
+      PluginConfig.UserConfigFolder = Settings.UserConfigFilesPath.StringValue;  // will (re-)set to default if needed.
+      PluginConfig.UserStateFiles = Settings.UserStateFiles.StringValue;         // will (re-)set to default if needed.
+      // compare with actual current config values (not Settings) because they may not have changed even if settings string did
+      // states dict will be empty on initial startup
+      if (p[0] != PluginConfig.UserConfigFolder || p[1] != PluginConfig.UserStateFiles)
         SetupSimVars();
     }
 
@@ -535,7 +515,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     public void OnInfoEvent(InfoEvent message) {
       var runtimeVer = string.Format("{0:X}", VersionInfo.GetProductVersionNumber() >> 8);  // strip the patch version
-      _logger?.LogInformation(
+      _logger?.LogInformation(new EventId(1, "Connected"),
         $"Touch Portal Connected with: TP v{message.TpVersionString}, SDK v{message.SdkVersion}, {PluginId} entry.tp v{message.PluginVersion}, " +
         $"{VersionInfo.AssemblyName} running v{VersionInfo.GetProductVersionString()} ({runtimeVer})"
       );
@@ -551,7 +531,7 @@ namespace MSFSTouchPortalPlugin.Services
       _logger.LogInformation($"Detected {_entryFileType} type entry.tp definition file.");
 
       ProcessPluginSettings(message.Settings);
-      autoReconnectSimConnect = Settings.ConnectSimOnStartup.BoolValue;  // we only care about this at startup
+      autoReconnectSimConnect = Settings.ConnectSimOnStartup.BoolValue;  // we only care about the Settings value at startup
 
       _client.StateUpdate(PluginId + ".Plugin.State.RunningVersion", runtimeVer);
       _client.StateUpdate(PluginId + ".Plugin.State.EntryVersion", $"{tpVer & 0xFFFFFF:X}");

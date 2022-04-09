@@ -7,6 +7,7 @@ namespace MSFSTouchPortalPlugin.Attributes
   public class TouchPortalActionAttribute : Attribute
   {
     public string Id { get; set; }
+    public Enum EnumId { get; set; } = default;
     public string Name { get; set; }
     public string Prefix { get; set; }
     public string Description { get; set; }
@@ -18,6 +19,11 @@ namespace MSFSTouchPortalPlugin.Attributes
 
     public TouchPortalActionAttribute(string id, string name, string description, string format, bool holdable = false) {
       SetupProperties(id, name, "MSFS", description, format, holdable, "communicate");
+    }
+
+    public TouchPortalActionAttribute(PluginActions id, string name, string description, string format, bool holdable = false) {
+      SetupProperties(id.ToString(), name, "MSFS", description, format, holdable, "communicate");
+      EnumId = id;
     }
 
     public TouchPortalActionAttribute(string id, string name, string prefix, string description, string format, bool holdable = false) {
@@ -113,12 +119,13 @@ namespace MSFSTouchPortalPlugin.Attributes
 
   public class TouchPortalActionChoiceAttribute : TouchPortalActionTextAttribute
   {
-
     public TouchPortalActionChoiceAttribute(string[] choiceValues, string defaultValue = default) : base(DataType.Choice, defaultValue) {
       ChoiceValues = choiceValues;
       if (defaultValue == default && choiceValues?.Length > 0)
         DefaultValue = choiceValues[0];
     }
+
+    public TouchPortalActionChoiceAttribute(string choiceValue, string defaultValue = default) : this(new [] { choiceValue }, defaultValue) { }
   }
 
   public class TouchPortalActionSwitchAttribute : TouchPortalActionDataAttribute

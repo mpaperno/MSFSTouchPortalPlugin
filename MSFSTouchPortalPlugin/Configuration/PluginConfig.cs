@@ -1,11 +1,11 @@
-﻿using MSFSTouchPortalPlugin.Enums;
+﻿using MSFSTouchPortalPlugin.Constants;
+using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
-using System.Runtime.Serialization;
 using Microsoft.Extensions.Logging;
 
 namespace MSFSTouchPortalPlugin.Configuration
@@ -13,6 +13,10 @@ namespace MSFSTouchPortalPlugin.Configuration
 
   internal class PluginConfig
   {
+    // these constants are for entry.tp version number en/decoding
+    public const uint ENTRY_FILE_VER_MASK_NOSTATES = 0x80000000;  // leading bit indicates an entry file with no static SimVar states at all (create all states dynamically)
+    public const uint ENTRY_FILE_VER_MASK_CUSTOM   = 0x7F000000;  // any of the other 7 bits indicates an entry file generated from custom config files (do not create any dynamic states)
+    public const ushort ENTRY_FILE_CONF_VER_SHIFT  = 24;          // bit position of custom config version number, used as the last 7 bits of file version
 
     /// <summary>
     /// RootName is used as the basis for the user folder name and TP State ID generation.
@@ -28,21 +32,39 @@ namespace MSFSTouchPortalPlugin.Configuration
     public static string UserConfigFolder {
       get => _currentUserCfgFolder;
       set {
-        if (string.IsNullOrWhiteSpace(value))
+        if (string.IsNullOrWhiteSpace(value) || (value.Trim() is var val && val.ToLower() == STR_DEFAULT))
           _currentUserCfgFolder = _defaultUserCfgFolder;
         else
-          _currentUserCfgFolder = value;
+          _currentUserCfgFolder = val;
       }
     }
 
+    public static string UserStateFiles
+    {
+      get => string.Join(',', _userStateFiles);
+      set {
+        if (string.IsNullOrWhiteSpace(value) || value.Trim().ToLower().Replace(".ini", "") == STR_DEFAULT) {
+          _userStateFiles = Array.Empty<string>();
+          return;
+        }
+        _userStateFiles = value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        for (int i=0, e=_userStateFiles.Length; i < e; ++i) {
+          if (_userStateFiles[i].ToLower().Replace(".ini", "") == STR_DEFAULT)
+            _userStateFiles[i] = STR_DEFAULT;  // "normalize" the default string for simpler comparison later.
+        }
+      }
+    }
+
+    public static bool HaveUserStateFiles => _userStateFiles.Any();
+    public static IReadOnlyCollection<string> UserStateFilesArray => _userStateFiles;
+
+
+    const string STR_DEFAULT = "default";
     private static readonly string _defaultUserCfgFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), RootName);
     private static string _currentUserCfgFolder = _defaultUserCfgFolder;
-
-    public const uint ENTRY_FILE_VER_MASK_NOSTATES = 0x80000000;  // leading bit indicates an entry file with no static SimVar states at all (create all states dynamically)
-    public const uint ENTRY_FILE_VER_MASK_CUSTOM   = 0x7F000000;  // any of the other 7 bits indicates an entry file generated from custom config files (do not create any dynamic states)
-    public const ushort ENTRY_FILE_CONF_VER_SHIFT = 24;           // bit position of custom config version number, used as the last 7 bits of file version
-
+    private static string[] _userStateFiles = Array.Empty<string>();
     private readonly ILogger<PluginConfig> _logger;
+
 
     public PluginConfig(ILogger<PluginConfig> logger) {
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -61,7 +83,7 @@ namespace MSFSTouchPortalPlugin.Configuration
           return true;
         }
         catch (Exception e) {
-          _logger.LogWarning(e, "Error trying to copy SimConnect.cfg file from user's AppData folder:");
+          _logger.LogError(e, $"Error trying to copy SimConnect.cfg file from '{srcFile}': {e.Message}");
           return false;
         }
       }
@@ -70,29 +92,12 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     public IReadOnlyCollection<SimVarItem> LoadSimVarItems(bool isUserConfig = true, string filename = default) {
       List<SimVarItem> ret = new();
-
-      // qualify the file name and path
-      if (filename == default)
-        filename = StatesConfigFile;
-      else if (string.IsNullOrWhiteSpace(Path.GetExtension(filename)))
-        filename += ".ini";
-      if (filename.IndexOfAny(new char[] { '\\', '/' }) < 0)
-        filename = Path.Combine(isUserConfig ? UserConfigFolder : AppConfigFolder, filename);
-
-      if (!File.Exists(filename)) {
-        _logger.LogError($"Cannot load SimVar states, file not found at '{filename}'");
-        return ret;
-      }
+      filename = GetFullFilePath(filename, isUserConfig);
 
       _logger.LogDebug($"Loading SimVars from file '{filename}'...");
-      SharpConfig.Configuration cfg;
-      try {
-        cfg = SharpConfig.Configuration.LoadFromFile(filename, Encoding.UTF8);
-      }
-      catch (Exception e) {
-        _logger.LogWarning(e, $"Configuration LoadFromFile error in '{filename}':");
+      if (!LoadFromFile(filename, out var cfg))
         return ret;
-      }
+
       foreach (SharpConfig.Section item in cfg) {
         if (item.Name == SharpConfig.Section.DefaultSectionName)
           continue;
@@ -101,11 +106,11 @@ namespace MSFSTouchPortalPlugin.Configuration
           simVar = item.ToObject<SimVarItem>();
         }
         catch (Exception e) {
-          _logger.LogWarning(e, $"Deserialize exception for section '{item}':");
+          _logger.LogError(e, $"Deserialize exception for section '{item}': {e.Message}:");
           continue;
         }
         if (simVar == null) {
-          _logger.LogWarning($"Produced SimVar is null from section '{item}':");
+          _logger.LogError($"Produced SimVar is null from section '{item}':");
           continue;
         }
         simVar.Id = item.Name;
@@ -124,14 +129,14 @@ namespace MSFSTouchPortalPlugin.Configuration
       return ret;
     }
 
-    public IReadOnlyCollection<SimVarItem> LoadCustomSimVars(IEnumerable<string> fileNames) {
+    public IReadOnlyCollection<SimVarItem> LoadSimVarStateConfigs() {
+      if (!HaveUserStateFiles)
+        return LoadSimVarItems(false);
+
       SimVarItem[] ret = Array.Empty<SimVarItem>();
-      foreach (var file in fileNames) {
-        // special case for anything named "default" which indicates the States.ini file in the plugin's install folder
-        if (file.ToLower()[0..7] == "default")
-          ret = ret.Concat(LoadSimVarItems(false)).ToArray();
-        else
-          ret = ret.Concat(LoadSimVarItems(true, file)).ToArray();
+      foreach (var file in UserStateFilesArray) {
+        bool isUserCfg = file != STR_DEFAULT;
+        ret = ret.Concat(LoadSimVarItems(isUserCfg, isUserCfg ? file : default)).ToArray();
       }
       return ret;
     }
@@ -139,10 +144,10 @@ namespace MSFSTouchPortalPlugin.Configuration
     public IReadOnlyCollection<SimVarItem> LoadPluginStates()
       => LoadSimVarItems(false, PluginStatesConfigFile);
 
-    public bool SaveSimVarItems(IReadOnlyCollection<SimVarItem> items, bool isUserConfig = true, string filename = default) {
+    public bool SaveSimVarItems(IEnumerable<SimVarItem> items, bool isUserConfig = true, string filename = default) {
       var cfg = new SharpConfig.Configuration();
       Groups lastCatId = default;
-
+      int count = 0;
       foreach (SimVarItem item in items) {
         if (item == null)
           continue;
@@ -169,39 +174,61 @@ namespace MSFSTouchPortalPlugin.Configuration
             sect.Add("UpdateInterval", item.UpdateInterval);
           if (item.DeltaEpsilon != 0.0f)
             sect.Add("DeltaEpsilon", item.DeltaEpsilon);
+
+          ++count;
         }
         catch (Exception e) {
-          _logger.LogWarning(e, $"Serialize exception for {item.ToDebugString()}:");
+          _logger.LogError(e, $"Serialize exception for {item.ToDebugString()}: {e.Message}:");
         }
       }
 
-      if (filename == default)
-        filename = StatesConfigFile;
-      return SaveToFile(cfg, isUserConfig ? UserConfigFolder : AppConfigFolder, filename);
+      filename = GetFullFilePath(filename, isUserConfig);
+      if (SaveToFile(cfg, filename) is bool ok)
+        _logger.LogDebug($"Saved {count} SimVars to '{filename}'");
+      return ok;
     }
 
-    private bool SaveToFile(SharpConfig.Configuration cfg, string folder, string filename) {
+
+    // Private common utility methods
+
+    static string GetFullFilePath(string filename, bool isUserConfig) {
+      if (filename == default)
+        filename = StatesConfigFile;
+      else if (string.IsNullOrWhiteSpace(Path.GetExtension(filename)))
+        filename += ".ini";
+      if (filename.IndexOfAny(new char[] { '\\', '/' }) < 0)
+        filename = Path.Combine(isUserConfig ? UserConfigFolder : AppConfigFolder, filename);
+      return filename;
+    }
+
+    bool LoadFromFile(string filename, out SharpConfig.Configuration cfg) {
+      cfg = null;
+      if (!File.Exists(filename)) {
+        _logger.LogError($"Cannot import SimVars, file not found at '{filename}'");
+        return false;
+      }
       try {
-        Directory.CreateDirectory(folder);
-        cfg.SaveToFile(Path.Combine(folder, filename), Encoding.UTF8);
+        cfg = SharpConfig.Configuration.LoadFromFile(filename, Encoding.UTF8);
+      }
+      catch (Exception e) {
+        _logger.LogError(e, $"Configuration error in '{filename}': {e.Message}");
+        return false;
+      }
+      return true;
+    }
+
+    bool SaveToFile(SharpConfig.Configuration cfg, string filename) {
+      try {
+        Directory.CreateDirectory(Path.GetDirectoryName(filename));
+        cfg.SaveToFile(filename, Encoding.UTF8);
         return true;
       }
       catch (Exception e) {
-        _logger.LogWarning(e, $"Error trying to write config file '{filename}' to folder '{folder}'");
+        _logger.LogError(e, $"Error trying to write config file '{filename}': {e.Message}");
       }
       return false;
     }
 
-  }
-
-  [Serializable]
-  public class DuplicateIdException : Exception
-  {
-    public DuplicateIdException() : base() { }
-    public DuplicateIdException(string message) : base(message) { }
-    protected DuplicateIdException(SerializationInfo info, StreamingContext context)
-        : base(info, context) {
-    }
   }
 
 }

@@ -2,7 +2,6 @@
 using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Interfaces;
-using MSFSTouchPortalPlugin.Objects.Plugin;
 using MSFSTouchPortalPlugin.Types;
 using System;
 using System.Collections.Generic;
@@ -71,7 +70,7 @@ namespace MSFSTouchPortalPlugin.Services
       foreach (var actAttr in catAttribs) {
         // Create the action data object to store in the return dict, using the meta data we've collected so far.
         ActionEventType act = new ActionEventType {
-          Id = Enum.Parse<Plugin>(actAttr.Id),
+          Id = actAttr.EnumId,
           ActionId = actAttr.Id,
           CategoryId = Groups.Plugin,
           DataAttributes = actAttr.Data.ToDictionary(d => d.Id, d => d)
@@ -88,7 +87,7 @@ namespace MSFSTouchPortalPlugin.Services
             fmtStrList.Add($"{{{i}}}");
           act.KeyFormatStr = string.Join(",", fmtStrList);
           foreach (var ma in actAttr.Mappings) {
-            if (!act.TpActionToEventMap.TryAdd($"{string.Join(",", ma.Values)}", Enum.Parse<Plugin>(ma.ActionId)))
+            if (!act.TpActionToEventMap.TryAdd($"{string.Join(",", ma.Values)}", ma.EnumId))
               _logger.LogWarning($"Duplicate action-to-event mapping found for Plugin action {act.ActionId} with choices '{string.Join(",", ma.Values)} for event '{ma.ActionId}'.");
           }
         }

@@ -53,19 +53,17 @@ namespace MSFSTouchPortalPlugin_Generator
       }
 
       // read states config
-      IEnumerable<SimVarItem> simVars = Array.Empty<SimVarItem>();
+      // always include the internal plugin states
+      IEnumerable<SimVarItem> simVars = _pluginConfig.LoadPluginStates();
       if (useCustomConfigs) {
-        if (!string.IsNullOrWhiteSpace(_options.StateFilesPath))
-          PluginConfig.UserConfigFolder = _options.StateFilesPath;
-        simVars = _pluginConfig.LoadCustomSimVars(_options.StateFiles);
-        _logger.LogInformation($"Generating entry.tp v{vNum:X} to '{_options.OutputPath}' with Custom states from file(s): {string.Join(", ", _options.StateFiles)}");
+        PluginConfig.UserConfigFolder = _options.StateFilesPath;
+        PluginConfig.UserStateFiles = string.Join(',', _options.StateFiles);
+        _logger.LogInformation($"Generating entry.tp v{vNum:X} to '{_options.OutputPath}' with Custom states from file(s): {PluginConfig.UserStateFiles}");
       }
       else {
-        simVars = _pluginConfig.LoadSimVarItems(false);
         _logger.LogInformation($"Generating entry.tp v{vNum:X} to '{_options.OutputPath}' with Default states.");
       }
-      // always include the internal plugin states
-      simVars = simVars.Concat(_pluginConfig.LoadPluginStates());
+      simVars = simVars.Concat(_pluginConfig.LoadSimVarStateConfigs());
 
       // Setup Base Model
       var model = new Base {
@@ -131,9 +129,6 @@ namespace MSFSTouchPortalPlugin_Generator
 
         }  // actions
 
-        // Sort the actions
-        category.Actions = category.Actions.OrderBy(c => c.Name).ToList();
-
         // States
         var categoryStates = simVars.Where(s => s.CategoryId == catAttrib.Id);
         foreach (SimVarItem state in categoryStates) {
@@ -150,9 +145,11 @@ namespace MSFSTouchPortalPlugin_Generator
             _logger.LogWarning($"Duplicate state ID found: '{newState.Id}', skipping.'");
         }
 
-        // Sort the states
-        category.States = category.States.OrderBy(c => c.Description).ToList();
-
+        // Sort the actions and states for SimConnect groups
+        if (catAttrib.Id != MSFSTouchPortalPlugin.Enums.Groups.Plugin) {
+          category.Actions = category.Actions.OrderBy(c => c.Name).ToList();
+          category.States = category.States.OrderBy(c => c.Description).ToList();
+        }
       }  // categories loop
 
       // Settings

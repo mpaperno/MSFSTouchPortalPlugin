@@ -5,18 +5,26 @@ using MSFSTouchPortalPlugin.Types;
 namespace MSFSTouchPortalPlugin.Objects.Plugin
 {
   [TouchPortalCategory(Groups.Plugin)]
-  internal static class PluginMapping {
-    [TouchPortalAction("Connection", "Connection", "Toggle/On/Off SimConnect Connection", "SimConnect Connection - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off", "Reload States" }, Id = "Action")]
-    [TouchPortalActionMapping("ToggleConnection", "Toggle")]
-    [TouchPortalActionMapping("Connect", "On")]
-    [TouchPortalActionMapping("Disconnect", "Off")]
-    [TouchPortalActionMapping("ReloadStates", "Reload States")]
+  internal static class PluginMapping
+  {
+    [TouchPortalAction(PluginActions.Connection, "Connection", "Toggle/On/Off SimConnect Connection", "SimConnect Connection - {0}")]
+    [TouchPortalActionChoice(new[] { "Toggle", "On", "Off", "Reload States" }, Id = "Action")]
+    [TouchPortalActionMapping(PluginActions.ToggleConnection, "Toggle")]
+    [TouchPortalActionMapping(PluginActions.Connect, "On")]
+    [TouchPortalActionMapping(PluginActions.Disconnect, "Off")]
+    [TouchPortalActionMapping(PluginActions.ReloadStates, "Reload States")]
     public static readonly object Connection;
 
+    [TouchPortalAction(PluginActions.ActionRepeatInterval, "Action Repeat Interval", "Held Action Repeat Rate (ms)", "Repeat Interval: {0} to/by: {1} ms", true)]
+    [TouchPortalActionChoice(new[] { "Set", "Increment", "Decrement" }, Id = "Action")]
+    [TouchPortalActionText("450", 50, int.MaxValue, Id = "Value")]
+    [TouchPortalActionMapping(PluginActions.ActionRepeatIntervalSet, "Set")]
+    [TouchPortalActionMapping(PluginActions.ActionRepeatIntervalInc, "Increment")]
+    [TouchPortalActionMapping(PluginActions.ActionRepeatIntervalDec, "Decrement")]
+    public static readonly object ActionRepeatInterval;
 
-    [TouchPortalAction("SetSimVar", "Set Simulator Variable Value", "Sets a value on any loaded State which is marked as settable.", "Set Variable {0} to {1} (release AI: {2})")]
-    [TouchPortalActionChoice(new[] { "<not connected>" }, "", Id = "VarName", Label = "Simulator Variable")]
+    [TouchPortalAction(PluginActions.SetSimVar, "Set Simulator Variable Value", "Sets a value on any loaded State which is marked as settable.", "Set Variable {0} to {1} (release AI: {2})")]
+    [TouchPortalActionChoice("<plugin not connected>", "", Id = "VarName", Label = "Simulator Variable")]
     [TouchPortalActionText("0", Id = "Value", Label = "Value")]
     [TouchPortalActionSwitch(false, Id = "RelAI", Label = "Release AI")]
     public static readonly object SetSimVar;
@@ -70,12 +78,6 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
       MaxLength = 255
     };
 
-    [TouchPortalAction("ActionRepeatInterval", "Action Repeat Interval", "Held Action Repeat Rate (ms)", "Repeat Interval: {0} to/by: {1} ms", true)]
-    [TouchPortalActionChoice(new[] { "Set", "Increment", "Decrement" }, Id = "Action")]
-    [TouchPortalActionText("450", 50, int.MaxValue, Id = "Interval")]
-    [TouchPortalActionMapping("ActionRepeatIntervalSet", "Set")]
-    [TouchPortalActionMapping("ActionRepeatIntervalInc", "Increment")]
-    [TouchPortalActionMapping("ActionRepeatIntervalDec", "Decrement")]
     public static readonly PluginSetting ActionRepeatInterval = new PluginSetting("ActionRepeatInterval", DataType.Number) {
       Name = "Held Action Repeat Rate (ms)",
       Description = "Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Action Repeat Interval' action. This setting cannot be changed from the TP Plugin Settings page (even though it appears to be editable on there).",
@@ -85,11 +87,14 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
       ReadOnly = true,
       TouchPortalStateId = "ActionRepeatInterval"
     };
-
   }
+}
 
+namespace MSFSTouchPortalPlugin.Enums
+{
   // IDs for handling internal events
-  internal enum Plugin : short {
+  public enum PluginActions : short
+  {
     None = 0,
 
     // Action IDs

@@ -37,6 +37,9 @@ namespace MSFSTouchPortalPlugin.Types
       return TpActionToEventMap.TryGetValue(FormatLookupKey(values), out eventEnum);
     }
 
+    public bool TryGetEventMapping(string value, out Enum eventEnum) =>
+      TryGetEventMapping(new string[] { value }, out eventEnum);
+
     // Helper to format an array of action data values into a unique key
     // used for indexing the TpActionToEventMap dictionary.
     public string FormatLookupKey(in string[] values) {
