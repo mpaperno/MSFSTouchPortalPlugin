@@ -1,4 +1,5 @@
 ﻿using MSFSTouchPortalPlugin.Enums;
+using System.Linq;
 
 namespace MSFSTouchPortalPlugin.Constants
 {
@@ -26,6 +27,9 @@ namespace MSFSTouchPortalPlugin.Constants
       /* SimSystem, */          "System",
     };
 
+    public static string[] ListAll => categoryNames;
+    public static string[] ListUsable => categoryNames[2..^0];  // w/out None and Plugin
+
     /// <summary>
     /// Returns the category name for given enum value, or a blank string if the id is invalid..
     /// </summary>
@@ -33,6 +37,24 @@ namespace MSFSTouchPortalPlugin.Constants
       if (System.Enum.IsDefined(catId))
         return categoryNames[(int)catId];
       return string.Empty;
+    }
+
+    /// <summary>
+    /// Returns the category ID for given name, or Groups.None if the string is invalid..
+    /// </summary>
+    internal static Groups CategoryId(string name) =>
+      categoryNames.ToList().IndexOf(name) is var idx && idx > -1 ? (Groups)idx : Groups.None;
+
+    /// <summary>
+    /// Places the category ID for given name in the out parameter, and returns true if string was valid.
+    /// </summary>
+    internal static bool TryGetCategoryId(string name, out Groups id) {
+      if (categoryNames.ToList().IndexOf(name) is var idx && idx > -1) {
+        id = (Groups)idx;
+        return true;
+      }
+      id = Groups.None;
+      return false;
     }
 
     /// <summary>

@@ -25,6 +25,8 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     public static string StatesConfigFile { get; set; } = "States.ini";
     public static string PluginStatesConfigFile { get; set; } = "PluginStates.ini";
+    public static string SimVarsImportsFile { get; set; } = "SimVars.ini";
+    public static string SimEventsImportsFile { get; set; } = "SimEvents.ini";
 
     public static string AppRootFolder    { get; set; } = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
     public static string AppConfigFolder  { get; set; } = Path.Combine(AppRootFolder, "Configuration");
@@ -186,6 +188,56 @@ namespace MSFSTouchPortalPlugin.Configuration
       if (SaveToFile(cfg, filename) is bool ok)
         _logger.LogDebug($"Saved {count} SimVars to '{filename}'");
       return ok;
+    }
+
+    public IReadOnlyCollection<SimVariable> ImportSimVars() {
+      List<SimVariable> ret = new();
+      var filename = Path.Combine(AppConfigFolder, SimVarsImportsFile);
+      _logger.LogDebug($"Importing SimVars from file '{filename}'...");
+
+      if (!LoadFromFile(filename, out var cfg))
+        return ret;
+
+      foreach (SharpConfig.Section section in cfg) {
+        if (section.Name == SharpConfig.Section.DefaultSectionName || section.Name.StartsWith("category_"))
+          continue;  // do something with category later?
+
+        SimVariable simVar;
+        try {
+          simVar = section.ToObject<SimVariable>();
+        }
+        catch (Exception e) {
+          _logger.LogError(e, $"Deserialize exception for section '{section}': {e.Message}:");
+          continue;
+        }
+        if (simVar == null) {
+          _logger.LogError($"Produced SimVar is null from section '{section}':");
+          continue;
+        }
+        string normUnit = Units.NormalizedUnit(simVar.Unit);
+        if (normUnit != null)
+          simVar.Unit = normUnit;
+        else
+          _logger.LogWarning($"Could not find Unit '{simVar.Unit}' for '{simVar.Id}'");
+
+        // set a default name. Some of the Descriptions would be suitable names but it's tricky to filter that.
+        if (string.IsNullOrWhiteSpace(simVar.Name))
+          simVar.Name = simVar.SimVarName;
+        // set up a name to use in the TP UI selection list
+        simVar.TouchPortalSelectorName = $"{simVar.CategoryId} - {simVar.SimVarName}{(simVar.Indexed ? ":N" : "")}";
+
+        // check unique
+        if (ret.FindIndex(s => s.Id == simVar.Id) is int idx && idx > -1) {
+          _logger.LogWarning($"Duplicate SimVar ID found for '{simVar.Id}', overwriting.");
+          ret[idx] = simVar;
+        }
+        else {
+          ret.Add(simVar);
+        }
+      }
+      ret = ret.OrderBy(s => s.TouchPortalSelectorName).ToList();
+      _logger.LogDebug($"Imported {ret.Count} SimVars from '{filename}'");
+      return ret;
     }
 
 

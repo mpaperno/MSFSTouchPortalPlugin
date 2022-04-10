@@ -28,9 +28,60 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     [TouchPortalActionText("0", Id = "Value", Label = "Value")]
     [TouchPortalActionSwitch(false, Id = "RelAI", Label = "Release AI")]
     public static readonly object SetSimVar;
+
+    [TouchPortalAction(PluginActions.AddCustomSimVar, "Add Custom Simulator Variable",
+      "Request Simulator Variable Name:                            Index (if any):                 Category:                                    " +
+        "Units:                                                                               Format:                            Default Value:                 " +
+        "Settable:           Update Period:                   Update Interval:               Delta Epsilon:     ",
+      "{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}")]
+    [TouchPortalActionText("SIMULATOR VARIABLE FULL NAME", Id = "VarName", Label = "Simulator Variable Name")]
+    [TouchPortalActionNumeric(0, 0, 99, false, Id = "VarIndex", Label = "Variable Index")]
+    [TouchPortalActionChoice("<plugin not connected>", "", Id = "CatId", Label = "Category")]
+    [TouchPortalActionChoice("<plugin not connected>", "", Id = "Unit", Label = "Unit Name")]
+    [TouchPortalActionText("F2", Id = "Format", Label = "Formatting String")]
+    [TouchPortalActionText("0", Id = "DfltVal", Label = "Default Value")]
+    [TouchPortalActionSwitch(false, Id = "CanSet", Label = "Settable")]
+    [TouchPortalActionChoice(new[] { /*"Never",*/ "Once", "VisualFrame", "SimFrame", "Second", "Millisecond", }, "SimFrame", Id = "UpdPer", Label = "Update Period")]
+    [TouchPortalActionNumeric(0, 0, int.MaxValue, false, Id = "UpdInt", Label = "Interval")]
+    [TouchPortalActionNumeric(0.0099999, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
+    public static readonly object AddCustomSimVar;
+
+    [TouchPortalAction(PluginActions.AddKnownSimVar, "Add Custom Simulator Variable From List",
+      "Request Simulator Variable Name                                                                                     Index (if any):                    Category:                                   " +
+        "Units:                                                                                Format:                             Default Value:                 " +
+        "Update Period:                  Update Interval:              Delta Epsilon:      ",
+      "{0}{1}{2}{3}{4}{5}{6}{7}{8}")]
+    [TouchPortalActionChoice("<plugin not connected>", "", Id = "VarName", Label = "Simulator Variable Name")]
+    [TouchPortalActionNumeric(0, 0, 99, false, Id = "VarIndex", Label = "Variable Index")]
+    [TouchPortalActionChoice("<plugin not connected>", "", Id = "CatId", Label = "Category")]
+    [TouchPortalActionChoice("<plugin not connected>", "", Id = "Unit", Label = "Unit Name")]
+    [TouchPortalActionText("F2", Id = "Format", Label = "Formatting String")]
+    [TouchPortalActionText("0", Id = "DfltVal", Label = "Default Value")]
+    //[TouchPortalActionSwitch(false, Id = "CanSet", Label = "Settable")]  // we should know if it's settable from the imported data
+    [TouchPortalActionChoice(new[] { /*"Never",*/ "Once", "VisualFrame", "SimFrame", "Second", "Millisecond", }, "SimFrame", Id = "UpdPer", Label = "Update Period")]
+    [TouchPortalActionNumeric(0, 0, int.MaxValue, false, Id = "UpdInt", Label = "Interval")]
+    [TouchPortalActionNumeric(0.0099999, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
+    public static readonly object AddKnownSimVar;
+
+    [TouchPortalAction(PluginActions.RemoveSimVar, "Remove a Simulator Variable",
+      "Remove an existing Simulator Variable. Note that static TP States cannot be removed.",
+      "Remove Simulator Variable {0}")]
+    [TouchPortalActionChoice("<plugin not connected>", "", Id = "VarName", Label = "Simulator Variable")]
+    public static readonly object RemoveSimVar;
+
+    [TouchPortalAction(PluginActions.LoadSimVars, "Load SimVar Definitions From File", "Load a set of simulator variable state definitions from a configuration file.", "Load from file {0} (name only for user config. folder, or full path with file name)")]
+    [TouchPortalActionFile("CustomStates.ini", Id = "VarsFile", Label = "Load From File")]
+    public static readonly object LoadSimVars;
+
+    [TouchPortalAction(PluginActions.SaveSimVars, "Save SimVar Definitions To File", "Save the current simulator variable state definitions to a configuration file.", "Save {0} states to file {1} (name only for user config. folder, or full path with file name)")]
+    [TouchPortalActionChoice(new[] { "Custom", "All" }, Id = "VarsSet", Label = "Variables Set")]
+    [TouchPortalActionText("CustomStates.ini", Id = "VarsFile", Label = "Save to File")]
+    //[TouchPortalActionFile("CustomStates.ini", Id = "VarsFile", Label = "Save to File")]  // doesn't allow freeform entry or selecting a non-existing file as of TP 3.0.10
+    [TouchPortalActionMapping(PluginActions.SaveCustomSimVars, "Custom")]
+    [TouchPortalActionMapping(PluginActions.SaveAllSimVars, "All")]
+    public static readonly object SaveSimVars;
   }
 
-  [TouchPortalCategory(Groups.Plugin)]
   [TouchPortalSettingsContainer]
   public static class Settings
   {
@@ -101,6 +152,11 @@ namespace MSFSTouchPortalPlugin.Enums
     Connection,
     ActionRepeatInterval,
     SetSimVar,
+    AddCustomSimVar,
+    AddKnownSimVar,
+    RemoveSimVar,
+    SaveSimVars,
+    LoadSimVars,
 
     // Action choice mapping IDs
     ToggleConnection,
@@ -112,6 +168,8 @@ namespace MSFSTouchPortalPlugin.Enums
     ActionRepeatIntervalDec,
     ActionRepeatIntervalSet,
 
+    SaveCustomSimVars,
+    SaveAllSimVars,
   }
 
   // Dynamically generated SimConnect client event IDs are "parented" to this enum type,
