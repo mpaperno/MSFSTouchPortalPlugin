@@ -74,6 +74,8 @@ namespace MSFSTouchPortalPlugin_Generator
       };
       if (!_options.Debug)
         model.Plugin_start_cmd = $"{basePath}dist/{_options.PluginId}.exe";
+      model.Configuration.ColorDark = "#" + _options.ColorDark.Trim('#');
+      model.Configuration.ColorLight = "#" + _options.ColorLight.Trim('#');
 
       var categegoryAttribs = _reflectionSvc.GetCategoryAttributes();
       foreach (var catAttrib in categegoryAttribs) {
