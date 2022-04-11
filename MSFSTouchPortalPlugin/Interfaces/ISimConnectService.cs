@@ -20,7 +20,7 @@ namespace MSFSTouchPortalPlugin.Interfaces
     bool AddNotification(Groups group, Enum eventId);
     bool Connect(uint configIndex = 0);
     void Disconnect();
-    bool MapClientEventToSimEvent(Enum eventId, string eventName);
+    bool MapClientEventToSimEvent(Enum eventId, string eventName, Groups group);
     bool TransmitClientEvent(Groups group, Enum eventId, uint data);
     void SetNotificationGroupPriorities();
     void ClearAllDataDefinitions();

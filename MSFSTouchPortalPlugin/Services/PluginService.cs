@@ -222,10 +222,8 @@ namespace MSFSTouchPortalPlugin.Services
 
       // Register Action events
       var eventMap = _reflectionService.GetClientEventIdToNameMap();
-      foreach (var m in eventMap) {
-        _simConnectService.MapClientEventToSimEvent(m.Key, m.Value.EventName);
-        _simConnectService.AddNotification(m.Value.GroupId, m.Key);
-      }
+      foreach (var m in eventMap)
+        _simConnectService.MapClientEventToSimEvent(m.Key, m.Value.EventName, m.Value.GroupId);
       // must be called after adding notifications
       _simConnectService.SetNotificationGroupPriorities();
 
