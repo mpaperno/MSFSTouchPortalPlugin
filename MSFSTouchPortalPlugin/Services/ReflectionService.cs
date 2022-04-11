@@ -31,11 +31,10 @@ namespace MSFSTouchPortalPlugin.Services
     private static readonly Dictionary<Enum, SimEventRecord> clientEventIdToNameMap = new();
 
     public ref readonly Dictionary<Enum, SimEventRecord> GetClientEventIdToNameMap() => ref clientEventIdToNameMap;
-    public string GetSimEventNameById(Enum id) {
-      return clientEventIdToNameMap.TryGetValue(id, out var entry) ? entry.EventName : "[unknown event]";
-    }
+    public string GetSimEventNameById(Enum id) => clientEventIdToNameMap.TryGetValue(id, out var entry) ? entry.EventName : "[unknown event]";
     public string GetSimEventNameById(uint id) => GetSimEventNameById((SimEventClientId)id);
     public string GetSimEventNameById(int id) => GetSimEventNameById((SimEventClientId)id);
+    public void AddSimEventNameMapping(Enum id, SimEventRecord record) => clientEventIdToNameMap[id] = record;
 
     public IEnumerable<TouchPortalCategoryAttribute> GetCategoryAttributes() {
       List<TouchPortalCategoryAttribute> ret = new();
@@ -87,7 +86,7 @@ namespace MSFSTouchPortalPlugin.Services
             fmtStrList.Add($"{{{i}}}");
           act.KeyFormatStr = string.Join(",", fmtStrList);
           foreach (var ma in actAttr.Mappings) {
-            if (!act.TpActionToEventMap.TryAdd($"{string.Join(",", ma.Values)}", ma.EnumId))
+            if (!act.TryAddPluginEventMapping($"{string.Join(",", ma.Values)}", (PluginActions)ma.EnumId))
               _logger.LogWarning($"Duplicate action-to-event mapping found for Plugin action {act.ActionId} with choices '{string.Join(",", ma.Values)} for event '{ma.ActionId}'.");
           }
         }
@@ -96,7 +95,6 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     public Dictionary<string, ActionEventType> GetActionEvents() {
-      int nextId = (int)SimEventClientId.Init + 1;
       var returnDict = GetInternalActionEvents();
       var catAttribs = GetCategoryAttributes();
 
@@ -144,12 +142,12 @@ namespace MSFSTouchPortalPlugin.Services
           act.KeyFormatStr = string.Join(",", fmtStrList);
           // Now get all the action mappings to produce the final list of all possible action events
           foreach (var ma in actAttr.Mappings) {
-            Enum mapTarget = (SimEventClientId)nextId++;
             // Put into collections
-            if (!act.TpActionToEventMap.TryAdd($"{string.Join(",", ma.Values)}", mapTarget))
+            if (act.TryAddSimEventMapping($"{string.Join(",", ma.Values)}", out Enum mapTarget))
+              // keep track of generated event IDs for Sim actions (for registering to SimConnect, and debug)
+              clientEventIdToNameMap[mapTarget] = new SimEventRecord(catAttr.Id, ma.ActionId);
+            else
               _logger.LogWarning($"Duplicate action-to-event mapping found for action {act.ActionId} with choices '{string.Join(",", ma.Values)} for event '{ma.ActionId}'.");
-            // keep track of generated event IDs for Sim actions (for registering to SimConnect, and debug)
-            clientEventIdToNameMap[mapTarget] = new SimEventRecord(catAttr.Id, ma.ActionId);
           }
 
         }  // actions loop

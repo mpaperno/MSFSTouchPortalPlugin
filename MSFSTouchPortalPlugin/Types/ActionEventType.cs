@@ -17,28 +17,54 @@ namespace MSFSTouchPortalPlugin.Types
     public double MaxValue = double.NaN;
     public DataType ValueType = DataType.None;  // assuming single value here also
 
+    public IReadOnlyDictionary<string, TouchPortalActionDataAttribute> DataAttributes;  // list of all data type attributes
+
     // Mapping of TP actions to SimConnect or "Native" events. For SimConnect, the Enum is a generated number
     // of type SimEventClientId (but doesn't actually exist), and for internal plugin events its an actual
-    // member of the MSFSTouchPortalPlugin.Objects.Plugin.Plugin enum.
-    public readonly Dictionary<string, Enum> TpActionToEventMap = new();
+    // member of the MSFSTouchPortalPlugin.Objects.Plugin.PluginActions enum.
+    readonly Dictionary<string, Enum> TpActionToEventMap = new();
 
-    // possible future use
-    //public object ActionObject = null;  // the member to which all action attributes are assigned to
-    public IReadOnlyDictionary<string, TouchPortalActionDataAttribute> DataAttributes;  // list of all data type attributes
+    // this is how we generate unique SimConnect client Event IDs.
+    private static SimEventClientId _nextEventId = SimEventClientId.Init;
+    private static SimEventClientId NextId() => ++_nextEventId;      // got a warning when trying to increment this directly from c'tor, but not via static member... ?
+
+    public ActionEventType() { }
+
+    /// <summary> c'tor for dynamically added actions with just one sim event, which returns the generated event ID of actual type SimEventClientId </summary>
+    public ActionEventType(string actionId, Groups categoryId, bool hasValue, out Enum eventId) {
+      Id = eventId = NextId();
+      ActionId = actionId;
+      CategoryId = categoryId;
+      ValueIndex = hasValue ? 0 : -1;
+      ValueType = DataType.Number;
+    }
+
+    public bool TryAddSimEventMapping(string actionId, out Enum eventId) {
+      eventId = NextId();
+      return TpActionToEventMap.TryAdd(actionId, eventId);
+    }
+
+    public bool TryAddPluginEventMapping(string actionName, PluginActions eventId) {
+      return TpActionToEventMap.TryAdd(actionName, eventId);
+    }
 
     // Get a unique event ID for this action, possibly based on data values
     // in the \c data array. Certain combination of values, eg. from choices,
     // may have their own unique events. Returns `false` if the lookup fails.
-    public bool TryGetEventMapping(in string[] values, out Enum eventEnum) {
-      if (TpActionToEventMap.Count == 1) {
-        eventEnum = TpActionToEventMap.First().Value;
+    public bool TryGetEventMapping(in string[] values, out Enum eventId) {
+      if (!TpActionToEventMap.Any()) {
+        eventId = Id;
         return true;
       }
-      return TpActionToEventMap.TryGetValue(FormatLookupKey(values), out eventEnum);
+      if (TpActionToEventMap.Count == 1) {
+        eventId = TpActionToEventMap.First().Value;
+        return true;
+      }
+      return TpActionToEventMap.TryGetValue(FormatLookupKey(values), out eventId);
     }
 
-    public bool TryGetEventMapping(string value, out Enum eventEnum) =>
-      TryGetEventMapping(new string[] { value }, out eventEnum);
+    public bool TryGetEventMapping(string value, out Enum eventId) =>
+      TryGetEventMapping(new string[] { value }, out eventId);
 
     // Helper to format an array of action data values into a unique key
     // used for indexing the TpActionToEventMap dictionary.
