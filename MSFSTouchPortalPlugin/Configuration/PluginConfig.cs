@@ -7,6 +7,7 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using System.Text.RegularExpressions;
 
 namespace MSFSTouchPortalPlugin.Configuration
 {
@@ -60,11 +61,15 @@ namespace MSFSTouchPortalPlugin.Configuration
     public static bool HaveUserStateFiles => _userStateFiles.Any();
     public static IReadOnlyCollection<string> UserStateFilesArray => _userStateFiles;
 
+    public IEnumerable<string> ImportedSimVarCategoryNames => _importedSimVars.Keys;
+    public IEnumerable<string> ImportedSimEvenCategoryNames => _importedSimEvents.Keys;
 
     const string STR_DEFAULT = "default";
     private static readonly string _defaultUserCfgFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), RootName);
     private static string _currentUserCfgFolder = _defaultUserCfgFolder;
     private static string[] _userStateFiles = Array.Empty<string>();
+    private IReadOnlyDictionary<string, IReadOnlyDictionary<string, SimVariable>> _importedSimVars;
+    private IReadOnlyDictionary<string, IReadOnlyDictionary<string, SimEvent>> _importedSimEvents;
     private readonly ILogger<PluginConfig> _logger;
 
 
@@ -76,22 +81,92 @@ namespace MSFSTouchPortalPlugin.Configuration
       SharpConfig.Configuration.AlwaysQuoteStringValues = true;  // custom SharpConfig v3.2.9.2-mp feature
     }
 
+    // Loads all imports
+    public void Init() {
+      _importedSimVars = ImportSimVars();
+      _importedSimEvents = ImportSimEvents();
+      // Check for custom SimConnect.cfg and try copy it to application dir (may require elevated privileges)
+      CopySimConnectConfig();
+    }
+
+    // Imported SimVariables methods
+
+    public bool TryGetImportedSimVarNamesForCateogy(string simCategoryName, out IEnumerable<string> list) {
+      if (_importedSimVars.TryGetValue(simCategoryName, out var dict)) {
+        list = dict.Keys;
+        return true;
+      }
+      list = Array.Empty<string>();
+      return false;
+    }
+
+    public bool TryGetImportedSimVarsForCateogy(string simCategoryName, out IEnumerable<SimVariable> list) {
+      if (_importedSimVars.TryGetValue(simCategoryName, out var dict)) {
+        list = dict.Values;
+        return true;
+      }
+      list = Array.Empty<SimVariable>();
+      return false;
+    }
+
+    public bool TryGetImportedSimVarBySelector(string selector, out SimVariable simVar) {
+      simVar = null;
+      selector = selector?.Trim().Replace(":N", "").Replace("* ", "") ?? string.Empty;
+      return (_importedSimVars.Values.FirstOrDefault(c => c.ContainsKey(selector)) is var cat && cat != null) && cat.TryGetValue(selector, out simVar);
+    }
+
+    public SimVariable GetOrCreateImportedSimVariable(string varName) {
+      if (string.IsNullOrWhiteSpace(varName))
+        return null;
+      var simVarName = varName.Trim().Replace(":N", "").Replace("* ", "");
+      if ((_importedSimVars.Values.FirstOrDefault(c => c.ContainsKey(simVarName)) is var cat && cat != null) && cat.TryGetValue(simVarName, out SimVariable simVar))
+        return simVar;
+      simVar = new() {
+        // Create a reasonable string for a TP state ID
+        Id = Regex.Replace(simVarName.ToLower(), @"(?:\b|\W|_)(\w)", m => (m.Groups[1].ToString().ToUpper())),
+        SimVarName = simVarName,
+        Name = simVarName,  // for lack of anything better
+        Indexed = varName.Trim().EndsWith(":N")
+      };
+      return simVar;
+    }
+
+    // Imported SimEvents methods
+
+    public bool TryGetImportedSimEventNamesForCateogy(string simCategoryName, out IEnumerable<string> list) {
+      if (_importedSimEvents.TryGetValue(simCategoryName, out var dict)) {
+        list = dict.Keys;
+        return true;
+      }
+      list = Array.Empty<string>();
+      return false;
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static")]
+    public bool TryGetImportedSimEventIdFromSelector(string selector, out string eventId) {
+      eventId = selector?.Split(" - ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).First() ?? string.Empty;
+      return !string.IsNullOrEmpty(eventId);
+    }
+
+    // Check if user config folder contains a SimConnect.cfg file and tries to copy it into the current running folder.
     public bool CopySimConnectConfig() {
       string filename = "SimConnect.cfg";
       string srcFile = Path.Combine(UserConfigFolder, filename);
       if (File.Exists(srcFile)) {
         try {
           File.Copy(srcFile, Path.Combine(AppRootFolder, filename), true);
+          _logger.LogInformation($"Using custom SimConnect.cfg file from '{UserConfigFolder}'.");
           return true;
         }
         catch (Exception e) {
-          _logger.LogError(e, $"Error trying to copy SimConnect.cfg file from '{srcFile}': {e.Message}");
+          _logger.LogError($"Error trying to copy SimConnect.cfg file from '{srcFile}': {e.Message}");
           return false;
         }
       }
       return false;
     }
 
+    // Loads an individual sim var states config file, either from user's config folder, the default app config location, or a full file path
     public IReadOnlyCollection<SimVarItem> LoadSimVarItems(bool isUserConfig = true, string filename = default) {
       List<SimVarItem> ret = new();
       filename = GetFullFilePath(filename, isUserConfig);
@@ -131,6 +206,7 @@ namespace MSFSTouchPortalPlugin.Configuration
       return ret;
     }
 
+    // Loads all sim var config as per current configuration of user/default state files
     public IReadOnlyCollection<SimVarItem> LoadSimVarStateConfigs() {
       if (!HaveUserStateFiles)
         return LoadSimVarItems(false);
@@ -143,9 +219,11 @@ namespace MSFSTouchPortalPlugin.Configuration
       return ret;
     }
 
+    // Loads the definitions of the internal plugin states
     public IReadOnlyCollection<SimVarItem> LoadPluginStates()
       => LoadSimVarItems(false, PluginStatesConfigFile);
 
+    // Save collection to file
     public bool SaveSimVarItems(IEnumerable<SimVarItem> items, bool isUserConfig = true, string filename = default) {
       var cfg = new SharpConfig.Configuration();
       Groups lastCatId = default;
@@ -190,17 +268,38 @@ namespace MSFSTouchPortalPlugin.Configuration
       return ok;
     }
 
-    public IReadOnlyCollection<SimVariable> ImportSimVars() {
-      List<SimVariable> ret = new();
+
+    // private importers, loaded data is stored internally
+
+    IReadOnlyDictionary<string, IReadOnlyDictionary<string, SimVariable>> ImportSimVars() {
+      Dictionary<string, IReadOnlyDictionary<string, SimVariable>> ret = new();
       var filename = Path.Combine(AppConfigFolder, SimVarsImportsFile);
       _logger.LogDebug($"Importing SimVars from file '{filename}'...");
 
       if (!LoadFromFile(filename, out var cfg))
         return ret;
 
+      int count = 0;
+      string currCatName = string.Empty;
+      Dictionary<string, SimVariable> catDict = null;
       foreach (SharpConfig.Section section in cfg) {
-        if (section.Name == SharpConfig.Section.DefaultSectionName || section.Name.StartsWith("category_"))
-          continue;  // do something with category later?
+        if (section.Name == SharpConfig.Section.DefaultSectionName)
+          continue;
+
+        // new category
+        if (section.Name.StartsWith("category_")) {
+          if (catDict != null) {
+            ret[currCatName] = catDict.OrderBy(kv => kv.Key).ToDictionary(s => s.Key, s => s.Value);
+          }
+          if (section.TryGetSetting("Name", out var setting)) {
+            currCatName = setting.StringValue;
+            // the categories should be sequential, but JIC we check if we already have it
+            catDict = ret.GetValueOrDefault(currCatName, new Dictionary<string, SimVariable>()).ToDictionary(s => s.Key, s => s.Value);
+          }
+          continue;
+        }
+        if (catDict == null)
+          continue;
 
         SimVariable simVar;
         try {
@@ -224,19 +323,78 @@ namespace MSFSTouchPortalPlugin.Configuration
         if (string.IsNullOrWhiteSpace(simVar.Name))
           simVar.Name = simVar.SimVarName;
         // set up a name to use in the TP UI selection list
-        simVar.TouchPortalSelectorName = $"{simVar.CategoryId} - {simVar.SimVarName}{(simVar.Indexed ? ":N" : "")}";
+        simVar.TouchPortalSelectorName = $"{simVar.SimVarName}{(simVar.Indexed ? ":N" : "")}";
+        // pad with 2 spaces per char because TP uses _very_ proportional fonts and we need the names to be of same width
+        simVar.TouchPortalSelectorName += string.Concat(Enumerable.Repeat("  ", Math.Max(0, 45 - simVar.TouchPortalSelectorName.Length)));
 
         // check unique
-        if (ret.FindIndex(s => s.Id == simVar.Id) is int idx && idx > -1) {
-          _logger.LogWarning($"Duplicate SimVar ID found for '{simVar.Id}', overwriting.");
-          ret[idx] = simVar;
+        if (!catDict.TryAdd(simVar.SimVarName, simVar)) {
+          catDict[simVar.SimVarName] = simVar;
+          _logger.LogWarning($"Duplicate SimVar ID found for '{simVar.Id}' ('{simVar.SimVarName}'), overwriting.");
         }
-        else {
-          ret.Add(simVar);
-        }
+        ++count;
       }
-      ret = ret.OrderBy(s => s.TouchPortalSelectorName).ToList();
-      _logger.LogDebug($"Imported {ret.Count} SimVars from '{filename}'");
+      ret = ret.OrderBy(s => s.Key).ToDictionary(s => s.Key, s => s.Value);
+      _logger.LogDebug($"Imported {count} SimVars in {ret.Count} categories from '{filename}'");
+      return ret;
+    }
+
+    IReadOnlyDictionary<string, IReadOnlyDictionary<string, SimEvent>> ImportSimEvents() {
+      Dictionary<string, IReadOnlyDictionary<string, SimEvent>> ret = new();
+      var filename = Path.Combine(AppConfigFolder, SimEventsImportsFile);
+      _logger.LogDebug($"Importing SimEvents from file '{filename}'...");
+
+      if (!LoadFromFile(filename, out var cfg))
+        return ret;
+
+      int count = 0;
+      string currCatName = string.Empty;
+      Dictionary<string, SimEvent> catDict = null;
+      foreach (SharpConfig.Section section in cfg) {
+        if (section.Name == SharpConfig.Section.DefaultSectionName)
+          continue;
+
+        // new category
+        if (section.Name.StartsWith("category_")) {
+          if (catDict != null) {
+            ret[currCatName] = catDict.OrderBy(kv => kv.Key).ToDictionary(s => s.Key, s => s.Value);
+          }
+          if (section.TryGetSetting("Name", out var setting)) {
+            currCatName = setting.StringValue;
+            // the categories should be sequential, but JIC we check if we already have it
+            catDict = ret.GetValueOrDefault(currCatName, new Dictionary<string, SimEvent>()).ToDictionary(s => s.Key, s => s.Value);
+          }
+          continue;
+        }
+        if (catDict == null)
+          continue;
+
+        SimEvent simEvt;
+        try {
+          simEvt = section.ToObject<SimEvent>();
+        }
+        catch (Exception e) {
+          _logger.LogError(e, $"Deserialize exception for section '{section}': {e.Message}:");
+          continue;
+        }
+        if (simEvt == null) {
+          _logger.LogError($"Produced SimEvent is null from section '{section}':");
+          continue;
+        }
+        // INI section name is the ID
+        simEvt.Id = section.Name;
+        // set up a name to use in the TP UI selection list
+        simEvt.TouchPortalSelectorName = $"{simEvt.Id} - {simEvt.Name}";
+
+        // check unique
+        if (!catDict.TryAdd(simEvt.TouchPortalSelectorName, simEvt)) {
+          catDict[simEvt.TouchPortalSelectorName] = simEvt;
+          _logger.LogWarning($"Duplicate SimEvent ID found for '{simEvt.Id}', overwriting.");
+        }
+        ++count;
+      }
+      ret = ret.OrderBy(s => s.Key).ToDictionary(s => s.Key, s => s.Value);
+      _logger.LogDebug($"Imported {count} SimEvents in {ret.Count} categories from '{filename}'");
       return ret;
     }
 

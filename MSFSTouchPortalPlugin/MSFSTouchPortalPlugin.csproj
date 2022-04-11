@@ -99,6 +99,9 @@
     <None Update="Configuration\SimVars.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Configuration\SimEvents.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <!-- SimConnect.cfg needs to go into the root -->
     <ContentWithTargetPath Include="Configuration\SimConnect.cfg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
