@@ -8,17 +8,19 @@ using System.Runtime.CompilerServices;
 namespace MSFSTouchPortalPlugin.Interfaces
 {
   internal delegate void DataUpdateEventHandler(Definition def, Definition req, object data);
-  internal delegate void ConnectEventHandler();
+  internal delegate void ConnectEventHandler(SimulatorInfo info);
   internal delegate void DisconnectEventHandler();
+  internal delegate void ExceptionEventHandler(RequestTrackingData data);
 
   internal interface ISimConnectService {
     event DataUpdateEventHandler OnDataUpdateEvent;
     event ConnectEventHandler OnConnect;
     event DisconnectEventHandler OnDisconnect;
+    event ExceptionEventHandler OnException;
 
     bool IsConnected();
     bool AddNotification(Groups group, Enum eventId);
-    bool Connect(uint configIndex = 0);
+    uint Connect(uint configIndex = 0);
     void Disconnect();
     bool MapClientEventToSimEvent(Enum eventId, string eventName, Groups group);
     bool TransmitClientEvent(Groups group, Enum eventId, uint data);

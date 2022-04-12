@@ -1,14 +1,11 @@
-﻿
-// define to enable extra request tracking code (for UNKNOWN_ID and similar errors)
-//#define DEBUG_REQUESTS
-
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Types;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,40 +16,66 @@ namespace MSFSTouchPortalPlugin.Services
   /// Wrapper for SimConnect
   /// </summary>
   internal class SimConnectService : ISimConnectService, IDisposable {
+    #region DLL Imports
+    // get pointer to console window for SimConnect binding
     [DllImport("kernel32.dll")]
     static extern IntPtr GetConsoleWindow();
 
-    private readonly ILogger<SimConnectService> _logger;
-    private readonly IReflectionService _reflectionService;
-
-    const uint NOTIFICATION_PRIORITY = 10000000;
-    const int WM_USER_SIMCONNECT = 0x0402;
-    /// enable AddNotification(), SetNotificationGroupPriorities(), and Simconnect_OnRecvEvent(); currently they serve no purpose except possible debug info.
-    private static readonly bool DEBUG_NOTIFICATIONS = false;
-
-    private SimConnect _simConnect;
-    private bool _connected;
-    private bool _connecting;
-    private Task _messageWaitTask;
-    private readonly EventWaitHandle _scReady = new EventWaitHandle(false, EventResetMode.AutoReset);
-    private readonly List<Definition> _addedDefinitions = new();
+    // Set up tracking requests by their SendID for diagnostic purposes with Simconnect_OnRecvException()
+    // https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Debug/SimConnect_GetLastSentPacketID.htm
+    IntPtr _hSimConnect = IntPtr.Zero;  // native SimConnect handle pointer
+    // Import methods from the actual SimConnect client which aren't available in the C# wrapper.
+    [DllImport("SimConnect.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+    static extern int /* HRESULT */ SimConnect_GetLastSentPacketID(IntPtr hSimConnect, out uint /* DWORD */ dwSendID);
+#pragma warning disable S3011
+    // Get a FieldInfo object on the SimConnect.hSimConnect private field variable so that we can query its value to get the handle to the actual SimConnect client.
+    static readonly FieldInfo _fiSimConnect = typeof(SimConnect).GetField("hSimConnect", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+#pragma warning restore S3011
+    #endregion DLL Imports
 
     public event DataUpdateEventHandler OnDataUpdateEvent;
     public event ConnectEventHandler OnConnect;
     public event DisconnectEventHandler OnDisconnect;
+    public event ExceptionEventHandler OnException;
+
+    // hResult
+    public const uint S_OK = 0;
+    public const uint E_FAIL = 0x80004005;
+    public const uint E_INVALIDARG = 0x80070057;
+
+    // maximum stored requests for error tracking (adding is fast but search is 0(n)), should be large enough to handle flood of requests at initial connection
+    const int MAX_STORED_REQUEST_RECORDS = 500;
+
+    const uint NOTIFICATION_PRIORITY = 10000000;  // notification group priority for SimConnect.SetNotificationGroupPriority()
+    const int WM_USER_SIMCONNECT = 0x0402;        // user event ID for SimConnect
+
+    // enable AddNotification(), SetNotificationGroupPriorities(), and Simconnect_OnRecvEvent() for events we initiate; currently this serves no purpose except possible debug info.
+    static readonly bool DEBUG_NOTIFICATIONS = false;
+
+    readonly ILogger<SimConnectService> _logger;
+    readonly IReflectionService _reflectionService;
+
+    bool _connected;
+    bool _connecting;
+    int _reqTrackIndex = 0;  // current write slot index in _requestTracking array
+    Task _messageWaitTask;
+    SimConnect _simConnect;
+    readonly EventWaitHandle _scReady = new EventWaitHandle(false, EventResetMode.AutoReset);
+    readonly List<Definition> _addedDefinitions = new();  // keep track of added SimVar definitions to avoid redundant registrations
+    readonly RequestTrackingData[] _requestTracking = new RequestTrackingData[MAX_STORED_REQUEST_RECORDS];  // rolling buffer array for request tracking
 
     // SimConnect method delegates, for centralized interaction in InvokeSimMethod()
-    private Action<Enum>             ClearDataDefinitionDelegate;
-    private Action<Enum, uint>       SetNotificationGroupPriorityDelegate;
-    private Action<uint, Enum>       AIReleaseControlDelegate;
-    private Action<Enum, string>     MapClientEventToSimEventDelegate;
-    private Action<Enum, Enum, bool> AddClientEventToNotificationGroupDelegate;
-    private Action<Enum, Enum, uint, SIMCONNECT_SIMOBJECT_TYPE>   RequestDataOnSimObjectTypeDelegate;
-    private Action<uint, Enum, uint, Enum, SIMCONNECT_EVENT_FLAG> TransmitClientEventDelegate;
-    private Action<Enum, uint, SIMCONNECT_DATA_SET_FLAG, object>  SetDataOnSimObjectDelegate;
-    private Action<Enum, string, string, SIMCONNECT_DATATYPE, float, uint> AddToDataDefinitionDelegate;
-    private Action<Enum, Enum, uint, SIMCONNECT_PERIOD, SIMCONNECT_DATA_REQUEST_FLAG, uint, uint, uint> RequestDataOnSimObjectDelegate;
-    private readonly Dictionary<Type, Action<Enum> > _registerDataDelegates = new();
+    Action<Enum>             ClearDataDefinitionDelegate;
+    Action<Enum, uint>       SetNotificationGroupPriorityDelegate;
+    Action<uint, Enum>       AIReleaseControlDelegate;
+    Action<Enum, string>     MapClientEventToSimEventDelegate;
+    Action<Enum, Enum, bool> AddClientEventToNotificationGroupDelegate;
+    Action<Enum, Enum, uint, SIMCONNECT_SIMOBJECT_TYPE>   RequestDataOnSimObjectTypeDelegate;
+    Action<uint, Enum, uint, Enum, SIMCONNECT_EVENT_FLAG> TransmitClientEventDelegate;
+    Action<Enum, uint, SIMCONNECT_DATA_SET_FLAG, object>  SetDataOnSimObjectDelegate;
+    Action<Enum, string, string, SIMCONNECT_DATATYPE, float, uint> AddToDataDefinitionDelegate;
+    Action<Enum, Enum, uint, SIMCONNECT_PERIOD, SIMCONNECT_DATA_REQUEST_FLAG, uint, uint, uint> RequestDataOnSimObjectDelegate;
+    readonly Dictionary<Type, Action<Enum> > _registerDataDelegates = new();
 
     public SimConnectService(ILogger<SimConnectService> logger, IReflectionService reflectionService) {
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -61,10 +84,11 @@ namespace MSFSTouchPortalPlugin.Services
 
     public bool IsConnected() => (_connected && _simConnect != null);
 
-    public bool Connect(uint configIndex = 0) {
+    public uint Connect(uint configIndex = 0) {
       if (_connecting || _simConnect != null)
-        return _connected;
+        return _connected ? S_OK : E_FAIL;
 
+      uint ret = E_FAIL;
       _connecting = true;
       _logger.LogInformation("Connecting to SimConnect...");
 
@@ -104,23 +128,21 @@ namespace MSFSTouchPortalPlugin.Services
         _registerDataDelegates.Add(typeof(long),      _simConnect.RegisterDataDefineStruct<long>);
         _registerDataDelegates.Add(typeof(StringVal), _simConnect.RegisterDataDefineStruct<StringVal>);
 
-#if DEBUG_REQUESTS
-        DbgSetupRequestTracking();
-#endif
+        SetupRequestTracking();
         //_simConnect.Text(SIMCONNECT_TEXT_TYPE.PRINT_BLACK, 5, Events.StartupMessage, "TouchPortal Connected");  // not currently supported in MSFS SDK
 
         _messageWaitTask = Task.Run(ReceiveMessages);
 
-      } catch (COMException e) {
+        ret = S_OK;
+      }
+      catch (Exception e) {
         _connected = false;
-        _logger.LogDebug("Connection to Simulator failed: {0}", e.Message);
+        _logger.LogDebug("Connection to SimConnect failed: [{0:X}] {0}", e.HResult, e.Message);
+        unchecked { ret = (uint)e.HResult; }
       }
 
       _connecting = false;
-      // Invoke Handler
-      if (_connected)
-        OnConnect?.Invoke();
-      return _connected;
+      return ret;
     }
 
     public void Disconnect() {
@@ -142,7 +164,7 @@ namespace MSFSTouchPortalPlugin.Services
       // Dispose serves the same purpose as SimConnect_Close()
       try {
         _simConnect?.Dispose();
-        _logger.LogInformation("SimConnect Disconnected");
+        _logger.LogDebug("SimConnect disposed");
       }
       catch (Exception e) {
         _logger.LogWarning(e, "Exception while trying to dispose SimConnect client.");
@@ -176,25 +198,23 @@ namespace MSFSTouchPortalPlugin.Services
       if (method == null || !_connected)
         return false;
       try {
-        _logger.LogTrace($"Invoking: {method.Method.Name}({(args != null ? string.Join(", ", args) : "null")})");
+        _logger.LogTrace($"Invoking: {method.Method.Name}({string.Join(", ", args)})");
         method.DynamicInvoke(args);
-#if DEBUG_REQUESTS
-        DbgAddSendRecord($"{method.Method.Name}({(args != null ? string.Join(", ", args) : "null")})");
-#endif
+        AddRequestRecord(method.Method, args);
         return true;
       }
       catch (COMException e) {
-        _logger.LogWarning($"SimConnect returned an error: [{e.HResult}] {e.Message} <site: '{e.TargetSite}'; source: '{e.Source}'");
+        _logger.LogWarning($"SimConnect returned an error: [{e.HResult:X}] {e.Message} <site: '{e.TargetSite}'; source: '{e.Source}'");
       }
       catch (Exception e) {
-        _logger.LogError(e, $"Method invocation failed with system exception: [{e.HResult}] {e.Message}");
+        _logger.LogError(e, $"Method invocation failed with system exception: [{e.HResult:X}] {e.Message}");
       }
       return false;
     }
 
     public bool MapClientEventToSimEvent(Enum eventId, string eventName, Groups group) {
       if (InvokeSimMethod(MapClientEventToSimEventDelegate, eventId, eventName))
-        return AddNotification(group, eventId);
+        return !DEBUG_NOTIFICATIONS || AddNotification(group, eventId);
       return false;
     }
 
@@ -295,16 +315,14 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     private void Simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data) {
-      _logger.LogInformation("SimConnect Connected");
+      OnConnect?.Invoke(new SimulatorInfo(data));
     }
 
     private void Simconnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data) {
-      SIMCONNECT_EXCEPTION eException = (SIMCONNECT_EXCEPTION)data.dwException;
-#if DEBUG_REQUESTS
-      _logger.LogWarning($"SimConnect Error: {eException}; SendID: {data.dwSendID}; Index: {data.dwIndex}; Request: {DbgGetSendRecord(data.dwSendID)}");
-#else
-      _logger.LogWarning($"SimConnect Error: {eException}; SendID: {data.dwSendID}; Index: {data.dwIndex};");
-#endif
+      RequestTrackingData record = GetRequestRecord(data.dwSendID);
+      record.eException = (SIMCONNECT_EXCEPTION)data.dwException;
+      record.dwExceptionIndex = data.dwIndex;
+      OnException?.Invoke(record);
     }
 
     private void Simconnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data) {
@@ -318,6 +336,52 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     #endregion SimConnect Event Handlers
+
+    #region SimConnect Request Tracking
+
+    private void SetupRequestTracking() {
+      // Get direct access to the SimConnect handle, to use functions otherwise not supported.
+      try {
+        _hSimConnect = (IntPtr)_fiSimConnect.GetValue(_simConnect);
+        _reqTrackIndex = 0;
+      }
+      catch (Exception e) {
+        _hSimConnect = IntPtr.Zero;
+        _logger.LogError(e, $"Exception trying to get handle to SimConnect: {e.Message}");
+      }
+    }
+
+    private void AddRequestRecord(MethodInfo info, params object[] args) {
+      if (_simConnect == null || _hSimConnect == IntPtr.Zero)
+        return;
+
+      if (SimConnect_GetLastSentPacketID(_hSimConnect, out uint dwSendID) == S_OK) {
+        _requestTracking[_reqTrackIndex] = new RequestTrackingData(dwSendID, info.Name, info.GetParameters(), args);
+        _reqTrackIndex = (_reqTrackIndex + 1) % MAX_STORED_REQUEST_RECORDS;
+      }
+      else {
+        _logger.LogWarning("SimConnect_GetLastSentPacketID returned E_FAIL");
+      }
+    }
+
+    private RequestTrackingData GetRequestRecord(uint sendId) {
+      /* Benchmark of 500 item array with worst-case scenario of scanning them all (while MSFS was running :).
+      |         Method |     Mean |     Error |    StdDev |  Gen 0 | Allocated |
+      |--------------- |---------:|----------:|----------:|-------:|----------:|
+      |  FindWithLoop  | 1.618 us | 0.0273 us | 0.0255 us |      - |         - |
+      | FirstOrDefault | 3.706 us | 0.0611 us | 0.0572 us | 0.0038 |      32 B |
+      */
+      // start at 10 records back from current index since it is more likely that the sendId error relates to a recent request than an old one
+      int i = (MAX_STORED_REQUEST_RECORDS + _reqTrackIndex - 10) % MAX_STORED_REQUEST_RECORDS, e = i;
+      for (bool first = true; i != e || first; i = (i + 1) % MAX_STORED_REQUEST_RECORDS, first = false) {
+        if (_requestTracking[i]?.dwSendId == sendId)
+          return _requestTracking[i];
+      }
+      return new RequestTrackingData(sendId);
+      //return _requestTracking.FirstOrDefault(r => r.dwSendId == sendId) ?? new RequestTrackingData(sendId);
+    }
+
+    #endregion SimConnect Request Tracking
 
     #region IDisposable Support
     private bool disposedValue; // To detect redundant calls
@@ -343,49 +407,6 @@ namespace MSFSTouchPortalPlugin.Services
     }
     #endregion IDisposable Support
 
-#if DEBUG_REQUESTS
-
-    // Extra SimConnect functions via native pointer
-    IntPtr hSimConnect = IntPtr.Zero;
-    [DllImport("SimConnect.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-    private static extern int /* HRESULT */ SimConnect_GetLastSentPacketID(IntPtr hSimConnect, out uint /* DWORD */ dwSendID);
-    // for tracking requests by their SendID
-    private readonly SortedDictionary<uint, string> dbgSendRecordsDict = new();
-
-#pragma warning disable S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
-    private void DbgSetupRequestTracking() {
-      // Get direct access to the SimConnect handle, to use functions otherwise not supported.
-      try {
-        System.Reflection.FieldInfo fiSimConnect = typeof(SimConnect).GetField("hSimConnect", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        hSimConnect = (IntPtr)fiSimConnect.GetValue(_simConnect);
-      }
-      catch (Exception e) {
-        hSimConnect = IntPtr.Zero;
-        _logger.LogError(e, $"Exception trying to get handle to SimConnect: {e.Message}");
-      }
-    }
-#pragma warning restore S3011
-
-    private void DbgAddSendRecord(string record) {
-      if (_simConnect == null || hSimConnect == IntPtr.Zero)
-        return;
-      if (SimConnect_GetLastSentPacketID(hSimConnect, out uint dwSendID) == 0)
-        dbgSendRecordsDict[dwSendID] = record;
-      // clean out old records
-      if (dbgSendRecordsDict.Count > 5000) {
-        // Remove the oldest, first, record.
-        var enmr = dbgSendRecordsDict.Keys.GetEnumerator();
-        enmr.MoveNext();
-        dbgSendRecordsDict.Remove(enmr.Current);
-      }
-    }
-
-    private string DbgGetSendRecord(uint sendId) {
-      if (dbgSendRecordsDict.TryGetValue(sendId, out string record))
-        return record;
-      return $"Record not found for SendID {sendId}";
-    }
-
-#endif  // DEBUG_REQUESTS
   }
+
 }

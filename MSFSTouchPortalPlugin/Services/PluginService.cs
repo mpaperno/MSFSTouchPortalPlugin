@@ -26,6 +26,8 @@ namespace MSFSTouchPortalPlugin.Services
   {
     public string PluginId => "MSFSTouchPortalPlugin";  // for ITouchPortalEventHandler
 
+    const int SIM_RECONNECT_DELAY_SEC = 30;   // SimConnect connection attempts delay on failure
+
     private readonly IHostApplicationLifetime _hostApplicationLifetime;
     private readonly ILogger<PluginService> _logger;
     private readonly ITouchPortalClient _client;
@@ -140,18 +142,31 @@ namespace MSFSTouchPortalPlugin.Services
       _simConnectService.OnDataUpdateEvent += SimConnectEvent_OnDataUpdateEvent;
       _simConnectService.OnConnect += SimConnectEvent_OnConnect;
       _simConnectService.OnDisconnect += SimConnectEvent_OnDisconnect;
+      _simConnectService.OnException += SimConnectEvent_OnException;
 
       return true;
     }
 
     private async Task SimConnectionMonitor() {
       _logger.LogDebug("SimConnectionMonitor task started.");
+      uint hResult;
       try {
         while (!_cancellationToken.IsCancellationRequested) {
           _simConnectionRequest.Wait(_cancellationToken);
-          if (!_simConnectService.IsConnected() && !_simConnectService.Connect(Settings.SimConnectConfigIndex.UIntValue)) {
-            _logger.LogWarning("Connection to Simulator failed, retrying in 10 seconds...");
-            await Task.Delay(10000, _cancellationToken);  // delay 10s on connection error
+          if (!_simConnectService.IsConnected() && (hResult = _simConnectService.Connect(Settings.SimConnectConfigIndex.UIntValue)) != SimConnectService.S_OK) {
+            if (hResult != SimConnectService.E_FAIL) {
+              if (hResult == SimConnectService.E_INVALIDARG)
+                _logger.LogError("SimConnect returned IVALID ARGUMENT for SimConnect.cfg index value " + Settings.SimConnectConfigIndex.UIntValue.ToString() +
+                  ". Connection attempts aborted. Please fix setting or config. file and retry.");
+              else
+                _logger.LogError("Unknown exception occurred trying to connect to SimConnect. Connection attempts aborted, please check plugin logs. Error code/message: " + $"{hResult:X}");
+              autoReconnectSimConnect = false;
+              _simConnectionRequest.Reset();
+              UpdateSimConnectState();
+              continue;
+            }
+            _logger.LogWarning("Connection to Simulator failed, retrying in " + SIM_RECONNECT_DELAY_SEC.ToString() + " seconds...");
+            await Task.Delay(SIM_RECONNECT_DELAY_SEC * 1000, _cancellationToken);  // delay on connection error
           }
         }
       }
@@ -202,12 +217,12 @@ namespace MSFSTouchPortalPlugin.Services
 
     #region SimConnect Events   /////////////////////////////////////
 
-    private void SimConnectEvent_OnConnect() {
+    private void SimConnectEvent_OnConnect(SimulatorInfo info) {
+      _logger.LogInformation("Connected to " + info.ToString());
+
       _simConnectionRequest.Reset();
       _simTasksCTS = new CancellationTokenSource();
       _simTasksCancelToken = _simTasksCTS.Token;
-
-      UpdateSimConnectState();
 
       // Register Action events
       var eventMap = _reflectionService.GetClientEventIdToNameMap();
@@ -222,6 +237,8 @@ namespace MSFSTouchPortalPlugin.Services
       // start checking timer events
       _pluginEventsTask = Task.Run(PluginEventsTask);
       _pluginEventsTask.ConfigureAwait(false);  // needed?
+
+      UpdateSimConnectState();
     }
 
     private void SimConnectEvent_OnDataUpdateEvent(Definition def, Definition req, object data) {
@@ -254,6 +271,10 @@ namespace MSFSTouchPortalPlugin.Services
 
       if (autoReconnectSimConnect && !_quitting)
         _simConnectionRequest.Set();  // re-enable connection attempts
+    }
+
+    private void SimConnectEvent_OnException(RequestTrackingData data) {
+      _logger.LogWarning($"SimConnect Request Exception: " + data.ToString());
     }
 
     #endregion SimConnect Events
