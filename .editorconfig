@@ -11,3 +11,5 @@ dotnet_diagnostic.CA1416.severity = none
 dotnet_diagnostic.S125.severity=none
 # S3358: Ternary operators should not be nested
 dotnet_diagnostic.S3358.severity = none
+# S1121: Assignments should not be made from within sub-expressions
+dotnet_diagnostic.S1121.severity = none

@@ -115,18 +115,31 @@ namespace MSFSTouchPortalPlugin.Configuration
       return (_importedSimVars.Values.FirstOrDefault(c => c.ContainsKey(selector)) is var cat && cat != null) && cat.TryGetValue(selector, out simVar);
     }
 
+    private static readonly Regex _reSimVarIdFromName = new Regex(@"(?:\b|\W|_)(\w)");  // for creating a PascalCase ID from a SimVar name
+
     public SimVariable GetOrCreateImportedSimVariable(string varName) {
       if (string.IsNullOrWhiteSpace(varName))
         return null;
-      var simVarName = varName.Trim().Replace(":N", "").Replace("* ", "");
-      if ((_importedSimVars.Values.FirstOrDefault(c => c.ContainsKey(simVarName)) is var cat && cat != null) && cat.TryGetValue(simVarName, out SimVariable simVar))
+      bool indexed = false;
+      // "normalize" the name passed from touch portal
+      var name = varName.Trim();
+      // strip leading "exists" indicator "* "
+      if (name[0] == '*')
+        name = name[2..];
+      // strip trailing single-char index indicator, ":N" or ":i" and such
+      if ((indexed = name[^2] == ':'))
+        name = name[..^2];
+      // otherwise check and strip ":index" suffix
+      else if ((indexed = name[^6] == ':' && name[^5..].ToLowerInvariant() == "index"))
+        name = name[..^6];
+      if ((_importedSimVars.Values.FirstOrDefault(c => c.ContainsKey(name)) is var cat && cat != null) && cat.TryGetValue(name, out SimVariable simVar))
         return simVar;
       simVar = new() {
         // Create a reasonable string for a TP state ID
-        Id = Regex.Replace(simVarName.ToLower(), @"(?:\b|\W|_)(\w)", m => (m.Groups[1].ToString().ToUpper())),
-        SimVarName = simVarName,
-        Name = simVarName,  // for lack of anything better
-        Indexed = varName.Trim().EndsWith(":N")
+        Id = _reSimVarIdFromName.Replace(name.ToLower(), m => (m.Groups[1].ToString().ToUpper())),
+        SimVarName = name,
+        Name = name,  // for lack of anything better
+        Indexed = indexed
       };
       return simVar;
     }
