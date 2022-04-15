@@ -15,7 +15,7 @@ namespace MSFSTouchPortalPlugin.Services
   /// <summary>
   /// Wrapper for SimConnect
   /// </summary>
-  internal class SimConnectService : ISimConnectService, IDisposable {
+  internal class SimConnectService : ISimConnectService {
     #region DLL Imports
     // get pointer to console window for SimConnect binding
     [DllImport("kernel32.dll")]
@@ -34,6 +34,7 @@ namespace MSFSTouchPortalPlugin.Services
     #endregion DLL Imports
 
     public event DataUpdateEventHandler OnDataUpdateEvent;
+    public event RecvEventEventHandler OnEventReceived;
     public event ConnectEventHandler OnConnect;
     public event DisconnectEventHandler OnDisconnect;
     public event ExceptionEventHandler OnException;
@@ -42,6 +43,10 @@ namespace MSFSTouchPortalPlugin.Services
     public const uint S_OK = 0;
     public const uint E_FAIL = 0x80004005;
     public const uint E_INVALIDARG = 0x80070057;
+    // SIMCONNECT_RECV_EVENT.dwData value for "View" event, from SimConnect.h
+    public const uint VIEW_EVENT_DATA_COCKPIT_2D = 0x00000001;      // 2D Panels in cockpit view
+    public const uint VIEW_EVENT_DATA_COCKPIT_3D = 0x00000002;      // Virtual (3D) panels in cockpit view
+    public const uint VIEW_EVENT_DATA_ORTHOGONAL = 0x00000004;      // Orthogonal (Map) view
 
     // maximum stored requests for error tracking (adding is fast but search is 0(n)), should be large enough to handle flood of requests at initial connection
     const int MAX_STORED_REQUEST_RECORDS = 500;
@@ -70,6 +75,7 @@ namespace MSFSTouchPortalPlugin.Services
     Action<uint, Enum>       AIReleaseControlDelegate;
     Action<Enum, string>     MapClientEventToSimEventDelegate;
     Action<Enum, Enum, bool> AddClientEventToNotificationGroupDelegate;
+    Action<Enum, string>     SubscribeToSystemEventDelegate;
     Action<Enum, Enum, uint, SIMCONNECT_SIMOBJECT_TYPE>   RequestDataOnSimObjectTypeDelegate;
     Action<uint, Enum, uint, Enum, SIMCONNECT_EVENT_FLAG> TransmitClientEventDelegate;
     Action<Enum, uint, SIMCONNECT_DATA_SET_FLAG, object>  SetDataOnSimObjectDelegate;
@@ -103,8 +109,8 @@ namespace MSFSTouchPortalPlugin.Services
         _simConnect.OnRecvException += new SimConnect.RecvExceptionEventHandler(Simconnect_OnRecvException);
 
         // Sim mapped events
-        if (DEBUG_NOTIFICATIONS)
-          _simConnect.OnRecvEvent += new SimConnect.RecvEventEventHandler(Simconnect_OnRecvEvent);
+        _simConnect.OnRecvEvent         += Simconnect_OnRecvEvent;
+        _simConnect.OnRecvEventFilename += Simconnect_OnRecvFilename;
 
         // Sim Data
         _simConnect.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(Simconnect_OnRecvSimobjectDataBytype);
@@ -121,6 +127,7 @@ namespace MSFSTouchPortalPlugin.Services
         RequestDataOnSimObjectTypeDelegate        = _simConnect.RequestDataOnSimObjectType;
         SetDataOnSimObjectDelegate                = _simConnect.SetDataOnSimObject;
         AIReleaseControlDelegate                  = _simConnect.AIReleaseControl;
+        SubscribeToSystemEventDelegate            = _simConnect.SubscribeToSystemEvent;
 
         _registerDataDelegates.Clear();
         _registerDataDelegates.Add(typeof(double),    _simConnect.RegisterDataDefineStruct<double>);
@@ -297,6 +304,10 @@ namespace MSFSTouchPortalPlugin.Services
       return InvokeSimMethod(AIReleaseControlDelegate, objectId, def);
     }
 
+    public bool SubscribeToSystemEvent(Enum eventId, string eventName) {
+      return InvokeSimMethod(SubscribeToSystemEventDelegate, eventId, eventName);
+    }
+
     #region SimConnect Event Handlers
 
     private void Simconnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data) {
@@ -322,17 +333,26 @@ namespace MSFSTouchPortalPlugin.Services
       RequestTrackingData record = GetRequestRecord(data.dwSendID);
       record.eException = (SIMCONNECT_EXCEPTION)data.dwException;
       record.dwExceptionIndex = data.dwIndex;
+      _logger.LogDebug($"SimConnect Error: {record.eException}; SendID: {data.dwSendID}; Index: {data.dwIndex};");
       OnException?.Invoke(record);
     }
 
     private void Simconnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data) {
-      string grpName = data.uGroupID.ToString();
-      string eventId = data.uEventID.ToString();
-      if (Enum.IsDefined(typeof(Groups), (int)data.uGroupID)) {
-        grpName = ((Groups)data.uGroupID).ToString();
-        eventId = _reflectionService.GetSimEventNameById(data.uEventID);
+      EventIds evId = (EventIds)data.uEventID;
+      Groups gId = (Groups)data.uGroupID;
+      string evName = evId.ToString();
+      if (DEBUG_NOTIFICATIONS && !Enum.IsDefined(evId) && Enum.IsDefined(gId)) {
+        evName = _reflectionService.GetSimEventNameById(data.uEventID);
       }
-      _logger.LogDebug($"Simconnect_OnRecvEvent Received: Group: {grpName}; Event: {eventId}");
+      _logger.LogDebug($"Simconnect_OnRecvEvent Received: Group: {gId}; Event: {evName}; Data: {data.dwData}");
+      OnEventReceived?.Invoke(evId, gId, data.dwData);
+    }
+
+    private void Simconnect_OnRecvFilename(SimConnect sender, SIMCONNECT_RECV_EVENT_FILENAME data) {
+      EventIds evId = (EventIds)data.uEventID;
+      Groups gId = (Groups)data.uGroupID;
+      _logger.LogDebug($"Simconnect_OnRecvFilename Received: Group: {gId}; Event: {evId}; Data: {data.szFileName}");
+      OnEventReceived?.Invoke(evId, gId, data.szFileName);
     }
 
     #endregion SimConnect Event Handlers
