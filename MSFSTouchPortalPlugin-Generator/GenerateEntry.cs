@@ -147,9 +147,29 @@ namespace MSFSTouchPortalPlugin_Generator
             _logger.LogWarning($"Duplicate state ID found: '{newState.Id}', skipping.'");
         }
 
+        // Events
+        var catEvents = _reflectionSvc.GetEvents(catAttrib.Id, fullStateId: true);
+        foreach (var ev in catEvents) {
+          var tpEv = new Model.TouchPortalEvent {
+            Id = category.Id + ".Event." + ev.Id,   // these come unqualified
+            Name = ev.Name,
+            Format = ev.Format,
+            Type = ev.Type,
+            ValueType = ev.ValueType,
+            ValueChoices = ev.ValueChoices,
+            ValueStateId =ev.ValueStateId,
+          };
+          // validate unique ID
+          if (category.Events.FirstOrDefault(s => s.Id == tpEv.Id) == null)
+            category.Events.Add(tpEv);
+          else
+            _logger.LogWarning($"Duplicate Event ID found: '{ev.Id}', skipping.'");
+        }
+
         // Sort the actions and states for SimConnect groups
         if (catAttrib.Id != MSFSTouchPortalPlugin.Enums.Groups.Plugin) {
           category.Actions = category.Actions.OrderBy(c => c.Name).ToList();
+          category.Events = category.Events.OrderBy(c => c.Name).ToList();
           category.States = category.States.OrderBy(c => c.Description).ToList();
         }
       }  // categories loop

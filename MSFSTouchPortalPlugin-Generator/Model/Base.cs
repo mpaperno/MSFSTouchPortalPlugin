@@ -38,7 +38,7 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string Name { get; set; }
     public string Imagepath { get; set; } = string.Empty;
     public List<TouchPortalAction> Actions { get; set; } = new List<TouchPortalAction>();
-    public List<object> Events { get; set; } = new List<object>();
+    public List<TouchPortalEvent> Events { get; set; } = new List<TouchPortalEvent>();
     public List<TouchPortalState> States { get; set; } = new List<TouchPortalState>();
   }
 
@@ -91,6 +91,24 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string Description { get; set; }
     [Required, JsonProperty("default")]
     public string DefaultValue { get; set; }
+  }
+
+  public class TouchPortalEvent
+  {
+    [Required, MinLength(5)]
+    public string Id { get; set; }
+    [Required, MinLength(5)]
+    public string Name { get; set; }
+    [Required, MinLength(5)]
+    public string Format { get; set; }
+    [Required]
+    public string Type { get; set; }
+    [Required]
+    public string ValueType { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public virtual string[] ValueChoices { get; set; }
+    [Required, MinLength(5)]
+    public string ValueStateId { get; set; }
   }
 
   class TouchPortalSetting

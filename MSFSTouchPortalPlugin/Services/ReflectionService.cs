@@ -62,6 +62,24 @@ namespace MSFSTouchPortalPlugin.Services
       return ret;
     }
 
+    public IEnumerable<TouchPortalEvent> GetEvents(Groups catId, bool fullStateId = false) {
+      List<TouchPortalEvent> ret = new();
+      var container = _assemblyTypes.Where(t => t.IsClass && t.GetCustomAttribute<TouchPortalCategoryAttribute>()?.Id == catId);
+      foreach (Type c in container) {
+        var fields = c.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+        foreach (FieldInfo field in fields) {
+          if (field.FieldType == typeof(TouchPortalEvent) && ((TouchPortalEvent)field.GetValue(null) is var ev && ev != null)) {
+            if (ev.ValueStateId?.IndexOf('.') < 0)
+              ev.ValueStateId = catId.ToString() + ".State." + ev.ValueStateId;  // qualify with category name, but not plugin name (which is assumed)
+            if (fullStateId)
+              ev.ValueStateId = TouchPortalBaseId + '.' + ev.ValueStateId;  // ok actually add the plugin name also, this is for the generators
+            ret.Add(ev);
+          }
+        }
+      }
+      return ret;
+    }
+
     private Dictionary<string, ActionEventType> GetInternalActionEvents() {
       var returnDict = new Dictionary<string, ActionEventType>();
       var catAttribs = GetActionAttributes(Groups.Plugin);
@@ -91,12 +109,14 @@ namespace MSFSTouchPortalPlugin.Services
           }
         }
       }
+      _logger.LogDebug($"Loaded {returnDict.Count} Internal Actions");
       return returnDict;
     }
 
     public Dictionary<string, ActionEventType> GetActionEvents() {
       var returnDict = GetInternalActionEvents();
       var catAttribs = GetCategoryAttributes();
+      var intActsCnt = returnDict.Count;
 
       foreach (var catAttr in catAttribs) {
         if (catAttr.Id == Groups.Plugin)
@@ -153,13 +173,14 @@ namespace MSFSTouchPortalPlugin.Services
         }  // actions loop
       }  // categories loop
 
+      _logger.LogDebug($"Loaded {returnDict.Count - intActsCnt} SimConnect Actions");
       return returnDict;
     }
 
     public Dictionary<string, PluginSetting> GetSettings() {
       Dictionary<string, PluginSetting> returnDict = new();
 
-      var setContainers = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass && t.GetCustomAttribute<TouchPortalSettingsContainerAttribute>() != null);
+      var setContainers = _assemblyTypes.Where(t => t.IsClass && t.GetCustomAttribute<TouchPortalSettingsContainerAttribute>() != null);
       foreach (Type setCtr in setContainers) {
         var settingFields = setCtr.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
         foreach (FieldInfo field in settingFields) {
@@ -173,6 +194,8 @@ namespace MSFSTouchPortalPlugin.Services
 
       return returnDict;
     }
+
+
   }
 
 }

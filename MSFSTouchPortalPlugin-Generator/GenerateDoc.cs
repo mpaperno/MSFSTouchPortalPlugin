@@ -129,7 +129,7 @@ namespace MSFSTouchPortalPlugin_Generator
         var categoryStates = simVars.Where(s => s.CategoryId == catAttrib.Id);
         foreach (SimVarItem state in categoryStates) {
           var newState = new DocState {
-            Id = state.TouchPortalStateId.Split('.').Last(),
+            Id = state.TouchPortalStateId.Split('.')[^1],
             Type = state.TouchPortalValueType,
             Description = state.Name,
             DefaultValue = state.DefaultValue ?? string.Empty,
@@ -141,9 +141,24 @@ namespace MSFSTouchPortalPlugin_Generator
           category.States.Add(newState);
         }
 
+        // Events
+        var catEvents = _reflectionSvc.GetEvents(catAttrib.Id, fullStateId: false);
+        foreach (var ev in catEvents) {
+          var tpEv = new DocEvent {
+            Id = ev.Id,
+            Name = ev.Name,
+            Format = ev.Format.Replace("$val", "$" + ev.ValueType),
+            ValueType = ev.ValueType,
+            ValueChoices = ev.ValueChoices,
+            ValueStateId = ev.ValueStateId.Remove(0, ev.ValueStateId.IndexOf('.') + 1),
+          };
+           category.Events.Add(tpEv);
+        }
+
         // Sort the actions and states for SimConnect groups
-        if (catAttrib.Id != MSFSTouchPortalPlugin.Enums.Groups.Plugin) {
+        if (catAttrib.Id != Groups.Plugin) {
           category.Actions = category.Actions.OrderBy(c => c.Name).ToList();
+          category.States = category.States.OrderBy(c => c.Description).ToList();
           category.States = category.States.OrderBy(c => c.Description).ToList();
         }
 
@@ -216,7 +231,7 @@ namespace MSFSTouchPortalPlugin_Generator
         s.Append($"### {cat.Name}\n<details><summary><sub>Click to expand</sub></summary>\n\n");
 
         // Loop Actions
-        if (cat.Actions.Count > 0) {
+        if (cat.Actions.Any()) {
           s.Append("#### Actions\n\n");
           s.Append("<table>\n");   // use HTML table for row valign attribute
           s.Append("<tr valign='bottom'>" +
@@ -270,8 +285,33 @@ namespace MSFSTouchPortalPlugin_Generator
           s.Append("</table>\n\n\n");
         }
 
-        if (cat.States.Count > 0) {
+        if (cat.Events.Any()) {
           // Loop States
+          s.Append("#### Events\n\n");
+          s.Append($" **Base Id:** {cat.Id}.Event. &nbsp; &nbsp; **Base State Id** {cat.Id.Split('.')[0]}.\n\n");
+          s.Append("<table>\n");   // use HTML table for row valign attribute
+          s.Append("<tr valign='bottom'>" +
+            "<th>Id</th>" +
+            "<th>Name</th>" +
+            "<th nowrap>Evaluated State Id</th>" +
+            "<th>Format</th>" +
+            "<th>Type</th>" +
+            "<th>Choice(s)</th>" +
+            "</tr>\n");
+          cat.Events.ForEach(ev => {
+            s.Append($"<tr valign='top'>" +
+              $"<td>{ev.Id}</td><" +
+              $"td>{ev.Name}</td>" +
+              $"<td>{ev.ValueStateId}</td>" +
+              $"<td>{ev.Format}</td>" +
+              $"<td>{ev.ValueType}</td>");
+            s.Append("<td>").AppendJoin(", ", ev.ValueChoices).Append("</td>");
+            s.Append("</tr>\n");
+          });
+          s.Append("</table>\n\n\n");
+        }
+
+        if (cat.States.Any()) {
           s.Append("#### States\n\n");
           s.Append($" **Base Id:** {cat.Id}.State.\n\n");
           s.Append("| Id | SimVar Name | Description | Unit | Format | DefaultValue | Settable |\n");
