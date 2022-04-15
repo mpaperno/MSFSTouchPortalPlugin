@@ -15,7 +15,7 @@ namespace MSFSTouchPortalPlugin.Types
   /// <summary>
   /// The SimVarItem which defines all data variables for SimConnect
   /// </summary>
-  public class SimVarItem
+  public class SimVarItem : System.IComparable<SimVarItem>, System.IComparable
   {
     /// <summary> Unique ID string, used to generate TouchPortal state ID (and possibly other uses). </summary>
     public string Id { get; set; }
@@ -41,6 +41,10 @@ namespace MSFSTouchPortalPlugin.Types
     public string TouchPortalValueType { get; set; } = "text";
     /// <summary> This could/should be populated by whatever is creating the SimVarItem instance </summary>
     public string TouchPortalStateId { get; set; }
+    /// <summary> A string used to identify this var in TP selection lists. This could/should be populated by whatever is creating the SimVarItem instance </summary>
+    public string TouchPortalSelector { get; set; }
+    /// <summary> Tracks the origin of this item for later reference. </summary>
+    public DataSourceType DataSource { get; set; }
 
     /// <summary>
     /// SimConnect unit name. Changing this property will clear any current value!
@@ -71,19 +75,18 @@ namespace MSFSTouchPortalPlugin.Types
     {
       get => string.IsNullOrWhiteSpace(_formatString) ? "{0}" : "{0:" + _formatString + "}";
       set {
-        if (value.StartsWith('{'))
-          value = value.Trim('{', '}');
+        value = value.Trim('{', '}');
         if (value.StartsWith("0:"))
           value = value.Remove(0, 2);
         _formatString = value;
       }
     }
 
-    /// <summary> The current value as an object. May be null; </summary>
+    /// <summary> The current value as an object. Read-only, and may be null. Use SetValue() methods to set value. </summary>
     public object Value
     {
       get => _value;
-      set {
+      private set {
         _value = value;
         _lastUpdate = Stopwatch.GetTimestamp();
         SetPending(false);
@@ -273,9 +276,27 @@ namespace MSFSTouchPortalPlugin.Types
       return true;
     }
 
+    // Object
+
+    public override int GetHashCode() => Id.GetHashCode();
+    public override string ToString() => SimVarName;
+
     public string ToDebugString() {
       return $"{GetType().Name}: {{Def: {Def}; SimVarName: {SimVarName}; Unit: {Unit}; Cat: {CategoryId}; Name: {Name}}}";
     }
+
+    // IComparable
+
+    public override bool Equals(object obj) => ReferenceEquals(this, obj) || (obj is SimVarItem item && item.Id == Id);
+    public static bool operator ==(SimVarItem left, SimVarItem right) => left is null ? right is null : left.Equals(right);
+    public static bool operator !=(SimVarItem left, SimVarItem right) => !(left == right);
+    public static bool operator <(SimVarItem left, SimVarItem right)  => left is null ? right is not null : left.CompareTo(right) < 0;
+    public static bool operator <=(SimVarItem left, SimVarItem right) => left is null || left.CompareTo(right) <= 0;
+    public static bool operator >(SimVarItem left, SimVarItem right)  => left is not null && left.CompareTo(right) > 0;
+    public static bool operator >=(SimVarItem left, SimVarItem right) => left is null ? right is null : left.CompareTo(right) >= 0;
+
+    public int CompareTo(object obj) => obj is SimVarItem item ? CompareTo(item) : -1;
+    public int CompareTo(SimVarItem other) => other is null ? -1 : Id.CompareTo(other.Id);
 
   }
 }

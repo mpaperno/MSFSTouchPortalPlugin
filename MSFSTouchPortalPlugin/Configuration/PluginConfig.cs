@@ -24,10 +24,10 @@ namespace MSFSTouchPortalPlugin.Configuration
     /// </summary>
     public static string RootName { get; set; } = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
 
-    public static string StatesConfigFile { get; set; } = "States.ini";
+    public static string StatesConfigFile { get; set; }       = "States.ini";
     public static string PluginStatesConfigFile { get; set; } = "PluginStates.ini";
-    public static string SimVarsImportsFile { get; set; } = "SimVars.ini";
-    public static string SimEventsImportsFile { get; set; } = "SimEvents.ini";
+    public static string SimVarsImportsFile { get; set; }     = "SimVariables.ini";
+    public static string SimEventsImportsFile { get; set; }   = "SimEvents.ini";
 
     public static string AppRootFolder    { get; set; } = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
     public static string AppConfigFolder  { get; set; } = Path.Combine(AppRootFolder, "Configuration");
@@ -61,6 +61,7 @@ namespace MSFSTouchPortalPlugin.Configuration
     public static bool HaveUserStateFiles => _userStateFiles.Any();
     public static IReadOnlyCollection<string> UserStateFilesArray => _userStateFiles;
 
+    public IEnumerable<string> DefaultStateIds { get; private set; }
     public IEnumerable<string> ImportedSimVarCategoryNames => _importedSimVars.Keys;
     public IEnumerable<string> ImportedSimEvenCategoryNames => _importedSimEvents.Keys;
 
@@ -72,7 +73,6 @@ namespace MSFSTouchPortalPlugin.Configuration
     private IReadOnlyDictionary<string, IReadOnlyDictionary<string, SimEvent>> _importedSimEvents;
     private readonly ILogger<PluginConfig> _logger;
 
-
     public PluginConfig(ILogger<PluginConfig> logger) {
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
@@ -83,6 +83,7 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     // Loads all imports
     public void Init() {
+      DefaultStateIds = LoadSimVarItems(false).Select(s => s.Id);
       _importedSimVars = ImportSimVars();
       _importedSimEvents = ImportSimEvents();
       // Check for custom SimConnect.cfg and try copy it to application dir (may require elevated privileges)
@@ -110,38 +111,56 @@ namespace MSFSTouchPortalPlugin.Configuration
     }
 
     public bool TryGetImportedSimVarBySelector(string selector, out SimVariable simVar) {
-      simVar = null;
-      selector = selector?.Trim().Replace(":N", "").Replace("* ", "") ?? string.Empty;
-      return (_importedSimVars.Values.FirstOrDefault(c => c.ContainsKey(selector)) is var cat && cat != null) && cat.TryGetValue(selector, out simVar);
+      return TryGetImportedSimVarBySelector(selector, out simVar, out _, out _);
     }
 
     private static readonly Regex _reSimVarIdFromName = new Regex(@"(?:\b|\W|_)(\w)");  // for creating a PascalCase ID from a SimVar name
 
-    public SimVariable GetOrCreateImportedSimVariable(string varName) {
-      if (string.IsNullOrWhiteSpace(varName))
-        return null;
-      bool indexed = false;
-      // "normalize" the name passed from touch portal
-      var name = varName.Trim();
-      // strip leading "exists" indicator "* "
-      if (name[0] == '*')
-        name = name[2..];
-      // strip trailing single-char index indicator, ":N" or ":i" and such
-      if ((indexed = name[^2] == ':'))
-        name = name[..^2];
-      // otherwise check and strip ":index" suffix
-      else if ((indexed = name[^6] == ':' && name[^5..].ToLowerInvariant() == "index"))
-        name = name[..^6];
-      if ((_importedSimVars.Values.FirstOrDefault(c => c.ContainsKey(name)) is var cat && cat != null) && cat.TryGetValue(name, out SimVariable simVar))
-        return simVar;
-      simVar = new() {
-        // Create a reasonable string for a TP state ID
-        Id = _reSimVarIdFromName.Replace(name.ToLower(), m => (m.Groups[1].ToString().ToUpper())),
-        SimVarName = name,
-        Name = name,  // for lack of anything better
-        Indexed = indexed
-      };
+    public SimVariable GetOrCreateImportedSimVariable(string varName, uint index = 0) {
+      if (!TryGetImportedSimVarBySelector(varName, out SimVariable simVar, out var name, out var indexed)) {
+        simVar = new() {
+          // Create a reasonable string for a TP state ID
+          Id = _reSimVarIdFromName.Replace(name.ToLower(), m => (m.Groups[1].ToString().ToUpper())),
+          SimVarName = name,
+          Name = name,  // for lack of anything better
+          Indexed = indexed
+        };
+      }
+      simVar.Indexed = simVar.Indexed || index > 0;
+      if (simVar.Indexed) {
+        simVar.Id += index.ToString();
+        simVar.SimVarName += ":" + Math.Clamp(index, 1, 99).ToString();
+      }
       return simVar;
+    }
+
+    private bool TryGetImportedSimVarBySelector(string varName, out SimVariable simVar, out string cleanName, out bool indexed) {
+      simVar = null;
+      if (!TryNormalizeVarName(varName, out cleanName, out indexed))
+        return false;
+      foreach (var cat in _importedSimVars.Values) {
+        if (cat.TryGetValue(cleanName, out simVar))
+          return true;
+      }
+      return false;
+    }
+
+    // "normalize" a SimVar name passed from touch portal
+    private static bool TryNormalizeVarName(string name, out string varName, out bool indexed) {
+      indexed = false;
+      varName = name.Trim();
+      if (string.IsNullOrEmpty(varName))
+        return false;
+      // strip leading "exists" indicator "* "
+      if (varName[0] == '*')
+        varName = varName[2..];
+      // strip trailing single-char index indicator, ":N" or ":i" and such
+      if ((indexed = varName[^2] == ':'))
+        varName = varName[..^2];
+      // otherwise check and strip ":index" suffix
+      else if ((indexed = varName[^6] == ':' && varName[^5..].ToLowerInvariant() == "index"))
+        varName = varName[..^6];
+      return true;
     }
 
     // Imported SimEvents methods
@@ -204,7 +223,9 @@ namespace MSFSTouchPortalPlugin.Configuration
           continue;
         }
         simVar.Id = item.Name;
+        simVar.DataSource = isUserConfig ? DataSourceType.UserFile : DataSourceType.DefaultFile;
         simVar.TouchPortalStateId = $"{RootName}.{simVar.CategoryId}.State.{simVar.Id}";
+        simVar.TouchPortalSelector = Categories.PrependCategoryName(simVar.CategoryId, simVar.Name) + $"  [{simVar.Id}]";
         // check unique
         if (ret.FindIndex(s => s.Id == simVar.Id) is int idx && idx > -1) {
           _logger.LogWarning($"Duplicate SimVar ID found for '{simVar.Id}', overwriting.");
@@ -237,7 +258,9 @@ namespace MSFSTouchPortalPlugin.Configuration
       => LoadSimVarItems(false, PluginStatesConfigFile);
 
     // Save collection to file
-    public bool SaveSimVarItems(IEnumerable<SimVarItem> items, bool isUserConfig = true, string filename = default) {
+    public int SaveSimVarItems(IEnumerable<SimVarItem> items, bool isUserConfig = true, string filename = default) {
+      if (!items.Any())
+        return 0;
       var cfg = new SharpConfig.Configuration();
       Groups lastCatId = default;
       int count = 0;
@@ -276,9 +299,11 @@ namespace MSFSTouchPortalPlugin.Configuration
       }
 
       filename = GetFullFilePath(filename, isUserConfig);
-      if (SaveToFile(cfg, filename) is bool ok)
+      if (SaveToFile(cfg, filename))
         _logger.LogDebug($"Saved {count} SimVars to '{filename}'");
-      return ok;
+      else
+        count = 0;
+      return count;
     }
 
 

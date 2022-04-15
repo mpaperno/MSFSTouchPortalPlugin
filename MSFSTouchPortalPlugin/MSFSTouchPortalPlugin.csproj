@@ -96,7 +96,7 @@
     <None Update="Configuration\States.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Configuration\SimVars.ini">
+    <None Update="Configuration\SimVariables.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Configuration\SimEvents.ini">
