@@ -49,8 +49,8 @@ namespace MSFSTouchPortalPlugin.Types
            Append(aArguments[i]);
       }
       sb.Append(')');
-      if (dwExceptionIndex > 0)
-        sb.Append(" ([@] = error source)");
+      if (dwExceptionIndex > 0 && dwExceptionIndex < uint.MaxValue)
+        sb.Append(" ([@] = error source arg. ").Append($"{dwExceptionIndex})");
       return sb.ToString();
     }
   }

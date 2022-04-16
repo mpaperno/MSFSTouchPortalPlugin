@@ -57,7 +57,7 @@ namespace MSFSTouchPortalPlugin.Types
         return true;
       }
       if (TpActionToEventMap.Count == 1) {
-        eventId = TpActionToEventMap.First().Value;
+        eventId = TpActionToEventMap.Values.First();
         return true;
       }
       return TpActionToEventMap.TryGetValue(FormatLookupKey(values), out eventId);
