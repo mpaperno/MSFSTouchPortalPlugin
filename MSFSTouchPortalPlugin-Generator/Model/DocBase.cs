@@ -5,6 +5,7 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string Title { get; set; }
     public string Overview { get; set; }
     public string Version { get; set; }
+    public string DocsUrl { get; set; }
     public List<DocSetting> Settings { get; set; } = new();
     public List<DocCategory> Categories { get; set; } = new();
   }

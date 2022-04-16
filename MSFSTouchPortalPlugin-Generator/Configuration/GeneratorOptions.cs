@@ -49,6 +49,10 @@ namespace MSFSTouchPortalPlugin_Generator.Configuration
       HelpText = "\nName of the plugin's folder once installed to TP.")]
     public string PluginFolder { get; set; }
 
+    [Option('u', "DocsUrl", Default = "", MetaValue = "<URL>", Required = false,
+      HelpText = "\nURL to full project documentation, if any.")]
+    public string DocumentationUrl { get; set; }
+
     [Option('d', "debug", Hidden = true, Default = false, Required = false,
       HelpText = "Enables generating a 'debug' version of entry.tp. Currently that means w/out a startup command.")]
     public bool Debug { get; set; }

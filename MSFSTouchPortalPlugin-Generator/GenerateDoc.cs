@@ -49,13 +49,23 @@ namespace MSFSTouchPortalPlugin_Generator
     private DocBase CreateModel() {
 
       // set plugin file location for version info
-      VersionInfo.AssemblyLocation = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _options.PluginId + ".dll");
+      var assembly = Assembly.GetExecutingAssembly();
+      VersionInfo.AssemblyLocation = Path.Combine(Path.GetDirectoryName(assembly.Location), _options.PluginId + ".dll");
+
+      string docsUrl = _options.DocumentationUrl;
+      if (string.IsNullOrWhiteSpace(docsUrl)) {
+        var metaAttr = assembly.GetCustomAttributes<AssemblyMetadataAttribute>();
+        foreach (var att in metaAttr)
+          if (att.Key == "DocumentationUrl")
+            docsUrl = att.Value;
+      }
 
       // create the base model
       var model = new DocBase {
         Title = _options.PluginName + " Documentation",
-        Overview = "This plugin will provide a two-way interface between Touch Portal and Flight Simulators which use SimConnect, such as Microsoft Flight Simulator 2020 and FS-X.",
-        Version = VersionInfo.GetProductVersionString()
+        Overview = "This plugin provides a two-way interface between Touch Portal and Flight Simulators which use SimConnect, such as Microsoft Flight Simulator 2020 and FS-X.",
+        Version = VersionInfo.GetProductVersionString(),
+        DocsUrl = docsUrl
       };
 
       // read states config
@@ -185,11 +195,13 @@ namespace MSFSTouchPortalPlugin_Generator
     }
 
     private static string CreateMarkdown(DocBase model) {
-      var s = new StringBuilder();
+      var s = new StringBuilder(75 * 1024);
 
       s.Append($"# {model.Title}\n\n");
       s.Append($"{model.Overview}\n\n");
-      s.Append($"Docuemntation generated for plugin version {model.Version}\n\n");
+      if (!string.IsNullOrWhiteSpace(model.DocsUrl))
+        s.Append("For further documentation, please see ").Append(model.DocsUrl).Append("\n\n");
+      s.Append($"This documentation generated for plugin v{model.Version}\n\n");
       s.Append("---\n\n");
 
       // Table of Contents
