@@ -29,6 +29,7 @@ namespace MSFSTouchPortalPlugin.Services
     public string PluginId => PLUGIN_ID;  // for ITouchPortalEventHandler
 
     const int SIM_RECONNECT_DELAY_SEC = 30;   // SimConnect connection attempts delay on failure
+    const int MAX_LOG_MSGS_FOR_STATE  = 12;   // maximum number of log lines to send in the LogMessages state
 
     private enum EntryFileType { Default, NoStates, Custom };
 
@@ -51,6 +52,7 @@ namespace MSFSTouchPortalPlugin.Services
     private readonly SimVarCollection _statesDictionary = new();
     private readonly List<string> _dynamicStateIds = new();  // keep track of dynamically created states for clearing them if/when reloading sim var state files
     private readonly ConcurrentDictionary<string, Timer> _repeatingActionTimers = new();  // storage for temporary repeating (held) action timers, index by action ID
+    private readonly ConcurrentQueue<string> _logMessages = new();  // stores the last MAX_LOG_MSGS_FOR_STATE log messages for the LogMessages state value, used in PluginLogger callback
 
     private bool _quitting;  // prevent recursion at shutdown
     private EntryFileType _entryFileType = EntryFileType.Default;  // detected entry.tp States configuration type
@@ -70,6 +72,7 @@ namespace MSFSTouchPortalPlugin.Services
       _client = clientFactory?.Create(this) ?? throw new ArgumentNullException(nameof(clientFactory));
       _pluginConfig = pluginConfig ?? throw new ArgumentNullException(nameof(pluginConfig));
 
+      PluginLogger.OnMessageReady += new PluginLogger.MessageReadyHandler(OnPluginLoggerMessage);
       TouchPortalOptions.ActionDataIdSeparator = '.';  // split up action Data Ids
     }
 
@@ -174,7 +177,7 @@ namespace MSFSTouchPortalPlugin.Services
       catch (OperationCanceledException) { /* ignore but exit */ }
       catch (ObjectDisposedException) { /* ignore but exit */ }
       catch (Exception e) {
-        _logger.LogError(e, "Exception in SimConnectionMonitor task, cannot continue: " + e.Message);
+        _logger.LogError((int)EventIds.Ignore, e, "Exception in SimConnectionMonitor task, cannot continue.");
       }
       _logger.LogDebug("SimConnectionMonitor task stopped.");
       return Task.CompletedTask;
@@ -198,7 +201,7 @@ namespace MSFSTouchPortalPlugin.Services
       catch (OperationCanceledException) { /* ignore but exit */ }
       catch (ObjectDisposedException) { /* ignore but exit */ }
       catch (Exception e) {
-        _logger.LogError(e, "Exception in PluginEventsTask task, cannot continue.");
+        _logger.LogError((int)EventIds.Ignore, e, "Exception in PluginEventsTask task, cannot continue.");
       }
       _logger.LogDebug("PluginEventsTask task stopped.");
     }
@@ -215,12 +218,28 @@ namespace MSFSTouchPortalPlugin.Services
       }
     }
 
+    // PluginLogger callback
+    private void OnPluginLoggerMessage(string message, LogLevel logLevel = LogLevel.Information, EventId eventId = default) {
+      //_logger.LogDebug($"Got message from our logger! {logLevel}: {message}");
+      while (_logMessages.Count >= MAX_LOG_MSGS_FOR_STATE)
+        _logMessages.TryDequeue(out _);
+      _logMessages.Enqueue(message);
+      if (_client.IsConnected) {
+        var evId = (EventIds)eventId.Id;
+        if (evId == EventIds.None && logLevel > LogLevel.Information)
+          evId = EventIds.PluginError;
+        if (evId != EventIds.None)
+          UpdateSimSystemEventState(evId, message);
+        UpdateTpStateValue("LogMessages", string.Join('\n', _logMessages.ToArray()));
+      }
+    }
+
     #endregion Startup, Shutdown and Processing Tasks
 
     #region SimConnect Events   /////////////////////////////////////
 
     private void SimConnectEvent_OnConnect(SimulatorInfo info) {
-      _logger.LogInformation("Connected to " + info.ToString());
+      _logger.LogInformation((int)EventIds.PluginInfo, "Connected to " + info.ToString());
 
       _simConnectionRequest.Reset();
       _simTasksCTS = new CancellationTokenSource();
@@ -264,7 +283,7 @@ namespace MSFSTouchPortalPlugin.Services
 
       _simTasksCTS?.Cancel();
       if (_pluginEventsTask.Status == TaskStatus.Running && !_pluginEventsTask.Wait(5000))
-        _logger.LogWarning("PluginEventsTask timed out while stopping.");
+        _logger.LogWarning((int)EventIds.Ignore, "PluginEventsTask timed out while stopping.");
       try { _pluginEventsTask.Dispose(); }
       catch { /* ignore in case it hung */ }
 
@@ -289,7 +308,7 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     private void SimConnectEvent_OnException(RequestTrackingData data) {
-      _logger.LogWarning($"SimConnect Request Exception: " + data.ToString());
+      _logger.LogWarning((int)EventIds.SimError, "SimConnect Request Error: " + data.ToString());
     }
 
     #endregion SimConnect Events
@@ -302,6 +321,7 @@ namespace MSFSTouchPortalPlugin.Services
       // We may need to generate all, some, or no states dynamically.
       bool allStatesDynamic = (_entryFileType == EntryFileType.NoStates);
       bool someStateDynamic = false;
+      string logMsg;
       IReadOnlyCollection<SimVarItem> simVars;
 
       // First check if we're using a custom config.
@@ -310,14 +330,15 @@ namespace MSFSTouchPortalPlugin.Services
         // then lets figure out what the default states are so we can create any missing ones dynamically if needed.
         if (_entryFileType == EntryFileType.Default)
           someStateDynamic = _pluginConfig.DefaultStateIds.Any();
-        _logger.LogInformation($"Loading custom state file(s) '{PluginConfig.UserStateFiles}' from '{PluginConfig.UserConfigFolder}'.");
+        logMsg = $"custom state file(s) '{PluginConfig.UserStateFiles}' in '{PluginConfig.UserConfigFolder}'";
       }
       else {  // Default config
-        _logger.LogInformation($"Loading default SimVar State file '{PluginConfig.AppConfigFolder}/{PluginConfig.StatesConfigFile}'.");
+        logMsg = $"default file '{PluginConfig.AppConfigFolder}/{PluginConfig.StatesConfigFile}'";
       }
       // Load the vars.  PluginConfig tracks which files should be loaded, defaults or custom.
       simVars = _pluginConfig.LoadSimVarStateConfigs();
-      _logger.LogInformation($"Loaded {simVars.Count} SimVars from file(s).");
+
+      _logger.LogInformation((int)EventIds.PluginInfo, $"Loaded {simVars.Count} SimVar States from {logMsg}.");
 
       // Now create the SimVars and track them. We're probably not connected to SimConnect at this point so the registration may happen later.
       foreach (var simVar in simVars)
@@ -377,7 +398,7 @@ namespace MSFSTouchPortalPlugin.Services
         foreach (var simVar in simVars)
           AddSimVar(simVar, true);
         UpdateSimVarLists();
-        _logger.LogInformation($"Loaded {simVars.Count} SimVar States from file '{filepath}'");
+        _logger.LogInformation((int)EventIds.PluginInfo, $"Loaded {simVars.Count} SimVar States from file '{filepath}'");
       }
       else {
         _logger.LogWarning($"Did not load any SimVar States from file '{filepath}'");
@@ -391,7 +412,7 @@ namespace MSFSTouchPortalPlugin.Services
       else
         count = _pluginConfig.SaveSimVarItems(_statesDictionary, true, filepath);
       if (count > 0)
-        _logger.LogInformation($"Saved {(customOnly ? $"{count} Custom" : $"All {count}")} SimVar States to file '{filepath}'");
+        _logger.LogInformation((int)EventIds.PluginInfo, $"Saved {(customOnly ? $"{count} Custom" : $"All {count}")} SimVar States to file '{filepath}'");
       else
         _logger.LogError($"Error saving SimVar States to file '{filepath}'; Please check log messages.");
     }
@@ -524,7 +545,7 @@ namespace MSFSTouchPortalPlugin.Services
       if (_simConnectService.IsConnected())
         _simConnectService.Disconnect();
       else if (wasSet)
-        _logger.LogInformation("Connection attempts to Simulator were canceled.");
+        _logger.LogInformation((int)EventIds.PluginInfo, "Connection attempts to Simulator were canceled.");
       UpdateSimConnectState();
     }
 
@@ -553,9 +574,12 @@ namespace MSFSTouchPortalPlugin.Services
         case PluginActions.ActionRepeatIntervalInc:
         case PluginActions.ActionRepeatIntervalDec:
         case PluginActions.ActionRepeatIntervalSet: {
+          string errMsg = null;
           // preserve backwards compatibility with old actions which used indexed data IDs
-          if (data == null || !(data.TryGetValue("Value", out var sVal) || data.TryGetValue("1", out sVal)) || !TryEvaluateValue(sVal, out var value)) {
-            _logger.LogWarning($"Could not find or parse numeric value for repeat rate from data: {ActionDataToKVPairString(data)}");
+          if (data == null || !(data.TryGetValue("Value", out var sVal) || data.TryGetValue("1", out sVal)) || !TryEvaluateValue(sVal, out var value, out errMsg)) {
+            if (errMsg == null)
+                errMsg = "Required parameter 'Value' missing or invalid.";
+            _logger.LogError($"Error getting value for repeat rate: '{errMsg}'; From data: {ActionDataToKVPairString(data)}");
             break;
           }
           if (actionId == PluginActions.ActionRepeatIntervalInc)
@@ -575,7 +599,7 @@ namespace MSFSTouchPortalPlugin.Services
       if (!data.TryGetValue("VarName", out var varName) ||
           !data.TryGetValue("Value", out var value) ||
           !TryGetSimVarIdFromActionData(varName, out string varId)) {
-        _logger.LogWarning($"Could not parse required action parameters for {PluginActions.SetSimVar} from data: {ActionDataToKVPairString(data)}");
+        _logger.LogError($"Could not parse required action parameters for {PluginActions.SetSimVar} from data: {ActionDataToKVPairString(data)}");
         return;
       }
       if (!_statesDictionary.TryGet(varId, out SimVarItem simVar)) {
@@ -589,8 +613,9 @@ namespace MSFSTouchPortalPlugin.Services
           return;
         }
       }
-      else if (!TryEvaluateValue(value, out double dVal) || !simVar.SetValue(dVal)) {
-        _logger.LogError($"Could not set numeric value '{value}' for SimVar Id: '{varId}' Name: '{varName}'");
+      else if (!TryEvaluateValue(value, out double dVal, out var errMsg) || !simVar.SetValue(dVal)) {
+        if (errMsg == null) errMsg = "Value is of wrong type.";
+        _logger.LogError($"Could not set numeric value '{value}' for SimVar Id: '{varId}' Name: '{varName}'; Error: {errMsg}");
         return;
       }
       if (data.TryGetValue("RelAi", out var relAi) && new BooleanString(relAi) && !_simConnectService.ReleaseAIControl(simVar.Def))
@@ -604,7 +629,7 @@ namespace MSFSTouchPortalPlugin.Services
           !data.TryGetValue("CatId", out var sCatId)    || !Categories.TryGetCategoryId(sCatId, out Groups catId) ||
           !data.TryGetValue("Unit", out var sUnit)
       ) {
-        _logger.LogWarning($"Could not parse required action parameters for {actId} from data: {ActionDataToKVPairString(data)}");
+        _logger.LogError($"Could not parse required action parameters for {actId} from data: {ActionDataToKVPairString(data)}");
         return;
       }
 
@@ -638,27 +663,27 @@ namespace MSFSTouchPortalPlugin.Services
         simVar.DeltaEpsilon = epsilon;
 
       if (AddSimVar(simVar))
-        _logger.LogInformation($"Added new SimVar state from action data: {simVar.ToDebugString()}");
+        _logger.LogInformation((int)EventIds.PluginInfo, $"Added new SimVar state from action data: {simVar.ToDebugString()}");
       else
         _logger.LogError($"Failed to add SimVar from action data, check previous log messages. Action data: {ActionDataToKVPairString(data)}");
     }
 
     private void RemoveSimVarByActionDataName(ActionData data) {
       if (!data.TryGetValue("VarName", out var varName) || !TryGetSimVarIdFromActionData(varName, out string varId)) {
-        _logger.LogWarning($"Could not find valid SimVar ID in action data: {ActionDataToKVPairString(data)}'");
+        _logger.LogError($"Could not find valid SimVar ID in action data: {ActionDataToKVPairString(data)}'");
         return;
       }
       SimVarItem simVar = _statesDictionary[varId];
       if (simVar != null && RemoveSimVar(simVar))
-        _logger.LogInformation($"Removed SimVar '{simVar.SimVarName}'");
+        _logger.LogInformation((int)EventIds.PluginInfo, $"Removed SimVar '{simVar.SimVarName}'");
       else
-        _logger.LogWarning($"Could not find definition for settable SimVar Id: '{varId}' from Name: '{varName}'");
+        _logger.LogError($"Could not find definition for settable SimVar Id: '{varId}' from Name: '{varName}'");
     }
 
     // Dynamic sim Events (actions)
     private void ProcessSimEventFromActionData(PluginActions actId, ActionData data) {
       if (!data.TryGetValue("EvtId", out var evtId) || !data.TryGetValue("Value", out var sValue)) {
-        _logger.LogWarning($"Could not find required action parameters for {actId} from data: {ActionDataToKVPairString(data)}");
+        _logger.LogError($"Could not find required action parameters for {actId} from data: {ActionDataToKVPairString(data)}");
         return;
       }
       // Check for known/imported type, which may have special formatting applied to the name
@@ -714,7 +739,7 @@ namespace MSFSTouchPortalPlugin.Services
           if ((data.TryGetValue("Action", out var actId) || data.TryGetValue("0", out actId)) && action.TryGetEventMapping(actId, out Enum eventId))
             ProcessPluginCommandAction((PluginActions)eventId, data);
           else
-            _logger.LogWarning($"Could not parse required action parameters for {action.ActionId} from data: {ActionDataToKVPairString(data)}");
+            _logger.LogError($"Could not parse required action parameters for {action.ActionId} from data: {ActionDataToKVPairString(data)}");
           break;
         }
 
@@ -762,8 +787,8 @@ namespace MSFSTouchPortalPlugin.Services
         switch (action.ValueType) {
           case DataType.Number:
           case DataType.Text:
-            if (!TryEvaluateValue(value, out dataReal)) {
-              _logger.LogWarning($"Data conversion failed for action '{action.ActionId}' on sim event '{_reflectionService.GetSimEventNameById(eventId)}'.");
+            if (!TryEvaluateValue(value, out dataReal, out var errMsg)) {
+              _logger.LogError($"Data conversion for string '{value}' failed for action '{action.ActionId}' on sim event '{_reflectionService.GetSimEventNameById(eventId)}' with Error: {errMsg}.");
               return;
             }
             break;
@@ -933,13 +958,15 @@ namespace MSFSTouchPortalPlugin.Services
 
     #region Utilities       ///////////////////////////////
 
-    private bool TryEvaluateValue(string strValue, out double value) {
+    private bool TryEvaluateValue(string strValue, out double value, out string errMsg) {
       value = double.NaN;
+      errMsg = null;
       try {
         value = Convert.ToDouble(_expressionEvaluator.Compute(strValue, null));
       }
       catch (Exception e) {
-        _logger.LogWarning(e, $"Failed to convert data value '{strValue}' to numeric.");
+        errMsg = e.Message;
+        _logger.LogDebug(e, $"Eval exception with '{strValue}'");
         return false;
       }
       return true;

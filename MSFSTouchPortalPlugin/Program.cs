@@ -48,7 +48,12 @@ namespace MSFSTouchPortalPlugin {
           .ConfigureLogging((hostContext, loggingBuilder) => {
             loggingBuilder
               .ClearProviders()
-              .AddSerilog(logger: new LoggerConfiguration().ReadFrom.Configuration(configurationRoot).CreateLogger(), dispose: true);
+              .AddSerilog(logger: new LoggerConfiguration().ReadFrom.Configuration(configurationRoot).CreateLogger(), dispose: true)
+              // PluginLogger is a feedback mechanism to get log entries delivered to the plugin's handler, which may then pass them on to TP as a State.
+              .AddProvider(PluginLoggerProvider.Instance)
+              // Do not change these filters w/out a good reason!
+              .AddFilter<PluginLoggerProvider>("", LogLevel.None)
+              .AddFilter<PluginLoggerProvider>("MSFSTouchPortalPlugin.Services.PluginService", LogLevel.Information);
           })
           .ConfigureServices((context, services) => {
             services
