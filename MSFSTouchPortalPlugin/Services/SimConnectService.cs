@@ -48,6 +48,7 @@ namespace MSFSTouchPortalPlugin.Services
     public const uint VIEW_EVENT_DATA_COCKPIT_3D = 0x00000002;      // Virtual (3D) panels in cockpit view
     public const uint VIEW_EVENT_DATA_ORTHOGONAL = 0x00000004;      // Orthogonal (Map) view
 
+    const int MESSAGE_RCV_WAIT_TIME = 5000;   // SimConnect.ReceiveMessage() wait time
     // maximum stored requests for error tracking (adding is fast but search is 0(n)), should be large enough to handle flood of requests at initial connection
     const int MAX_STORED_REQUEST_RECORDS = 500;
 
@@ -66,6 +67,7 @@ namespace MSFSTouchPortalPlugin.Services
     Task _messageWaitTask;
     SimConnect _simConnect;
     readonly EventWaitHandle _scReady = new EventWaitHandle(false, EventResetMode.AutoReset);
+    readonly AutoResetEvent _scQuit = new(false);
     readonly List<Definition> _addedDefinitions = new();  // keep track of added SimVar definitions to avoid redundant registrations
     readonly RequestTrackingData[] _requestTracking = new RequestTrackingData[MAX_STORED_REQUEST_RECORDS];  // rolling buffer array for request tracking
 
@@ -157,13 +159,11 @@ namespace MSFSTouchPortalPlugin.Services
         return;
 
       _connected = false;
-      _scReady.Set();  // trigger message wait task to exit
+      _scQuit.Set();  // trigger message wait task to exit
       var sw = System.Diagnostics.Stopwatch.StartNew();
-      while (_messageWaitTask.Status == TaskStatus.Running && sw.ElapsedMilliseconds <= 5000) {
+      while (_messageWaitTask.Status == TaskStatus.Running && sw.ElapsedMilliseconds <= MESSAGE_RCV_WAIT_TIME)
         Thread.Sleep(2);
-        _scReady.Set();
-      }
-      if (sw.ElapsedMilliseconds > 5000)
+      if (_messageWaitTask.Status == TaskStatus.Running)
         _logger.LogWarning("Message wait task timed out while stopping.");
       try { _messageWaitTask.Dispose(); }
       catch { /* ignore in case it hung */ }
@@ -186,10 +186,15 @@ namespace MSFSTouchPortalPlugin.Services
     // runs in separate task/thread
     private void ReceiveMessages() {
       _logger.LogDebug("ReceiveMessages task started.");
+      int sig;
+      var waitHandles = new WaitHandle[] { _scReady, _scQuit };
       try {
         while (_connected) {
-          if (_scReady.WaitOne(5000) && _connected)
-            _simConnect?.ReceiveMessage();
+          sig = WaitHandle.WaitAny(waitHandles, MESSAGE_RCV_WAIT_TIME);
+          if (sig == 0 && _simConnect != null)
+            _simConnect.ReceiveMessage();    // note that this calls our event handlers synchronously on this same thread.
+          else if (sig != WaitHandle.WaitTimeout)
+            break;
         }
       }
       catch (ObjectDisposedException) { /* ignore but exit */ }
@@ -312,7 +317,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     private void Simconnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data) {
       _logger.LogInformation("Received shutdown command from SimConnect, disconnecting.");
-      Disconnect();
+      Task.Run(Disconnect);  // async to avoid deadlock
     }
 
     private void Simconnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data) {
