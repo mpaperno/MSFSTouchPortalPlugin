@@ -4,7 +4,7 @@ namespace MSFSTouchPortalPlugin.Enums
   public enum EventIds : short
   {
     None = 0,
-
+    Ignore,            // a way to flag > info log entries which shouldn't trigger a PluginError/SimError events
     // Plugin events
     SimConnecting,     // attempting to connect
     SimConnected,
@@ -12,6 +12,7 @@ namespace MSFSTouchPortalPlugin.Enums
     SimTimedOut,       // connection error, sim not running
     SimError,          // SimConnect error
     PluginError,       // internal plugin error
+    PluginInfo,        // internal plugin "info"/success event w/message (log entry)
 
     // SimConnect events (must match names accepted by SimConnect_SubscribeToSystemEvent, see comment block at EOF)
     SimEventNone,      // marker
@@ -28,7 +29,7 @@ namespace MSFSTouchPortalPlugin.Enums
     //Frame,           // no notification
     Pause,
     Paused,
-    //PauseFrame,      // no notification
+    //PauseFrame,      // no notification (I've read this could be used to detect active pause, but...?)
     PositionChanged,
     Sim,
     SimStart,

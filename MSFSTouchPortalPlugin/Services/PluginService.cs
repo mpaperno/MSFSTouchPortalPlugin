@@ -6,6 +6,7 @@ using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Helpers;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Objects.Plugin;
+using MSFSTouchPortalPlugin.Objects.SimSystem;
 using MSFSTouchPortalPlugin.Types;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,8 @@ namespace MSFSTouchPortalPlugin.Services
   /// <inheritdoc cref="IPluginService" />
   internal class PluginService : IPluginService, ITouchPortalEventHandler
   {
-    public string PluginId => "MSFSTouchPortalPlugin";  // for ITouchPortalEventHandler
+    const string PLUGIN_ID = "MSFSTouchPortalPlugin";
+    public string PluginId => PLUGIN_ID;  // for ITouchPortalEventHandler
 
     const int SIM_RECONNECT_DELAY_SEC = 30;   // SimConnect connection attempts delay on failure
 
@@ -138,6 +140,7 @@ namespace MSFSTouchPortalPlugin.Services
       _simConnectService.OnConnect += SimConnectEvent_OnConnect;
       _simConnectService.OnDisconnect += SimConnectEvent_OnDisconnect;
       _simConnectService.OnException += SimConnectEvent_OnException;
+      _simConnectService.OnEventReceived += SimConnectEvent_OnEventReceived;
 
       return true;
     }
@@ -233,6 +236,10 @@ namespace MSFSTouchPortalPlugin.Services
       // Register SimVars for States
       RegisterAllSimVars();
 
+      // Request system events
+      for (EventIds eventId = EventIds.SimEventNone + 1; eventId < EventIds.SimEventLast; ++eventId)
+        _simConnectService.SubscribeToSystemEvent(eventId, eventId.ToString());
+
       // start checking timer events
       _pluginEventsTask = Task.Run(PluginEventsTask);
       _pluginEventsTask.ConfigureAwait(false);  // needed?
@@ -262,7 +269,6 @@ namespace MSFSTouchPortalPlugin.Services
       catch { /* ignore in case it hung */ }
 
       ClearRepeatingActions();
-      UpdateSimConnectState();
 
       _pluginEventsTask = null;
       _simTasksCTS?.Dispose();
@@ -270,6 +276,16 @@ namespace MSFSTouchPortalPlugin.Services
 
       if (!_simAutoConnectDisable.IsSet && !_quitting)
         _simConnectionRequest.Set();  // re-enable connection attempts
+
+      UpdateSimConnectState();
+    }
+
+    private void SimConnectEvent_OnEventReceived(EventIds eventId, Groups categoryId, object data) {
+      if (eventId > EventIds.SimEventNone && eventId < EventIds.SimEventLast) {
+        if (eventId == EventIds.View)
+          eventId = (uint)data == SimConnectService.VIEW_EVENT_DATA_COCKPIT_3D ? EventIds.ViewCockpit : EventIds.ViewExternal;
+        UpdateSimSystemEventState(eventId, data);
+      }
     }
 
     private void SimConnectEvent_OnException(RequestTrackingData data) {
@@ -388,7 +404,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     // common handler for other action list updaters
     private void UpdateActionDataList(PluginActions actionId, string dataId, IEnumerable<string> data, string instanceId = null) {
-      _client.ChoiceUpdate(PluginId + $".Plugin.Action.{actionId}.Data.{dataId}", data.ToArray(), instanceId);
+      _client.ChoiceUpdate(PLUGIN_ID + $".Plugin.Action.{actionId}.Data.{dataId}", data.ToArray(), instanceId);
     }
 
     private void UpdateSimVarLists() {
@@ -459,11 +475,27 @@ namespace MSFSTouchPortalPlugin.Services
 
     // Misc. data update/clear
 
+    // common handler for state updates
+    void UpdateTpStateValue(string stateId, string value, Groups catId = Groups.Plugin) {
+      _client.StateUpdate(PLUGIN_ID + "." + catId.ToString() + ".State." + stateId, value);
+    }
+
+    // update SimSystemEvent and (maybe) SimSystemEventData states in SimSystem group
+    private void UpdateSimSystemEventState(EventIds eventId, object data = null) {
+      if (SimSystemMapping.SimSystemEvent.ChoiceMappings.TryGetValue(eventId, out var eventName)) {
+        UpdateTpStateValue("SimSystemEvent", eventName, Groups.SimSystem);
+        if (data is string)
+          UpdateTpStateValue("SimSystemEventData", data.ToString(), Groups.SimSystem);
+      }
+    }
+
+    // update Connected state and trigger corresponding UpdateSimSystemEventState update
     private void UpdateSimConnectState() {
-      string stat = "true";
+      EventIds evtId = EventIds.SimConnected;
       if (!_simConnectService.IsConnected())
-        stat = _simConnectionRequest.IsSet ? "connecting" : "false";
-      _client.StateUpdate(PluginId + ".Plugin.State.Connected", stat);
+        evtId = _simConnectionRequest.IsSet ? EventIds.SimConnecting : EventIds.SimDisconnected;
+      UpdateTpStateValue("Connected", evtId switch { EventIds.SimConnected => "true", EventIds.SimDisconnected => "false", _ => "connecting" });
+      UpdateSimSystemEventState(evtId);
     }
 
     private void ClearRepeatingActions() {
@@ -596,7 +628,7 @@ namespace MSFSTouchPortalPlugin.Services
         StringFormat = data.GetValueOrDefault("Format", string.Empty).Trim(),
         DefaultValue = data.GetValueOrDefault("DfltVal", string.Empty).Trim(),
       };
-      simVar.TouchPortalStateId = $"{PluginId}.{catId}.State.{simVar.Id}";
+      simVar.TouchPortalStateId = PLUGIN_ID + $".{catId}.State.{simVar.Id}";
       simVar.TouchPortalSelector = Categories.PrependCategoryName(catId, simVar.Name) + $"  [{simVar.Id}]";
       if (data.TryGetValue("UpdPer", out var sPeriod) && Enum.TryParse(sPeriod, out UpdatePeriod period))
         simVar.UpdatePeriod = period;
@@ -799,9 +831,9 @@ namespace MSFSTouchPortalPlugin.Services
       if (Settings.ConnectSimOnStartup.BoolValue)  // we only care about the Settings value at startup
         _simAutoConnectDisable.Set();
 
-      _client.StateUpdate(PluginId + ".Plugin.State.RunningVersion", runtimeVer);
-      _client.StateUpdate(PluginId + ".Plugin.State.EntryVersion", $"{tpVer & 0xFFFFFF:X}");
-      _client.StateUpdate(PluginId + ".Plugin.State.ConfigVersion", $"{tpVer >> 24:X}");
+      UpdateTpStateValue("RunningVersion", runtimeVer);
+      UpdateTpStateValue("EntryVersion", $"{tpVer & 0xFFFFFF:X}");
+      UpdateTpStateValue("ConfigVersion", $"{tpVer >> 24:X}");
 
       UpdateUCategoryLists();
       UpdateUnitsLists();
