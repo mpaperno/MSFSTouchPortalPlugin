@@ -632,29 +632,19 @@ namespace MSFSTouchPortalPlugin.Services
         _logger.LogError($"Could not parse required action parameters for {actId} from data: {ActionDataToKVPairString(data)}");
         return;
       }
-
       uint index = 0;
-      bool haveIndexValue = (data.TryGetValue("VarIndex", out var sIndex) && uint.TryParse(sIndex, out index) && index > 0);
-
-      // check if we've imported this var and have meta data
-      SimVariable impSimVar = _pluginConfig.GetOrCreateImportedSimVariable(varName, index);
-      if (impSimVar == null)  // highly unlikely
-        return;
+      if (data.TryGetValue("VarIndex", out var sIndex) && !uint.TryParse(sIndex, out index))
+        index = 0;
 
       // create the SimVarItem from collected data
-      var simVar = new SimVarItem() {
-        Id = impSimVar.Id,
-        Name = impSimVar.Name,
-        SimVarName = impSimVar.SimVarName,
-        CategoryId = catId,
-        Unit = sUnit ?? "number",
-        DataSource = DataSourceType.Dynamic,
-        CanSet = impSimVar.CanSet || (data.TryGetValue("CanSet", out var sCanSet) && new BooleanString(sCanSet)),
-        StringFormat = data.GetValueOrDefault("Format", string.Empty).Trim(),
-        DefaultValue = data.GetValueOrDefault("DfltVal", string.Empty).Trim(),
-      };
-      simVar.TouchPortalStateId = PLUGIN_ID + $".{catId}.State.{simVar.Id}";
-      simVar.TouchPortalSelector = Categories.PrependCategoryName(catId, simVar.Name) + $"  [{simVar.Id}]";
+      SimVarItem simVar = _pluginConfig.CreateDynamicSimVarItem(varName, catId, sUnit, index);
+      // check for optional properties
+      if (data.TryGetValue("Format", out var sFormat))
+        simVar.StringFormat = sFormat.Trim();
+      if (data.TryGetValue("DfltVal", out var sDefault))
+        simVar.DefaultValue = sDefault.Trim();
+      if (data.TryGetValue("CanSet", out var sCanSet) && new BooleanString(sCanSet))
+        simVar.CanSet = true;
       if (data.TryGetValue("UpdPer", out var sPeriod) && Enum.TryParse(sPeriod, out UpdatePeriod period))
         simVar.UpdatePeriod = period;
       if (data.TryGetValue("UpdInt", out var sInterval) && uint.TryParse(sInterval, out uint interval))
