@@ -42,7 +42,7 @@ copy "CHANGELOG.md" "$PluginFilesPath"
 copy "airplane_takeoff24.png" "$PluginFilesPath"
 
 # Get version
-$FileVersion = (Get-Command $BinFilesPath\$ProjectName.dll).FileVersionInfo.FileVersion
+$FileVersion = (Get-Command $BinFilesPath\$ProjectName.dll).FileVersionInfo.ProductVersion
 
 # Create TPP File
 $TppFile = "$DistFolderPath\$DistroName-$FileVersion.tpp"

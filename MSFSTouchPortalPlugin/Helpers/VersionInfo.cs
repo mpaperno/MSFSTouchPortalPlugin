@@ -31,12 +31,9 @@ namespace MSFSTouchPortalPlugin.Helpers
     }
 
     /// <summary>
-    /// Returns a string representing the full version in dotted notation, eg. 1.22.3.0
+    /// Returns a string representing the full version in dotted notation with possible qualifier, eg. 1.22.3.0-beta
     /// </summary>
-    internal static string GetProductVersionString() {
-      var vi = GetVersionInfo();
-      return $"{vi.ProductMajorPart}.{vi.ProductMinorPart}.{vi.ProductBuildPart}.{vi.ProductPrivatePart}";
-    }
+    internal static string GetProductVersionString() => GetVersionInfo().ProductVersion;
 
     /// <summary>
     /// Returns a System.Diagnostics.FileVersionInfo for a file at given location, or AssemblyLocation if location is default/null.
