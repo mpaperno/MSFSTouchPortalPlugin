@@ -28,6 +28,8 @@ namespace MSFSTouchPortalPlugin.Services
 
     const int SIM_RECONNECT_DELAY_SEC = 30;   // SimConnect connection attempts delay on failure
 
+    private enum EntryFileType { Default, NoStates, Custom };
+
     private readonly IHostApplicationLifetime _hostApplicationLifetime;
     private readonly ILogger<PluginService> _logger;
     private readonly ITouchPortalClient _client;
@@ -35,29 +37,25 @@ namespace MSFSTouchPortalPlugin.Services
     private readonly IReflectionService _reflectionService;
     private readonly PluginConfig _pluginConfig;
 
-    private CancellationToken _cancellationToken;
-    private CancellationTokenSource _simTasksCTS;
-    private CancellationToken _simTasksCancelToken;
-    private Task _pluginEventsTask;
-    private readonly ManualResetEventSlim _simConnectionRequest = new(false);
-    private bool autoReconnectSimConnect = false;
-    private EntryFileType _entryFileType = EntryFileType.Default;
-    private bool _quitting;
+    private CancellationToken _cancellationToken;    // main run enable token passed from Program startup in StartAsync()
+    private CancellationTokenSource _simTasksCTS;    // for _simTasksCancelToken
+    private CancellationToken _simTasksCancelToken;  // used to shut down local task(s) only needed while simulator is connected
+    private Task _pluginEventsTask;                  // runs timed events needed while simulator is connected
+    private readonly ManualResetEventSlim _simConnectionRequest = new(false);  // is Set when connection should be attempted, SimConnectionMonitor task will wait until this, or cancellation token, is set.
+    private readonly ManualResetEventSlim _simAutoConnectDisable = new(true);  // basically the opposite, used to break out of the reconnection wait timeout and as a flag to indicate if _simConnectionRequest should be Set (eg. at startup).
 
     private Dictionary<string, ActionEventType> actionsDictionary = new();
     private Dictionary<string, PluginSetting> pluginSettingsDictionary = new();
     private readonly SimVarCollection _statesDictionary = new();
     private readonly List<string> _dynamicStateIds = new();  // keep track of dynamically created states for clearing them if/when reloading sim var state files
-    private readonly ConcurrentDictionary<string, Timer> _repeatingActionTimers = new();
+    private readonly ConcurrentDictionary<string, Timer> _repeatingActionTimers = new();  // storage for temporary repeating (held) action timers, index by action ID
+
+    private bool _quitting;  // prevent recursion at shutdown
+    private EntryFileType _entryFileType = EntryFileType.Default;  // detected entry.tp States configuration type
 
     private static readonly System.Data.DataTable _expressionEvaluator = new();  // used to evaluate basic math in action data
 
-    private enum EntryFileType { Default, NoStates, Custom };
 
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="messageProcessor">Message Processor Object</param>
     public PluginService(IHostApplicationLifetime hostApplicationLifetime, ILogger<PluginService> logger,
       ITouchPortalClientFactory clientFactory, ISimConnectService simConnectService, IReflectionService reflectionService,
       PluginConfig pluginConfig)
@@ -96,7 +94,7 @@ namespace MSFSTouchPortalPlugin.Services
         //Environment.Exit(0);
       };
 
-      if (autoReconnectSimConnect)
+      if (!_simAutoConnectDisable.IsSet)
         _simConnectionRequest.Set();  // enable connection attempts
       return Task.WhenAll(SimConnectionMonitor());
     }
@@ -111,12 +109,12 @@ namespace MSFSTouchPortalPlugin.Services
       // Shut down
       _quitting = true;
       _logger.LogDebug("Shutting down...");
-      _simConnectionRequest.Reset();  // just in case
-      _simConnectService?.Disconnect();
+      DisconnectSimConnect();
       if (_client?.IsConnected ?? false) {
         try { _client.Close(); }
         catch (Exception) { /* ignore */ }
       }
+      _simConnectService?.Dispose();
       _logger.LogInformation($"======= {PluginId} Stopped =======");
       return Task.CompletedTask;
     }
@@ -144,35 +142,39 @@ namespace MSFSTouchPortalPlugin.Services
       return true;
     }
 
-    private async Task SimConnectionMonitor() {
+    private Task SimConnectionMonitor() {
       _logger.LogDebug("SimConnectionMonitor task started.");
       uint hResult;
+      // reconnection delay WaitHandle will exit on any of these handles being set (or SIM_RECONNECT_DELAY_SEC timeout)
+      var waitHandles = new WaitHandle[] { _cancellationToken.WaitHandle, _simAutoConnectDisable.WaitHandle };
       try {
         while (!_cancellationToken.IsCancellationRequested) {
           _simConnectionRequest.Wait(_cancellationToken);
           if (!_simConnectService.IsConnected() && (hResult = _simConnectService.Connect(Settings.SimConnectConfigIndex.UIntValue)) != SimConnectService.S_OK) {
             if (hResult != SimConnectService.E_FAIL) {
+              DisconnectSimConnect();
               if (hResult == SimConnectService.E_INVALIDARG)
-                _logger.LogError("SimConnect returned IVALID ARGUMENT for SimConnect.cfg index value " + Settings.SimConnectConfigIndex.UIntValue.ToString() +
+                _logger.LogError((int)EventIds.SimError,
+                  "SimConnect returned IVALID ARGUMENT for SimConnect.cfg index value " + Settings.SimConnectConfigIndex.UIntValue.ToString() +
                   ". Connection attempts aborted. Please fix setting or config. file and retry.");
               else
-                _logger.LogError("Unknown exception occurred trying to connect to SimConnect. Connection attempts aborted, please check plugin logs. Error code/message: " + $"{hResult:X}");
-              autoReconnectSimConnect = false;
-              _simConnectionRequest.Reset();
-              UpdateSimConnectState();
+                _logger.LogError((int)EventIds.SimError,
+                  "Unknown exception occurred trying to connect to SimConnect. Connection attempts aborted, please check plugin logs. " +
+                  "Error code/message: " + $"{hResult:X}");
               continue;
             }
-            _logger.LogWarning("Connection to Simulator failed, retrying in " + SIM_RECONNECT_DELAY_SEC.ToString() + " seconds...");
-            await Task.Delay(SIM_RECONNECT_DELAY_SEC * 1000, _cancellationToken);  // delay on connection error
+            _logger.LogWarning((int)EventIds.SimTimedOut, "Connection to Simulator failed, retrying in " + SIM_RECONNECT_DELAY_SEC.ToString() + " seconds...");
+            WaitHandle.WaitAny(waitHandles, SIM_RECONNECT_DELAY_SEC * 1000);  // delay on connection error
           }
         }
       }
       catch (OperationCanceledException) { /* ignore but exit */ }
       catch (ObjectDisposedException) { /* ignore but exit */ }
       catch (Exception e) {
-        _logger.LogError(e, "Exception in SimConnectionMonitor task, cannot continue.");
+        _logger.LogError(e, "Exception in SimConnectionMonitor task, cannot continue: " + e.Message);
       }
       _logger.LogDebug("SimConnectionMonitor task stopped.");
+      return Task.CompletedTask;
     }
 
     /// <summary>
@@ -266,7 +268,7 @@ namespace MSFSTouchPortalPlugin.Services
       _simTasksCTS?.Dispose();
       _simTasksCTS = null;
 
-      if (autoReconnectSimConnect && !_quitting)
+      if (!_simAutoConnectDisable.IsSet && !_quitting)
         _simConnectionRequest.Set();  // re-enable connection attempts
     }
 
@@ -476,29 +478,40 @@ namespace MSFSTouchPortalPlugin.Services
 
     #region Plugin Action/Event Handlers    /////////////////////////////////////
 
+    void ConnectSimConnect() {
+      _simAutoConnectDisable.Reset();
+      if (!_simConnectService.IsConnected())
+        _simConnectionRequest.Set();
+      UpdateSimConnectState();
+    }
+
+    void DisconnectSimConnect() {
+      _simAutoConnectDisable.Set();
+      bool wasSet = _simConnectionRequest.IsSet;
+      _simConnectionRequest.Reset();
+      if (_simConnectService.IsConnected())
+        _simConnectService.Disconnect();
+      else if (wasSet)
+        _logger.LogInformation("Connection attempts to Simulator were canceled.");
+      UpdateSimConnectState();
+    }
+
     // Handles some basic actions like sim connection and repeat rate, with optional data value(s).
     private void ProcessPluginCommandAction(PluginActions actionId, ActionData data = null) {
       switch (actionId) {
         case PluginActions.ToggleConnection:
-          ProcessPluginCommandAction(autoReconnectSimConnect ? PluginActions.Disconnect : PluginActions.Connect);
+          if (_simAutoConnectDisable.IsSet)
+            ConnectSimConnect();
+          else
+            DisconnectSimConnect();
           break;
 
         case PluginActions.Connect:
-          autoReconnectSimConnect = true;
-          if (!_simConnectService.IsConnected())
-            _simConnectionRequest.Set();
-          UpdateSimConnectState();
+          ConnectSimConnect();
           break;
 
         case PluginActions.Disconnect:
-          autoReconnectSimConnect = false;
-          bool wasSet = _simConnectionRequest.IsSet;
-          _simConnectionRequest.Reset();
-          if (_simConnectService.IsConnected())
-            _simConnectService.Disconnect();
-          else if (wasSet)
-            _logger.LogInformation("Connection attempts to Simulator were canceled.");
-          UpdateSimConnectState();
+          DisconnectSimConnect();
           break;
 
         case PluginActions.ReloadStates:
@@ -783,7 +796,8 @@ namespace MSFSTouchPortalPlugin.Services
       _logger.LogInformation($"Detected {_entryFileType} type entry.tp definition file.");
 
       ProcessPluginSettings(message.Settings);
-      autoReconnectSimConnect = Settings.ConnectSimOnStartup.BoolValue;  // we only care about the Settings value at startup
+      if (Settings.ConnectSimOnStartup.BoolValue)  // we only care about the Settings value at startup
+        _simAutoConnectDisable.Set();
 
       _client.StateUpdate(PluginId + ".Plugin.State.RunningVersion", runtimeVer);
       _client.StateUpdate(PluginId + ".Plugin.State.EntryVersion", $"{tpVer & 0xFFFFFF:X}");
