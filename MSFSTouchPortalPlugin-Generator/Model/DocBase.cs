@@ -4,6 +4,8 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
   public class DocBase {
     public string Title { get; set; }
     public string Overview { get; set; }
+    public string Version { get; set; }
+    public string DocsUrl { get; set; }
     public List<DocSetting> Settings { get; set; } = new();
     public List<DocCategory> Categories { get; set; } = new();
   }
@@ -21,10 +23,12 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
   }
 
   public class DocCategory {
+    public MSFSTouchPortalPlugin.Enums.Groups CategoryId { get; set; }
+    public string Id { get; set; }
     public string Name { get; set; }
     public List<DocAction> Actions { get; set; } = new();
     public List<DocState> States { get; set; } = new();
-    public List<object> Events { get; set; } = new();
+    public List<DocEvent> Events { get; set; } = new();
   }
 
   public class DocAction {
@@ -58,5 +62,20 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string Description { get; set; }
     public string DefaultValue { get; set; }
     public string SimVarName { get; set; }
+    public string Unit { get; set; }
+    public string FormattingString { get; set; }
+    public bool CanSet { get; set; }
   }
+
+  public class DocEvent
+  {
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string Format { get; set; }
+    public string ValueType { get; set; }
+    public virtual string[] ValueChoices { get; set; }
+    public string ValueStateId { get; set; }
+    public Dictionary<string, string> ChoiceMappings { get; set; }
+  }
+
 }

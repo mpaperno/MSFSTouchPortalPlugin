@@ -7,15 +7,18 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
   class Base {
     [Required, Range(1, int.MaxValue)]
     public int Sdk { get; set; } = 3;
-    [Required, Range(1, int.MaxValue)]
-    public int Version { get; set; }
+    [JsonConverter(typeof(VersionNumberJsonConverter))]
+    [Required, Range(1, uint.MaxValue)]
+    public uint Version { get; set; }
     [Required, MinLength(5)]
     public string Name { get; set; } = string.Empty;
     [Required, MinLength(5)]
     public string Id { get; set; } = string.Empty;
     [Required, ValidateObject]
     public Configuration Configuration { get; set; } = new Configuration();
-    public string Plugin_start_cmd { get; set; } = string.Empty;
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [DefaultValue(null)]
+    public string Plugin_start_cmd { get; set; } = null;
     [ValidateObject]
     public List<TouchPortalCategory> Categories { get; set; } = new();
     public List<TouchPortalSetting> Settings { get; set; } = new();
@@ -23,9 +26,9 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
 
   class Configuration {
     [Required, RegularExpression(@"^#[A-Fa-f0-9]{6}$")]
-    public string ColorDark { get; set; } = "#000000";
+    public string ColorDark { get; set; }
     [Required, RegularExpression(@"^#[A-Fa-f0-9]{6}$")]
-    public string ColorLight { get; set; } = "#00B4FF";
+    public string ColorLight { get; set; }
   }
 
   class TouchPortalCategory {
@@ -35,7 +38,7 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string Name { get; set; }
     public string Imagepath { get; set; } = string.Empty;
     public List<TouchPortalAction> Actions { get; set; } = new List<TouchPortalAction>();
-    public List<object> Events { get; set; } = new List<object>();
+    public List<TouchPortalEvent> Events { get; set; } = new List<TouchPortalEvent>();
     public List<TouchPortalState> States { get; set; } = new List<TouchPortalState>();
   }
 
@@ -88,6 +91,24 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string Description { get; set; }
     [Required, JsonProperty("default")]
     public string DefaultValue { get; set; }
+  }
+
+  public class TouchPortalEvent
+  {
+    [Required, MinLength(5)]
+    public string Id { get; set; }
+    [Required, MinLength(5)]
+    public string Name { get; set; }
+    [Required, MinLength(5)]
+    public string Format { get; set; }
+    [Required]
+    public string Type { get; set; }
+    [Required]
+    public string ValueType { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public virtual string[] ValueChoices { get; set; }
+    [Required, MinLength(5)]
+    public string ValueStateId { get; set; }
   }
 
   class TouchPortalSetting
@@ -143,6 +164,21 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
 
     public void AddResult(ValidationResult validationResult) {
       _results.Add(validationResult);
+    }
+  }
+
+  public sealed class VersionNumberJsonConverter : JsonConverter
+  {
+    public override bool CanConvert(System.Type objectType) {
+      return typeof(uint).Equals(objectType);
+    }
+
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) {
+      writer.WriteValue(uint.Parse($"{value:X}"));
+    }
+
+    public override object ReadJson(JsonReader reader, System.Type objectType, object existingValue, JsonSerializer serializer) {
+      throw new System.NotImplementedException();
     }
   }
 }

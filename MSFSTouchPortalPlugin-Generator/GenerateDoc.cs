@@ -1,5 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using MSFSTouchPortalPlugin.Configuration;
+using MSFSTouchPortalPlugin.Constants;
+using MSFSTouchPortalPlugin.Enums;
+using MSFSTouchPortalPlugin.Helpers;
+using MSFSTouchPortalPlugin.Interfaces;
+using MSFSTouchPortalPlugin.Types;
 using MSFSTouchPortalPlugin_Generator.Configuration;
 using MSFSTouchPortalPlugin_Generator.Interfaces;
 using MSFSTouchPortalPlugin_Generator.Model;
@@ -9,209 +14,256 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Text;
-using TouchPortalExtension.Attributes;
-using MSFSTouchPortalPlugin.Constants;
+using System.Collections.Generic;
 
-namespace MSFSTouchPortalPlugin_Generator {
+namespace MSFSTouchPortalPlugin_Generator
+{
   internal class GenerateDoc : IGenerateDoc {
     private readonly ILogger<GenerateDoc> _logger;
-    private readonly IOptions<GeneratorOptions> _options;
+    private readonly GeneratorOptions _options;
+    private readonly IReflectionService _reflectionSvc;
+    private readonly PluginConfig _pluginConfig;
 
-    public GenerateDoc(ILogger<GenerateDoc> logger, IOptions<GeneratorOptions> options) {
+    public GenerateDoc(ILogger<GenerateDoc> logger, GeneratorOptions options, IReflectionService reflectionSvc, PluginConfig pluginConfig) {
       _logger = logger;
       _options = options;
+      _reflectionSvc = reflectionSvc ?? throw new ArgumentNullException(nameof(reflectionSvc));
+      _pluginConfig = pluginConfig ?? throw new ArgumentNullException(nameof(pluginConfig));
     }
 
     public void Generate() {
       // Create reflection model
       var model = CreateModel();
+      if (model == null)
+        return;
 
       // Create Markdown
       var result = CreateMarkdown(model);
 
-      File.WriteAllText(Path.Combine(_options.Value.TargetPath, "DOCUMENTATION.md"), result);
-      _logger.LogInformation("DOCUMENTATION.md generated.");
+      // Save
+      var dest = Path.Combine(_options.OutputPath, "DOCUMENTATION.md");
+      File.WriteAllText(dest, result);
+      _logger.LogInformation($"Generated '{dest}'.");
     }
 
     private DocBase CreateModel() {
-      // Find assembly
-      var a = Assembly.GetExecutingAssembly().GetReferencedAssemblies().FirstOrDefault(a => a.Name == _options.Value.PluginName);
 
-      if (a == null) {
-        throw new FileNotFoundException("Unable to load assembly for reflection.");
+      // set plugin file location for version info
+      var assembly = Assembly.GetExecutingAssembly();
+      VersionInfo.AssemblyLocation = Path.Combine(Path.GetDirectoryName(assembly.Location), _options.PluginId + ".dll");
+
+      string docsUrl = _options.DocumentationUrl;
+      if (string.IsNullOrWhiteSpace(docsUrl)) {
+        var metaAttr = assembly.GetCustomAttributes<AssemblyMetadataAttribute>();
+        foreach (var att in metaAttr)
+          if (att.Key == "DocumentationUrl")
+            docsUrl = att.Value;
       }
 
+      // create the base model
       var model = new DocBase {
-        Title = "MSFS 2020 TouchPortal Plugin",
-        Overview = "This plugin will provide a two way interface between Touch Portal and Microsoft Flight Simulator 2020 through SimConnect."
+        Title = _options.PluginName + " Documentation",
+        Overview = "This plugin provides a two-way interface between Touch Portal and Flight Simulators which use SimConnect, such as Microsoft Flight Simulator 2020 and FS-X.",
+        Version = VersionInfo.GetProductVersionString(),
+        DocsUrl = docsUrl
       };
 
-      var assembly = Assembly.Load(a);
-      var assemblyList = assembly.GetTypes().ToList();
+      // read states config
+      // always include the internal plugin states
+      IEnumerable<SimVarItem> simVars = _pluginConfig.LoadPluginStates();
+      if (_options.StateFiles.Any()) {
+        PluginConfig.UserConfigFolder = _options.StateFilesPath;
+        PluginConfig.UserStateFiles = string.Join(',', _options.StateFiles);
+        model.Version += "<br/>" +
+          $"Custom configuration version {_options.ConfigVersion}<br/>" +
+          $"Custom State Definitions Source(s): {string.Join(", ", _options.StateFiles)}";
+      }
+      simVars = simVars.Concat(_pluginConfig.LoadSimVarStateConfigs());
 
-      // Get all classes with the TouchPortalCategory
-      var classList = assemblyList.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalCategoryAttribute))).OrderBy(o => o.Name).ToList();
+      var categegoryAttribs = _reflectionSvc.GetCategoryAttributes();
+      foreach (var catAttrib in categegoryAttribs) {
 
-      // Loop through categories
-      classList.ForEach(cat => {
-        var catAttr = (TouchPortalCategoryAttribute)Attribute.GetCustomAttribute(cat, typeof(TouchPortalCategoryAttribute));
-        bool newCatCreated = false;
-        var newCat = model.Categories.FirstOrDefault(c => c.Name == catAttr.Name);
-        if (newCat == null) {
-          newCat = new DocCategory {
-            Name = catAttr.Name
+        var category = new DocCategory {
+          CategoryId = catAttrib.Id,
+          Id = $"{_options.PluginId}.{catAttrib.Id}",
+          Name = catAttrib.Name
+        };
+        model.Categories.Add(category);
+
+        // workaround for backwards compat with mis-named actions in category InstrumentsSystems.Fuel
+        string actionCatId = _options.PluginId + "." + Categories.ActionCategoryId(catAttrib.Id);
+
+        // Add Actions
+        foreach (var actionAttrib in catAttrib.Actions) {
+          var action = new DocAction {
+            Name = actionAttrib.Name,
+            Description = actionAttrib.Description,
+            Type = actionAttrib.Type,
+            Format = actionAttrib.Format,
+            HasHoldFunctionality = actionAttrib.HasHoldFunctionality,
           };
-          newCatCreated = true;
-        }
+          category.Actions.Add(action);
 
-        // Loop through Actions
-        var actions = cat.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalActionAttribute))).ToList();
-        actions.ForEach(act => {
-          var actionAttribute = act.GetCustomAttribute<TouchPortalActionAttribute>();
-          var newAct = new DocAction {
-            Name = actionAttribute.Name,
-            Description = actionAttribute.Description,
-            Type = actionAttribute.Type,
-            Format = actionAttribute.Format,
-            HasHoldFunctionality = actionAttribute.HasHoldFunctionality
-          };
-
-          // Loop through Action Data
-          var dataAttributes = act.GetCustomAttributes<TouchPortalActionDataAttribute>();
-          foreach (var attrib in dataAttributes) {
+          // Action data
+          foreach (var attrib in actionAttrib.Data) {
             var data = new DocActionData {
               Type = attrib.Type,
               DefaultValue = attrib.GetDefaultValue()?.ToString(),
               Values = attrib.ChoiceValues != null ? string.Join(", ", attrib.ChoiceValues) : "",
               MinValue = attrib.MinValue,
               MaxValue = attrib.MaxValue,
-              AllowDecimals = attrib.AllowDecimals
+              AllowDecimals = attrib.AllowDecimals,
             };
-            newAct.Data.Add(data);
+            action.Data.Add(data);
           }
 
-          // Loop through Action mappings
-          var mapAttribs = act.GetCustomAttributes<MSFSTouchPortalPlugin.Attributes.TouchPortalActionMappingAttribute>();
-          foreach (var attrib in mapAttribs) {
+          // Action data mappings, but Plugin category doesn't show them anyway
+          if (catAttrib.Id == Groups.Plugin)
+            continue;
+
+          // Warn about missing mappings
+          if (!actionAttrib.Mappings.Any()) {
+            _logger.LogWarning($"No event mappings found for action ID '{actionAttrib.Id}' in category '{category.Name}'");
+            continue;
+          }
+          foreach (var attrib in actionAttrib.Mappings) {
             var map = new DocActionMapping {
               ActionId = attrib.ActionId,
               Values = attrib.Values,
             };
-            newAct.Mappings.Add(map);
+            action.Mappings.Add(map);
           }
-          // Warn about missing mappings
-          if (!mapAttribs.Any())
-            _logger.LogWarning($"No event mappings found for action ID '{actionAttribute.Id}' in category '{catAttr.Name}'");
+        }  // actions
 
-          newCat.Actions.Add(newAct);
-        });
+        // Add States
+        var categoryStates = simVars.Where(s => s.CategoryId == catAttrib.Id);
+        foreach (SimVarItem state in categoryStates) {
+          var newState = new DocState {
+            Id = state.TouchPortalStateId.Split('.')[^1],
+            Type = state.TouchPortalValueType,
+            Description = state.Name,
+            DefaultValue = state.DefaultValue ?? string.Empty,
+            SimVarName = state.SimVarName,
+            Unit = state.Unit,
+            FormattingString = state.FormattingString,
+            CanSet = state.CanSet,
+          };
+          category.States.Add(newState);
+        }
 
-        newCat.Actions = newCat.Actions.OrderBy(c => c.Name).ToList();
+        // Events
+        var catEvents = _reflectionSvc.GetEvents(catAttrib.Id, fullStateId: false);
+        foreach (var ev in catEvents) {
+          var tpEv = new DocEvent {
+            Id = ev.Id,
+            Name = ev.Name,
+            Format = ev.Format.Replace("$val", "$" + ev.ValueType),
+            ValueType = ev.ValueType,
+            ValueChoices = ev.ValueChoices,
+            ValueStateId = ev.ValueStateId.Remove(0, ev.ValueStateId.IndexOf('.') + 1),
+            ChoiceMappings = (Dictionary<string, string>)ev.GetEventDescriptions(),
+          };
+          category.Events.Add(tpEv);
+        }
 
-        // Loop through States
-        var states = cat.GetFields().Where(m => m.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalStateAttribute))).ToList();
-        states.ForEach(state => {
-          var stateAttribute = state.GetCustomAttribute<TouchPortalStateAttribute>();
+        // Sort the actions and states for SimConnect groups
+        if (catAttrib.Id != Groups.Plugin) {
+          category.Actions = category.Actions.OrderBy(c => c.Name).ToList();
+          category.States = category.States.OrderBy(c => c.Description).ToList();
+          category.States = category.States.OrderBy(c => c.Description).ToList();
+        }
 
-          if (stateAttribute != null) {
-            var newState = new DocState {
-              Id = $"{_options.Value.PluginName}.{catAttr.Id}.State.{stateAttribute.Id}",
-              Type = stateAttribute.Type,
-              Description = stateAttribute.Description,
-              DefaultValue = stateAttribute.Default,
-              SimVarName = state.FieldType == typeof(SimVarItem) ? ((SimVarItem)state.GetValue(null)).SimVarName : ""
-            };
-
-            newCat.States.Add(newState);
-          }
-        });
-
-        newCat.States = newCat.States.OrderBy(c => c.Description).ToList();
-
-        // Loop through Events
-
-        if (newCatCreated)
-          model.Categories.Add(newCat);
-      });
-
-      model.Categories = model.Categories.OrderBy(c => c.Name).ToList();
+      }  // categories loop
 
       // Settings
-      var setContainers = assemblyList.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalSettingsContainerAttribute))).OrderBy(o => o.Name).ToList();
-      setContainers.ForEach(setCtr => {
-        var settingsList = setCtr.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalSettingAttribute))).ToList();
-        settingsList.ForEach(setType => {
-          var att = (TouchPortalSettingAttribute)Attribute.GetCustomAttribute(setType, typeof(TouchPortalSettingAttribute));
-          var setting = new DocSetting {
-            Name = att.Name,
-            Description = att.Description,
-            Type = att.Type,
-            DefaultValue = att.Default,
-            MaxLength = att.MaxLength,
-            MinValue = att.MinValue,
-            MaxValue = att.MaxValue,
-            IsPassword = att.IsPassword,
-            ReadOnly = att.ReadOnly
-          };
-
-          model.Settings.Add(setting);
-        });
-      });
-      model.Settings = model.Settings.OrderBy(c => c.Name).ToList();
+      var settings = _reflectionSvc.GetSettings().Values;
+      foreach (var s in settings) {
+        var setting = new DocSetting {
+          Name = s.Name,
+          Description = s.Description,
+          Type = s.TouchPortalType,
+          DefaultValue = s.Default,
+          MaxLength = s.MaxLength,
+          MinValue = s.MinValue,
+          MaxValue = s.MaxValue,
+          IsPassword = s.IsPassword,
+          ReadOnly = s.ReadOnly
+        };
+        model.Settings.Add(setting);
+      }
 
       return model;
     }
 
     private static string CreateMarkdown(DocBase model) {
-      var s = new StringBuilder();
+      var s = new StringBuilder(75 * 1024);
 
       s.Append($"# {model.Title}\n\n");
       s.Append($"{model.Overview}\n\n");
+      if (!string.IsNullOrWhiteSpace(model.DocsUrl))
+        s.Append("For further documentation, please see ").Append(model.DocsUrl).Append("\n\n");
+      s.Append($"This documentation generated for plugin v{model.Version}\n\n");
       s.Append("---\n\n");
 
       // Table of Contents
       s.Append("## Table of Contents\n\n");
       s.Append("[Plugin Settings](#plugin-settings)\n\n");
+      s.Append("[Actions and States by Category](#actions-and-states-by-category)\n\n");
       model.Categories.ForEach(cat => {
-        s.Append($"[{cat.Name}](#{cat.Name.Replace(" ", "-").ToLower()})\n\n");
+        s.Append($"* [{cat.Name}](#{cat.Name.Replace(" ", "-").ToLower()})\n\n");
       });
       s.Append("---\n\n");
 
       // Show settings first
       s.Append("## Plugin Settings\n<details><summary><sub>Click to expand</sub></summary>\n\n");
       model.Settings.ForEach(setting => {
+        bool[] f = new[] { setting.MaxLength > 0, !double.IsNaN(setting.MinValue), !double.IsNaN(setting.MaxValue) };
         s.Append($"### {setting.Name}\n\n");
-        s.Append("| Read-only | Type | Default Value | Max. Length | Min. Value | Max. Value |\n");
-        s.Append("| --- | --- | --- | --- | --- | --- |\n");
-        s.Append($"| {setting.ReadOnly} | {setting.Type} | {setting.DefaultValue} ");
-        s.Append($"| {(setting.MaxLength > 0 ? setting.MaxLength : "N/A")} ");
-        s.Append($"| {(double.IsNaN(setting.MinValue) ? "N/A" : setting.MinValue)} ");
-        s.Append($"| {(double.IsNaN(setting.MaxValue) ? "N/A" : setting.MaxValue)} ");
-        s.Append("|\n\n");
+        s.Append("| Read-only | Type | Default Value");
+        if (f[0]) s.Append(" | Max. Length");
+        if (f[1]) s.Append(" | Min. Value");
+        if (f[2]) s.Append(" | Max. Value");
+        s.Append(" |\n");
+        s.Append("| --- | --- | ---");
+        for (var i = 0; i < 3; ++i)
+          if (f[i]) s.Append(" | ---");
+        s.Append(" |\n");
+        s.Append($"| {setting.ReadOnly} | {setting.Type} | {setting.DefaultValue}");
+        if (f[0]) s.Append(" | ").Append(setting.MaxLength);
+        if (f[1]) s.Append(" | ").Append(setting.MinValue);
+        if (f[2]) s.Append(" | ").Append(setting.MaxValue);
+        s.Append(" |\n\n");
         s.Append(setting.Description + "\n\n");
       });
       s.Append("</details>\n\n---\n\n");
 
+      s.Append("## Actions and States by Category\n\n");
+
       // Loop Categories
       model.Categories.ForEach(cat => {
-        s.Append($"## {cat.Name}\n<details><summary><sub>Click to expand</sub></summary>\n\n");
+        s.Append($"### {cat.Name}\n<details><summary><sub>Click to expand</sub></summary>\n\n");
 
         // Loop Actions
-        if (cat.Actions.Count > 0) {
-          s.Append("### Actions\n\n");
+        if (cat.Actions.Any()) {
+          s.Append("#### Actions\n\n");
           s.Append("<table>\n");   // use HTML table for row valign attribute
-          s.Append("<tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th>" +
+          s.Append("<tr valign='bottom'>" +
+            "<th>Name</th>" +
+            "<th>Description</th>" +
+            "<th>Format</th>" +
             "<th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th>" +
-            "<th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>\n");
+            (cat.CategoryId != Groups.Plugin ? "<th>Sim Event(s)</th>" : "") +
+            "<th>On<br/>Hold</sub></div></th>" +
+            "</tr>\n");
           cat.Actions.ForEach(act => {
             s.Append($"<tr valign='top'><td>{act.Name}</td><td>{act.Description}</td><td>{act.Format}</td>");
             // Loop action data
-            // I first tried by making a nested table to list the datas, but it looked like ass on GitHub due to their CSS which forces a table width and (as of Feb '22). -MP
+            // I first tried by making a nested table to list the data, but it looked like ass on GitHub due to their CSS which forces a table width and (as of Feb '22). -MP
             s.Append("<td><ol start=0>\n");
             act.Data.ForEach(ad => {
               s.Append($"<li>[{ad.Type}] &nbsp; ");
               if (ad.Type == "choice")
-                s.Append(new Regex(Regex.Escape(ad.DefaultValue)).Replace(ad.Values, $"<b>{ad.DefaultValue}</b>", 1));  // only replace 1st occurence of default string
+                s.Append(new Regex(Regex.Escape(ad.DefaultValue)).Replace(ad.Values, $"<b>{ad.DefaultValue}</b>", 1));  // only replace 1st occurrence of default string
               else if (!string.IsNullOrWhiteSpace(ad.DefaultValue))
                 s.Append($"<b>{ad.DefaultValue}</b>");
               else
@@ -223,30 +275,72 @@ namespace MSFSTouchPortalPlugin_Generator {
                 s.Append($" <sub>&lt;max: {ad.MaxValue.ToString($"F{prec}")}&gt;</sub>");  // seriously... printf("%.*f", prec, val) anyone?
               s.Append("</li>\n");
             });
-            s.Append($"</ol></td>\n<td>");
-            if (act.Mappings.Count > 2)  // collapsible only if more than 2 items
-              s.Append($"<details><summary><sub>details</sub></summary>");
-            s.Append("<dl>");
-            act.Mappings.ForEach(am => {
-              if (am.Values?.Length > 0)
-                s.Append($"<dt>{string.Join("+", am.Values)}</dt>");
-              s.Append($"<dd>{am.ActionId}</dd>");
-            });
-            s.Append($"</dl>");
-            if (act.Mappings.Count > 2)
-              s.Append($"</details>");
-            s.Append($"</td>\n<td align='center'>{(act.HasHoldFunctionality ? "&#9745;" : "")}</td></tr>\n");  // U+2611 Ballot Box with Check Emoji
+            s.Append("</ol></td>\n");
+            // mappings (only for SimConnect events)
+            if (cat.CategoryId != Groups.Plugin) {
+              s.Append("<td>");
+              if (act.Mappings.Count > 2)  // collapsible only if more than 2 items
+                s.Append("<details><summary><sub>details</sub></summary>");
+              s.Append("<dl>");
+              act.Mappings.ForEach(am => {
+                if (am.Values?.Length > 0)
+                  s.Append($"<dt>{string.Join("+", am.Values)}</dt>");
+                s.Append($"<dd>{am.ActionId}</dd>");
+              });
+              s.Append($"</dl>");
+              if (act.Mappings.Count > 2)
+                s.Append($"</details>");
+              s.Append("</td>\n");
+            }
+            // has hold
+            s.Append($"<td align='center'>{(act.HasHoldFunctionality ? "&#9745;" : "")}</td></tr>\n");  // U+2611 Ballot Box with Check Emoji
           });
           s.Append("</table>\n\n\n");
         }
 
-        if (cat.States.Count > 0) {
+        if (cat.Events.Any()) {
           // Loop States
-          s.Append("### States\n\n");
-          s.Append("| Id | SimVar Name | Description | DefaultValue |\n");
-          s.Append("| --- | --- | --- | --- |\n");
+          s.Append("#### Events\n\n");
+          s.Append($" **Base Id:** {cat.Id}.Event. &nbsp; &nbsp; **Base State Id** {cat.Id.Split('.')[0]}.\n\n");
+          s.Append("<table>\n");   // use HTML table for row valign attribute
+          s.Append("<tr valign='bottom'>" +
+            "<th>Id</th>" +
+            "<th>Name</th>" +
+            "<th nowrap>Evaluated State Id</th>" +
+            "<th>Format</th>" +
+            "<th>Type</th>" +
+            "<th>Choice(s)</th>" +
+            "</tr>\n");
+          cat.Events.ForEach(ev => {
+            s.Append($"<tr valign='top'>" +
+              $"<td>{ev.Id}</td><" +
+              $"td>{ev.Name}</td>" +
+              $"<td>{ev.ValueStateId}</td>" +
+              $"<td>{ev.Format}</td>" +
+              $"<td>{ev.ValueType}</td>");
+            s.Append("<td>");
+            if (ev.ChoiceMappings == null || !ev.ChoiceMappings.Any()) {
+              s.AppendJoin(", ", ev.ValueChoices);
+            }
+            else {
+              s.Append("<details><summary><sub>details</sub></summary>\n<ul>");
+              s.AppendJoin('\n', ev.ChoiceMappings.Select(m => $"<li><b>{m.Key}</b> - {m.Value}</li>"));
+              s.Append($"</ul></details>");
+            }
+            s.Append("</td>");
+            s.Append("</tr>\n");
+          });
+          s.Append("</table>\n\n\n");
+        }
+
+        if (cat.States.Any()) {
+          s.Append("#### States\n\n");
+          s.Append($" **Base Id:** {cat.Id}.State.\n\n");
+          s.Append("| Id | SimVar Name | Description | Unit | Format | DefaultValue | Settable |\n");
+          s.Append("| --- | --- | --- | --- | --- | --- | --- |\n");
           cat.States.ForEach(state => {
-            s.Append($"| {state.Id} | {state.SimVarName} | {state.Description} | {state.DefaultValue} |\n");
+            s.Append($"| {state.Id} | {state.SimVarName} | {state.Description} | {state.Unit} | {state.FormattingString} | {state.DefaultValue}");
+            s.Append($"| {(state.CanSet ? "&#9745;" : "")} |\n");  // U+2611 Ballot Box with Check Emoji
           });
           s.Append("\n\n");
         }

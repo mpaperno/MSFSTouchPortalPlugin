@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSFSTouchPortalPlugin", "MS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSFSTouchPortalPlugin-Generator", "MSFSTouchPortalPlugin-Generator\MSFSTouchPortalPlugin-Generator.csproj", "{53A38611-6486-4FF5-8637-1C6BC38A6A18}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TouchPortalExtension", "TouchPortalExtension\TouchPortalExtension.csproj", "{C217E7C3-4A14-457E-ABC8-180546369646}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6DF0C85E-3EB4-4898-A304-EFA04CB547A6}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -43,7 +41,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PULL_REQUEST_TEMPLATE", "PU
 		.github\PULL_REQUEST_TEMPLATE\pull-request-template.md = .github\PULL_REQUEST_TEMPLATE\pull-request-template.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSFSTouchPortalPlugin-Tests", "MSFSTouchPortalPlugin-Tests\MSFSTouchPortalPlugin-Tests.csproj", "{562A58FF-DD9A-4839-B503-4520D3BE96DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSFSTouchPortalPlugin-Tests", "MSFSTouchPortalPlugin-Tests\MSFSTouchPortalPlugin-Tests.csproj", "{562A58FF-DD9A-4839-B503-4520D3BE96DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,10 +57,6 @@ Global
 		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Debug|x64.Build.0 = Debug|x64
 		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Release|x64.ActiveCfg = Release|x64
 		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Release|x64.Build.0 = Release|x64
-		{C217E7C3-4A14-457E-ABC8-180546369646}.Debug|x64.ActiveCfg = Debug|x64
-		{C217E7C3-4A14-457E-ABC8-180546369646}.Debug|x64.Build.0 = Debug|x64
-		{C217E7C3-4A14-457E-ABC8-180546369646}.Release|x64.ActiveCfg = Release|x64
-		{C217E7C3-4A14-457E-ABC8-180546369646}.Release|x64.Build.0 = Release|x64
 		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Debug|x64.ActiveCfg = Debug|x64
 		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Debug|x64.Build.0 = Debug|x64
 		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Release|x64.ActiveCfg = Release|x64

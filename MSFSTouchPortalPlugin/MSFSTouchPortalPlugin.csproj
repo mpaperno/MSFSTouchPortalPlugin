@@ -4,25 +4,28 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>MSFSTouchPortalPlugin</RootNamespace>
-    <Version>0.6.0</Version>
-    <AssemblyVersion>0.6.0.0</AssemblyVersion>
-    <FileVersion>0.6.0.0</FileVersion>
+    <Version>0.7.0.0-mp</Version>
     <CodeAnalysisRuleSet>..\.sonarlint\msfstouchportalplugincsharp.ruleset</CodeAnalysisRuleSet>
     <Platforms>x64</Platforms>
+    <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath> 
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
+    <DefineConstants>DEBUG;TRACE;DEBUG_REQUESTS</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
-    <NoWarn>1701;1702;S125;CS8032</NoWarn>
+    <NoWarn>1701;1702</NoWarn>
+    <AllowedReferenceRelatedFileExtensions>
+      <!-- Prevent .pdb, .xml, etc from being copied to output folder -->
+      .dll
+    </AllowedReferenceRelatedFileExtensions>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <DefineConstants />
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="appsettings.json" />
-  </ItemGroup>
 
   <ItemGroup>
     <AdditionalFiles Include="..\.sonarlint\msfstouchportalplugin\CSharp\SonarLint.xml" Link="SonarLint.xml" />
@@ -38,6 +41,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="8.34.0.42011">
@@ -47,28 +51,60 @@
     <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Handles" Version="4.3.0" />
     <PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" />
-    <PackageReference Include="TouchPortalSDK" Version="0.23.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\TouchPortalExtension\TouchPortalExtension.csproj" />
-  </ItemGroup>
-
+  <!-- SimConnect libs -->
   <ItemGroup>
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
-      <HintPath>.\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
+      <HintPath>.\lib\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
       <EmbedInteropTypes>false</EmbedInteropTypes>
       <Private>true</Private>
     </Reference>
+    <ContentWithTargetPath Include=".\lib\SimConnect.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SimConnect.dll</TargetPath>
+    </ContentWithTargetPath>
   </ItemGroup>
 
+  <!-- Custom TouchPortalSDK lib -->
   <ItemGroup>
-    <None Update="SimConnect.dll">
+    <Reference Include="TouchPortalSDK, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>.\lib\TouchPortalSDK\TouchPortalSDK.dll</HintPath>
+      <Private>true</Private>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
+    </Reference>
+    <!--<PackageReference Include="TouchPortalSDK" Version="0.23.1" />-->
+  </ItemGroup>
+
+  <!-- Custom SharpConfig lib -->
+  <ItemGroup>
+    <Reference Include="SharpConfig, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>.\lib\SharpConfig\SharpConfig.dll</HintPath>
+      <Private>true</Private>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
+    </Reference>
+    <!--<PackageReference Include="SharpConfig" Version="3.2.9.1" />-->
+  </ItemGroup>
+
+  <!-- Config files to copy to output -->
+  <ItemGroup>
+    <None Update="Configuration\PluginStates.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="SimConnect.lib">
+    <None Update="Configuration\States.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Configuration\SimVariables.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\SimEvents.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <!-- SimConnect.cfg needs to go into the root -->
+    <ContentWithTargetPath Include="Configuration\SimConnect.cfg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SimConnect.cfg</TargetPath>
+    </ContentWithTargetPath>
   </ItemGroup>
 
 </Project>

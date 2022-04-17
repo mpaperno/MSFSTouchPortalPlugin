@@ -1,12 +1,137 @@
 # MSFS Touch Portal Plugin - MP fork
 
+## 0.7.0.0-mp (April-17-2022)
+
+### Major Features
+
+#### Simulator Variables (SimVars)
+* All SimVar/Touch Portal State definitions loaded from easily editable .ini configuration files.
+* Can load custom state config file(s) at startup or via new TP Action.
+* Request any arbitrary [Simulation Variable](https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Simulation_Variables.htm) by name to be sent as a TP State via 2 new TP Actions, 
+  with ability to save added variables to a config. file.
+* New TP Action to **Set** a value on any settable SimVar. The Action presents a dynamic list of loaded SimVars which are configured to be settable.
+
+#### Events
+* Run any arbitrary [Simulator Event](https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Event_IDs.htm) (action), with optional value, 
+  either selected from a list of known (imported) events or any custom event name (allows full MobiFlight compatibility, for example).
+* Adds ability to monitor [Simulator System Events](https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_SubscribeToSystemEvent.htm) 
+  via a new _Touch Portal_ Event (and corresponding State).
+* New _Touch Portal_ Events to indicate simulator connection status, connection timeout, simulator errors/warnings, and plugin errors and informative events.
+* A new TP State to transmit corresponding event data, if any, such as name of flight being loaded (for sim System Events) or details about error/information events (log messages).
+
+#### Performance
+The changes below lead to considerable performance improvements and much quicker state updates (when the values change), while also being more efficient.
+* SimVars/states are now updated via "push" from SimConnect at a settable period and interval (defaults to every "Sim Frame" eg. ~60Hz) vs. being polled individually every 250ms. 
+  Custom update polling period can also be set per SimVar in milliseconds.
+* SimVars are only updated if changed by a configurable epsilon value, eg. for a decimal value SimConnect will not send update unless it changes by more than 0.001.
+* Implemented custom version of the Touch Portal C# client/API layer which is several times more performant and, among other things, 
+  allows our plugin to exit cleanly if stopped (send any last state updates, shut down SimConnect connection properly, etc).
+
+#### Others
+* Add ability to use a custom [SimConnect.cfg](https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_CFG_Definition.htm) file for simulator connection properties -- 
+  this allows (among other things) to easily use the plugin on a Touch Portal instance running on a different networked computer than the simulator, 
+  including multiple plugin instances which can be used on multiple TP client devices.
+* Add new LogMessags TP State which contains the last 12 plugin log entries (same entries as can be found in the log file, but fewer of them and with shorter formatting).
+
+### Fixes and Minor Improvements
+* Fix missing values for states CowlFlaps1/2/3/4 and AutoPilotFlightDirectorCurrentBank. [29](https://github.com/mpaperno/MSFSTouchPortalPlugin/issues/29)
+* Fix that the +/-16383 value limits are actually +/- 16384 regardless of what the SimConnect docs claim (0x4000, which is actually more logical and an even number).
+* Fix formatting of _AutoPilotAirSpeedVar_ state. [26](https://github.com/mpaperno/MSFSTouchPortalPlugin/issues/26)
+* Fix formatting on "Total percentage of gear extended," "AutoPilot Pitch Reference Value," "AutoPilot Max Bank Angle," "Flight Director Current Bank," and "Flight Director Current Pitch" states.
+* Fix _Throttle Specific Decrement_ and _Decrement Small_ actions broken due to spelling.
+* Add FlightSystems spoiler states: _SpoilersAvailable_, _SpoilersArmed_, _SpoilersHandlePosition_, _SpoilersLeftPosition_, _SpoilersRightPosition_. [7](https://github.com/mpaperno/MSFSTouchPortalPlugin/issues/7)
+* Add plugin version number information States, for both running and entry.tp version numbers. [11](https://github.com/mpaperno/MSFSTouchPortalPlugin/issues/11)
+* Add optional value for "Add Fuel" action.
+* Make most "Set" actions repeatable (on hold).
+* Unit conversions (eg. radians to degrees) are no longer necessary since we can request simulator variable values in specific units right from SimConnect.
+* More reliable SimConnect re-connection attempts and connection/disconnection/timeout/error detection and reporting.
+* Changed (again) the plugin's TP UI colors to a darker blue and lighter black to help with readability.
+* Adjust logging format to include ms, implement better template for log file, allow setting log levels from env. vars, file logging is now asynchronous.
+* A lot of the logging in general has been improved/added/made more consistent throughout all the parts of the plugin. Eliminates noise and focuses on important details.
+* Numerous internal code optimizations, smaller improvements, organization, and documentation.
+
+### Documentation
+* Add SimVar state's Unit, Format, and Settable status to generated docs.
+* Add documentation for new TP Events with full descriptions of each choice (currently there's only the one event in "System" category).
+* Add plugin version number to generated docs.
+* MSFSTouchPortalPlugin-Generator.exe utility is now included with the plugin for optionally generating entry.tp from custom state configs. Run with `--help` for options.
+
+### Upgrade Notes
+* **The plugin's Settings will be reset to default.** Specifically the "connect on startup" and "action repeat interval" options.
+* The new default for the _Connect To Flight Sim on Startup_ setting is **false**.
+* **For use with FS-X** (and compatible sims), the new setting "_SimConnect.cfg Index (0 for MSFS, 1 for FSX, or custom)_" should be set to `1`.
+* The delay time between reconnection attempts to the simulator (eg. when it's not yet running) has been increased from 10 to 30 seconds.
+
+(See DOCUMENTATION.md for details on all the new items listed below.)
+
+#### New Settings
+* Sim Variable State Config File(s) (blank = Default)
+* SimConnect.cfg Index (0 for MSFS, 1 for FSX, or custom)
+* User Config Files Path (blank for default)
+
+#### New Actions
+##### Plugin
+* Activate a Custom Simulator Event
+* Activate a Simulator Event From List
+* Set Simulator Variable Value
+* Request a Custom Simulator Variable
+* Request a Simulator Variable From List
+* Remove a Simulator Variable
+* Load SimVar Definitions From File
+* Save SimVar Definitions To File
+* Reload SimVar Definition Files (as configured in Settings)
+
+#### New States
+##### Plugin
+* RunningVersion  -- The running plugin version number.
+* EntryVersion - The loaded entry.tp plugin version number.
+* ConfigVersion - The loaded entry.tp custom configuration version.
+* LogMessages - Most recent plugin log messages.
+##### Flight Systems
+* Spoilers Armed (0/1)
+* Spoilers Available (0/1)
+* Spoilers Handle Position (0 - 16384)
+* Spoilers Left & Right Position Percent
+##### System
+* SimSystemEvent - Most recent Simulator System Event name (triggers the new events below).
+* SimSystemEventData - Data from the most recent Simulator System Event, if any.
+
+#### New Events
+##### System
+* Simulator Connecting
+* Simulator Connected
+* Simulator Disconnected
+* Simulator Connection Timed Out
+* SimConnect Error
+* Plugin Error
+* Plugin Information
+* Paused
+* Unpaused
+* Pause Toggled
+* Flight Started
+* Flight Stopped
+* Flight  Toggled
+* Aircraft Loaded
+* Crashed
+* Crash Reset
+* Flight Loaded
+* Flight Saved
+* Flight Plan Activated
+* Flight Plan Deactivated
+* Position Changed
+* Sound Toggled
+* View 3D Cockpit
+* View External
+
+--------------------------------------------------
+
 ## 0.6.0-mp (Feb-15-2022)
 * Added support for sending numeric data values to the simulator with the various "Set" actions.
   * Most/all "Set" actions have been broken out into their own separate action types. Since they now have a data field, it doesn't make sense to pair them with actions which don't use them, such as "Increment."
     * Buttons which did *not* use the old "Set" choices, such as "Increment," etc, will continue to work (although they will still show the old choices in existing TP buttons until replaced with the new versions). However any buttons which relied on the old behavior of the "Set" action value always being `0` (zero) will need to be updated.
-  * Simple arithmetic operations (`+`, `-`, `*`, `/`, `%`, precedence with `( )`, scientific notation) are supported in most of the data fields which can be sent to the sim. 
-That means you can do things like `25 * 30`, but more interestingly one could use states/variables, like:  
-    `"AP Set Alt. Hold to:" ${value:MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAltitudeVar} + 1000`  
+  * Simple arithmetic operations (`+`, `-`, `*`, `/`, `%`, precedence with `( )`, scientific notation) are supported in most of the data fields which can be sent to the sim.
+That means you can do things like `25 * 30`, but more interestingly one could use states/variables, like:
+    `"AP Set Alt. Hold to:" ${value:MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAltitudeVar} + 1000`
 This evaluation could be expanded upon later if there is a need (to include higher math, rounding, etc).
 * Generated documentation updated to include all Action Data attributes and mappings to the actual SimConnect events. Also added SimVar names to the list of States.
 * New TP UI color for MSFS Plugin actions, "MSFS Blue."
@@ -44,7 +169,7 @@ This evaluation could be expanded upon later if there is a need (to include high
 For some hints on using the new Set commands, check out the wiki page [Tips And Tricks For Setting Simulator Values](https://github.com/tlewis17/MSFSTouchPortalPlugin/wiki/Tips-And-Tricks-For-Setting-Simulator-Values).
 
 ## 0.5.4-mp (Feb-08-2022)
-* Added support for "On Hold" type Touch Portal actions with a configurable repeat time. 
+* Added support for "On Hold" type Touch Portal actions with a configurable repeat time.
   All current actions which may make sense to repeat (such as for control surfaces or AP adjustments) should now be available in the "On Hold" TP button configuration page.
   The generated documentation now shows which actions can be held.
   - Note that "On Hold" actions do _not_ trigger upon first button press, you need to  configure an "On Pressed" action as well, which is a bit more setup but is more flexible
@@ -54,7 +179,7 @@ For some hints on using the new Set commands, check out the wiki page [Tips And 
 * Fixed issue with re-connecting to SimConnect automatically despite user's Disconnect/Toggle Off action.
 * Fixed text values like ATC ID and Aircraft Title not updating properly after the first time. [#42](https://github.com/tlewis17/MSFSTouchPortalPlugin/issues/42)
 * Fixed/changed light switch states to only reflect switch status, not the light OR switch being on. [#5](https://github.com/tlewis17/MSFSTouchPortalPlugin/issues/5)
-* Fixed that Elevevator Trim Position (degrees) was actually reporting the percentage-open value (percents also added, see below).
+* Fixed that Elevator Trim Position (degrees) was actually reporting the percentage-open value (percents also added, see below).
 * More robust recovery (reconnection) in case of (some) unexpected SimConnect errors.
 * Fixed generated documentation to include all TP States per category. It now also includes settings information.
 * Less verbose logging by default, with more control via `appsettings.json` file (changes in config reflected w/out restarting the plugin).

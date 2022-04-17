@@ -1,26 +1,35 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using MSFSTouchPortalPlugin.Configuration;
+using MSFSTouchPortalPlugin.Constants;
+using MSFSTouchPortalPlugin.Helpers;
+using MSFSTouchPortalPlugin.Interfaces;
+using MSFSTouchPortalPlugin.Types;
 using MSFSTouchPortalPlugin_Generator.Configuration;
 using MSFSTouchPortalPlugin_Generator.Interfaces;
 using MSFSTouchPortalPlugin_Generator.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using TouchPortalExtension.Attributes;
 
-namespace MSFSTouchPortalPlugin_Generator {
+namespace MSFSTouchPortalPlugin_Generator
+{
   internal class GenerateEntry : IGenerateEntry {
     private readonly ILogger<GenerateEntry> _logger;
-    private readonly IOptions<GeneratorOptions> _options;
+    private readonly GeneratorOptions _options;
+    private readonly IReflectionService _reflectionSvc;
+    private readonly PluginConfig _pluginConfig;
 
-    public GenerateEntry(ILogger<GenerateEntry> logger, IOptions<GeneratorOptions> options) {
-      _logger = logger;
-      _options = options;
+    public GenerateEntry(ILogger<GenerateEntry> logger, GeneratorOptions options, IReflectionService reflectionSvc, PluginConfig pluginConfig) {
+      _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+      _options = options ?? throw new ArgumentNullException(nameof(options));
+      _reflectionSvc = reflectionSvc ?? throw new ArgumentNullException(nameof(reflectionSvc));
+      _pluginConfig = pluginConfig ?? throw new ArgumentNullException(nameof(pluginConfig));
 
       JsonConvert.DefaultSettings = () => new JsonSerializerSettings {
         ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -28,74 +37,78 @@ namespace MSFSTouchPortalPlugin_Generator {
     }
 
     public void Generate() {
-      // Find assembly
-      var a = Assembly.GetExecutingAssembly().GetReferencedAssemblies().FirstOrDefault(a => a.Name == _options.Value.PluginName);
 
-      if (a == null) {
-        throw new FileNotFoundException("Unable to load assembly for reflection.");
+      string basePath = $"%TP_PLUGIN_FOLDER%{_options.PluginFolder}/";
+      bool useCustomConfigs = _options.StateFiles.Any();
+
+      // Get version and see if we need a custom version number
+      VersionInfo.AssemblyLocation = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _options.PluginId + ".dll");
+      uint vNum = VersionInfo.GetProductVersionNumber() >> 8;  // strip the patch level
+      // add custom config version if using custom files
+      if (useCustomConfigs) {
+        uint cVer = _options.ConfigVersion << PluginConfig.ENTRY_FILE_CONF_VER_SHIFT;
+        if (cVer > PluginConfig.ENTRY_FILE_VER_MASK_CUSTOM)
+          cVer = PluginConfig.ENTRY_FILE_VER_MASK_CUSTOM;
+        vNum |= cVer;
       }
 
-      var assembly = Assembly.Load(a);
-
-      var fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
-      var version = fvi.FileVersion;
+      // read states config
+      // always include the internal plugin states
+      IEnumerable<SimVarItem> simVars = _pluginConfig.LoadPluginStates();
+      if (useCustomConfigs) {
+        PluginConfig.UserConfigFolder = _options.StateFilesPath;
+        PluginConfig.UserStateFiles = string.Join(',', _options.StateFiles);
+        _logger.LogInformation($"Generating entry.tp v{vNum:X} to '{_options.OutputPath}' with Custom states from file(s): {PluginConfig.UserStateFiles}");
+      }
+      else {
+        _logger.LogInformation($"Generating entry.tp v{vNum:X} to '{_options.OutputPath}' with Default states.");
+      }
+      simVars = simVars.Concat(_pluginConfig.LoadSimVarStateConfigs());
 
       // Setup Base Model
       var model = new Base {
         Sdk = 3,
-        Version = int.Parse(version.Replace(".", "")),
-        Name = _options.Value.PluginName,
-        Id = _options.Value.PluginName
+        Version = vNum,
+        Name = _options.PluginName,
+        Id = _options.PluginId
       };
+      if (!_options.Debug)
+        model.Plugin_start_cmd = $"{basePath}dist/{_options.PluginId}.exe";
+      model.Configuration.ColorDark = "#" + _options.ColorDark.Trim('#');
+      model.Configuration.ColorLight = "#" + _options.ColorLight.Trim('#');
 
-      // Add Configuration
-      // Add Plug Start Comand
-      model.Plugin_start_cmd = Path.Combine("%TP_PLUGIN_FOLDER%", "MSFS-TouchPortal-Plugin\\dist", "MSFSTouchPortalPlugin.exe");
-      // Load asembly
-      _ = MSFSTouchPortalPlugin.Objects.Plugin.Plugin.Init;
+      var categegoryAttribs = _reflectionSvc.GetCategoryAttributes();
+      foreach (var catAttrib in categegoryAttribs) {
+        var category = new TouchPortalCategory {
+          Id = $"{_options.PluginId}.{catAttrib.Id}",
+          Name = Categories.FullCategoryName(catAttrib.Id),
+          Imagepath = basePath + catAttrib.Imagepath
+        };
+        model.Categories.Add(category);
 
-      var q = assembly.GetTypes().ToList();
+        // workaround for backwards compat with mis-named actions in category InstrumentsSystems.Fuel
+        string actionCatId = _options.PluginId + "." + Categories.ActionCategoryId(catAttrib.Id);
 
-      // Get all classes with the TouchPortalCategory
-      var s = q.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalCategoryAttribute))).OrderBy(o => o.Name).ToList();
-
-      // For each category, add to model
-      s.ForEach(cat => {
-        var att = (TouchPortalCategoryAttribute)Attribute.GetCustomAttribute(cat, typeof(TouchPortalCategoryAttribute));
-        bool newCatCreated = false;
-        var category = model.Categories.FirstOrDefault(c => c.Name == att.Name);
-        if (category == null) {
-          category = new TouchPortalCategory {
-            Id = $"{_options.Value.PluginName}.{att.Id}",
-            Name = att.Name,
-            // Imagepath = att.ImagePath
-            Imagepath = Path.Combine("%TP_PLUGIN_FOLDER%", "MSFS-TouchPortal-Plugin", "airplane_takeoff24.png")
-          };
-          newCatCreated = true;
-        }
-
-        // Add actions
-        var actions = cat.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalActionAttribute))).ToList();
-        actions.ForEach(act => {
-          var actionAttribute = (TouchPortalActionAttribute)Attribute.GetCustomAttribute(act, typeof(TouchPortalActionAttribute));
+        // Actions
+        foreach (var actionAttrib in catAttrib.Actions) {
           var action = new TouchPortalAction {
-            Id = $"{category.Id}.Action.{actionAttribute.Id}",
-            Name = actionAttribute.Name,
-            Prefix = actionAttribute.Prefix,
-            Type = actionAttribute.Type,
-            Description = actionAttribute.Description,
+            Id = $"{actionCatId}.Action.{actionAttrib.Id}",
+            Name = actionAttrib.Name,
+            Prefix = actionAttrib.Prefix,
+            Type = actionAttrib.Type,
+            Description = actionAttrib.Description,
             TryInline = true,
-            Format = actionAttribute.Format,
-            HasHoldFunctionality = actionAttribute.HasHoldFunctionality,
+            Format = actionAttrib.Format,
+            HasHoldFunctionality = actionAttrib.HasHoldFunctionality,
           };
 
           // Action Data
-          var dataAttributes = act.GetCustomAttributes<TouchPortalActionDataAttribute>();
-          if (dataAttributes.Any()) {
-            for (int i = 0, e = dataAttributes.Count(); i < e; ++i) {
-              var attrib = dataAttributes.ElementAt(i);
+          if (actionAttrib.Data.Any()) {
+            int i = 0;
+            foreach (var attrib in actionAttrib.Data) {
+              string dataId = (string.IsNullOrWhiteSpace(attrib.Id) ? i.ToString() : attrib.Id);
               var data = new TouchPortalActionData {
-                Id = $"{action.Id}.Data.{i}",
+                Id = $"{action.Id}.Data.{dataId}",
                 Type = attrib.Type,
                 Label = attrib.Label ?? "Action",
                 DefaultValue = attrib.GetDefaultValue(),
@@ -104,79 +117,86 @@ namespace MSFSTouchPortalPlugin_Generator {
                 MaxValue = attrib.MaxValue,
                 AllowDecimals = attrib.AllowDecimals,
               };
-
+              ++i;
               action.Data.Add(data);
             }
             action.Format = string.Format(action.Format, action.Data.Select(d => $"{{${d.Id}$}}").ToArray());
-          }
+          }  // action data
 
           // validate unique ID
           if (category.Actions.FirstOrDefault(a => a.Id == action.Id) == null)
             category.Actions.Add(action);
           else
             _logger.LogWarning($"Duplicate action ID found: '{action.Id}', skipping.'");
-        });
 
-        // Ordering
-        category.Actions = category.Actions.OrderBy(c => c.Name).ToList();
+        }  // actions
 
         // States
-        var states = cat.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalStateAttribute))).ToList();
-        states.ForEach(state => {
-          var stateAttribute = state.GetCustomAttribute<TouchPortalStateAttribute>();
+        var categoryStates = simVars.Where(s => s.CategoryId == catAttrib.Id);
+        foreach (SimVarItem state in categoryStates) {
           var newState = new TouchPortalState {
-            Id = $"{category.Id}.State.{stateAttribute.Id}",
-            Type = stateAttribute.Type,
-            Description = $"{category.Name} - {stateAttribute.Description}",
-            DefaultValue = stateAttribute.Default
+            Id = state.TouchPortalStateId,
+            Type = state.TouchPortalValueType,
+            Description = $"{category.Name} - {state.Name}",
+            DefaultValue = state.DefaultValue ?? string.Empty,
           };
-
           // validate unique ID
           if (category.States.FirstOrDefault(s => s.Id == newState.Id) == null)
             category.States.Add(newState);
           else
             _logger.LogWarning($"Duplicate state ID found: '{newState.Id}', skipping.'");
-        });
+        }
 
-        // Ordering
-        category.States = category.States.OrderBy(c => c.Description).ToList();
+        // Events
+        var catEvents = _reflectionSvc.GetEvents(catAttrib.Id, fullStateId: true);
+        foreach (var ev in catEvents) {
+          var tpEv = new Model.TouchPortalEvent {
+            Id = category.Id + ".Event." + ev.Id,   // these come unqualified
+            Name = ev.Name,
+            Format = ev.Format,
+            Type = ev.Type,
+            ValueType = ev.ValueType,
+            ValueChoices = ev.ValueChoices,
+            ValueStateId =ev.ValueStateId,
+          };
+          // validate unique ID
+          if (category.Events.FirstOrDefault(s => s.Id == tpEv.Id) == null)
+            category.Events.Add(tpEv);
+          else
+            _logger.LogWarning($"Duplicate Event ID found: '{ev.Id}', skipping.'");
+        }
 
-        // Add events
-
-        if (newCatCreated)
-          model.Categories.Add(category);
-      });
-
-      // Ordering
-      model.Categories = model.Categories.OrderBy(c => c.Name).ToList();
+        // Sort the actions and states for SimConnect groups
+        if (catAttrib.Id != MSFSTouchPortalPlugin.Enums.Groups.Plugin) {
+          category.Actions = category.Actions.OrderBy(c => c.Name).ToList();
+          category.Events = category.Events.OrderBy(c => c.Name).ToList();
+          category.States = category.States.OrderBy(c => c.Description).ToList();
+        }
+      }  // categories loop
 
       // Settings
-      var setContainers = q.Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalSettingsContainerAttribute))).OrderBy(o => o.Name).ToList();
-      setContainers.ForEach(setCtr => {
-        var settingsList = setCtr.GetMembers().Where(t => t.CustomAttributes.Any(att => att.AttributeType == typeof(TouchPortalSettingAttribute))).ToList();
-        settingsList.ForEach(setType => {
-          var att = (TouchPortalSettingAttribute)Attribute.GetCustomAttribute(setType, typeof(TouchPortalSettingAttribute));
-          var setting = new TouchPortalSetting {
-            Name = att.Name,
-            Type = att.Type,
-            DefaultValue = att.Default,
-            IsPassword = att.IsPassword,
-            ReadOnly = att.ReadOnly
-          };
-          if (att.MaxLength > 0)
-            setting.MaxLength = att.MaxLength;
-          if (!double.IsNaN(att.MinValue))
-            setting.MinValue = att.MinValue;
-          if (!double.IsNaN(att.MaxValue))
-            setting.MaxValue = att.MaxValue;
+      var settings = _reflectionSvc.GetSettings().Values;
+      foreach (var s in settings) {
+        var setting = new TouchPortalSetting {
+          Name = s.Name,
+          Type = s.TouchPortalType,
+          DefaultValue = s.Default,
+          IsPassword = s.IsPassword,
+          ReadOnly = s.ReadOnly
+        };
+        if (s.MaxLength > 0)
+          setting.MaxLength = s.MaxLength;
+        if (!double.IsNaN(s.MinValue))
+          setting.MinValue = s.MinValue;
+        if (!double.IsNaN(s.MaxValue))
+          setting.MaxValue = s.MaxValue;
 
-          // validate unique Name
-          if (model.Settings.FirstOrDefault(s => s.Name == setting.Name) == null)
-            model.Settings.Add(setting);
-          else
-            _logger.LogWarning($"Duplicate Setting Name found: '{setting.Name}', skipping.'");
-        });
-      });
+        // validate unique Name
+        if (model.Settings.FirstOrDefault(s => s.Name == setting.Name) == null)
+          model.Settings.Add(setting);
+        else
+          _logger.LogWarning($"Duplicate Setting Name found: '{setting.Name}', skipping.'");
+      }
 
       var context = new ValidationContext(model, null, null);
       var errors = new Collection<ValidationResult>();
@@ -188,8 +208,22 @@ namespace MSFSTouchPortalPlugin_Generator {
       }
 
       var result = JsonConvert.SerializeObject(model, Formatting.Indented);
-      File.WriteAllText(Path.Combine(_options.Value.TargetPath, "entry.tp"), result);
-      _logger.LogInformation("entry.tp generated.");
+      var dest = Path.Combine(_options.OutputPath, "entry.tp");
+      File.WriteAllText(dest, result);
+      _logger.LogInformation($"Generated '{dest}'.");
+
+      if (useCustomConfigs)
+        return;
+
+      // Generate the entry.tp version with no states; use version as runtime indicator for plugin
+      model.Version |= PluginConfig.ENTRY_FILE_VER_MASK_NOSTATES;
+      foreach (var cat in model.Categories)
+        if (!cat.Id.EndsWith(".Plugin"))
+          cat.States.Clear();
+      result = JsonConvert.SerializeObject(model, Formatting.Indented);
+      dest = Path.Combine(_options.OutputPath, "entry_no-states.tp");
+      File.WriteAllText(dest, result);
+      _logger.LogInformation($"Generated '{dest}'.");
     }
   }
 }

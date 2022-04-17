@@ -1,12 +1,9 @@
 ﻿using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Enums;
-using TouchPortalExtension.Attributes;
 
-namespace MSFSTouchPortalPlugin.Objects.Failures 
+namespace MSFSTouchPortalPlugin.Objects.Failures
 {
-  [SimVarDataRequestGroup]
-  [SimNotificationGroup(Groups.Failures)]
-  [TouchPortalCategory("Failures", "MSFS - Failures")]
+  [TouchPortalCategory(Groups.Failures)]
   internal static class FailuresMapping {
 
     [TouchPortalAction("Failures", "Failures", "MSFS", "Toggle Failures", "Toggle Failures - {0}")]
@@ -23,6 +20,6 @@ namespace MSFSTouchPortalPlugin.Objects.Failures
     [TouchPortalActionMapping("TOGGLE_ENGINE2_FAILURE", "Engine 2")]
     [TouchPortalActionMapping("TOGGLE_ENGINE3_FAILURE", "Engine 3")]
     [TouchPortalActionMapping("TOGGLE_ENGINE4_FAILURE", "Engine 4")]
-    public static object FAILURES { get; }
+    public static readonly object FAILURES;
   }
 }

@@ -1,54 +1,63 @@
+
+[CmdletBinding(PositionalBinding=$false)]
 Param(
-  [Parameter(Position = 0)]
-  [Boolean]$IsBuildAgent = $false,
-  [Parameter(Position = 1)]
-  [String]$Configuration = "Release",
-  [Parameter(Position = 2)]
-  [String]$VersionSuffix = ""
+  [string]$ProjectName = "MSFSTouchPortalPlugin",
+  [string]$DistroName = "MSFS-TouchPortal-Plugin",
+  [string]$Configuration = "Release",
+  [string]$Platform = "x64",
+  [String]$VersionSuffix = "",
+  [switch]$Clean = $false,
+  [switch]$BuildAgent = $false
 )
 
-if((-Not ($IsBuildAgent)) -And ([string]::IsNullOrEmpty($VersionSuffix))) {
-  $VersionSuffix = "1"
-}
+$CurrentDir = [System.IO.Path]::GetDirectoryName($myInvocation.MyCommand.Path)
+$DistFolderPath = "$CurrentDir\packages-dist"
+$PluginFilesPath = "$DistFolderPath\$DistroName"
+$BinFilesPath = "$PluginFilesPath\dist"
 
 $VersionSuffixCommand = ""
 if(-Not ([string]::IsNullOrEmpty($VersionSuffix))) {
   $VersionSuffixCommand = "--version-suffix"
 }
 
-Write-Information "Restoring 'MSFSTouchPortalPlugin' component....`n" -InformationAction Continue
-dotnet restore "MSFSTouchPortalPlugin"
-dotnet restore "MSFSTouchPortalPlugin.Tests"
-
-Write-Information "Building 'MSFSTouchPortalPlugin' component...`n" -InformationAction Continue
-dotnet build "MSFSTouchPortalPlugin" --configuration $Configuration -p:Platform=x64
-
-Write-Information "Cleaning 'MSFSTouchPortalPlugin' packages-dist folder..." -InformationAction Continue
-$CurrentDir = [System.IO.Path]::GetDirectoryName($myInvocation.MyCommand.Path)
-$DistFolderPath = "$CurrentDir\packages-dist"
-if (Test-Path $DistFolderPath) {
-  Remove-Item $DistFolderPath -Force -Recurse
+if (Test-Path $PluginFilesPath) {
+  Write-Information "Cleaning '$ProjectName' packages-dist folder '$PluginFilesPath'..." -InformationAction Continue
+  Remove-Item $PluginFilesPath -Force -Recurse
 }
 
-Write-Information "Publishing 'MSFSTouchPortalPlugin' component...`n" -InformationAction Continue
-dotnet publish "MSFSTouchPortalPlugin" --output "$DistFolderPath\MSFS-TouchPortal-Plugin\dist" --configuration $Configuration -p:Platform=x64 $VersionSuffixCommand $VersionSuffix -r "win-x64" --self-contained true
+Write-Information "`nPublishing '$ProjectName' component to '$BinFilesPath' ...`n" -InformationAction Continue
+dotnet publish "$ProjectName" --output "$BinFilesPath" --configuration $Configuration -p:Platform=$Platform $VersionSuffixCommand $VersionSuffix -r "win-$Platform"
+
+Write-Information "`nPublishing '$ProjectName-Generator' component...`n" -InformationAction Continue
+dotnet publish "$ProjectName-Generator" --output "$BinFilesPath" --configuration $Configuration -p:Platform=$Platform -r "win-$Platform" /p:ValidateExecutableReferencesMatchSelfContained=false
 
 # Run Documentation
-dotnet run -p "MSFSTouchPortalPlugin-Generator" "$DistFolderPath\MSFS-TouchPortal-Plugin"
+Write-Information "`nGenerating entry.tp JSON and Documentation..." -InformationAction Continue
+#dotnet run -p "$ProjectName-Generator" -o "$PluginFilesPath"
+& "$BinFilesPath\$ProjectName-Generator.exe" -o "$PluginFilesPath"
 
-# Copy Entry.tp, Readme, Documentation, CHANGELOG to publish
-copy "README.md" "$DistFolderPath\MSFS-TouchPortal-Plugin"
-copy "CHANGELOG.md" "$DistFolderPath\MSFS-TouchPortal-Plugin"
-copy "airplane_takeoff24.png" "$DistFolderPath\MSFS-TouchPortal-Plugin"
+# Copy Readme, CHANGELOG, image(s) to publish folder
+copy "README.md" "$PluginFilesPath"
+copy "CHANGELOG.md" "$PluginFilesPath"
+copy "airplane_takeoff24.png" "$PluginFilesPath"
 
 # Get version
-$FileVersion = (Get-Command $DistFolderPath\MSFS-TouchPortal-Plugin\dist\MSFSTouchPortalPlugin.dll).FileVersionInfo.FileVersion
+$FileVersion = (Get-Command $BinFilesPath\$ProjectName.dll).FileVersionInfo.ProductVersion
 
 # Create TPP File
-#Compress-Archive -Path "$DistFolderPath\MSFS-TouchPortal-Plugin" -DestinationPath "$DistFolderPath\MSFS-TouchPortal-Plugin.zip"
-#Rename-Item -Path "$DistFolderPath\MSFS-TouchPortal-Plugin.zip" -NewName "MSFS-TouchPortal-Plugin.tpp"
-& "C:\Program Files\7-Zip\7z.exe" a $DistFolderPath\MSFS-TouchPortal-Plugin-$FileVersion.tpp "$DistFolderPath\*" -r -tzip
+$TppFile = "$DistFolderPath\$DistroName-$FileVersion.tpp"
+if (Test-Path $TppFile) {
+  Remove-Item $TppFile -Force
+}
+& "C:\Program Files\7-Zip\7z.exe" a "$TppFile" "$DistFolderPath\*" -tzip `-xr!*.tpp
 
-if ($IsBuildAgent) {
+if ($Clean) {
+  Write-Information "`nCleaning '$ProjectName-Generator' component....`n" -InformationAction Continue
+  dotnet clean "$ProjectName-Generator" --configuration $Configuration -p:Platform=$Platform -r "win-$Platform" /p:ValidateExecutableReferencesMatchSelfContained=false
+  Write-Information "`nCleaning '$ProjectName' component....`n" -InformationAction Continue
+  dotnet clean "$ProjectName" --configuration $Configuration -p:Platform=$Platform -r "win-$Platform"
+}
+
+if ($BuildAgent) {
   exit 0
 }

@@ -2,9 +2,9 @@ name: verify-build
 
 on:
   push:
-    branches: [ mp/main, nightly-build ]
+    branches: [ mp/main, mp/next ]
   pull_request:
-    branches: [ mp/main, nightly-build ]
+    branches: [ mp/main, mp/next ]
 
 jobs:
   build:

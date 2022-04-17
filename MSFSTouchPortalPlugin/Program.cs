@@ -20,13 +20,18 @@ namespace MSFSTouchPortalPlugin {
   public static class Program {
     private static async Task Main(string[] args) {
       // Logger
+#if DEBUG
+      // always debug logging in debug build
+      Environment.SetEnvironmentVariable("Serilog__MinimumLevel__Override__MSFSTouchPortalPlugin", "Debug");
+#endif
       var logFactory = new LoggerFactory();
       var logger = logFactory.CreateLogger("Program");
 
       //Build configuration:
       var configurationRoot = new ConfigurationBuilder()
           .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
-          .AddJsonFile("appsettings.json", false, true)
+          .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+          .AddEnvironmentVariables()  // inject env. vars
           .Build();
 
       // Ensure only one running instance
@@ -40,10 +45,15 @@ namespace MSFSTouchPortalPlugin {
 
       try {
         await Host.CreateDefaultBuilder(args)
-          .ConfigureLogging((hostContext, loggingBuilder) => { 
+          .ConfigureLogging((hostContext, loggingBuilder) => {
             loggingBuilder
               .ClearProviders()
-              .AddSerilog(logger: new LoggerConfiguration().ReadFrom.Configuration(configurationRoot).CreateLogger(), dispose: true);
+              .AddSerilog(logger: new LoggerConfiguration().ReadFrom.Configuration(configurationRoot).CreateLogger(), dispose: true)
+              // PluginLogger is a feedback mechanism to get log entries delivered to the plugin's handler, which may then pass them on to TP as a State.
+              .AddProvider(PluginLoggerProvider.Instance)
+              // Do not change these filters w/out a good reason!
+              .AddFilter<PluginLoggerProvider>("", LogLevel.None)
+              .AddFilter<PluginLoggerProvider>("MSFSTouchPortalPlugin.Services.PluginService", LogLevel.Information);
           })
           .ConfigureServices((context, services) => {
             services
@@ -51,6 +61,7 @@ namespace MSFSTouchPortalPlugin {
               .AddHostedService<PluginService>()
               .AddSingleton<ISimConnectService, SimConnectService>()
               .AddSingleton<IReflectionService, ReflectionService>()
+              .AddSingleton(typeof(PluginConfig))
               .AddTouchPortalSdk(configurationRoot);
           })
           .RunConsoleAsync();

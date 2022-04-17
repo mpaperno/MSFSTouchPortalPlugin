@@ -1,6 +1,10 @@
-# MSFS 2020 TouchPortal Plugin
+# MSFS Touch Portal Plugin Documentation
 
-This plugin will provide a two way interface between Touch Portal and Microsoft Flight Simulator 2020 through SimConnect.
+This plugin provides a two-way interface between Touch Portal and Flight Simulators which use SimConnect, such as Microsoft Flight Simulator 2020 and FS-X.
+
+For further documentation, please see https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki
+
+This documentation generated for plugin v0.7.0.0-mp
 
 ---
 
@@ -8,27 +12,29 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 [Plugin Settings](#plugin-settings)
 
-[MSFS - AutoPilot](#msfs---autopilot)
+[Actions and States by Category](#actions-and-states-by-category)
 
-[MSFS - Communication](#msfs---communication)
+* [Plugin](#plugin)
 
-[MSFS - Electrical](#msfs---electrical)
+* [AutoPilot](#autopilot)
 
-[MSFS - Engine](#msfs---engine)
+* [Communication](#communication)
 
-[MSFS - Environment](#msfs---environment)
+* [Electrical](#electrical)
 
-[MSFS - Failures](#msfs---failures)
+* [Engine](#engine)
 
-[MSFS - Flight Instruments](#msfs---flight-instruments)
+* [Environment](#environment)
 
-[MSFS - Flight Systems](#msfs---flight-systems)
+* [Failures](#failures)
 
-[MSFS - Fuel](#msfs---fuel)
+* [Flight Instruments](#flight-instruments)
 
-[MSFS - Plugin](#msfs---plugin)
+* [Flight Systems](#flight-systems)
 
-[MSFS - System](#msfs---system)
+* [Fuel](#fuel)
+
+* [System](#system)
 
 ---
 
@@ -37,28 +43,163 @@ This plugin will provide a two way interface between Touch Portal and Microsoft 
 
 ### Connect To Flight Sim on Startup (0/1)
 
-| Read-only | Type | Default Value | Max. Length | Min. Value | Max. Value |
-| --- | --- | --- | --- | --- | --- |
-| False | number | 1 | N/A | 0 | 1 |
+| Read-only | Type | Default Value | Min. Value | Max. Value |
+| --- | --- | --- | --- | --- |
+| False | number | 0 | 0 | 1 |
 
 Set to 1 to automatically attempt connection to flight simulator upon Touch Portal startup. Set to 0 to only connect manually via the provided Action.
 
+### Sim Variable State Config File(s) (blank = Default)
+
+| Read-only | Type | Default Value | Max. Length |
+| --- | --- | --- | --- |
+| False | text | Default | 255 |
+
+Here you can specify one or more custom configuration files which define SimConnect variables to request as Touch Portal States. This plugin comes with an extensive default set of states, however since the possibilities between which variables are requested, which units they are displayed in,and how they are formatted are almost endless. This option provides a way to customize the output as desired.
+
+Enter a file name here, with or w/out the suffix (`.ini` is assumed). Separate multiple files with commas (and optional space). To include the default set of variables/states, use the name `Default` as one of the file names (in any position of the list).
+
+Files are loaded in the order in which they appear in the list, and in case of conflicting state IDs, the last one found will be used.
+
+The custom file(s) are expected to be in the folder specified in the "User Config Files Path" setting (see below).
+
+### SimConnect.cfg Index (0 for MSFS, 1 for FSX, or custom)
+
+| Read-only | Type | Default Value | Min. Value | Max. Value |
+| --- | --- | --- | --- | --- |
+| False | number | 0 | 0 | 20 |
+
+A __SimConnect.cfg__ file can contain a number of connection configurations, identified in sections with the `[SimConnect.N]` title. A default __SimConnect.cfg__ is included with this plugin (in the installation folder). You may also use a custom configuration file stored in the "User Config Files Path" folder (see below). 
+
+The index number can be specified in this setting. This is useful for 
+  1. compatibility with FSX, and/or 
+  2. custom configurations over network connections (running Touch Portal on a different computer than the sim). 
+
+The default configuration index is zero, which (in the included default SimConnect.cfg) is suitable for MSFS (2020). Use the index 1 for compatibility with FSX (or perhaps other sims). 
+
+See here for more info: https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_CFG_Definition.htm
+
+### User Config Files Path (blank for default)
+
+| Read-only | Type | Default Value | Max. Length |
+| --- | --- | --- | --- |
+| False | text |  | 255 |
+
+The system path where custom user configuration files for sate definitions, SimConnect.cfg, etc, are stored. Keep it blank for default, which is `C:\Users\<UserName>\AppData\Roaming\MSFSTouchPortalPlugin`.
+
+Note that using this plugin's installation folder for custom data storage is not recommended, since anything in there will likely get overwritten during a plugin update/re-install.
+
 ### Held Action Repeat Rate (ms)
 
-| Read-only | Type | Default Value | Max. Length | Min. Value | Max. Value |
-| --- | --- | --- | --- | --- | --- |
-| True | number | 450 | N/A | 50 | 2147483647 |
+| Read-only | Type | Default Value | Min. Value | Max. Value |
+| --- | --- | --- | --- | --- |
+| True | number | 450 | 50 | 2147483647 |
 
-Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Action Repeat Interval' action.
+Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Action Repeat Interval' action. This setting cannot be changed from the TP Plugin Settings page (even though it appears to be editable on there).
 
 </details>
 
 ---
 
-## MSFS - AutoPilot
+## Actions and States by Category
+
+### Plugin
 <details><summary><sub>Click to expand</sub></summary>
 
-### Actions
+#### Actions
+
+<table>
+<tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>On<br/>Hold</sub></div></th></tr>
+<tr valign='top'><td>Connection</td><td>Toggle/On/Off SimConnect Connection</td><td>SimConnect Connection - {0}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Toggle</b>, On, Off, Reload States</li>
+</ol></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Action Repeat Interval</td><td>Held Action Repeat Rate (ms)</td><td>Repeat Interval: {0} to/by: {1} ms</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Set</b>, Increment, Decrement</li>
+<li>[text] &nbsp; <b>450</b> &nbsp; <sub>&lt;min: 50&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
+</ol></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Activate a Custom Simulator Event</td><td>Trigger a Simulator Event by name. The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.</td><td>Activate Event {0} with value {1} (if any)</td><td><ol start=0>
+<li>[text] &nbsp; <b>SIMULATOR_EVENT_NAME</b></li>
+<li>[text] &nbsp; &lt;empty&gt;</li>
+</ol></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Activate a Simulator Event From List</td><td>Trigger a Simulator Event. The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.</td><td>From Category {0} Activate Event {1} with value {2} (if any)</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b><plugin not connected></li>
+<li>[choice] &nbsp; <b></b><select a category></li>
+<li>[text] &nbsp; &lt;empty&gt;</li>
+</ol></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Set Simulator Variable Value</td><td>Sets a value on any loaded State which is marked as settable. If a numeric value is required, using basic math operators and dynamic state values is possible.</td><td>Set Variable {0} to {1} (release AI: {2})</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b><plugin not connected></li>
+<li>[text] &nbsp; <b>0</b></li>
+<li>[switch] &nbsp; <b>False</b></li>
+</ol></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Request a Custom Simulator Variable</td><td>Request Simulator Variable Name:                            Index (if req'd):               Category:                                    Units:                                                                               Format:                            Default Value:                 Settable:           Update Period:                   Update Interval:               Delta Epsilon:     </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}</td><td><ol start=0>
+<li>[text] &nbsp; <b>SIMULATOR VARIABLE FULL NAME</b></li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 99&gt;</sub></li>
+<li>[choice] &nbsp; <b></b><connect plugin></li>
+<li>[choice] &nbsp; <b></b><connect to plugin>                                 </li>
+<li>[text] &nbsp; <b>F2</b></li>
+<li>[text] &nbsp; <b>0</b></li>
+<li>[switch] &nbsp; <b>False</b></li>
+<li>[choice] &nbsp; Once, VisualFrame, <b>SimFrame</b>, Second, Millisecond</li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
+<li>[number] &nbsp; <b>0.0099999</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+</ol></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Request a Simulator Variable From List</td><td>From Simulator Category            Request Simulator Variable                                                                        Index (if req'd):                Plugin Category:                         Units:                                                                               Format:                            Default Value:                 Update Period:                  Update Interval:              Delta Epsilon:      </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b><connect to plugin></li>
+<li>[choice] &nbsp; <b></b><select a category>                                                            </li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 99&gt;</sub></li>
+<li>[choice] &nbsp; <b></b><connect plugin></li>
+<li>[choice] &nbsp; <b></b><connect to plugin>                                 </li>
+<li>[text] &nbsp; <b>F2</b></li>
+<li>[text] &nbsp; <b>0</b></li>
+<li>[choice] &nbsp; Once, VisualFrame, <b>SimFrame</b>, Second, Millisecond</li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
+<li>[number] &nbsp; <b>0.0099999</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+</ol></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Remove a Simulator Variable</td><td>Remove an existing Simulator Variable. Note that static TP States cannot be removed.</td><td>Remove Simulator Variable {0}</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b><plugin not connected></li>
+</ol></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Load SimVar Definitions From File</td><td>Load a set of simulator variable state definitions from a configuration file.</td><td>Load from file {0} (name only for user config. folder, or full path with file name)</td><td><ol start=0>
+<li>[file] &nbsp; <b>CustomStates.ini</b></li>
+</ol></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Save SimVar Definitions To File</td><td>Save the current simulator variable state definitions to a configuration file.</td><td>Save {0} states to file {1} (name only for user config. folder, or full path with file name)</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Custom</b>, All</li>
+<li>[text] &nbsp; <b>CustomStates.ini</b></li>
+</ol></td>
+<td align='center'></td></tr>
+</table>
+
+
+#### States
+
+ **Base Id:** MSFSTouchPortalPlugin.Plugin.State.
+
+| Id | SimVar Name | Description | Unit | Format | DefaultValue | Settable |
+| --- | --- | --- | --- | --- | --- | --- |
+| ActionRepeatInterval |  | The current Held Action Repeat Rate (ms) | millisecond |  | 450|  |
+| Connected |  | The status of SimConnect (true/false/connecting) | string |  | false|  |
+| RunningVersion |  | The running plugin version number. | number |  | 0|  |
+| EntryVersion |  | The loaded entry.tp plugin version number. | number |  | 0|  |
+| ConfigVersion |  | The loaded entry.tp custom configuration version. | number |  | 0|  |
+| LogMessages |  | Most recent plugin log messages. | string |  | |  |
+
+
+</details>
+
+---
+
+### AutoPilot
+<details><summary><sub>Click to expand</sub></summary>
+
+#### Actions
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
@@ -76,7 +217,7 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 5000&gt;</sub></li>
 </ol></td>
 <td><dl><dd>AP_SPD_VAR_SET</dd></dl></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Altitude Hold</td><td>Toggle/On/Off the altitude hold for auto pilot</td><td>Altitude Hold - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
@@ -92,7 +233,7 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 <li>[text] &nbsp; <b>0</b></li>
 </ol></td>
 <td><dl><dt>Set English</dt><dd>AP_ALT_VAR_SET_ENGLISH</dd><dt>Set Metric</dt><dd>AP_ALT_VAR_SET_METRIC</dd></dl></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>AP Max Bank Angle</td><td>Increase/Decrease the max bank angle</td><td>Max Bank Angle - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
@@ -113,11 +254,11 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Increase</dt><dd>AP_PITCH_REF_INC_UP</dd><dt>Decrease</dt><dd>AP_PITCH_REF_INC_DN</dd><dt>Select</dt><dd>AP_PITCH_REF_SELECT</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Attitude Hold Pitch Value Set</td><td>Sets the airspeed value</td><td>Set Attitude Hold Pitch Value to {0} (-16383 - +16383)</td><td><ol start=0>
-<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16383&gt;</sub> <sub>&lt;max: 16383&gt;</sub></li>
+<tr valign='top'><td>Attitude Hold Pitch Value Set</td><td>Sets the airspeed value</td><td>Set Attitude Hold Pitch Value to {0} (-16384 to +16384)</td><td><ol start=0>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><dl><dd>AP_PITCH_REF_SET</dd></dl></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Auto Brake</td><td>Increase/Decrease the auto brake</td><td>Auto Brake - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
@@ -160,7 +301,7 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 <li>[text] &nbsp; <b>1</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 359&gt;</sub></li>
 </ol></td>
 <td><dl><dd>HEADING_BUG_SET</dd></dl></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Localizer</td><td>Toggle/On/Off the localizer for auto pilot</td><td>Localizer - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
@@ -180,7 +321,7 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 20&gt;</sub></li>
 </ol></td>
 <td><dl><dd>AP_MACH_VAR_SET</dd></dl></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Nav Mode - Set</td><td>Sets the nav to 1 or 2 for Nav mode</td><td>Nav Mode - {0} </td><td><ol start=0>
 <li>[number] &nbsp; <b>1</b> &nbsp; <sub>&lt;min: 1&gt;</sub> <sub>&lt;max: 2&gt;</sub></li>
 </ol></td>
@@ -206,7 +347,7 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 <li>[text] &nbsp; <b>1</b> &nbsp; <sub>&lt;min: -5000&gt;</sub> <sub>&lt;max: 5000&gt;</sub></li>
 </ol></td>
 <td><dl><dt>Set English</dt><dd>AP_VS_VAR_SET_ENGLISH</dd><dt>Set Metric</dt><dd>AP_VS_VAR_SET_METRIC</dd></dl></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Wing Leveler</td><td>Toggle/On/Off the Wing Leveler for auto pilot</td><td>Wing Leveler - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
@@ -220,47 +361,49 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 </table>
 
 
-### States
+#### States
 
-| Id | SimVar Name | Description | DefaultValue |
-| --- | --- | --- | --- |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoThrottleArm | AUTOPILOT THROTTLE ARM | Auto Throttle Armed |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoThrottleGoAround | AUTOPILOT TAKEOFF POWER ACTIVE | Auto Throttle GoAround |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAirSpeedHold | AUTOPILOT AIRSPEED HOLD | AutoPilot Air Speed Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAirSpeedVar | AUTOPILOT AIRSPEED HOLD VAR | AutoPilot Air Speed Value |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAltitudeHold | AUTOPILOT ALTITUDE LOCK | AutoPilot Altitude Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAltitudeVar | AUTOPILOT ALTITUDE LOCK VAR | AutoPilot Altitude Value |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotApproachHold | AUTOPILOT APPROACH HOLD | AutoPilot Approach Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAttitudeHold | AUTOPILOT ATTITUDE HOLD | AutoPilot Attitude Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAvailable | AUTOPILOT AVAILABLE | AutoPilot Availability |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotBackCourseHold | AUTOPILOT BACKCOURSE HOLD | AutoPilot Back Course Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotFlightDirector | AUTOPILOT FLIGHT DIRECTOR ACTIVE | AutoPilot Flight Director Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotHeadingVar | AUTOPILOT HEADING LOCK DIR | AutoPilot Heading Direction |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotHeadingHold | AUTOPILOT HEADING LOCK | AutoPilot Heading Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotMach | AUTOPILOT MACH HOLD | AutoPilot Mach Hold |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotMachVar | AUTOPILOT MACH HOLD VAR | AutoPilot Mach Value |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotMaster | AUTOPILOT MASTER | AutoPilot Master Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotBanking | AUTOPILOT MAX BANK | AutoPilot Max Bank Angle |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotNavSelected | AUTOPILOT NAV SELECTED | AutoPilot Nav Selected Index |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotNav1Hold | AUTOPILOT NAV1 LOCK | AutoPilot Nav1 Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAttitudeVar | AUTOPILOT PITCH HOLD REF | AutoPilot Pitch Reference Value |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotVerticalSpeedHold | AUTOPILOT VERTICAL HOLD | AutoPilot Vertical Speed Status |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotVerticalSpeedVar | AUTOPILOT VERTICAL HOLD VAR | AutoPilot Vertical Speed Value |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotWingLeveler | AUTOPILOT WING LEVELER | AutoPilot Wing Leveler |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotFlightDirectorCurrentBank | AUTOPILOT FLIGHT DIRECTOR BANK | Flight Director Current Bank |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotFlightDirectorCurrentPitch | AUTOPILOT FLIGHT DIRECTOR PITCH | Flight Director Current Pitch |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotPitchHold | AUTOPILOT PITCH HOLD | The status of Auto Pilot Pitch Hold button |  |
-| MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotYawDampener | AUTOPILOT YAW DAMPER | Yaw Dampener Status |  |
+ **Base Id:** MSFSTouchPortalPlugin.AutoPilot.State.
+
+| Id | SimVar Name | Description | Unit | Format | DefaultValue | Settable |
+| --- | --- | --- | --- | --- | --- | --- |
+| AutoThrottleArm | AUTOPILOT THROTTLE ARM | Auto Throttle Armed | Bool |  | |  |
+| AutoThrottleGoAround | AUTOPILOT TAKEOFF POWER ACTIVE | Auto Throttle GoAround | Bool |  | |  |
+| AutoPilotAirSpeedHold | AUTOPILOT AIRSPEED HOLD | AutoPilot Air Speed Status | Bool |  | |  |
+| AutoPilotAirSpeedVar | AUTOPILOT AIRSPEED HOLD VAR | AutoPilot Air Speed Value | knots | 0.0# | |  |
+| AutoPilotAltitudeHold | AUTOPILOT ALTITUDE LOCK | AutoPilot Altitude Status | Bool |  | |  |
+| AutoPilotAltitudeVar | AUTOPILOT ALTITUDE LOCK VAR | AutoPilot Altitude Value | feet |  | | &#9745; |
+| AutoPilotApproachHold | AUTOPILOT APPROACH HOLD | AutoPilot Approach Status | Bool |  | |  |
+| AutoPilotAttitudeHold | AUTOPILOT ATTITUDE HOLD | AutoPilot Attitude Status | Bool |  | |  |
+| AutoPilotAvailable | AUTOPILOT AVAILABLE | AutoPilot Availability | Bool |  | |  |
+| AutoPilotBackCourseHold | AUTOPILOT BACKCOURSE HOLD | AutoPilot Back Course Status | Bool |  | |  |
+| AutoPilotFlightDirector | AUTOPILOT FLIGHT DIRECTOR ACTIVE | AutoPilot Flight Director Status | Bool |  | |  |
+| AutoPilotHeadingVar | AUTOPILOT HEADING LOCK DIR | AutoPilot Heading Direction | degrees | F0 | | &#9745; |
+| AutoPilotHeadingHold | AUTOPILOT HEADING LOCK | AutoPilot Heading Status | Bool |  | |  |
+| AutoPilotMach | AUTOPILOT MACH HOLD | AutoPilot Mach Hold | Bool |  | |  |
+| AutoPilotMachVar | AUTOPILOT MACH HOLD VAR | AutoPilot Mach Value | number |  | |  |
+| AutoPilotMaster | AUTOPILOT MASTER | AutoPilot Master Status | Bool |  | |  |
+| AutoPilotBanking | AUTOPILOT MAX BANK | AutoPilot Max Bank Angle | degrees | F2 | |  |
+| AutoPilotNavSelected | AUTOPILOT NAV SELECTED | AutoPilot Nav Selected Index | number |  | |  |
+| AutoPilotNav1Hold | AUTOPILOT NAV1 LOCK | AutoPilot Nav1 Status | Bool |  | |  |
+| AutoPilotAttitudeVar | AUTOPILOT PITCH HOLD REF | AutoPilot Pitch Reference Value | degrees | F2 | |  |
+| AutoPilotVerticalSpeedHold | AUTOPILOT VERTICAL HOLD | AutoPilot Vertical Speed Status | Bool |  | |  |
+| AutoPilotVerticalSpeedVar | AUTOPILOT VERTICAL HOLD VAR | AutoPilot Vertical Speed Value | feet/minute |  | | &#9745; |
+| AutoPilotWingLeveler | AUTOPILOT WING LEVELER | AutoPilot Wing Leveler | Bool |  | |  |
+| AutoPilotFlightDirectorCurrentBank | AUTOPILOT FLIGHT DIRECTOR BANK | Flight Director Current Bank | degrees | F2 | |  |
+| AutoPilotFlightDirectorCurrentPitch | AUTOPILOT FLIGHT DIRECTOR PITCH | Flight Director Current Pitch | degrees | F2 | |  |
+| AutoPilotPitchHold | AUTOPILOT PITCH HOLD | The status of Auto Pilot Pitch Hold button | Bool |  | |  |
+| AutoPilotYawDampener | AUTOPILOT YAW DAMPER | Yaw Dampener Status | Bool |  | |  |
 
 
 </details>
 
 ---
 
-## MSFS - Communication
+### Communication
 <details><summary><sub>Click to expand</sub></summary>
 
-### Actions
+#### Actions
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
@@ -273,32 +416,34 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 </table>
 
 
-### States
+#### States
 
-| Id | SimVar Name | Description | DefaultValue |
-| --- | --- | --- | --- |
-| MSFSTouchPortalPlugin.Communication.State.Com1ActiveFrequency | COM ACTIVE FREQUENCY:1 | The frequency of the active COM1 radio |  |
-| MSFSTouchPortalPlugin.Communication.State.Com2ActiveFrequency | COM ACTIVE FREQUENCY:2 | The frequency of the active COM2 radio |  |
-| MSFSTouchPortalPlugin.Communication.State.Nav1ActiveFrequency | NAV ACTIVE FREQUENCY:1 | The frequency of the active NAV1 radio |  |
-| MSFSTouchPortalPlugin.Communication.State.Nav2ActiveFrequency | NAV ACTIVE FREQUENCY:2 | The frequency of the active NAV2 radio |  |
-| MSFSTouchPortalPlugin.Communication.State.Com1StandbyFrequency | COM STANDBY FREQUENCY:1 | The frequency of the standby COM1 radio |  |
-| MSFSTouchPortalPlugin.Communication.State.Com2StandbyFrequency | COM STANDBY FREQUENCY:2 | The frequency of the standby COM2 radio |  |
-| MSFSTouchPortalPlugin.Communication.State.Nav1StandbyFrequency | NAV STANDBY FREQUENCY:1 | The frequency of the standby NAV1 radio |  |
-| MSFSTouchPortalPlugin.Communication.State.Nav2StandbyFrequency | NAV STANDBY FREQUENCY:2 | The frequency of the standby NAV2 radio |  |
+ **Base Id:** MSFSTouchPortalPlugin.Communication.State.
+
+| Id | SimVar Name | Description | Unit | Format | DefaultValue | Settable |
+| --- | --- | --- | --- | --- | --- | --- |
+| Com1ActiveFrequency | COM ACTIVE FREQUENCY:1 | The frequency of the active COM1 radio | MHz | 0.000# | |  |
+| Com2ActiveFrequency | COM ACTIVE FREQUENCY:2 | The frequency of the active COM2 radio | MHz | 0.000# | |  |
+| Nav1ActiveFrequency | NAV ACTIVE FREQUENCY:1 | The frequency of the active NAV1 radio | MHz | 0.000# | |  |
+| Nav2ActiveFrequency | NAV ACTIVE FREQUENCY:2 | The frequency of the active NAV2 radio | MHz | 0.000# | |  |
+| Com1StandbyFrequency | COM STANDBY FREQUENCY:1 | The frequency of the standby COM1 radio | MHz | 0.000# | |  |
+| Com2StandbyFrequency | COM STANDBY FREQUENCY:2 | The frequency of the standby COM2 radio | MHz | 0.000# | |  |
+| Nav1StandbyFrequency | NAV STANDBY FREQUENCY:1 | The frequency of the standby NAV1 radio | MHz | 0.000# | |  |
+| Nav2StandbyFrequency | NAV STANDBY FREQUENCY:2 | The frequency of the standby NAV2 radio | MHz | 0.000# | |  |
 
 
 </details>
 
 ---
 
-## MSFS - Electrical
+### Electrical
 <details><summary><sub>Click to expand</sub></summary>
 
-### Actions
+#### Actions
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
-<tr valign='top'><td>Alternator - Specific</td><td>Toggle Specific Alternator</td><td>Toggle Altenator - {0}</td><td><ol start=0>
+<tr valign='top'><td>Alternator - Specific</td><td>Toggle Specific Alternator</td><td>Toggle Alternator - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>1</dt><dd>TOGGLE_ALTERNATOR1</dd><dt>2</dt><dd>TOGGLE_ALTERNATOR2</dd><dt>3</dt><dd>TOGGLE_ALTERNATOR3</dd><dt>4</dt><dd>TOGGLE_ALTERNATOR4</dd></dl></details></td>
@@ -342,35 +487,37 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 </table>
 
 
-### States
+#### States
 
-| Id | SimVar Name | Description | DefaultValue |
-| --- | --- | --- | --- |
-| MSFSTouchPortalPlugin.Electrical.State.AvionicsMasterSwitch | AVIONICS MASTER SWITCH | Avionics Master Switch |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightBeaconOn | LIGHT BEACON | Light Beacon Switch Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightBrakeOn | LIGHT BRAKE ON | Light Brake Switch or Light Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightCabinOn | LIGHT CABIN | Light Cabin Switch Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightHeadOn | LIGHT HEAD ON | Light Head Switch or Light Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightLandingOn | LIGHT LANDING | Light Landing Switch Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightLogoOn | LIGHT LOGO | Light Logo Switch Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightNavOn | LIGHT NAV | Light Nav Switch Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightPanelOn | LIGHT PANEL | Light Panel Switch Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightRecognitionOn | LIGHT RECOGNITION | Light Recognition Switch Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightStrobeOn | LIGHT STROBE | Light Strobe Switch Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightTaxiOn | LIGHT TAXI | Light Taxi Switch Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.LightWingOn | LIGHT WING | Light Wing Switch Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.MasterAlternator | GENERAL ENG MASTER ALTERNATOR:1 | Master Alternator Status |  |
-| MSFSTouchPortalPlugin.Electrical.State.MasterBattery | ELECTRICAL MASTER BATTERY | Master Battery Status |  |
+ **Base Id:** MSFSTouchPortalPlugin.Electrical.State.
+
+| Id | SimVar Name | Description | Unit | Format | DefaultValue | Settable |
+| --- | --- | --- | --- | --- | --- | --- |
+| AvionicsMasterSwitch | AVIONICS MASTER SWITCH | Avionics Master Switch | Bool |  | |  |
+| LightBeaconOn | LIGHT BEACON | Light Beacon Switch Status | Bool |  | |  |
+| LightBrakeOn | LIGHT BRAKE ON | Light Brake Switch or Light Status | Bool |  | |  |
+| LightCabinOn | LIGHT CABIN | Light Cabin Switch Status | Bool |  | |  |
+| LightHeadOn | LIGHT HEAD ON | Light Head Switch or Light Status | Bool |  | |  |
+| LightLandingOn | LIGHT LANDING | Light Landing Switch Status | Bool |  | |  |
+| LightLogoOn | LIGHT LOGO | Light Logo Switch Status | Bool |  | |  |
+| LightNavOn | LIGHT NAV | Light Nav Switch Status | Bool |  | |  |
+| LightPanelOn | LIGHT PANEL | Light Panel Switch Status | Bool |  | |  |
+| LightRecognitionOn | LIGHT RECOGNITION | Light Recognition Switch Status | Bool |  | |  |
+| LightStrobeOn | LIGHT STROBE | Light Strobe Switch Status | Bool |  | |  |
+| LightTaxiOn | LIGHT TAXI | Light Taxi Switch Status | Bool |  | |  |
+| LightWingOn | LIGHT WING | Light Wing Switch Status | Bool |  | |  |
+| MasterAlternator | GENERAL ENG MASTER ALTERNATOR:1 | Master Alternator Status | Bool |  | |  |
+| MasterBattery | ELECTRICAL MASTER BATTERY | Master Battery Status | Bool |  | | &#9745; |
 
 
 </details>
 
 ---
 
-## MSFS - Engine
+### Engine
 <details><summary><sub>Click to expand</sub></summary>
 
-### Actions
+#### Actions
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
@@ -412,28 +559,28 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>All+Increment</dt><dd>PROP_PITCH_INCR</dd><dt>All+Increment Small</dt><dd>PROP_PITCH_INCR_SMALL</dd><dt>All+Decrement</dt><dd>PROP_PITCH_DECR</dd><dt>All+Decrement Small</dt><dd>PROP_PITCH_DECR_SMALL</dd><dt>All+Min (hi pitch)</dt><dd>PROP_PITCH_HI</dd><dt>All+Max (lo pitch)</dt><dd>PROP_PITCH_LO</dd><dt>All+Toggle Feather Switch</dt><dd>TOGGLE_FEATHER_SWITCHES</dd><dt>1+Increment</dt><dd>PROP_PITCH1_INCR</dd><dt>1+Increment Small</dt><dd>PROP_PITCH1_INCR_SMALL</dd><dt>1+Decrement</dt><dd>PROP_PITCH1_DECR</dd><dt>1+Decrement Small</dt><dd>PROP_PITCH1_DECR_SMALL</dd><dt>1+Min (hi pitch)</dt><dd>PROP_PITCH1_HI</dd><dt>1+Max (lo pitch)</dt><dd>PROP_PITCH1_LO</dd><dt>1+Toggle Feather Switch</dt><dd>TOGGLE_FEATHER_SWITCH_1</dd><dt>2+Increment</dt><dd>PROP_PITCH2_INCR</dd><dt>2+Increment Small</dt><dd>PROP_PITCH2_INCR_SMALL</dd><dt>2+Decrement</dt><dd>PROP_PITCH2_DECR</dd><dt>2+Decrement Small</dt><dd>PROP_PITCH2_DECR_SMALL</dd><dt>2+Min (hi pitch)</dt><dd>PROP_PITCH2_HI</dd><dt>2+Max (lo pitch)</dt><dd>PROP_PITCH2_LO</dd><dt>2+Toggle Feather Switch</dt><dd>TOGGLE_FEATHER_SWITCH_2</dd><dt>3+Increment</dt><dd>PROP_PITCH3_INCR</dd><dt>3+Increment Small</dt><dd>PROP_PITCH3_INCR_SMALL</dd><dt>3+Decrement</dt><dd>PROP_PITCH3_DECR</dd><dt>3+Decrement Small</dt><dd>PROP_PITCH3_DECR_SMALL</dd><dt>3+Min (hi pitch)</dt><dd>PROP_PITCH3_HI</dd><dt>3+Max (lo pitch)</dt><dd>PROP_PITCH3_LO</dd><dt>3+Toggle Feather Switch</dt><dd>TOGGLE_FEATHER_SWITCH_3</dd><dt>4+Increment</dt><dd>PROP_PITCH4_INCR</dd><dt>4+Increment Small</dt><dd>PROP_PITCH4_INCR_SMALL</dd><dt>4+Decrement</dt><dd>PROP_PITCH4_DECR</dd><dt>4+Decrement Small</dt><dd>PROP_PITCH4_DECR_SMALL</dd><dt>4+Min (hi pitch)</dt><dd>PROP_PITCH4_HI</dd><dt>4+Max (lo pitch)</dt><dd>PROP_PITCH4_LO</dd><dt>4+Toggle Feather Switch</dt><dd>TOGGLE_FEATHER_SWITCH_4</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Propeller Pitch Set</td><td>Sets propeller pitch lever to value</td><td>Set Propeller {0} Pitch to {1} (0 to 16383)</td><td><ol start=0>
+<tr valign='top'><td>Propeller Pitch Set</td><td>Sets propeller pitch lever to value</td><td>Set Propeller {0} Pitch to {1} (0 to 16384)</td><td><ol start=0>
 <li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
-<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16383&gt;</sub></li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>All</dt><dd>PROP_PITCH_SET</dd><dt>1</dt><dd>PROP_PITCH1_SET</dd><dt>2</dt><dd>PROP_PITCH2_SET</dd><dt>3</dt><dd>PROP_PITCH3_SET</dd><dt>4</dt><dd>PROP_PITCH4_SET</dd></dl></details></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Throttle</td><td>Sets all throttles</td><td>All Throttles - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Full</b>, Increase, Increase Small, Decrease, Decrease Small, Cut, 10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90%</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Full</dt><dd>THROTTLE_FULL</dd><dt>Increase</dt><dd>THROTTLE_INCR</dd><dt>Increase Small</dt><dd>THROTTLE_INCR_SMALL</dd><dt>Decrease</dt><dd>THROTTLE_DECR</dd><dt>Decrease Small</dt><dd>THROTTLE_DECR_SMALL</dd><dt>Cut</dt><dd>THROTTLE_CUT</dd><dt>10%</dt><dd>THROTTLE_10</dd><dt>20%</dt><dd>THROTTLE_20</dd><dt>30%</dt><dd>THROTTLE_30</dd><dt>40%</dt><dd>THROTTLE_40</dd><dt>50%</dt><dd>THROTTLE_50</dd><dt>60%</dt><dd>THROTTLE_60</dd><dt>70%</dt><dd>THROTTLE_70</dd><dt>80%</dt><dd>THROTTLE_80</dd><dt>90%</dt><dd>THROTTLE_90</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Throttle Set</td><td>Sets all or specific Throttle(s) to specific value</td><td>Set Throttle {0} to {1} (-16383 - +16383)</td><td><ol start=0>
+<tr valign='top'><td>Throttle Set</td><td>Sets all or specific Throttle(s) to specific value</td><td>Set Throttle {0} to {1} (-16384 to +16384)</td><td><ol start=0>
 <li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
-<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16383&gt;</sub> <sub>&lt;max: 16383&gt;</sub></li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>All</dt><dd>THROTTLE_SET</dd><dt>1</dt><dd>THROTTLE1_SET</dd><dt>2</dt><dd>THROTTLE2_SET</dd><dt>3</dt><dd>THROTTLE3_SET</dd><dt>4</dt><dd>THROTTLE4_SET</dd></dl></details></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Throttle Specific</td><td>Sets Throttle on specific engine</td><td>Throttle {0} - {1}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
 <li>[choice] &nbsp; <b>Full</b>, Increase, Increase Small, Decrease, Decrease Small, Cut</li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>1+Full</dt><dd>THROTTLE1_FULL</dd><dt>1+Increase</dt><dd>THROTTLE1_INCR</dd><dt>1+Increase Small</dt><dd>THROTTLE1_INCR_SMALL</dd><dt>1+Descrease</dt><dd>THROTTLE1_DECR</dd><dt>1+Descrease Small</dt><dd>THROTTLE1_DECR_SMALL</dd><dt>1+Cut</dt><dd>THROTTLE1_CUT</dd><dt>2+Full</dt><dd>THROTTLE2_FULL</dd><dt>2+Increase</dt><dd>THROTTLE2_INCR</dd><dt>2+Increase Small</dt><dd>THROTTLE2_INCR_SMALL</dd><dt>2+Descrease</dt><dd>THROTTLE2_DECR</dd><dt>2+Descrease Small</dt><dd>THROTTLE2_DECR_SMALL</dd><dt>2+Cut</dt><dd>THROTTLE2_CUT</dd><dt>3+Full</dt><dd>THROTTLE3_FULL</dd><dt>3+Increase</dt><dd>THROTTLE3_INCR</dd><dt>3+Increase Small</dt><dd>THROTTLE3_INCR_SMALL</dd><dt>3+Descrease</dt><dd>THROTTLE3_DECR</dd><dt>3+Descrease Small</dt><dd>THROTTLE3_DECR_SMALL</dd><dt>3+Cut</dt><dd>THROTTLE3_CUT</dd><dt>4+Full</dt><dd>THROTTLE4_FULL</dd><dt>4+Increase</dt><dd>THROTTLE4_INCR</dd><dt>4+Increase Small</dt><dd>THROTTLE4_INCR_SMALL</dd><dt>4+Descrease</dt><dd>THROTTLE4_DECR</dd><dt>4+Descrease Small</dt><dd>THROTTLE4_DECR_SMALL</dd><dt>4+Cut</dt><dd>THROTTLE4_CUT</dd></dl></details></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>1+Full</dt><dd>THROTTLE1_FULL</dd><dt>1+Increase</dt><dd>THROTTLE1_INCR</dd><dt>1+Increase Small</dt><dd>THROTTLE1_INCR_SMALL</dd><dt>1+Decrease</dt><dd>THROTTLE1_DECR</dd><dt>1+Decrease Small</dt><dd>THROTTLE1_DECR_SMALL</dd><dt>1+Cut</dt><dd>THROTTLE1_CUT</dd><dt>2+Full</dt><dd>THROTTLE2_FULL</dd><dt>2+Increase</dt><dd>THROTTLE2_INCR</dd><dt>2+Increase Small</dt><dd>THROTTLE2_INCR_SMALL</dd><dt>2+Decrease</dt><dd>THROTTLE2_DECR</dd><dt>2+Decrease Small</dt><dd>THROTTLE2_DECR_SMALL</dd><dt>2+Cut</dt><dd>THROTTLE2_CUT</dd><dt>3+Full</dt><dd>THROTTLE3_FULL</dd><dt>3+Increase</dt><dd>THROTTLE3_INCR</dd><dt>3+Increase Small</dt><dd>THROTTLE3_INCR_SMALL</dd><dt>3+Decrease</dt><dd>THROTTLE3_DECR</dd><dt>3+Decrease Small</dt><dd>THROTTLE3_DECR_SMALL</dd><dt>3+Cut</dt><dd>THROTTLE3_CUT</dd><dt>4+Full</dt><dd>THROTTLE4_FULL</dd><dt>4+Increase</dt><dd>THROTTLE4_INCR</dd><dt>4+Increase Small</dt><dd>THROTTLE4_INCR_SMALL</dd><dt>4+Decrease</dt><dd>THROTTLE4_DECR</dd><dt>4+Decrease Small</dt><dd>THROTTLE4_DECR_SMALL</dd><dt>4+Cut</dt><dd>THROTTLE4_CUT</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Toggle All Magnetos</td><td>Toggle All Magnetos</td><td>Toggle All Magnetos - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Start</b>, Off, Right, Left, Both, Decrease, Increase, Select (for +/-)</li>
@@ -448,49 +595,51 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 </table>
 
 
-### States
+#### States
 
-| Id | SimVar Name | Description | DefaultValue |
-| --- | --- | --- | --- |
-| MSFSTouchPortalPlugin.Engine.State.MasterIgnitionSwitch | MASTER IGNITION SWITCH | Master Ignition Switch Status |  |
-| MSFSTouchPortalPlugin.Engine.State.MixtureEngine1 | GENERAL ENG MIXTURE LEVER POSITION:1 | Mixture - Engine 1 - Percentage |  |
-| MSFSTouchPortalPlugin.Engine.State.MixtureEngine2 | GENERAL ENG MIXTURE LEVER POSITION:2 | Mixture - Engine 2 - Percentage |  |
-| MSFSTouchPortalPlugin.Engine.State.MixtureEngine3 | GENERAL ENG MIXTURE LEVER POSITION:3 | Mixture - Engine 3 - Percentage |  |
-| MSFSTouchPortalPlugin.Engine.State.MixtureEngine4 | GENERAL ENG MIXTURE LEVER POSITION:4 | Mixture - Engine 4 - Percentage |  |
-| MSFSTouchPortalPlugin.Engine.State.Propeller1FeatherSw | PROP FEATHER SWITCH:1 | Propeller - Engine 1 - Feather Switch State (bool) |  |
-| MSFSTouchPortalPlugin.Engine.State.Propeller1Feathered | PROP FEATHERED:1 | Propeller - Engine 1 - Feathered (bool) |  |
-| MSFSTouchPortalPlugin.Engine.State.PropellerEngine1 | GENERAL ENG PROPELLER LEVER POSITION:1 | Propeller - Engine 1 - Percentage |  |
-| MSFSTouchPortalPlugin.Engine.State.Propeller2FeatherSw | PROP FEATHER SWITCH:2 | Propeller - Engine 2 - Feather Switch State (bool) |  |
-| MSFSTouchPortalPlugin.Engine.State.Propeller2Feathered | PROP FEATHERED:2 | Propeller - Engine 2 - Feathered (bool) |  |
-| MSFSTouchPortalPlugin.Engine.State.PropellerEngine2 | GENERAL ENG PROPELLER LEVER POSITION:2 | Propeller - Engine 2 - Percentage |  |
-| MSFSTouchPortalPlugin.Engine.State.Propeller3FeatherSw | PROP FEATHER SWITCH:3 | Propeller - Engine 3 - Feather Switch State (bool) |  |
-| MSFSTouchPortalPlugin.Engine.State.Propeller3Feathered | PROP FEATHERED:3 | Propeller - Engine 3 - Feathered (bool) |  |
-| MSFSTouchPortalPlugin.Engine.State.PropellerEngine3 | GENERAL ENG PROPELLER LEVER POSITION:3 | Propeller - Engine 3 - Percentage |  |
-| MSFSTouchPortalPlugin.Engine.State.Propeller4FeatherSw | PROP FEATHER SWITCH:4 | Propeller - Engine 4 - Feather Switch State (bool) |  |
-| MSFSTouchPortalPlugin.Engine.State.Propeller4Feathered | PROP FEATHERED:4 | Propeller - Engine 4 - Feathered (bool) |  |
-| MSFSTouchPortalPlugin.Engine.State.PropellerEngine4 | GENERAL ENG PROPELLER LEVER POSITION:4 | Propeller - Engine 4 - Percentage |  |
-| MSFSTouchPortalPlugin.Engine.State.RPMN1Engine1 | ENG N1 RPM:1 | RPM - Engine 1 |  |
-| MSFSTouchPortalPlugin.Engine.State.RPMN1Engine2 | ENG N1 RPM:2 | RPM - Engine 2 |  |
-| MSFSTouchPortalPlugin.Engine.State.RPMN1Engine3 | ENG N1 RPM:3 | RPM - Engine 3 |  |
-| MSFSTouchPortalPlugin.Engine.State.RPMN1Engine4 | ENG N1 RPM:4 | RPM - Engine 4 |  |
-| MSFSTouchPortalPlugin.Engine.State.RPMPropeller1 | PROP RPM:1 | RPM - Propeller 1 |  |
-| MSFSTouchPortalPlugin.Engine.State.RPMPropeller2 | PROP RPM:2 | RPM - Propeller 2 |  |
-| MSFSTouchPortalPlugin.Engine.State.RPMPropeller3 | PROP RPM:3 | RPM - Propeller 3 |  |
-| MSFSTouchPortalPlugin.Engine.State.RPMPropeller4 | PROP RPM:4 | RPM - Propeller 4 |  |
-| MSFSTouchPortalPlugin.Engine.State.ThrottleEngine1 | GENERAL ENG THROTTLE LEVER POSITION:1 | Throttle - Engine 1 - Percentage |  |
-| MSFSTouchPortalPlugin.Engine.State.ThrottleEngine2 | GENERAL ENG THROTTLE LEVER POSITION:2 | Throttle - Engine 2 - Percentage |  |
-| MSFSTouchPortalPlugin.Engine.State.ThrottleEngine3 | GENERAL ENG THROTTLE LEVER POSITION:3 | Throttle - Engine 3 - Percentage |  |
-| MSFSTouchPortalPlugin.Engine.State.ThrottleEngine4 | GENERAL ENG THROTTLE LEVER POSITION:4 | Throttle - Engine 4 - Percentage |  |
+ **Base Id:** MSFSTouchPortalPlugin.Engine.State.
+
+| Id | SimVar Name | Description | Unit | Format | DefaultValue | Settable |
+| --- | --- | --- | --- | --- | --- | --- |
+| MasterIgnitionSwitch | MASTER IGNITION SWITCH | Master Ignition Switch Status | Bool |  | |  |
+| MixtureEngine1 | GENERAL ENG MIXTURE LEVER POSITION:1 | Mixture - Engine 1 - Percentage | percent | 0.0# | | &#9745; |
+| MixtureEngine2 | GENERAL ENG MIXTURE LEVER POSITION:2 | Mixture - Engine 2 - Percentage | percent | 0.0# | | &#9745; |
+| MixtureEngine3 | GENERAL ENG MIXTURE LEVER POSITION:3 | Mixture - Engine 3 - Percentage | percent | 0.0# | | &#9745; |
+| MixtureEngine4 | GENERAL ENG MIXTURE LEVER POSITION:4 | Mixture - Engine 4 - Percentage | percent | 0.0# | | &#9745; |
+| Propeller1FeatherSw | PROP FEATHER SWITCH:1 | Propeller - Engine 1 - Feather Switch State (bool) | Bool |  | |  |
+| Propeller1Feathered | PROP FEATHERED:1 | Propeller - Engine 1 - Feathered (bool) | Bool |  | |  |
+| PropellerEngine1 | GENERAL ENG PROPELLER LEVER POSITION:1 | Propeller - Engine 1 - Percentage | percent | 0.0# | | &#9745; |
+| Propeller2FeatherSw | PROP FEATHER SWITCH:2 | Propeller - Engine 2 - Feather Switch State (bool) | Bool |  | |  |
+| Propeller2Feathered | PROP FEATHERED:2 | Propeller - Engine 2 - Feathered (bool) | Bool |  | |  |
+| PropellerEngine2 | GENERAL ENG PROPELLER LEVER POSITION:2 | Propeller - Engine 2 - Percentage | percent | 0.0# | | &#9745; |
+| Propeller3FeatherSw | PROP FEATHER SWITCH:3 | Propeller - Engine 3 - Feather Switch State (bool) | Bool |  | |  |
+| Propeller3Feathered | PROP FEATHERED:3 | Propeller - Engine 3 - Feathered (bool) | Bool |  | |  |
+| PropellerEngine3 | GENERAL ENG PROPELLER LEVER POSITION:3 | Propeller - Engine 3 - Percentage | percent | 0.0# | | &#9745; |
+| Propeller4FeatherSw | PROP FEATHER SWITCH:4 | Propeller - Engine 4 - Feather Switch State (bool) | Bool |  | |  |
+| Propeller4Feathered | PROP FEATHERED:4 | Propeller - Engine 4 - Feathered (bool) | Bool |  | |  |
+| PropellerEngine4 | GENERAL ENG PROPELLER LEVER POSITION:4 | Propeller - Engine 4 - Percentage | percent | 0.0# | | &#9745; |
+| RPMN1Engine1 | ENG N1 RPM:1 | RPM - Engine 1 | percent | 0.0# | |  |
+| RPMN1Engine2 | ENG N1 RPM:2 | RPM - Engine 2 | percent | 0.0# | |  |
+| RPMN1Engine3 | ENG N1 RPM:3 | RPM - Engine 3 | percent | 0.0# | |  |
+| RPMN1Engine4 | ENG N1 RPM:4 | RPM - Engine 4 | percent | 0.0# | |  |
+| RPMPropeller1 | PROP RPM:1 | RPM - Propeller 1 | rpm | 0.0# | | &#9745; |
+| RPMPropeller2 | PROP RPM:2 | RPM - Propeller 2 | rpm | 0.0# | | &#9745; |
+| RPMPropeller3 | PROP RPM:3 | RPM - Propeller 3 | rpm | 0.0# | | &#9745; |
+| RPMPropeller4 | PROP RPM:4 | RPM - Propeller 4 | rpm | 0.0# | | &#9745; |
+| ThrottleEngine1 | GENERAL ENG THROTTLE LEVER POSITION:1 | Throttle - Engine 1 - Percentage | percent | 0.# | | &#9745; |
+| ThrottleEngine2 | GENERAL ENG THROTTLE LEVER POSITION:2 | Throttle - Engine 2 - Percentage | percent | 0.# | | &#9745; |
+| ThrottleEngine3 | GENERAL ENG THROTTLE LEVER POSITION:3 | Throttle - Engine 3 - Percentage | percent | 0.# | | &#9745; |
+| ThrottleEngine4 | GENERAL ENG THROTTLE LEVER POSITION:4 | Throttle - Engine 4 - Percentage | percent | 0.# | | &#9745; |
 
 
 </details>
 
 ---
 
-## MSFS - Environment
+### Environment
 <details><summary><sub>Click to expand</sub></summary>
 
-### Actions
+#### Actions
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
@@ -526,36 +675,38 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 </table>
 
 
-### States
+#### States
 
-| Id | SimVar Name | Description | DefaultValue |
-| --- | --- | --- | --- |
-| MSFSTouchPortalPlugin.Environment.State.AntiIceEng1 | GENERAL ENG ANTI ICE POSITION:1 | Anti-Ice Engine 1 |  |
-| MSFSTouchPortalPlugin.Environment.State.AntiIceEng2 | GENERAL ENG ANTI ICE POSITION:2 | Anti-Ice Engine 2 |  |
-| MSFSTouchPortalPlugin.Environment.State.AntiIceEng3 | GENERAL ENG ANTI ICE POSITION:3 | Anti-Ice Engine 3 |  |
-| MSFSTouchPortalPlugin.Environment.State.AntiIceEng4 | GENERAL ENG ANTI ICE POSITION:4 | Anti-Ice Engine 4 |  |
-| MSFSTouchPortalPlugin.Environment.State.AntiIcePanelSwitch | PANEL ANTI ICE SWITCH | Panel Anti-Ice Switch |  |
-| MSFSTouchPortalPlugin.Environment.State.PitotHeat | PITOT HEAT | Pitot Heat Status |  |
-| MSFSTouchPortalPlugin.Environment.State.PitotHeatSwitch1 | PITOT HEAT SWITCH:1 | Pitot Heat Switch 1 State (0=Off; 1=On; 2=Auto) |  |
-| MSFSTouchPortalPlugin.Environment.State.PitotHeatSwitch2 | PITOT HEAT SWITCH:2 | Pitot Heat Switch 2 State (0=Off; 1=On; 2=Auto) |  |
-| MSFSTouchPortalPlugin.Environment.State.PitotHeatSwitch3 | PITOT HEAT SWITCH:3 | Pitot Heat Switch 3 State (0=Off; 1=On; 2=Auto) |  |
-| MSFSTouchPortalPlugin.Environment.State.PitotHeatSwitch4 | PITOT HEAT SWITCH:4 | Pitot Heat Switch 4 State (0=Off; 1=On; 2=Auto) |  |
-| MSFSTouchPortalPlugin.Environment.State.AntiIcePropeller1Switch | PROP DEICE SWITCH:1 | Propeller 1 Deice Switch |  |
-| MSFSTouchPortalPlugin.Environment.State.AntiIcePropeller2Switch | PROP DEICE SWITCH:2 | Propeller 2 Deice Switch |  |
-| MSFSTouchPortalPlugin.Environment.State.AntiIcePropeller3Switch | PROP DEICE SWITCH:3 | Propeller 3 Deice Switch |  |
-| MSFSTouchPortalPlugin.Environment.State.AntiIcePropeller4Switch | PROP DEICE SWITCH:4 | Propeller 4 Deice Switch |  |
-| MSFSTouchPortalPlugin.Environment.State.AntiIceStructuralSwitch | STRUCTURAL DEICE SWITCH | Structural Deice Switch |  |
-| MSFSTouchPortalPlugin.Environment.State.AntiIceWindshieldSwitch | WINDSHIELD DEICE SWITCH | Windshield Deice Switch |  |
+ **Base Id:** MSFSTouchPortalPlugin.Environment.State.
+
+| Id | SimVar Name | Description | Unit | Format | DefaultValue | Settable |
+| --- | --- | --- | --- | --- | --- | --- |
+| AntiIceEng1 | GENERAL ENG ANTI ICE POSITION:1 | Anti-Ice Engine 1 | Bool |  | |  |
+| AntiIceEng2 | GENERAL ENG ANTI ICE POSITION:2 | Anti-Ice Engine 2 | Bool |  | |  |
+| AntiIceEng3 | GENERAL ENG ANTI ICE POSITION:3 | Anti-Ice Engine 3 | Bool |  | |  |
+| AntiIceEng4 | GENERAL ENG ANTI ICE POSITION:4 | Anti-Ice Engine 4 | Bool |  | |  |
+| AntiIcePanelSwitch | PANEL ANTI ICE SWITCH | Panel Anti-Ice Switch | Bool |  | |  |
+| PitotHeat | PITOT HEAT | Pitot Heat Status | Bool |  | |  |
+| PitotHeatSwitch1 | PITOT HEAT SWITCH:1 | Pitot Heat Switch 1 State (0=Off; 1=On; 2=Auto) | Enum |  | |  |
+| PitotHeatSwitch2 | PITOT HEAT SWITCH:2 | Pitot Heat Switch 2 State (0=Off; 1=On; 2=Auto) | Enum |  | |  |
+| PitotHeatSwitch3 | PITOT HEAT SWITCH:3 | Pitot Heat Switch 3 State (0=Off; 1=On; 2=Auto) | Enum |  | |  |
+| PitotHeatSwitch4 | PITOT HEAT SWITCH:4 | Pitot Heat Switch 4 State (0=Off; 1=On; 2=Auto) | Enum |  | |  |
+| AntiIcePropeller1Switch | PROP DEICE SWITCH:1 | Propeller 1 Deice Switch | Bool |  | |  |
+| AntiIcePropeller2Switch | PROP DEICE SWITCH:2 | Propeller 2 Deice Switch | Bool |  | |  |
+| AntiIcePropeller3Switch | PROP DEICE SWITCH:3 | Propeller 3 Deice Switch | Bool |  | |  |
+| AntiIcePropeller4Switch | PROP DEICE SWITCH:4 | Propeller 4 Deice Switch | Bool |  | |  |
+| AntiIceStructuralSwitch | STRUCTURAL DEICE SWITCH | Structural Deice Switch | Bool |  | |  |
+| AntiIceWindshieldSwitch | WINDSHIELD DEICE SWITCH | Windshield Deice Switch | Bool |  | |  |
 
 
 </details>
 
 ---
 
-## MSFS - Failures
+### Failures
 <details><summary><sub>Click to expand</sub></summary>
 
-### Actions
+#### Actions
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
@@ -571,38 +722,40 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 
 ---
 
-## MSFS - Flight Instruments
+### Flight Instruments
 <details><summary><sub>Click to expand</sub></summary>
 
-### States
+#### States
 
-| Id | SimVar Name | Description | DefaultValue |
-| --- | --- | --- | --- |
-| MSFSTouchPortalPlugin.FlightInstruments.State.AirSpeedIndicated | AIRSPEED INDICATED | Air speed indicated in Knots |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.AirSpeedMach | AIRSPEED MACH | Air speed indicated in mach |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.AirSpeedTrue | AIRSPEED TRUE | Air speed true in Knots |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.FlapSpeedExceeeded | FLAP SPEED EXCEEDED | Flap Speed Exceeded Warning true/false |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.GroundAltitude | GROUND ALTITUDE | Ground level in Feet |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.GroundVelocity | GROUND VELOCITY | Ground Speed in Knots |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.OverspeedWarning | OVERSPEED WARNING | Overspeed Warning true/false |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.PlaneAltitudeAGL | PLANE ALT ABOVE GROUND | Plane Altitude AGL in Feet |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.PlaneAltitude | PLANE ALTITUDE | Plane Altitude in Feet |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.PlaneBankAngle | PLANE BANK DEGREES | Plane Bank Angle in Degrees |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.PlaneHeadingMagnetic | PLANE HEADING DEGREES MAGNETIC | Plane Heading (Magnetic North) in Degrees |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.PlaneHeadingTrue | PLANE HEADING DEGREES TRUE | Plane Heading (True North) in Degrees |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.PlanePitchAngle | PLANE PITCH DEGREES | Plane Pitch Angle in Degrees |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.StallWarning | STALL WARNING | Stall Warning true/false |  |
-| MSFSTouchPortalPlugin.FlightInstruments.State.VerticalSpeed | VERTICAL SPEED | Vertical Speed in feet per minute |  |
+ **Base Id:** MSFSTouchPortalPlugin.FlightInstruments.State.
+
+| Id | SimVar Name | Description | Unit | Format | DefaultValue | Settable |
+| --- | --- | --- | --- | --- | --- | --- |
+| AirSpeedIndicated | AIRSPEED INDICATED | Air speed indicated in Knots | knots | 0.0# | | &#9745; |
+| AirSpeedMach | AIRSPEED MACH | Air speed indicated in Mach | mach | 0.0# | |  |
+| AirSpeedTrue | AIRSPEED TRUE | Air speed true in Knots | knots | 0.0# | | &#9745; |
+| FlapSpeedExceeeded | FLAP SPEED EXCEEDED | Flap Speed Exceeded Warning true/false | Bool |  | |  |
+| GroundAltitude | GROUND ALTITUDE | Ground level in Feet | feet | 0.# | |  |
+| GroundVelocity | GROUND VELOCITY | Ground Speed in Knots | knots | 0.0# | |  |
+| OverspeedWarning | OVERSPEED WARNING | Overspeed Warning true/false | Bool |  | |  |
+| PlaneAltitudeAGL | PLANE ALT ABOVE GROUND | Plane Altitude AGL in Feet | feet | 0.# | | &#9745; |
+| PlaneAltitude | PLANE ALTITUDE | Plane Altitude in Feet | feet | 0.# | | &#9745; |
+| PlaneBankAngle | PLANE BANK DEGREES | Plane Bank Angle in Degrees | degrees | 0 | | &#9745; |
+| PlaneHeadingMagnetic | PLANE HEADING DEGREES MAGNETIC | Plane Heading (Magnetic North) in Degrees | degrees | 0 | | &#9745; |
+| PlaneHeadingTrue | PLANE HEADING DEGREES TRUE | Plane Heading (True North) in Degrees | degrees | 0 | | &#9745; |
+| PlanePitchAngle | PLANE PITCH DEGREES | Plane Pitch Angle in Degrees | degrees | 0 | | &#9745; |
+| StallWarning | STALL WARNING | Stall Warning true/false | Bool |  | |  |
+| VerticalSpeed | VERTICAL SPEED | Vertical Speed in feet per minute | feet/minute | 0.0# | | &#9745; |
 
 
 </details>
 
 ---
 
-## MSFS - Flight Systems
+### Flight Systems
 <details><summary><sub>Click to expand</sub></summary>
 
-### Actions
+#### Actions
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
@@ -615,17 +768,17 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -100&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
 </ol></td>
 <td><dl><dd>AILERON_TRIM_SET</dd></dl></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Ailerons</td><td>Ailerons</td><td>Ailerons - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Center</b>, Left, Right</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Center</dt><dd>CENTER_AILER_RUDDER</dd><dt>Left</dt><dd>AILERONS_LEFT</dd><dt>Right</dt><dd>AILERONS_RIGHT</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Ailerons Set</td><td> Set Ailerons</td><td>Ailerons set to {0} (-16383 - +16383)</td><td><ol start=0>
-<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16383&gt;</sub> <sub>&lt;max: 16383&gt;</sub></li>
+<tr valign='top'><td>Ailerons Set</td><td> Set Ailerons</td><td>Ailerons set to {0} (-16384 to +16384)</td><td><ol start=0>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><dl><dd>AILERON_SET</dd></dl></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Brakes</td><td>Brakes</td><td>Brakes - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>All</b>, Left, Right</li>
 </ol></td>
@@ -661,31 +814,31 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 </ol></td>
 <td><dl><dt>Up</dt><dd>ELEV_UP</dd><dt>Down</dt><dd>ELEV_DOWN</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Elevator Set</td><td> Set Elevator</td><td>Elevator set to {0} (-16383 - +16383)</td><td><ol start=0>
-<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16383&gt;</sub> <sub>&lt;max: 16383&gt;</sub></li>
+<tr valign='top'><td>Elevator Set</td><td> Set Elevator</td><td>Elevator set to {0} (-16384 to +16384)</td><td><ol start=0>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><dl><dd>ELEVATOR_SET</dd></dl></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Elevator Trim</td><td>Elevator Trim</td><td>Elevator Trim - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Up</b>, Down</li>
 </ol></td>
 <td><dl><dt>Down</dt><dd>ELEV_TRIM_DN</dd><dt>Up</dt><dd>ELEV_TRIM_UP</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Elevator Trim Set</td><td> Set Elevator Trim</td><td>Elevator Trim set to {0} (-16383 - +16383)</td><td><ol start=0>
-<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16383&gt;</sub> <sub>&lt;max: 16383&gt;</sub></li>
+<tr valign='top'><td>Elevator Trim Set</td><td> Set Elevator Trim</td><td>Elevator Trim set to {0} (-16384 to +16384)</td><td><ol start=0>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><dl><dd>ELEVATOR_TRIM_SET</dd></dl></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Flaps</td><td>Flaps</td><td>Flaps - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Up</b>, Down, Increase, Decrease, 1, 2, 3, 4</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Up</dt><dd>FLAPS_UP</dd><dt>Down</dt><dd>FLAPS_DOWN</dd><dt>Increase</dt><dd>FLAPS_INCR</dd><dt>Decrease</dt><dd>FLAPS_DECR</dd><dt>1</dt><dd>FLAPS_1</dd><dt>2</dt><dd>FLAPS_2</dd><dt>3</dt><dd>FLAPS_3</dd><dt>4</dt><dd>FLAPS_3</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Flaps Set</td><td> Set Flaps</td><td>Flaps set to {0} (0 - +16383)</td><td><ol start=0>
-<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16383&gt;</sub></li>
+<tr valign='top'><td>Flaps Set</td><td> Set Flaps</td><td>Flaps set to {0} (0 to 16384)</td><td><ol start=0>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><dl><dd>FLAPS_SET</dd></dl></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Gear Manipulation</td><td>Gear Manipulation</td><td>Gear - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, Up, Down, Pump</li>
 </ol></td>
@@ -696,11 +849,11 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Center</dt><dd>RUDDER_CENTER</dd><dt>Left</dt><dd>RUDDER_LEFT</dd><dt>Right</dt><dd>RUDDER_RIGHT</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Rudder Set</td><td> Set Rudder</td><td>Rudder set to {0} (-16383 - +16383)</td><td><ol start=0>
-<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16383&gt;</sub> <sub>&lt;max: 16383&gt;</sub></li>
+<tr valign='top'><td>Rudder Set</td><td> Set Rudder</td><td>Rudder set to {0} (-16384 to +16384)</td><td><ol start=0>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><dl><dd>RUDDER_SET</dd></dl></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Rudder Trim</td><td>Rudder Trim</td><td>Rudder Trim - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Left</b>, Right</li>
 </ol></td>
@@ -710,7 +863,7 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -100&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
 </ol></td>
 <td><dl><dd>RUDDER_TRIM_SET</dd></dl></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Spoilers</td><td>Spoilers</td><td>Spoilers - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
@@ -721,11 +874,11 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>SPOILERS_ARM_TOGGLE</dd><dt>On</dt><dd>SPOILERS_ARM_ON</dd><dt>Off</dt><dd>SPOILERS_ARM_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Spoilers Set</td><td> Set Spoilers</td><td>Spoilers set to {0} (0- +16383)</td><td><ol start=0>
-<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16383&gt;</sub></li>
+<tr valign='top'><td>Spoilers Set</td><td> Set Spoilers</td><td>Set Spoilers handle position to {0} (0 to 16384)</td><td><ol start=0>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><dl><dd>SPOILERS_SET</dd></dl></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Toggle Parking Brake</td><td>Toggle Parking Brake</td><td>Toggle Parking Brake</td><td><ol start=0>
 </ol></td>
 <td><dl><dd>PARKING_BRAKES</dd></dl></td>
@@ -733,40 +886,48 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 </table>
 
 
-### States
+#### States
 
-| Id | SimVar Name | Description | DefaultValue |
-| --- | --- | --- | --- |
-| MSFSTouchPortalPlugin.FlightSystems.State.AileronTrim | AILERON TRIM | Aileron Trim Angle |  |
-| MSFSTouchPortalPlugin.FlightSystems.State.AileronTrimPct | AILERON TRIM PCT | Aileron Trim Percent | 0 |
-| MSFSTouchPortalPlugin.FlightSystems.State.CowlFlaps1Percent | RECIP ENG COWL FLAP POSITION:1 | Cowl Flaps 1 Opened Percentage |  |
-| MSFSTouchPortalPlugin.FlightSystems.State.CowlFlaps2Percent | RECIP ENG COWL FLAP POSITION:2 | Cowl Flaps 2 Opened Percentage |  |
-| MSFSTouchPortalPlugin.FlightSystems.State.CowlFlaps3Percent | RECIP ENG COWL FLAP POSITION:3 | Cowl Flaps 3 Opened Percentage |  |
-| MSFSTouchPortalPlugin.FlightSystems.State.CowlFlaps4Percent | RECIP ENG COWL FLAP POSITION:4 | Cowl Flaps 4 Opened Percentage |  |
-| MSFSTouchPortalPlugin.FlightSystems.State.ElevatorTrim | ELEVATOR TRIM POSITION | Elevator Trim Angle |  |
-| MSFSTouchPortalPlugin.FlightSystems.State.ElevatorTrimPct | ELEVATOR TRIM PCT | Elevator Trim Percent | 0 |
-| MSFSTouchPortalPlugin.FlightSystems.State.FlapsHandlePercent | FLAPS HANDLE PERCENT | Flaps Handle Percentage |  |
-| MSFSTouchPortalPlugin.FlightSystems.State.ParkingBrakeIndicator | BRAKE PARKING POSITION | Parking Brake Indicator true/false |  |
-| MSFSTouchPortalPlugin.FlightSystems.State.RudderTrim | RUDDER TRIM | Rudder Trim Angle |  |
-| MSFSTouchPortalPlugin.FlightSystems.State.RudderTrimPct | RUDDER TRIM PCT | Rudder Trim Percent | 0 |
-| MSFSTouchPortalPlugin.FlightSystems.State.GearTotalExtended | GEAR TOTAL PCT EXTENDED | Total percentage of gear extended |  |
+ **Base Id:** MSFSTouchPortalPlugin.FlightSystems.State.
+
+| Id | SimVar Name | Description | Unit | Format | DefaultValue | Settable |
+| --- | --- | --- | --- | --- | --- | --- |
+| AileronTrim | AILERON TRIM | Aileron Trim Angle | degrees | F2 | |  |
+| AileronTrimPct | AILERON TRIM PCT | Aileron Trim Percent | percent | F1 | 0| &#9745; |
+| CowlFlaps1Percent | RECIP ENG COWL FLAP POSITION:1 | Cowl Flaps 1 Opened Percentage | percent | 0.0# | | &#9745; |
+| CowlFlaps2Percent | RECIP ENG COWL FLAP POSITION:2 | Cowl Flaps 2 Opened Percentage | percent | 0.0# | | &#9745; |
+| CowlFlaps3Percent | RECIP ENG COWL FLAP POSITION:3 | Cowl Flaps 3 Opened Percentage | percent | 0.0# | | &#9745; |
+| CowlFlaps4Percent | RECIP ENG COWL FLAP POSITION:4 | Cowl Flaps 4 Opened Percentage | percent | 0.0# | | &#9745; |
+| ElevatorTrim | ELEVATOR TRIM POSITION | Elevator Trim Angle | degrees | F2 | | &#9745; |
+| ElevatorTrimPct | ELEVATOR TRIM PCT | Elevator Trim Percent | percent | F1 | 0|  |
+| FlapsHandlePercent | FLAPS HANDLE PERCENT | Flaps Handle Percentage | percent | 0.0# | |  |
+| ParkingBrakeIndicator | BRAKE PARKING POSITION | Parking Brake Indicator true/false | Bool |  | |  |
+| RudderTrim | RUDDER TRIM | Rudder Trim Angle | degrees | F2 | |  |
+| RudderTrimPct | RUDDER TRIM PCT | Rudder Trim Percent | percent | F1 | 0| &#9745; |
+| SpoilersArmed | SPOILERS ARMED | Spoilers Armed (0/1) | Bool |  | 0|  |
+| SpoilersAvailable | SPOILER AVAILABLE | Spoilers Available (0/1) | Bool |  | 0|  |
+| SpoilersHandlePosition | SPOILERS HANDLE POSITION | Spoilers Handle Position (0 - 16384) | position 16k |  | 0| &#9745; |
+| SpoilersLeftPosition | SPOILERS LEFT POSITION | Spoilers Left Position Percent | percent | F1 | 0|  |
+| SpoilersRightPosition | SPOILERS RIGHT POSITION | Spoilers Right Position Percent | percent | F1 | 0|  |
+| GearTotalExtended | GEAR TOTAL PCT EXTENDED | Total percentage of gear extended | percent | F0 | |  |
 
 
 </details>
 
 ---
 
-## MSFS - Fuel
+### Fuel
 <details><summary><sub>Click to expand</sub></summary>
 
-### Actions
+#### Actions
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
-<tr valign='top'><td>Add Fuel</td><td>Adds 25% amount of Fuel</td><td>Add 25% amount of fuel</td><td><ol start=0>
+<tr valign='top'><td>Add Fuel</td><td>Add Fuel (1 to 65535 or zero for 25% of capacity)</td><td>Add {0} amount of Fuel</td><td><ol start=0>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 65535&gt;</sub></li>
 </ol></td>
 <td><dl><dd>ADD_FUEL_QUANTITY</dd></dl></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Electric Fuel Pump - Toggle</td><td>Toggles the Electric Fuel Pump</td><td>Toggle Electric Fuel Pump - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
 </ol></td>
@@ -808,43 +969,10 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 
 ---
 
-## MSFS - Plugin
+### System
 <details><summary><sub>Click to expand</sub></summary>
 
-### Actions
-
-<table>
-<tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
-<tr valign='top'><td>Action Repeat Interval</td><td>Held Action Repeat Rate (ms)</td><td>Repeat Interval: {0} to/by: {1} ms</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Set</b>, Increment, Decrement</li>
-<li>[text] &nbsp; <b>450</b> &nbsp; <sub>&lt;min: 50&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Set</dt><dd>ActionRepeatIntervalSet</dd><dt>Increment</dt><dd>ActionRepeatIntervalInc</dd><dt>Decrement</dt><dd>ActionRepeatIntervalDec</dd></dl></details></td>
-<td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Connection</td><td>Toggle/On/Off SimConnect Connection</td><td>SimConnect Connection - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>ToggleConnection</dd><dt>On</dt><dd>Connect</dd><dt>Off</dt><dd>Disconnect</dd></dl></details></td>
-<td align='center'></td></tr>
-</table>
-
-
-### States
-
-| Id | SimVar Name | Description | DefaultValue |
-| --- | --- | --- | --- |
-| MSFSTouchPortalPlugin.Plugin.State.ActionRepeatInterval |  | The current Held Action Repeat Rate (ms) | 450 |
-| MSFSTouchPortalPlugin.Plugin.State.Connected |  | The status of SimConnect (true/false/connecting) | false |
-
-
-</details>
-
----
-
-## MSFS - System
-<details><summary><sub>Click to expand</sub></summary>
-
-### Actions
+#### Actions
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
@@ -861,17 +989,55 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 </table>
 
 
-### States
+#### Events
 
-| Id | SimVar Name | Description | DefaultValue |
-| --- | --- | --- | --- |
-| MSFSTouchPortalPlugin.SimSystem.State.AtcId | ATC ID | Aircraft Id used by ATC |  |
-| MSFSTouchPortalPlugin.SimSystem.State.AircraftTitle | TITLE | Aircraft Title |  |
-| MSFSTouchPortalPlugin.SimSystem.State.AtcAirline | ATC AIRLINE | Airline used by ATC |  |
-| MSFSTouchPortalPlugin.SimSystem.State.AtcFlightNumber | ATC FLIGHT NUMBER | Flight Number used by ATC |  |
-| MSFSTouchPortalPlugin.SimSystem.State.AtcModel | ATC MODEL | Model of aircraft used by ATC |  |
-| MSFSTouchPortalPlugin.SimSystem.State.SimulationRate | SIMULATION RATE | The current simulation rate |  |
-| MSFSTouchPortalPlugin.SimSystem.State.AtcType | ATC TYPE | Type of aircraft used by ATC |  |
+ **Base Id:** MSFSTouchPortalPlugin.SimSystem.Event. &nbsp; &nbsp; **Base State Id** MSFSTouchPortalPlugin.
+
+<table>
+<tr valign='bottom'><th>Id</th><th>Name</th><th nowrap>Evaluated State Id</th><th>Format</th><th>Type</th><th>Choice(s)</th></tr>
+<tr valign='top'><td>SimSystemEvent</td><td>Simulator System Event</td><td>SimSystem.State.SimSystemEvent</td><td>On Simulator Event $choice</td><td>choice</td><td><details><summary><sub>details</sub></summary>
+<ul><li><b>Connecting</b> - Upon every connection attempt to the Simulator.</li>
+<li><b>Connected</b> - Upon successful connection to the Simulator.</li>
+<li><b>Disconnected</b> - Upon disconnection from the Simulator.</li>
+<li><b>Connection Timed Out</b> - When a connection attempt to the Simulator times out, eg. when sim is not running.</li>
+<li><b>SimConnect Error</b> - When a Simulator (SimConnect) error or warning is detected. Error details (log entry) are sent in the SimSystemEventData state value.</li>
+<li><b>Plugin Error</b> - When a Plugin-specific error or warning is detected (eg. could not parse action data, load a file, etc). Error details (log entry) are sent in the SimSystemEventData state value.</li>
+<li><b>Plugin Information</b> - When a notable plugin informational ("success") action is detected. Information details (log entry) are sent in the SimSystemEventData state value.</li>
+<li><b>Paused</b> - When the flight is paused.</li>
+<li><b>Unpaused</b> - When the flight is un-paused.</li>
+<li><b>Pause Toggled</b> - When the flight is paused or unpaused, and also immediately returns the current pause state (1 = paused or 0 = unpaused).</li>
+<li><b>Flight Started</b> - The simulator is running. Typically the user is actively controlling the aircraft on the ground or in the air. However, in some cases additional pairs of SimStart/SimStop events are sent. For example, when a flight is reset the events that are sent are SimStop, SimStart, SimStop, SimStart.</li>
+<li><b>Flight Stopped</b> - The simulator is not running. Typically the user is loading a flight, navigating the shell or in a dialog.</li>
+<li><b>Flight Toggled</b> - When the flight changes between running and not.</li>
+<li><b>Aircraft Loaded</b> - When the aircraft flight dynamics file is changed. These files have a .AIR extension. The filename is sent in the SimSystemEventData state value.</li>
+<li><b>Crashed</b> - When the user aircraft crashes.</li>
+<li><b>Crash Reset</b> - When the crash cut-scene has completed.</li>
+<li><b>Flight Loaded</b> - When a flight is loaded. Note that when a flight is ended, a default flight is typically loaded, so these events will occur when flights and missions are started and finished. The filename of the flight loaded is sent in the SimSystemEventData state value.</li>
+<li><b>Flight Saved</b> - When a flight is saved correctly. The filename of the flight saved is sent in the SimSystemEventData state value.</li>
+<li><b>Flight Plan Activated</b> - When a new flight plan is activated. The filename of the activated flight plan is sent in the SimSystemEventData state value.</li>
+<li><b>Flight Plan Deactivated</b> - When the active flight plan is de-activated.</li>
+<li><b>Position Changed</b> - When the user changes the position of their aircraft through a dialog or loading a flight.</li>
+<li><b>Sound Toggled</b> - When the master sound switch is changed.</li>
+<li><b>View 3D Cockpit</b> - When the view changes to the 3D virtual cockpit view.</li>
+<li><b>View External</b> - When the view changes to an external view.</li></ul></details></td></tr>
+</table>
+
+
+#### States
+
+ **Base Id:** MSFSTouchPortalPlugin.SimSystem.State.
+
+| Id | SimVar Name | Description | Unit | Format | DefaultValue | Settable |
+| --- | --- | --- | --- | --- | --- | --- |
+| AtcId | ATC ID | Aircraft Id used by ATC | string |  | | &#9745; |
+| AircraftTitle | TITLE | Aircraft Title | string |  | |  |
+| AtcAirline | ATC AIRLINE | Airline used by ATC | string |  | | &#9745; |
+| SimSystemEventData |  | Data from the most recent Simulator System Event, if any. | string |  | |  |
+| AtcFlightNumber | ATC FLIGHT NUMBER | Flight Number used by ATC | string |  | | &#9745; |
+| AtcModel | ATC MODEL | Model of aircraft used by ATC | string |  | |  |
+| SimSystemEvent |  | Most recent Simulator System Event name. | string |  | |  |
+| SimulationRate | SIMULATION RATE | The current simulation rate | number |  | |  |
+| AtcType | ATC TYPE | Type of aircraft used by ATC | string |  | |  |
 
 
 </details>

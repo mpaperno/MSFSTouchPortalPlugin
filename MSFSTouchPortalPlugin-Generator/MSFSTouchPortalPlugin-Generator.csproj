@@ -6,11 +6,26 @@
     <RootNamespace>MSFSTouchPortalPlugin_Generator</RootNamespace>
     <CodeAnalysisRuleSet>..\.sonarlint\msfstouchportalplugincsharp.ruleset</CodeAnalysisRuleSet>
     <Platforms>x64</Platforms>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
+    <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <NoWarn>1701;1702</NoWarn>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <NoWarn>1701;1702;S125;CS8032</NoWarn>
+    <PlatformTarget>x64</PlatformTarget>
+    <NoWarn>1701;1702</NoWarn>
+    <DefineConstants />
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <AllowedReferenceRelatedFileExtensions>
+      <!-- Prevent .pdb, .xml, etc from being copied to output folder -->
+      .dll
+    </AllowedReferenceRelatedFileExtensions>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
