@@ -25,8 +25,8 @@ namespace MSFSTouchPortalPlugin.Types
     readonly Dictionary<string, Enum> TpActionToEventMap = new();
 
     // this is how we generate unique SimConnect client Event IDs.
-    private static SimEventClientId _nextEventId = SimEventClientId.Init;
-    private static SimEventClientId NextId() => ++_nextEventId;      // got a warning when trying to increment this directly from c'tor, but not via static member... ?
+    private static EventIds _nextEventId = EventIds.DynamicEventInit;
+    private static EventIds NextId() => ++_nextEventId;      // got a warning when trying to increment this directly from c'tor, but not via static member... ?
 
     public ActionEventType() { }
 

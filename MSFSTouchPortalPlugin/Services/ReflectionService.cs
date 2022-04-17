@@ -32,8 +32,8 @@ namespace MSFSTouchPortalPlugin.Services
 
     public ref readonly Dictionary<Enum, SimEventRecord> GetClientEventIdToNameMap() => ref clientEventIdToNameMap;
     public string GetSimEventNameById(Enum id) => clientEventIdToNameMap.TryGetValue(id, out var entry) ? entry.EventName : "[unknown event]";
-    public string GetSimEventNameById(uint id) => GetSimEventNameById((SimEventClientId)id);
-    public string GetSimEventNameById(int id) => GetSimEventNameById((SimEventClientId)id);
+    public string GetSimEventNameById(uint id) => GetSimEventNameById((EventIds)id);
+    public string GetSimEventNameById(int id) => GetSimEventNameById((EventIds)id);
     public void AddSimEventNameMapping(Enum id, SimEventRecord record) => clientEventIdToNameMap[id] = record;
 
     public IEnumerable<TouchPortalCategoryAttribute> GetCategoryAttributes() {
