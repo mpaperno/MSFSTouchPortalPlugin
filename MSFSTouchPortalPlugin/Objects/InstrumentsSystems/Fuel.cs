@@ -6,7 +6,8 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
   [TouchPortalCategory(Groups.Fuel)]
   internal static class FuelMapping {
 
-    [TouchPortalAction("AddFuel", "Add Fuel", "MSFS", "Adds 25% amount of Fuel", "Add 25% amount of fuel")]
+    [TouchPortalAction("AddFuel", "Add Fuel", "MSFS", "Add Fuel (1 to 65535 or zero for 25% of capacity)", "Add {0} amount of Fuel", true)]
+    [TouchPortalActionText("0", 0, 65535)]
     [TouchPortalActionMapping("ADD_FUEL_QUANTITY")]
     public static readonly object ADD_FUEL;
 

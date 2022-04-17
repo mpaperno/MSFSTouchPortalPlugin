@@ -33,7 +33,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     [TouchPortalActionMapping("AP_PITCH_REF_SELECT", "Select")]
     public static readonly object AP_ATTITUDE_PITCH;
 
-    [TouchPortalAction("AutoPilotAttitudeSet", "Attitude Hold Pitch Value Set", "MSFS", "Sets the airspeed value", "Set Attitude Hold Pitch Value to {0} (-16384 to +16384)")]
+    [TouchPortalAction("AutoPilotAttitudeSet", "Attitude Hold Pitch Value Set", "MSFS", "Sets the airspeed value", "Set Attitude Hold Pitch Value to {0} (-16384 to +16384)", true)]
     [TouchPortalActionText("0", -16384, 16384)]
     [TouchPortalActionMapping("AP_PITCH_REF_SET")]
     public static readonly object AP_ATTITUDE_PITCH_SET;
@@ -77,7 +77,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     [TouchPortalActionMapping("HEADING_BUG_SELECT", "Select")]
     public static readonly object AP_HEADING_VAR;
 
-    [TouchPortalAction("AutoPilotHeadingSet", "Heading Hold Value Set", "MSFS", "Sets the heading hold value", "Heading Hold Value - {0}")]
+    [TouchPortalAction("AutoPilotHeadingSet", "Heading Hold Value Set", "MSFS", "Sets the heading hold value", "Heading Hold Value - {0}", true)]
     [TouchPortalActionText("1", 0, 359)]
     [TouchPortalActionMapping("HEADING_BUG_SET")]
     public static readonly object AP_HEADING_SET;
@@ -101,7 +101,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     [TouchPortalActionMapping("ALTITUDE_BUG_SELECT", "Select")]
     public static readonly object AP_ALTITUDE_VAR;
 
-    [TouchPortalAction("AutoPilotAltitudeSet", "Altitude Hold Value Set", "MSFS", "Sets the altitude hold value", "Altitude Hold Value - {0} to {1}")]
+    [TouchPortalAction("AutoPilotAltitudeSet", "Altitude Hold Value Set", "MSFS", "Sets the altitude hold value", "Altitude Hold Value - {0} to {1}", true)]
     [TouchPortalActionChoice(new[] { "Set English", "Set Metric" })]
     [TouchPortalActionText("0")]
     [TouchPortalActionMapping("AP_ALT_VAR_SET_ENGLISH", "Set English")]
@@ -154,7 +154,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     [TouchPortalActionMapping("AP_VS_VAR_SET_CURRENT", "Set Current")]
     public static readonly object AP_VERTICALSPEED_VAR;
 
-    [TouchPortalAction("AutoPilotVerticalSpeedSet", "Vertical Speed Value Set", "MSFS", "Sets the vertical speed value", "Vertical Speed Hold Value - {0} to {1}")]
+    [TouchPortalAction("AutoPilotVerticalSpeedSet", "Vertical Speed Value Set", "MSFS", "Sets the vertical speed value", "Vertical Speed Hold Value - {0} to {1}", true)]
     [TouchPortalActionChoice(new[] { "Set English", "Set Metric" })]
     [TouchPortalActionText("1", -5000, 5000)]
     [TouchPortalActionMapping("AP_VS_VAR_SET_ENGLISH", "Set English")]
@@ -179,7 +179,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     [TouchPortalActionMapping("AP_SPD_VAR_DEC", "Decrease")]
     public static readonly object AP_AIRSPEED_VAR;
 
-    [TouchPortalAction("AutoPilotAirSpeedSet", "Airspeed Value Set", "MSFS", "Sets the airspeed value", "Set Airspeed Hold Value to {0}")]
+    [TouchPortalAction("AutoPilotAirSpeedSet", "Airspeed Value Set", "MSFS", "Sets the airspeed value", "Set Airspeed Hold Value to {0}", true)]
     [TouchPortalActionText("0", 0, 5000)]
     [TouchPortalActionMapping("AP_SPD_VAR_SET")]
     public static readonly object AP_AIRSPEED_SET;
@@ -221,7 +221,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     [TouchPortalActionMapping("AP_MACH_VAR_DEC", "Decrease")]
     public static readonly object AP_MACH_VAR;
 
-    [TouchPortalAction("AutoPilotMachSet", "Mach Hold Value Set", "MSFS", "Sets the mach hold value", "Set Mach Hold Value to {0}")]
+    [TouchPortalAction("AutoPilotMachSet", "Mach Hold Value Set", "MSFS", "Sets the mach hold value", "Set Mach Hold Value to {0}", true)]
     [TouchPortalActionText("0", 0, 20)]
     [TouchPortalActionMapping("AP_MACH_VAR_SET")]
     public static readonly object AP_MACH_SET;

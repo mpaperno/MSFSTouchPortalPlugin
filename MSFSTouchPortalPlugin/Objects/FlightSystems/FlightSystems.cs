@@ -14,7 +14,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalActionMapping("AILERONS_RIGHT", "Right")]
     public static readonly object Ailerons;
 
-    [TouchPortalAction("AileronsSet", "Ailerons Set", "MSFS", " Set Ailerons", "Ailerons set to {0} (-16384 to +16384)")]
+    [TouchPortalAction("AileronsSet", "Ailerons Set", "MSFS", " Set Ailerons", "Ailerons set to {0} (-16384 to +16384)", true)]
     [TouchPortalActionText("0", -16384, 16384)]
     [TouchPortalActionMapping("AILERON_SET")]
     public static readonly object AileronsSet;
@@ -29,7 +29,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalActionMapping("ELEV_DOWN", "Down")]
     public static readonly object Elevator;
 
-    [TouchPortalAction("ElevatorSet", "Elevator Set", "MSFS", " Set Elevator", "Elevator set to {0} (-16384 to +16384)")]
+    [TouchPortalAction("ElevatorSet", "Elevator Set", "MSFS", " Set Elevator", "Elevator set to {0} (-16384 to +16384)", true)]
     [TouchPortalActionText("0", -16384, 16384)]
     [TouchPortalActionMapping("ELEVATOR_SET")]
     public static readonly object ElevatorSet;
@@ -65,7 +65,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalActionMapping("FLAPS_3", "4")]
     public static readonly object FlapsHandlePercent;
 
-    [TouchPortalAction("FlapsSet", "Flaps Set", "MSFS", " Set Flaps", "Flaps set to {0} (0 to 16384)")]
+    [TouchPortalAction("FlapsSet", "Flaps Set", "MSFS", " Set Flaps", "Flaps set to {0} (0 to 16384)", true)]
     [TouchPortalActionText("0", 0, 16384)]
     [TouchPortalActionMapping("FLAPS_SET")]
     public static readonly object FlapsSet;
@@ -124,7 +124,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalActionMapping("RUDDER_RIGHT", "Right")]
     public static readonly object Rudder;
 
-    [TouchPortalAction("RudderSet", "Rudder Set", "MSFS", " Set Rudder", "Rudder set to {0} (-16384 to +16384)")]
+    [TouchPortalAction("RudderSet", "Rudder Set", "MSFS", " Set Rudder", "Rudder set to {0} (-16384 to +16384)", true)]
     [TouchPortalActionText("0", -16384, 16384)]
     [TouchPortalActionMapping("RUDDER_SET")]
     public static readonly object RudderSet;
@@ -141,7 +141,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalActionMapping("SPOILERS_OFF", "Off")]
     public static readonly object SpoilersAvailable;
 
-    [TouchPortalAction("SpoilersSet", "Spoilers Set", "MSFS", " Set Spoilers", "Set Spoilers handle position to {0} (0 to 16384)")]
+    [TouchPortalAction("SpoilersSet", "Spoilers Set", "MSFS", " Set Spoilers", "Set Spoilers handle position to {0} (0 to 16384)", true)]
     [TouchPortalActionText("0", 0, 16384)]
     [TouchPortalActionMapping("SPOILERS_SET")]
     public static readonly object SpoilersHandlePosition;
@@ -163,7 +163,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalActionMapping("AILERON_TRIM_RIGHT", "Right")]
     public static readonly object AileronTrim;
 
-    [TouchPortalAction("AileronTrimSet", "Aileron Trim Set", "MSFS", " Set Aileron Trim", "Aileron Trim set to {0}% (-100 - +100)")]
+    [TouchPortalAction("AileronTrimSet", "Aileron Trim Set", "MSFS", " Set Aileron Trim", "Aileron Trim set to {0}% (-100 - +100)", true)]
     [TouchPortalActionText("0", -100, 100)]
     [TouchPortalActionMapping("AILERON_TRIM_SET")]
     public static readonly object AileronTrimSet;
@@ -175,7 +175,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalActionMapping("ELEV_TRIM_UP", "Up")]
     public static readonly object ElevatorTrim;
 
-    [TouchPortalAction("ElevatorTrimSet", "Elevator Trim Set", "MSFS", " Set Elevator Trim", "Elevator Trim set to {0} (-16384 to +16384)")]
+    [TouchPortalAction("ElevatorTrimSet", "Elevator Trim Set", "MSFS", " Set Elevator Trim", "Elevator Trim set to {0} (-16384 to +16384)", true)]
     [TouchPortalActionText("0", -16384, 16384)]
     [TouchPortalActionMapping("ELEVATOR_TRIM_SET")]
     public static readonly object ElevatorTrimSet;
@@ -187,7 +187,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalActionMapping("RUDDER_TRIM_RIGHT", "Right")]
     public static readonly object RudderTrim;
 
-    [TouchPortalAction("RudderTrimSet", "Rudder Trim Set", "MSFS", " Set Rudder Trim", "Rudder Trim set to {0}% (-100 - +100)")]
+    [TouchPortalAction("RudderTrimSet", "Rudder Trim Set", "MSFS", " Set Rudder Trim", "Rudder Trim set to {0}% (-100 - +100)", true)]
     [TouchPortalActionText("0", -100, 100)]
     [TouchPortalActionMapping("RUDDER_TRIM_SET")]
     public static readonly object RudderTrimSet;
