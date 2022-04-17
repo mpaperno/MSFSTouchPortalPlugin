@@ -75,6 +75,7 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string ValueType { get; set; }
     public virtual string[] ValueChoices { get; set; }
     public string ValueStateId { get; set; }
+    public Dictionary<string, string> ChoiceMappings { get; set; }
   }
 
 }

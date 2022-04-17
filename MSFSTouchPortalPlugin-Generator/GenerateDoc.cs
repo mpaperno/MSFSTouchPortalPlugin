@@ -161,8 +161,9 @@ namespace MSFSTouchPortalPlugin_Generator
             ValueType = ev.ValueType,
             ValueChoices = ev.ValueChoices,
             ValueStateId = ev.ValueStateId.Remove(0, ev.ValueStateId.IndexOf('.') + 1),
+            ChoiceMappings = (Dictionary<string, string>)ev.GetEventDescriptions(),
           };
-           category.Events.Add(tpEv);
+          category.Events.Add(tpEv);
         }
 
         // Sort the actions and states for SimConnect groups
@@ -317,7 +318,16 @@ namespace MSFSTouchPortalPlugin_Generator
               $"<td>{ev.ValueStateId}</td>" +
               $"<td>{ev.Format}</td>" +
               $"<td>{ev.ValueType}</td>");
-            s.Append("<td>").AppendJoin(", ", ev.ValueChoices).Append("</td>");
+            s.Append("<td>");
+            if (ev.ChoiceMappings == null || !ev.ChoiceMappings.Any()) {
+              s.AppendJoin(", ", ev.ValueChoices);
+            }
+            else {
+              s.Append("<details><summary><sub>details</sub></summary>\n<ul>");
+              s.AppendJoin('\n', ev.ChoiceMappings.Select(m => $"<li><b>{m.Key}</b> - {m.Value}</li>"));
+              s.Append($"</ul></details>");
+            }
+            s.Append("</td>");
             s.Append("</tr>\n");
           });
           s.Append("</table>\n\n\n");
