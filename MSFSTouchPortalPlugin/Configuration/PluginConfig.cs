@@ -29,7 +29,7 @@ namespace MSFSTouchPortalPlugin.Configuration
     public static string SimVarsImportsFile { get; set; }     = "SimVariables.ini";
     public static string SimEventsImportsFile { get; set; }   = "SimEvents.ini";
 
-    public static string AppRootFolder    { get; set; } = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+    public static string AppRootFolder    { get; set; } = Path.GetDirectoryName(AppContext.BaseDirectory);
     public static string AppConfigFolder  { get; set; } = Path.Combine(AppRootFolder, "Configuration");
 
     public static string UserConfigFolder {
@@ -206,18 +206,21 @@ namespace MSFSTouchPortalPlugin.Configuration
     public bool CopySimConnectConfig() {
       string filename = "SimConnect.cfg";
       string srcFile = Path.Combine(UserConfigFolder, filename);
+      bool ret = File.Exists(srcFile);
+      if (!ret && Directory.GetCurrentDirectory() != AppRootFolder)
+        srcFile = Path.Combine(AppRootFolder, filename);
+
       if (File.Exists(srcFile)) {
         try {
-          File.Copy(srcFile, Path.Combine(AppRootFolder, filename), true);
-          _logger.LogInformation($"Using custom SimConnect.cfg file from '{UserConfigFolder}'.");
-          return true;
+          File.Copy(srcFile, Path.Combine(Directory.GetCurrentDirectory(), filename), true);
+          _logger.LogInformation($"Copied SimConnect.cfg file from '{srcFile}'.");
         }
         catch (Exception e) {
           _logger.LogError($"Error trying to copy SimConnect.cfg file from '{srcFile}': {e.Message}");
-          return false;
+          ret = false;
         }
       }
-      return false;
+      return ret;
     }
 
     // Loads an individual sim var states config file, either from user's config folder, the default app config location, or a full file path
