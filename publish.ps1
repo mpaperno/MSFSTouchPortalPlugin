@@ -3,7 +3,7 @@
 Param(
   [string]$ProjectName = "MSFSTouchPortalPlugin",
   [string]$DistroName = "MSFS-TouchPortal-Plugin",
-  [string]$Configuration = "Release",
+  [string]$Configuration = "Publish",
   [string]$Platform = "x64",
   [String]$VersionSuffix = "",
   [switch]$Clean = $false,
@@ -26,10 +26,10 @@ if (Test-Path $PluginFilesPath) {
 }
 
 Write-Information "`nPublishing '$ProjectName' component to '$BinFilesPath' ...`n" -InformationAction Continue
-dotnet publish "$ProjectName" --output "$BinFilesPath" --configuration $Configuration -p:Platform=$Platform $VersionSuffixCommand $VersionSuffix -r "win-$Platform"
+dotnet publish "$ProjectName" --output "$BinFilesPath" --configuration $Configuration -p:Platform=$Platform $VersionSuffixCommand $VersionSuffix
 
 Write-Information "`nPublishing '$ProjectName-Generator' component...`n" -InformationAction Continue
-dotnet publish "$ProjectName-Generator" --output "$BinFilesPath" --configuration $Configuration -p:Platform=$Platform -r "win-$Platform" /p:ValidateExecutableReferencesMatchSelfContained=false
+dotnet publish "$ProjectName-Generator" --output "$BinFilesPath" --configuration $Configuration -p:Platform=$Platform
 
 # Run Documentation
 Write-Information "`nGenerating entry.tp JSON and Documentation..." -InformationAction Continue

@@ -4,10 +4,11 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>MSFSTouchPortalPlugin_Generator</RootNamespace>
-    <CodeAnalysisRuleSet>..\.sonarlint\msfstouchportalplugincsharp.ruleset</CodeAnalysisRuleSet>
     <Platforms>x64</Platforms>
     <Version>1.2.0</Version>
     <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath>
+    <Configurations>Debug;Release;Publish</Configurations>
+    <!--<CodeAnalysisRuleSet>..\.sonarlint\msfstouchportalplugincsharp.ruleset</CodeAnalysisRuleSet>-->
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -16,7 +17,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <PropertyGroup Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Publish') And '$(Platform)'=='x64'">
     <PlatformTarget>x64</PlatformTarget>
     <NoWarn>1701;1702</NoWarn>
     <DefineConstants />
@@ -28,9 +29,11 @@
     </AllowedReferenceRelatedFileExtensions>
   </PropertyGroup>
 
+  <!--
   <ItemGroup>
     <AdditionalFiles Include="..\.sonarlint\msfstouchportalplugin\CSharp\SonarLint.xml" Link="SonarLint.xml" />
   </ItemGroup>
+  -->
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
@@ -42,4 +45,28 @@
     <ProjectReference Include="..\MSFSTouchPortalPlugin\MSFSTouchPortalPlugin.csproj" />
   </ItemGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishTrimmed>True</PublishTrimmed>
+    <TrimMode>copyused</TrimMode>
+    <PublishSingleFile>False</PublishSingleFile>
+    <PublishReadyToRun>False</PublishReadyToRun>
+  </PropertyGroup>
+
+  <!-- required for trimming otherwise we get missing dependencies at runtime -->
+  <ItemGroup>
+    <TrimmerRootAssembly Include="mscorlib" />
+    <TrimmerRootAssembly Include="netstandard" />
+  </ItemGroup>
+  
+  <!-- somehow this is required for trimming to work properly, otherwise we get an exception during build -->
+  <ItemGroup Condition="'$(Configuration)'=='Publish'">
+    <Reference Include="Microsoft.FlightSimulator.SimConnect">
+      <HintPath>..\MSFSTouchPortalPlugin\lib\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+  
 </Project>

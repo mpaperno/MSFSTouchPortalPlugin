@@ -11,7 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		actions = actions
 		airplane_takeoff1600.png = airplane_takeoff1600.png
 		airplane_takeoff24.png = airplane_takeoff24.png
 		build.ps1 = build.ps1
@@ -23,10 +22,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		publish.ps1 = publish.ps1
 		README.md = README.md
 		sonarcube.ps1 = sonarcube.ps1
-		states = states
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{BB11FB83-1407-4C82-AA08-67D7BB5A106B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{7FEA40CD-379E-48F1-9581-2692B532A839}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\verify-build.yml = .github\workflows\verify-build.yml
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ISSUE_TEMPLATE", "ISSUE_TEMPLATE", "{D74D033D-8E79-4CCD-9D07-7CD7CD2FEF49}"
 	ProjectSection(SolutionItems) = preProject
@@ -46,19 +49,25 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
+		Publish|x64 = Publish|x64
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D3F1B2FB-0846-4003-8D2E-355273668F37}.Debug|x64.ActiveCfg = Debug|x64
 		{D3F1B2FB-0846-4003-8D2E-355273668F37}.Debug|x64.Build.0 = Debug|x64
+		{D3F1B2FB-0846-4003-8D2E-355273668F37}.Publish|x64.ActiveCfg = Publish|x64
+		{D3F1B2FB-0846-4003-8D2E-355273668F37}.Publish|x64.Build.0 = Publish|x64
 		{D3F1B2FB-0846-4003-8D2E-355273668F37}.Release|x64.ActiveCfg = Release|x64
 		{D3F1B2FB-0846-4003-8D2E-355273668F37}.Release|x64.Build.0 = Release|x64
 		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Debug|x64.ActiveCfg = Debug|x64
 		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Debug|x64.Build.0 = Debug|x64
+		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Publish|x64.ActiveCfg = Publish|x64
+		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Publish|x64.Build.0 = Publish|x64
 		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Release|x64.ActiveCfg = Release|x64
 		{53A38611-6486-4FF5-8637-1C6BC38A6A18}.Release|x64.Build.0 = Release|x64
 		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Debug|x64.ActiveCfg = Debug|x64
 		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Debug|x64.Build.0 = Debug|x64
+		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Publish|x64.ActiveCfg = Release|x64
 		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Release|x64.ActiveCfg = Release|x64
 		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
@@ -67,6 +76,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BB11FB83-1407-4C82-AA08-67D7BB5A106B} = {6DF0C85E-3EB4-4898-A304-EFA04CB547A6}
+		{7FEA40CD-379E-48F1-9581-2692B532A839} = {BB11FB83-1407-4C82-AA08-67D7BB5A106B}
 		{D74D033D-8E79-4CCD-9D07-7CD7CD2FEF49} = {BB11FB83-1407-4C82-AA08-67D7BB5A106B}
 		{8781784E-631E-4D29-A3A1-9CBEFBC01310} = {BB11FB83-1407-4C82-AA08-67D7BB5A106B}
 	EndGlobalSection
