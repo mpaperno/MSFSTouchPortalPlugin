@@ -20,7 +20,8 @@ namespace MSFSTouchPortalPlugin.Interfaces
     event DisconnectEventHandler OnDisconnect;
     event ExceptionEventHandler OnException;
 
-    bool IsConnected();
+    bool IsConnected { get; }
+
     bool AddNotification(Groups group, Enum eventId);
     uint Connect(uint configIndex = 0);
     void Disconnect();

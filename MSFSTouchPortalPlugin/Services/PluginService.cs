@@ -85,7 +85,7 @@ namespace MSFSTouchPortalPlugin.Services
     public Task StartAsync(CancellationToken cancellationToken) {
       _cancellationToken = cancellationToken;
 
-      _logger.LogInformation($"======= {PluginId} Starting =======");
+      _logger.LogInformation($"======= " + PLUGIN_ID + " Starting =======");
 
       if (!Initialize()) {
         _hostApplicationLifetime.StopApplication();
@@ -120,7 +120,10 @@ namespace MSFSTouchPortalPlugin.Services
         catch (Exception) { /* ignore */ }
       }
       _simConnectService?.Dispose();
-      _logger.LogInformation($"======= {PluginId} Stopped =======");
+      _simConnectionRequest?.Dispose();
+      _simAutoConnectDisable?.Dispose();
+
+      _logger.LogInformation("======= " + PLUGIN_ID + " Stopped =======");
       return Task.CompletedTask;
     }
 
@@ -156,20 +159,31 @@ namespace MSFSTouchPortalPlugin.Services
       try {
         while (!_cancellationToken.IsCancellationRequested) {
           _simConnectionRequest.Wait(_cancellationToken);
-          if (!_simConnectService.IsConnected() && (hResult = _simConnectService.Connect(Settings.SimConnectConfigIndex.UIntValue)) != SimConnectService.S_OK) {
-            if (hResult != SimConnectService.E_FAIL) {
-              DisconnectSimConnect();
-              if (hResult == SimConnectService.E_INVALIDARG)
+          if (!_simConnectService.IsConnected && (hResult = _simConnectService.Connect(Settings.SimConnectConfigIndex.UIntValue)) != SimConnectService.S_OK) {
+            switch (hResult) {
+              case SimConnectService.E_FAIL:   // sim not running, keep trying
+                _logger.LogWarning((int)EventIds.SimTimedOut, "Connection to Simulator failed, retrying in " + SIM_RECONNECT_DELAY_SEC.ToString() + " seconds...");
+                break;
+
+              case SimConnectService.E_TIMEOUT:  // unexpected timeout, keep trying... ?
+                _logger.LogWarning((int)EventIds.SimError, "Unexpected timeout while trying to connect to SimConnect. Will keep trying...");
+                break;
+
+              case SimConnectService.E_INVALIDARG:  // invalid SimConnect.cfg index value
                 _logger.LogError((int)EventIds.SimError,
                   "SimConnect returned IVALID ARGUMENT for SimConnect.cfg index value " + Settings.SimConnectConfigIndex.UIntValue.ToString() +
                   ". Connection attempts aborted. Please fix setting or config. file and retry.");
-              else
+                DisconnectSimConnect();
+                continue;
+
+              default:  // other unexpected error
                 _logger.LogError((int)EventIds.SimError,
                   "Unknown exception occurred trying to connect to SimConnect. Connection attempts aborted, please check plugin logs. " +
                   "Error code/message: " + $"{hResult:X}");
-              continue;
+                DisconnectSimConnect();
+                continue;
+
             }
-            _logger.LogWarning((int)EventIds.SimTimedOut, "Connection to Simulator failed, retrying in " + SIM_RECONNECT_DELAY_SEC.ToString() + " seconds...");
             WaitHandle.WaitAny(waitHandles, SIM_RECONNECT_DELAY_SEC * 1000);  // delay on connection error
           }
         }
@@ -190,7 +204,7 @@ namespace MSFSTouchPortalPlugin.Services
     private async Task PluginEventsTask() {
       _logger.LogDebug("PluginEventsTask task started.");
       try {
-        while (_simConnectService.IsConnected() && !_simTasksCancelToken.IsCancellationRequested) {
+        while (_simConnectService.IsConnected && !_simTasksCancelToken.IsCancellationRequested) {
           IReadOnlyCollection<Timer> timers = _repeatingActionTimers.Values.ToArray();
           foreach (Timer tim in timers)
             tim.Tick();
@@ -282,11 +296,12 @@ namespace MSFSTouchPortalPlugin.Services
       _logger.LogInformation("SimConnect Disconnected");
 
       _simTasksCTS?.Cancel();
-      if (_pluginEventsTask.Status == TaskStatus.Running && !_pluginEventsTask.Wait(5000))
-        _logger.LogWarning((int)EventIds.Ignore, "PluginEventsTask timed out while stopping.");
-      try { _pluginEventsTask.Dispose(); }
-      catch { /* ignore in case it hung */ }
-
+      if (_pluginEventsTask != null){
+        if (_pluginEventsTask.Status == TaskStatus.Running && !_pluginEventsTask.Wait(5000))
+          _logger.LogWarning((int)EventIds.Ignore, "PluginEventsTask timed out while stopping.");
+        try { _pluginEventsTask.Dispose(); }
+        catch { /* ignore in case it hung */ }
+      }
       ClearRepeatingActions();
 
       _pluginEventsTask = null;
@@ -348,7 +363,7 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     private void RegisterAllSimVars() {
-      if (_simConnectService.IsConnected())
+      if (_simConnectService.IsConnected)
         foreach (SimVarItem simVar in _statesDictionary)
           _simConnectService.RegisterToSimConnect(simVar);
     }
@@ -362,7 +377,7 @@ namespace MSFSTouchPortalPlugin.Services
 
       // Register it. If the SimVar gets regular updates (not custom polling) then this also starts the data requests for this value.
       // If we're not connected now then the var will be registered in RegisterAllSimVars() when we do connect.
-      if (_simConnectService.IsConnected() && !_simConnectService.RegisterToSimConnect(simVar))
+      if (_simConnectService.IsConnected && !_simConnectService.RegisterToSimConnect(simVar))
         return false;
 
       _statesDictionary.Add(simVar.Def, simVar);
@@ -513,7 +528,7 @@ namespace MSFSTouchPortalPlugin.Services
     // update Connected state and trigger corresponding UpdateSimSystemEventState update
     private void UpdateSimConnectState() {
       EventIds evtId = EventIds.SimConnected;
-      if (!_simConnectService.IsConnected())
+      if (!_simConnectService.IsConnected)
         evtId = _simConnectionRequest.IsSet ? EventIds.SimConnecting : EventIds.SimDisconnected;
       UpdateTpStateValue("Connected", evtId switch { EventIds.SimConnected => "true", EventIds.SimDisconnected => "false", _ => "connecting" });
       UpdateSimSystemEventState(evtId);
@@ -533,7 +548,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     void ConnectSimConnect() {
       _simAutoConnectDisable.Reset();
-      if (!_simConnectService.IsConnected())
+      if (!_simConnectService.IsConnected)
         _simConnectionRequest.Set();
       UpdateSimConnectState();
     }
@@ -542,7 +557,7 @@ namespace MSFSTouchPortalPlugin.Services
       _simAutoConnectDisable.Set();
       bool wasSet = _simConnectionRequest.IsSet;
       _simConnectionRequest.Reset();
-      if (_simConnectService.IsConnected())
+      if (_simConnectService.IsConnected)
         _simConnectService.Disconnect();
       else if (wasSet)
         _logger.LogInformation((int)EventIds.PluginInfo, "Connection attempts to Simulator were canceled.");
@@ -686,13 +701,13 @@ namespace MSFSTouchPortalPlugin.Services
         eventId = ev.Id;
       }
       else {
-        ev = new ActionEventType(evtId, Groups.SimSystem, !string.IsNullOrWhiteSpace(sValue), out eventId);
+        ev = new ActionEventType(evtId, Groups.Plugin, !string.IsNullOrWhiteSpace(sValue), out eventId);
         actionsDictionary[evtId] = ev;
         _reflectionService.AddSimEventNameMapping(eventId, new SimEventRecord(ev.CategoryId, evtId));
         _simConnectService.MapClientEventToSimEvent(eventId, evtId, ev.CategoryId);  // no-op if not connected, will get mapped in the OnConnected handler
       }
 
-      if (_simConnectService.IsConnected())
+      if (_simConnectService.IsConnected)
         ProcessSimEvent(ev, eventId, sValue);
     }
 
@@ -707,7 +722,7 @@ namespace MSFSTouchPortalPlugin.Services
         return;
       }
 
-      if (!_simConnectService.IsConnected())
+      if (!_simConnectService.IsConnected)
         return;
 
       var dataArry = actionEvent.Data.Values.ToArray();
