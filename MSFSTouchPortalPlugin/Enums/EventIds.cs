@@ -56,17 +56,17 @@ namespace MSFSTouchPortalPlugin.Enums
     [Display(Name = "Flight Plan Deactivated", Description = "When the active flight plan is de-activated.")]
     FlightPlanDeactivated,
 
-    //[Display(Description = "Upon every visual frame")]
-    //Frame,      // not working, no notification
+    //[Display(Description = "Upon every visual frame while simulator is not paused.")]
+    //Frame,      // not used for now since it's a lot of data for no particular reason...
 
-    [Display(Name = "Pause Toggled", Description = "When the flight is paused or unpaused, and also immediately returns the current pause state (1 = paused or 0 = unpaused).")]
+    [Display(Name = "Pause Toggled", Description = "When the flight is paused or unpaused (but not active pause nor 'esc' pause).")]
     Pause,
 
-    [Display(Name = "Paused", Description = "When the flight is paused.")]
+    [Display(Name = "Paused", Description = "When the flight is paused (but not active pause nor 'esc' pause).")]
     Paused,
 
-    //[Display(Description = "Upon every visual frame that the simulation is paused.")]
-    //PauseFrame,  // no notification (I've read this could be used to detect active pause, but...?)
+    //[Display(Name = "Pause Frame", Description = "Upon every visual frame that the simulation is paused.")]
+    //PauseFrame,  // not used, not useful... only fires when in Paused state anyway which is neither active pause nor "Esc" pause.
 
     [Display(Name = "Position Changed", Description = "When the user changes the position of their aircraft through a dialog or loading a flight.")]
     PositionChanged,
@@ -83,7 +83,7 @@ namespace MSFSTouchPortalPlugin.Enums
     [Display(Name = "Sound Toggled", Description = "When the master sound switch is changed.")]
     Sound,
 
-    [Display(Name = "Unpaused", Description = "When the flight is un-paused.")]
+    [Display(Name = "Unpaused", Description = "When the flight is un-paused  (but not active pause nor 'esc' pause).")]
     Unpaused,
 
     [Display(Name = "View Changed", Description = "When the user aircraft view is changed. This request will also return the current view immediately. A Enum type is returned in the dwData parameter (0 = External, 2 = Virtual cockpit, .. possibly others for FSX?).")]
