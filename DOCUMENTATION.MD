@@ -4,7 +4,7 @@ This plugin provides a two-way interface between Touch Portal and Flight Simulat
 
 For further documentation, please see https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki
 
-This documentation generated for plugin v0.7.0.0-mp
+This documentation generated for plugin v0.7.0.2-mp
 
 ---
 
@@ -1003,9 +1003,9 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 <li><b>SimConnect Error</b> - When a Simulator (SimConnect) error or warning is detected. Error details (log entry) are sent in the SimSystemEventData state value.</li>
 <li><b>Plugin Error</b> - When a Plugin-specific error or warning is detected (eg. could not parse action data, load a file, etc). Error details (log entry) are sent in the SimSystemEventData state value.</li>
 <li><b>Plugin Information</b> - When a notable plugin informational ("success") action is detected. Information details (log entry) are sent in the SimSystemEventData state value.</li>
-<li><b>Paused</b> - When the flight is paused.</li>
-<li><b>Unpaused</b> - When the flight is un-paused.</li>
-<li><b>Pause Toggled</b> - When the flight is paused or unpaused, and also immediately returns the current pause state (1 = paused or 0 = unpaused).</li>
+<li><b>Paused</b> - When the flight is paused (but not active pause nor 'esc' pause).</li>
+<li><b>Unpaused</b> - When the flight is un-paused  (but not active pause nor 'esc' pause).</li>
+<li><b>Pause Toggled</b> - When the flight is paused or unpaused (but not active pause nor 'esc' pause).</li>
 <li><b>Flight Started</b> - The simulator is running. Typically the user is actively controlling the aircraft on the ground or in the air. However, in some cases additional pairs of SimStart/SimStop events are sent. For example, when a flight is reset the events that are sent are SimStop, SimStart, SimStop, SimStart.</li>
 <li><b>Flight Stopped</b> - The simulator is not running. Typically the user is loading a flight, navigating the shell or in a dialog.</li>
 <li><b>Flight Toggled</b> - When the flight changes between running and not.</li>

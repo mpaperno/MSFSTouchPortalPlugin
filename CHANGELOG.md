@@ -1,5 +1,17 @@
 # MSFS Touch Portal Plugin - MP fork
 
+
+## 0.7.0.2-mp (April-121-2022)
+* Fixes an issue that prevented MobiFlight events from working.
+* Fixes possible plugin crash when trying to re-connect to MSFS after it has crashed.
+* Improved detection of an actual valid SimConnect link when trying to connect. SimConnect seems sometimes "confused" after the sim has exited unexpectedly (crashed).
+
+## 0.7.0.1-mp (April-18-2022)
+
+* This release fixes missing .Net 5.0 dependency issue with v0.7.0. This would only affect users who did not have .Net 5 libraries already installed on their PC.
+* There is also a minor bug fix for SimConnect.cfg file not being copied to the correct folder.
+* Lastly, the distribution size has been reduced by almost half.
+
 ## 0.7.0.0-mp (April-17-2022)
 
 ### Major Features

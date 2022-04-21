@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>MSFSTouchPortalPlugin</RootNamespace>
-    <Version>0.7.0.1-mp</Version>
+    <Version>0.7.0.2-mp</Version>
     <Platforms>x64</Platforms>
     <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath>
     <AnalysisLevel>5.0</AnalysisLevel>
@@ -55,15 +55,15 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+    <!--<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />-->
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Handles" Version="4.3.0" />
-    <PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" />
+    <!--<PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />-->
+    <!--<PackageReference Include="System.Runtime.Handles" Version="4.3.0" />-->
+    <!--<PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" />-->
     <!--
     <PackageReference Include="SonarAnalyzer.CSharp" Version="8.34.0.42011">
       <PrivateAssets>all</PrivateAssets>
