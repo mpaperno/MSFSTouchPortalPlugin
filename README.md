@@ -1,4 +1,4 @@
-# SimConnect Touch Portal Plugin - MP fork
+# MSFS/SimConnect Touch Portal Plugin
 
 [![verify-build](https://github.com/mpaperno/MSFSTouchPortalPlugin/actions/workflows/verify-build.yml/badge.svg)](https://github.com/mpaperno/MSFSTouchPortalPlugin/actions/workflows/verify-build.yml)
 [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/mpaperno/MSFSTouchPortalPlugin?include_prereleases)](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases)
@@ -6,8 +6,6 @@
 [![Downloads of latest release](https://img.shields.io/github/downloads/mpaperno/MSFSTouchPortalPlugin/latest/total)](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases/latest)
 [![Stars](https://img.shields.io/github/stars/mpaperno/MSFSTouchPortalPlugin)](https://github.com/mpaperno/MSFSTouchPortalPlugin/stargazers)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
-Please note you're on the main branch for this fork (version). This README is specific to this version and repository. The `master` branch will stay synced with the original.
 
 ## Overview
 
@@ -18,6 +16,7 @@ A good starting point for pages would be to look at those created by Denham at [
 Another source to check out is FordMustang0288's repo: [MSFSTouchPortalPages](https://github.com/FordMustang0288/MSFSTouchPortalPages).
 A (slightly dated) installation and usage guide is available at _Simvol_ [How to use Touch Portal [with MSFS]](https://www.simvol.org/en/articles/tutorials/use-touch-portal).
 
+This project is a continuation of the original [MSFSTuchPortalPlugin by Tim Lewis](https://github.com/tlewis17/MSFSTouchPortalPlugin).
 
 ## Features
 
@@ -101,8 +100,19 @@ My [TJoy Touch Portal Plugin](https://github.com/mpaperno/TJoy) is an interface 
 
 * Sliders ("connectors")
 * Custom SimVar/states setup GUI
+* WASM module integration for local vars and more
+
+## References
+
+* [MSFS EventIDs (old but has all events on one page)](https://docs.microsoft.com/en-us/previous-versions/microsoft-esp/cc526980\(v=msdn.10\))
+* [MSFS Variables (also old but also all on one page)](https://docs.microsoft.com/en-us/previous-versions/microsoft-esp/cc526981\(v=msdn.10\))
+* [FlightSimulator.com SDK Reference (current)](https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_SDK.htm)
+* [SDK Event IDs (current)](https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Event_IDs.htm)
+* [SDK Simulator Variables (current)](https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Simulation_Variables.htm)
+* [HubHop Community Database](https://hubhop.mobiflight.com)
 
 ## Credits
+
 Originally created by Tim Lewis at https://github.com/tlewis17/MSFSTouchPortalPlugin and published under the MIT license.
 
 Heavily modified by Maxim Paperno, version found at https://github.com/mpaperno/MSFSTouchPortalPlugin
@@ -113,10 +123,24 @@ binaries, used under the MIT license. The modified source is [published here](ht
 Uses a modified version of [SharpConfig](https://github.com/cemdervis/SharpConfig) library, used under the MIT license.
 Change log is included in this repo alongside the library files.
 
-## References
+## Copyright, License, and Disclaimer
 
-* [MSFS EventIDs (old but has all events on one page)](https://docs.microsoft.com/en-us/previous-versions/microsoft-esp/cc526980\(v=msdn.10\))
-* [MSFS Variables (also old but also all on one page)](https://docs.microsoft.com/en-us/previous-versions/microsoft-esp/cc526981\(v=msdn.10\))
-* [FlightSimulator.com SDK Reference (current)](https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_SDK.htm)
-* [SDK Event IDs (current)](https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Event_IDs.htm)
-* [SDK Simulator Variables (current)](https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Simulation_Variables.htm)
+MSFSTouchPortalPlugin Project<br/>
+Copyright (c) 2020 Tim Lewis;<br />
+Copyright Maxim Paperno, all rights reserved;<br />
+Copyright MSFSTouchPortalPlugin Project Contributors
+
+This program and associated files may be used under the terms of the MIT
+License, a copy of which is included with this project.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+This project may also use 3rd-party Open Source software under the terms
+of their respective licenses. The copyright notice above does not apply
+to any 3rd-party components used within.
