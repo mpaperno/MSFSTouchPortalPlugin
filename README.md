@@ -5,7 +5,11 @@
 [![Downloads](https://img.shields.io/github/downloads/mpaperno/MSFSTouchPortalPlugin/total.svg)](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases)
 [![Downloads of latest release](https://img.shields.io/github/downloads/mpaperno/MSFSTouchPortalPlugin/latest/total)](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases/latest)
 [![Stars](https://img.shields.io/github/stars/mpaperno/MSFSTouchPortalPlugin)](https://github.com/mpaperno/MSFSTouchPortalPlugin/stargazers)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPL3-blue.svg)](LICENSE)
+
+<div align="center">
+<img src="https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/images/logo/banner_top-768x204.png" />
+</div>
 
 ## Overview
 
@@ -21,10 +25,11 @@ This project is a continuation of the original [MSFSTuchPortalPlugin by Tim Lewi
 ## Features
 
 * Connects automatically through SimConnect.
-* Allows getting data variables from simulator such as flight instruments or button/switch states.
-* Allows triggering various aircraft components from a Touch Portal panel.
-* Completely configurable to request any variable or trigger any even supported by the connected simulator, including with custom extensions like MobiFlight.
-* Supports simulator system events as Touch Portal events.
+* Allows getting data variables from simulator at regular intervals, such as flight instruments, control surfaces, or switch states.
+* Allows triggering any interactive aircraft event via a Touch Portal Action, such as setting switches, adjusting control surfaces, radio frequencies, and so on.
+* Completely configurable to request any variable or trigger any event supported by the connected simulator, including with custom extensions like MobiFlight.
+* Supports simulator system events (such as "flight loaded" or "sim started") as Touch Portal Events.
+* Allows simultaneous usage from multiple networked Touch Portal devices.
 
 ## Documentation
 
@@ -112,15 +117,14 @@ My [TJoy Touch Portal Plugin](https://github.com/mpaperno/TJoy) is an interface 
 * [HubHop Community Database](https://hubhop.mobiflight.com)
 
 ## Credits
+Currently maintained by Maxim Paperno at https://github.com/mpaperno/MSFSTouchPortalPlugin ; see copyright and licensing details below.
 
-Originally created by Tim Lewis at https://github.com/tlewis17/MSFSTouchPortalPlugin and published under the MIT license.
-
-Heavily modified by Maxim Paperno, version found at https://github.com/mpaperno/MSFSTouchPortalPlugin
+Originally created by Tim Lewis at https://github.com/tlewis17/MSFSTouchPortalPlugin and published under the MIT License.
 
 Uses a modified version of [TouchPortalSDK for C#](https://github.com/oddbear/TouchPortalSDK) library
-binaries, used under the MIT license. The modified source is [published here](https://github.com/mpaperno/TouchPortalSDK).
+binaries, used under the MIT License. The modified source is [published here](https://github.com/mpaperno/TouchPortal-CS-API).
 
-Uses a modified version of [SharpConfig](https://github.com/cemdervis/SharpConfig) library, used under the MIT license.
+Uses a modified version of [SharpConfig](https://github.com/cemdervis/SharpConfig) library, used under the MIT License.
 Change log is included in this repo alongside the library files.
 
 ## Copyright, License, and Disclaimer
@@ -130,16 +134,17 @@ Copyright (c) 2020 Tim Lewis;<br />
 Copyright Maxim Paperno, all rights reserved;<br />
 Copyright MSFSTouchPortalPlugin Project Contributors
 
-This program and associated files may be used under the terms of the MIT
-License, a copy of which is included with this project.
+This program and associated files may be used under the terms of the GNU
+General Public License as published by the Free Software Foundation,
+either version 3 of the License, or (at your option) any later version.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+A copy of the GNU General Public License is included in this repository
+and is also available at <http://www.gnu.org/licenses/>.
 
 This project may also use 3rd-party Open Source software under the terms
 of their respective licenses. The copyright notice above does not apply
