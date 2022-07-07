@@ -43,7 +43,7 @@
     <TrimmerRootAssembly Include="mscorlib" />
     <TrimmerRootAssembly Include="netstandard" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -55,21 +55,13 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-    <!--<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />-->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <!--<PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />-->
-    <!--<PackageReference Include="System.Runtime.Handles" Version="4.3.0" />-->
-    <!--<PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" />-->
-    <!--
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.34.0.42011">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    -->
+    <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
   </ItemGroup>
 
   <!-- SimConnect libs -->
@@ -119,11 +111,12 @@
     <None Update="Configuration\SimEvents.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <!-- SimConnect.cfg needs to go into the root -->
-    <ContentWithTargetPath Include="Configuration\SimConnect.cfg">
+    <None Update="Configuration\SimConnect.cfg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>SimConnect.cfg</TargetPath>
-    </ContentWithTargetPath>
+    </None>
+    <None Update="Configuration\HubHop\hubhop_presets.sqlite3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
