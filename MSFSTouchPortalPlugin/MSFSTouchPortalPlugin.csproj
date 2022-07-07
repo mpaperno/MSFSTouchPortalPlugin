@@ -77,14 +77,14 @@
     </ContentWithTargetPath>
   </ItemGroup>
 
-  <!-- Custom TouchPortalSDK lib -->
+  <!-- TouchPortal API lib -->
   <ItemGroup>
     <Reference Include="TouchPortalSDK, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>.\lib\TouchPortalSDK\TouchPortalSDK.dll</HintPath>
       <Private>true</Private>
       <EmbedInteropTypes>false</EmbedInteropTypes>
     </Reference>
-    <!--<PackageReference Include="TouchPortalSDK" Version="0.23.1" />-->
+    <!--<PackageReference Include="TouchPortal-CS-API" Version="1.44.2" />-->
   </ItemGroup>
 
   <!-- Custom SharpConfig lib -->
@@ -95,6 +95,32 @@
       <EmbedInteropTypes>false</EmbedInteropTypes>
     </Reference>
     <!--<PackageReference Include="SharpConfig" Version="3.2.9.1" />-->
+  </ItemGroup>
+
+  <!-- WASimCommander Client -->
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Reference Include="WASimCommander.WASimClient, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>.\lib\WASimCommander\WASimCommander.WASimClient.dll</HintPath>
+      <Private>true</Private>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Reference Include="WASimCommander.WASimClient_d, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>.\lib\WASimCommander\WASimCommander.WASimClient_d.dll</HintPath>
+      <Private>true</Private>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ContentWithTargetPath Include=".\lib\WASimCommander\Ijwhost.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>Ijwhost.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include=".\lib\WASimCommander\client_conf.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>client_conf.ini</TargetPath>
+    </ContentWithTargetPath>
   </ItemGroup>
 
   <!-- Config files to copy to output -->
