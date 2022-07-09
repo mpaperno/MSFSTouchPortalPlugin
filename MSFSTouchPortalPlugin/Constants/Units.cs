@@ -6,7 +6,7 @@ namespace MSFSTouchPortalPlugin.Constants {
   internal static class Units {
 
     private static readonly string[] _integralUnits = new string[] {
-      Enum, mask, flags, position16k, position32k, position128, Bco16, second, seconds, minute, minutes, hour, hours, day, days, hourover10, hoursover10, year, years
+      Enum, mask, flags, integer, position16k, position32k, position128, Bco16, second, seconds, minute, minutes, hour, hours, day, days, hourover10, hoursover10, year, years
     };
 
     private static readonly string[] _booleanUnits = new string[] { Bool, Boolean };
@@ -37,6 +37,7 @@ namespace MSFSTouchPortalPlugin.Constants {
     #region Unit Names
 
     internal const string null_unit = "";
+    internal const string integer = "integer";  // not std unit, like "number" but for ints
 
     internal const string amp = "amp";
     internal const string ampere = "ampere";
