@@ -53,7 +53,7 @@ namespace MSFSTouchPortalPlugin_Generator.Configuration
       HelpText = "\nURL to full project documentation, if any.")]
     public string DocumentationUrl { get; set; }
 
-    [Option('d', "debug", Hidden = true, Default = false, Required = false,
+    [Option('d', "debug", Default = false, Required = false,
       HelpText = "Enables generating a 'debug' version of entry.tp. Currently that means w/out a startup command.")]
     public bool Debug { get; set; }
   }
