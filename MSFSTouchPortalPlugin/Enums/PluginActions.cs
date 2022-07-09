@@ -8,6 +8,8 @@
     // Action IDs
     Connection,
     ActionRepeatInterval,
+    UpdateHubHopPresets,
+
     SetCustomSimEvent,
     SetKnownSimEvent,
     SetSimVar,

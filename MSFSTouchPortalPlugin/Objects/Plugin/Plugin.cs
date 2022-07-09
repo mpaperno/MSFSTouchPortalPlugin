@@ -7,14 +7,15 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
   [TouchPortalCategory(Groups.Plugin)]
   internal static class PluginMapping
   {
-    [TouchPortalAction(PluginActions.Connection, "Connection",
-      "Toggle/On/Off SimConnect Connection",
-      "SimConnect Connection - {0}")]
-    [TouchPortalActionChoice(new[] { "Toggle", "On", "Off", "Reload States" }, Id = "Action")]
+    [TouchPortalAction(PluginActions.Connection, "Connect & Update",
+      "Plugin actions: Toggle/On/Off SimConnect Connection, Reload State Config Files, Update HubHop Presets",
+      "Plugin Action: {0}")]
+    [TouchPortalActionChoice(new[] { "Toggle", "On", "Off", "Reload States", "Update HubHop" }, Id = "Action")]
     [TouchPortalActionMapping(PluginActions.ToggleConnection, "Toggle")]
     [TouchPortalActionMapping(PluginActions.Connect, "On")]
     [TouchPortalActionMapping(PluginActions.Disconnect, "Off")]
     [TouchPortalActionMapping(PluginActions.ReloadStates, "Reload States")]
+    [TouchPortalActionMapping(PluginActions.UpdateHubHopPresets, "Update HubHop")]
     public static readonly object Connection;
 
     [TouchPortalAction(PluginActions.ActionRepeatInterval, "Action Repeat Interval",
@@ -121,7 +122,7 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
   {
     public static readonly PluginSetting ConnectSimOnStartup = new PluginSetting("ConnectSimOnStartup", DataType.Switch) {
       Name = "Connect To Flight Sim on Startup (0/1)",
-      Description = "Set to 1 to automatically attempt connection to flight simulator upon Touch Portal startup. Set to 0 to only connect manually via the provided Action.",
+      Description = "Set to 1 to automatically attempt connection to flight simulator upon Touch Portal startup. Set to 0 to only connect manually via the Action *MSFS - Plugin -> Connect & Update*.",
       Default = "0",
     };
 
@@ -172,5 +173,12 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
       ReadOnly = true,
       TouchPortalStateId = "ActionRepeatInterval"
     };
+
+    public static readonly PluginSetting UpdateHubHopOnStartup = new PluginSetting("UpdateHubHopOnStartup", DataType.Switch) {
+      Name = "Update HubHop Data on Startup (0/1)",
+      Description = "Set to 1 to automatically load latest HubHop data when plugin starts. Set to 0 to disable. Updates can always be triggered manually via the Action *MSFS - Plugin -> Connect & Update*.",
+      Default = "0",
+    };
+
   }
 }

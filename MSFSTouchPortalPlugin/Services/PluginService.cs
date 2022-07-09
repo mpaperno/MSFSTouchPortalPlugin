@@ -39,6 +39,7 @@ namespace MSFSTouchPortalPlugin.Services
     private readonly ISimConnectService _simConnectService;
     private readonly IReflectionService _reflectionService;
     private readonly PluginConfig _pluginConfig;
+    private readonly HubHopPresetsCollection _presets;
 
     private CancellationToken _cancellationToken;    // main run enable token passed from Program startup in StartAsync()
     private CancellationTokenSource _simTasksCTS;    // for _simTasksCancelToken
@@ -71,6 +72,9 @@ namespace MSFSTouchPortalPlugin.Services
 
       _client = clientFactory?.Create(this) ?? throw new ArgumentNullException(nameof(clientFactory));
       _pluginConfig = pluginConfig ?? throw new ArgumentNullException(nameof(pluginConfig));
+
+      Configuration.HubHop.Common.Logger = _logger;
+      _presets = new HubHopPresetsCollection();
 
       PluginLogger.OnMessageReady += new PluginLogger.MessageReadyHandler(OnPluginLoggerMessage);
       TouchPortalOptions.ActionDataIdSeparator = '.';  // split up action Data Ids
@@ -122,15 +126,13 @@ namespace MSFSTouchPortalPlugin.Services
       _simConnectService?.Dispose();
       _simConnectionRequest?.Dispose();
       _simAutoConnectDisable?.Dispose();
+      _presets?.Dispose();
 
       _logger.LogInformation("======= " + PLUGIN_ID + " Stopped =======");
       return Task.CompletedTask;
     }
 
-    /// <summary>
-    /// Initialized the Touch Portal Message Processor
-    /// </summary>
-    private bool Initialize() {
+    bool Initialize() {
       // set up data which may be sent to TP upon initial connection
       _pluginConfig.Init();
       actionsDictionary = _reflectionService.GetActionEvents();
@@ -140,6 +142,9 @@ namespace MSFSTouchPortalPlugin.Services
         _logger.LogCritical("Failed to connect to Touch Portal! Quitting.");
         return false;
       }
+
+      if (Settings.UpdateHubHopOnStartup.BoolValue)
+        _ = _presets.UpdateIfNeededAsync();
 
       // Setup SimConnect Events
       _simConnectService.OnDataUpdateEvent += SimConnectEvent_OnDataUpdateEvent;
@@ -586,6 +591,10 @@ namespace MSFSTouchPortalPlugin.Services
           SetupSimVars();
           break;
 
+        case PluginActions.UpdateHubHopPresets:
+          _presets.UpdateIfNeededAsync().ConfigureAwait(false);
+          break;
+
         case PluginActions.ActionRepeatIntervalInc:
         case PluginActions.ActionRepeatIntervalDec:
         case PluginActions.ActionRepeatIntervalSet: {
@@ -754,6 +763,7 @@ namespace MSFSTouchPortalPlugin.Services
 
         case PluginActions.SetCustomSimEvent:
         case PluginActions.SetKnownSimEvent:
+        case PluginActions.SetHubHopEvent:
           ProcessSimEventFromActionData(pluginEventId, data);
           break;
 
