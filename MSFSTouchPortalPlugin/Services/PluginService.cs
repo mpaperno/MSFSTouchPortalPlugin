@@ -1177,10 +1177,14 @@ namespace MSFSTouchPortalPlugin.Services
 
     #region Utilities       ///////////////////////////////
 
+    // used in numeric evaluator... because none of the math eval libs can parse hex notation
+    static readonly System.Text.RegularExpressions.Regex _hexNumberRegex = new (@"\b0x([0-9A-Fa-f]{1,8})\b", System.Text.RegularExpressions.RegexOptions.None, TimeSpan.FromSeconds(0.05));
+
     private bool TryEvaluateValue(string strValue, out double value, out string errMsg) {
       value = double.NaN;
       errMsg = null;
       try {
+        strValue = _hexNumberRegex.Replace(strValue, m => (Convert.ToUInt32(m.Groups[1].ToString(), 16).ToString()));
         value = Convert.ToDouble(_expressionEvaluator.Compute(strValue, null));
       }
       catch (Exception e) {
