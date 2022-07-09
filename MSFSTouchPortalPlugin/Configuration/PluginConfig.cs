@@ -115,9 +115,9 @@ namespace MSFSTouchPortalPlugin.Configuration
       return TryGetImportedSimVarBySelector(selector, out simVar, out _, out _);
     }
 
-    bool TryGetImportedSimVarBySelector(string varName, out SimVariable simVar, out string cleanName, out bool indexed) {
+    bool TryGetImportedSimVarBySelector(string varName, out SimVariable simVar, out string cleanName, out uint index) {
       simVar = null;
-      if (!TryNormalizeVarName(varName, out cleanName, out indexed))
+      if (!TryNormalizeVarName(varName, out cleanName, out index))
         return false;
       foreach (var cat in _importedSimVars.Values) {
         if (cat.TryGetValue(cleanName, out simVar))
@@ -127,46 +127,63 @@ namespace MSFSTouchPortalPlugin.Configuration
     }
 
     // "normalize" a SimVar name passed from touch portal
-    static bool TryNormalizeVarName(string name, out string varName, out bool indexed) {
-      indexed = false;
+    static bool TryNormalizeVarName(string name, out string varName, out uint index) {
+      index = 0;
       varName = name.Trim();
       if (string.IsNullOrEmpty(varName))
         return false;
       // strip leading "exists" indicator "* "
       if (varName[0] == '*')
         varName = varName[2..];
-      // strip trailing single-char index indicator, ":N" or ":i" and such
-      if ((indexed = varName[^2] == ':'))
+      // strip trailing single-char index indicator or digit, ":N" or ":i" or ":1" and such
+      if (varName[^2] == ':') {
+        if (uint.TryParse(varName[^1].ToString(), out uint res))
+          index = res;
         varName = varName[..^2];
+      }
+      // trailing 2 digit index number
+      else if (varName[^3] == ':') {
+        if (uint.TryParse(varName[..^2], out uint res))
+          index = res;
+        varName = varName[..^3];
+      }
       // otherwise check and strip ":index" suffix
-      else if ((indexed = varName[^6] == ':' && varName[^5..].ToLowerInvariant() == "index"))
+      else if (varName[^6] == ':' && varName[^5..].ToLowerInvariant() == "index")
         varName = varName[..^6];
       return true;
     }
 
     // This is a helper for creating SimVars dynamically at runtime. It is here to centralize how some of the
     // information is populated/formatted to keep things consistent with SimVars read from config files.
-    public SimVarItem CreateDynamicSimVarItem(string varName, Groups catId, string unit, uint index = 0) {
+    public SimVarItem CreateDynamicSimVarItem(char varType, string varName, Groups catId, string unit, uint index = 0) {
       SimVarItem simVar;
-      if (TryGetImportedSimVarBySelector(varName, out SimVariable impSimVar, out var name, out var indexed)) {
+      string name = varName;
+      uint parsedIndex = 0;
+      if (varType == 'A' && TryGetImportedSimVarBySelector(varName, out SimVariable impSimVar, out name, out parsedIndex)) {
         simVar = new SimVarItem() {
           Id = impSimVar.Id,
+          VariableType = varType,
           Name = impSimVar.Name,
           SimVarName = impSimVar.SimVarName,
           CanSet = impSimVar.CanSet
         };
       }
       else {
+        if (varType != 'A')
+          name = name.Trim();
         simVar = new SimVarItem() {
           // Create a reasonable string for a TP state ID
           Id = _reSimVarIdFromName.Replace(name.ToLower(), m => (m.Groups[1].ToString().ToUpper())),
+          VariableType = varType,
           Name = name,  // for lack of anything better
           SimVarName = name,
         };
       }
-      if (indexed || index > 0) {
-        simVar.Id += index.ToString();
-        simVar.SimVarName += ":" + Math.Clamp(index, 1, 99).ToString();
+      if (parsedIndex > 0 && index == 0)
+        index = parsedIndex;
+      if (index > 0) {
+        simVar.Id += parsedIndex.ToString();
+        simVar.SimVarName += ":" + Math.Clamp(parsedIndex, 1, 99).ToString();
       }
       simVar.CategoryId = catId;
       simVar.Unit = unit ?? "number";
@@ -207,8 +224,8 @@ namespace MSFSTouchPortalPlugin.Configuration
       string filename = "SimConnect.cfg";
       string srcFile = Path.Combine(UserConfigFolder, filename);
       bool ret = File.Exists(srcFile);
-      if (!ret && Directory.GetCurrentDirectory() != AppRootFolder)
-        srcFile = Path.Combine(AppRootFolder, filename);
+      if (!ret && !File.Exists(filename))  // check that it exists in current directory
+        srcFile = Path.Combine(AppConfigFolder, filename);
 
       if (File.Exists(srcFile)) {
         try {
@@ -300,8 +317,12 @@ namespace MSFSTouchPortalPlugin.Configuration
 
           sect.Add("CategoryId", item.CategoryId);
           sect.Add("Name", item.Name);
+          sect.Add("VariableType", item.VariableType);
           sect.Add("SimVarName", item.SimVarName);
-          sect.Add("Unit", item.Unit);
+          if (item.VariableType == 'Q')
+            sect.Add("CalcResultType", item.CalcResultType);
+          else
+            sect.Add("Unit", item.Unit);
           if (!string.IsNullOrWhiteSpace(item.DefaultValue))
             sect.Add("DefaultValue", item.DefaultValue);
           if (!string.IsNullOrWhiteSpace(item.FormattingString))

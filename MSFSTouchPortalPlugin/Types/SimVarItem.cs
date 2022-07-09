@@ -1,5 +1,6 @@
 ﻿using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
+using WASimCommander.CLI.Structs;
 using Stopwatch = System.Diagnostics.Stopwatch;
 using SIMCONNECT_DATATYPE = Microsoft.FlightSimulator.SimConnect.SIMCONNECT_DATATYPE;
 
@@ -21,13 +22,18 @@ namespace MSFSTouchPortalPlugin.Types
     public string Id { get; set; }
     /// <summary> Category for sorting/organizing, also used in TouchPortal state ID. </summary>
     public Groups CategoryId { get; set; } = default;
+    /// <summary>
+    /// The variable type designator, as per MSFS RPN docs (mostly): https://docs.flightsimulator.com/html/Additional_Information/Reverse_Polish_Notation.htm
+    /// One of: 'A' (default, SimVar), 'B', 'C', 'E', 'L', 'M', 'P', 'R', 'Z', plus 'T' for Token and 'Q' for calculator code.
+    /// </summary>
+    public char VariableType { get; set; } = 'A';
     /// <summary> Descriptive name for this data (for TouchPortal or other UI). </summary>
     public string Name { get; set; }
-    /// <summary> Corresponding SimConnect SimVar name (blank if used for internal purposes). </summary>
+    /// <summary> Corresponding SimConnect Variable name or calculator code (blank if used for internal purposes). </summary>
     public string SimVarName { get; set; }
     /// <summary> Default value string when no data from SimConnect. </summary>
     public string DefaultValue { get; set; }
-    /// <summary> SimConnect settable value (future use) </summary>
+    /// <summary> SimConnect settable Sim Var </summary>
     public bool CanSet { get; set; } = false;
     /// <summary> How often updates are sent by SimConnect if value changes (SIMCONNECT_PERIOD). Default is equivalent to SIMCONNECT_PERIOD_SIM_FRAME. </summary>
     public UpdatePeriod UpdatePeriod { get; set; } = UpdatePeriod.Default;
@@ -64,6 +70,26 @@ namespace MSFSTouchPortalPlugin.Types
         IsRealType = !IsStringType && !IsBooleanType && !IsIntegralType;
         SimConnectDataType = IsStringType ? SIMCONNECT_DATATYPE.STRING256 : IsIntegralType ? SIMCONNECT_DATATYPE.INT64 : IsBooleanType ? SIMCONNECT_DATATYPE.INT32 : SIMCONNECT_DATATYPE.FLOAT64;
         StorageDataType = IsStringType ? typeof(StringVal) : IsIntegralType ? typeof(long) : IsBooleanType ? typeof(uint) : typeof(double);
+      }
+    }
+
+    /// <summary>
+    /// Returns the set calculation result type, for 'Q' type variables. Setting this value will also set the corresponding Unit type
+    /// to either "number," (for Double result) "integer," or "String" and hence also the corresponding data type/size.
+    /// </summary>
+    public WASimCommander.CLI.Enums.CalcResultType CalcResultType
+    {
+      get => _calcResultType;
+      set {
+        if (value == _calcResultType)
+          return;
+        _calcResultType = value;
+        if (value == WASimCommander.CLI.Enums.CalcResultType.Double)
+          Unit = Units.number;
+        else if (value == WASimCommander.CLI.Enums.CalcResultType.Integer)
+          Unit = Units.integer;
+        else
+          Unit = Units.String;
       }
     }
 
@@ -132,6 +158,29 @@ namespace MSFSTouchPortalPlugin.Types
       }
     }
 
+    /// <summary> Returns a SimConnect dwSizeOrType value. </summary>
+    public uint DataSize
+    {
+      get {
+        if (StorageDataType == typeof(double))
+          return WASimCommander.CLI.ValueTypes.DATA_TYPE_DOUBLE;
+        if (StorageDataType == typeof(long))
+          return WASimCommander.CLI.ValueTypes.DATA_TYPE_INT64;
+        if (StorageDataType == typeof(uint) || StorageDataType == typeof(int))
+          return WASimCommander.CLI.ValueTypes.DATA_TYPE_INT32;
+        if (StorageDataType == typeof(StringVal))
+          return StringVal.MAX_SIZE;   // return actual byte size for strings
+        // we don't use the types below but just in case we do later.
+        if (StorageDataType == typeof(float))
+          return WASimCommander.CLI.ValueTypes.DATA_TYPE_FLOAT;
+        if (StorageDataType == typeof(byte))
+          return WASimCommander.CLI.ValueTypes.DATA_TYPE_INT8;
+        if (StorageDataType == typeof(short) || StorageDataType == typeof(char))
+          return WASimCommander.CLI.ValueTypes.DATA_TYPE_INT16;
+        return 0;
+      }
+    }
+
     /// <summary> Returns true if this value is of a real (double) type, false otherwise </summary>
     public bool IsRealType { get; private set; }
     /// <summary> Returns true if this value is of a string type, false if numeric or bool. </summary>
@@ -156,12 +205,14 @@ namespace MSFSTouchPortalPlugin.Types
     /// </summary>
     public bool UpdateRequired => _valueExpires > 0 && !CheckPending() && Stopwatch.GetTimestamp() > _valueExpires;
 
+
     private object _value;         // the actual Value storage
     private string _unit;          // unit type storage
     private string _formatString;  // the "raw" formatting string w/out "{0}" part
     private long _lastUpdate = 0;  // value update timestamp in Stopwatch ticks
     private long _valueExpires;    // value expiry timestamp in Stopwatch ticks, if a timed UpdatePeriod type, zero otherwise
     private long _requestTimeout;  // for tracking last data request time to avoid race conditions, next pending timeout ticks count or zero if not pending
+    private WASimCommander.CLI.Enums.CalcResultType _calcResultType;
     private const short REQ_TIMEOUT_SEC = 30;  // pending value timeout period in seconds
 
     private bool ValInit => _lastUpdate > 0;  // has value been set at least once
@@ -172,25 +223,32 @@ namespace MSFSTouchPortalPlugin.Types
 
     public SimVarItem() {
       Def = NextId();
+      Unit = "number";  // set a default unit
     }
 
     public bool ValueEquals(string value) => ValInit && IsStringType && value == Value.ToString();
     public bool ValueEquals(double value) => ValInit && IsRealType && System.Math.Abs((double)Value - value) <= DeltaEpsilon;
     public bool ValueEquals(long value)   => ValInit && IsIntegralType && System.Math.Abs((long)Value - value) <= (long)DeltaEpsilon;
     public bool ValueEquals(uint value)   => ValInit && IsBooleanType && System.Math.Abs((uint)Value - value) <= (uint)DeltaEpsilon;
+    public bool ValueEquals(DataRequestRecord dr) => ValInit && Value switch {
+      StringVal or string => ValueEquals((string)dr),
+      uint => ValueEquals((uint)dr),
+      double => ValueEquals((double)dr),
+      long => ValueEquals((long)dr),
+      _ => false,
+    };
 
     /// <summary>
     /// Compare this instance's value to the given object's value. For numeric types, it takes the DeltaEpsilon property into account.
     /// Uses strict type matching for double, long, uint, and falls back to string compare for all other types.
     /// </summary>
     public bool ValueEquals(object value) {
-      if (!ValInit)
-        return false;
       try {
         return value switch {
           double v => ValueEquals(v),
           uint v => ValueEquals(v),
           long v => ValueEquals(v),
+          DataRequestRecord dr => ValueEquals(dr),
           _ => ValueEquals(value.ToString()),
         };
       }
@@ -211,7 +269,7 @@ namespace MSFSTouchPortalPlugin.Types
       if (IsRealType)
         Value = value;
       else if (IsBooleanType)
-        Value = ((long)value != 0);
+        Value = (long)value != 0;
       else
         Value = (long)value;
       return true;
@@ -231,11 +289,22 @@ namespace MSFSTouchPortalPlugin.Types
 
     internal bool SetValue(string value) {
       return Value switch {
-        string         => SetValue(new StringVal(value)),
+        StringVal or string => SetValue(new StringVal(value)),
         uint           => SetValue((uint)new BooleanString(value)),
         double or long => double.TryParse(value, out var dVal) && SetValue(dVal),
         _              => false,
       };
+    }
+
+    internal bool SetValue(DataRequestRecord dr) {
+      return Value switch {
+        StringVal or string => SetValue((string)dr),
+        uint => SetValue((uint)dr),
+        double => SetValue((double)dr),
+        long => SetValue((long)dr),
+        _ => false,
+      };
+      //return SetValue(System.Convert.ChangeType(dr, StorageDataType));
     }
 
     /// <summary>
@@ -250,6 +319,7 @@ namespace MSFSTouchPortalPlugin.Types
           uint v => SetValue(v),
           long v => SetValue(v),
           StringVal v => SetValue(v),
+          DataRequestRecord dr => SetValue(dr),
           _ => SetValue(value.ToString())
         };
       }
@@ -282,7 +352,7 @@ namespace MSFSTouchPortalPlugin.Types
     public override string ToString() => SimVarName;
 
     public string ToDebugString() {
-      return $"{GetType().Name}: {{Def: {Def}; SimVarName: {SimVarName}; Unit: {Unit}; Cat: {CategoryId}; Name: {Name}}}";
+      return $"{GetType().Name}: {{Def: {Def}; Type: {VariableType}; VarName: {SimVarName}; Unit: {Unit}; Cat: {CategoryId}; Name: {Name}}}";
     }
 
     // IComparable
