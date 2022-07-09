@@ -2,9 +2,7 @@
 
 This plugin provides a two-way interface between Touch Portal and Flight Simulators which use SimConnect, such as Microsoft Flight Simulator 2020 and FS-X.
 
-For further documentation, please see https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki
-
-This documentation generated for plugin v0.7.0.2-mp
+This documentation generated for plugin v1.0.0.0
 
 ---
 
@@ -47,7 +45,7 @@ This documentation generated for plugin v0.7.0.2-mp
 | --- | --- | --- | --- | --- |
 | False | number | 0 | 0 | 1 |
 
-Set to 1 to automatically attempt connection to flight simulator upon Touch Portal startup. Set to 0 to only connect manually via the provided Action.
+Set to 1 to automatically attempt connection to flight simulator upon Touch Portal startup. Set to 0 to only connect manually via the Action *MSFS - Plugin -> Connect & Update*.
 
 ### Sim Variable State Config File(s) (blank = Default)
 
@@ -97,6 +95,14 @@ Note that using this plugin's installation folder for custom data storage is not
 
 Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Action Repeat Interval' action. This setting cannot be changed from the TP Plugin Settings page (even though it appears to be editable on there).
 
+### Update HubHop Data on Startup (0/1)
+
+| Read-only | Type | Default Value | Min. Value | Max. Value |
+| --- | --- | --- | --- | --- |
+| False | number | 0 | 0 | 1 |
+
+Set to 1 to automatically load latest HubHop data when plugin starts. Set to 0 to disable. Updates can always be triggered manually via the Action *MSFS - Plugin -> Connect & Update*.
+
 </details>
 
 ---
@@ -110,8 +116,8 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>On<br/>Hold</sub></div></th></tr>
-<tr valign='top'><td>Connection</td><td>Toggle/On/Off SimConnect Connection</td><td>SimConnect Connection - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off, Reload States</li>
+<tr valign='top'><td>Connect & Update</td><td>Plugin actions: Toggle/On/Off SimConnect Connection, Reload State Config Files, Update HubHop Presets</td><td>Plugin Action: {0}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Toggle</b>, On, Off, Reload State Files, Update Local Var. List, Update HubHop Data</li>
 </ol></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Action Repeat Interval</td><td>Held Action Repeat Rate (ms)</td><td>Repeat Interval: {0} to/by: {1} ms</td><td><ol start=0>
@@ -119,51 +125,111 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 <li>[text] &nbsp; <b>450</b> &nbsp; <sub>&lt;min: 50&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Activate a Custom Simulator Event</td><td>Trigger a Simulator Event by name. The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.</td><td>Activate Event {0} with value {1} (if any)</td><td><ol start=0>
+<tr valign='top'><td>Activate a Named Simulator Event</td><td>Trigger a Simulator Event by name.
+The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.</td><td>Activate Event {0} with value {1} (if any)</td><td><ol start=0>
 <li>[text] &nbsp; <b>SIMULATOR_EVENT_NAME</b></li>
 <li>[text] &nbsp; &lt;empty&gt;</li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Activate a Simulator Event From List</td><td>Trigger a Simulator Event. The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.</td><td>From Category {0} Activate Event {1} with value {2} (if any)</td><td><ol start=0>
-<li>[choice] &nbsp; <b></b><plugin not connected></li>
-<li>[choice] &nbsp; <b></b><select a category></li>
+<tr valign='top'><td>Activate a Simulator Event From List</td><td>Trigger a Simulator Event.
+The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.</td><td>From Category {0} Activate Event {1} with value {2} (if any)</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b>[plugin not connected]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt;</li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Set Simulator Variable Value</td><td>Sets a value on any loaded State which is marked as settable. If a numeric value is required, using basic math operators and dynamic state values is possible.</td><td>Set Variable {0} to {1} (release AI: {2})</td><td><ol start=0>
-<li>[choice] &nbsp; <b></b><plugin not connected></li>
+<tr valign='top'><td>Activate a Simulator Event From HubHop</td><td>																** Requires WASimModule or MobiFlight. **
+Trigger a Simulator Event from loaded HubHop data.					"Potentiometer" type events are only supported with WASimModule (using the provided value, which should evaluate to numeric).</td><td>Aircraft/Device: {0} System: {1} Event Name: {2} with value {3} (if any)</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b>[plugin not connected]</li>
+<li>[choice] &nbsp; <b></b>[select an aircraft]</li>
+<li>[choice] &nbsp; <b></b>[select a system]</li>
+<li>[text] &nbsp; &lt;empty&gt;</li>
+</ol></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Set Variable Value From List</td><td>Sets a value on a known named variable, which could be a Sim Var which is marked as settable, or a Local variable from currently loaded aircraft.					** Requires WASimModule for Local Vars **</td><td>Set Variable type {0} named {1} to {2} in Units (optional) {3} (release AI: {4})</td><td><ol start=0>
+<li>[choice] &nbsp; <b>A: SimVar</b>, L: Local</li>
+<li>[choice] &nbsp; <b></b>[select a type]</li>
 <li>[text] &nbsp; <b>0</b></li>
+<li>[choice] &nbsp; <b></b>[connect to plugin]</li>
 <li>[switch] &nbsp; <b>False</b></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Request a Custom Simulator Variable</td><td>Request Simulator Variable Name:                            Index (if req'd):               Category:                                    Units:                                                                               Format:                            Default Value:                 Settable:           Update Period:                   Update Interval:               Delta Epsilon:     </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}</td><td><ol start=0>
+<tr valign='top'><td>Set Named Variable Value</td><td>Set a Named Variable
+Sets a value on any named variable, by type of variable. Local (L) variables can also be created.					** Requires WASimModule **</td><td>Set Variable Type {0} named {1} to {2} in Units (optional) {3} (create L var: {4}) (release AI: {5})</td><td><ol start=0>
+<li>[choice] &nbsp; <b>A: SimVar</b>, C: GPS, H: HTML Event, K: Key Event, L: Local, Z: Custom SimVar</li>
+<li>[text] &nbsp; &lt;empty&gt;</li>
+<li>[text] &nbsp; <b>0</b></li>
+<li>[choice] &nbsp; <b></b>[connect to plugin]</li>
+<li>[choice] &nbsp; <b>N/A</b>, No, Yes</li>
+<li>[switch] &nbsp; <b>False</b></li>
+</ol></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Execute Calculator Code</td><td>Execute Calculator Code
+Runs any entered string of RPN code through the 'execute_calculator_code' Gauge API function. You may use TP state value macros to insert dynamic data.</td><td>Execute this code: {0} (must be valid RPN format)                             ** Requires WASimModule **</td><td><ol start=0>
+<li>[text] &nbsp; <b>1 (>H:AS1000_PFD_SOFTKEYS_1)</b></li>
+</ol></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Request a Custom Simulator Variable</td><td>Request Simulator Variable Name:                            Index (if req'd):               Category:                                    Units:                                                                Format:                            Default Value:                 Settable:           Update Period:                   Update Interval:               Delta Epsilon:     </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}</td><td><ol start=0>
 <li>[text] &nbsp; <b>SIMULATOR VARIABLE FULL NAME</b></li>
 <li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 99&gt;</sub></li>
-<li>[choice] &nbsp; <b></b><connect plugin></li>
-<li>[choice] &nbsp; <b></b><connect to plugin>                                 </li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[connect to plugin]                                 </li>
 <li>[text] &nbsp; <b>F2</b></li>
 <li>[text] &nbsp; <b>0</b></li>
 <li>[switch] &nbsp; <b>False</b></li>
-<li>[choice] &nbsp; Once, VisualFrame, <b>SimFrame</b>, Second, Millisecond</li>
+<li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
 <li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
-<li>[number] &nbsp; <b>0.0099999</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[number] &nbsp; <b>0.009</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 </ol></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Request a Simulator Variable From List</td><td>From Simulator Category            Request Simulator Variable                                                                        Index (if req'd):                Plugin Category:                         Units:                                                                               Format:                            Default Value:                 Update Period:                  Update Interval:              Delta Epsilon:      </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}</td><td><ol start=0>
-<li>[choice] &nbsp; <b></b><connect to plugin></li>
-<li>[choice] &nbsp; <b></b><select a category>                                                            </li>
+<tr valign='top'><td>Request a Variable From List</td><td>Request a Variable from Simulator					** Local Variables support requires WASimModule **
+Category or Local Aircraft          Request Variable                                                                                        Index (if req'd):                Plugin Category:                         Units:                                                                 Format:                            Default Value:                 Update Period:                  Update Interval:              Delta Epsilon:      </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b>[connect to plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]                                                            </li>
 <li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 99&gt;</sub></li>
-<li>[choice] &nbsp; <b></b><connect plugin></li>
-<li>[choice] &nbsp; <b></b><connect to plugin>                                 </li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; [connect to plugin]                                 </li>
 <li>[text] &nbsp; <b>F2</b></li>
 <li>[text] &nbsp; <b>0</b></li>
-<li>[choice] &nbsp; Once, VisualFrame, <b>SimFrame</b>, Second, Millisecond</li>
+<li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
 <li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
-<li>[number] &nbsp; <b>0.0099999</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[number] &nbsp; <b>0.009</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 </ol></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Remove a Simulator Variable</td><td>Remove an existing Simulator Variable. Note that static TP States cannot be removed.</td><td>Remove Simulator Variable {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b></b><plugin not connected></li>
+<tr valign='top'><td>Request a Named Variable</td><td>Request a Named Variable                       For indexed SimVars, include it in the name after a : (colon).					** Requires WASimModule **
+Variable Type:                Name:                                                   Plugin Category:                         Units (optional):                                               Format:                            Default Value:                 Update Period:                Update Interval:              Delta Epsilon:     </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>A: SimVar</b>, B: Input, C: GPS, E: Env., L: Local, M: Mouse, R: Rsrc., T: Token, Z: Custom</li>
+<li>[text] &nbsp; <b>FULL VARIABLE NAME</b></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; [connect to plugin]                                 </li>
+<li>[text] &nbsp; <b>F2</b></li>
+<li>[text] &nbsp; <b>0</b></li>
+<li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
+<li>[number] &nbsp; <b>0.009</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+</ol></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Request a Calculated Value</td><td>Request a Calculated Value					** Requires WASimModule **
+Calculator Code:                                                                                                         Result Type:                  Plugin Category:                         State Name:                                                Format:                            Default Value:                 Update Period:                Update Interval:              Delta Epsilon:     </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}</td><td><ol start=0>
+<li>[text] &nbsp; <b>(A:TRAILING EDGE FLAPS LEFT ANGLE, degrees) 30 - abs 0.1 <</b></li>
+<li>[choice] &nbsp; <b>Double</b>, Integer, String, Formatted</li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[text] &nbsp; <b>A name for the States list</b></li>
+<li>[text] &nbsp; <b>F2</b></li>
+<li>[text] &nbsp; <b>0</b></li>
+<li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
+<li>[number] &nbsp; <b>0.009</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+</ol></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Update a Variable Value</td><td>Request a value update for an added variable. This is especially useful for variables with a "Once" type Update Period.</td><td>From Category {0} Update Variable {1}</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+</ol></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Remove a Simulator Variable</td><td>Remove an existing Simulator Variable. Note that static TP States cannot be removed.</td><td>From Category {0} Remove Variable {1}</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
 </ol></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Load SimVar Definitions From File</td><td>Load a set of simulator variable state definitions from a configuration file.</td><td>Load from file {0} (name only for user config. folder, or full path with file name)</td><td><ol start=0>
@@ -784,30 +850,50 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>All</dt><dd>BRAKES</dd><dt>Left</dt><dd>BRAKES_LEFT</dd><dt>Right</dt><dd>BRAKES_RIGHT</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flaps 1</td><td>Cowl Flaps 1</td><td>Cowl Flaps 1 - {0}</td><td><ol start=0>
+<tr valign='top'><td>Cowl Flap Levers - Adjust All</td><td>Adjust All Cowl Flap Levers</td><td>{0} All Cowl Flaps Levers</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
+</ol></td>
+<td><dl><dt>Increase</dt><dd>INC_COWL_FLAPS</dd><dt>Decrease</dt><dd>DEC_COWL_FLAPS</dd></dl></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Cowl Flaps 1 Lever Adjust</td><td>Adjust Cowl Flaps 1 Lever</td><td>{0} Cowl Flaps 1 Lever</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
 <td><dl><dt>Increase</dt><dd>INC_COWL_FLAPS1</dd><dt>Decrease</dt><dd>DEC_COWL_FLAPS1</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flaps 2</td><td>Cowl Flaps 2</td><td>Cowl Flaps 2 - {0}</td><td><ol start=0>
+<tr valign='top'><td>Cowl Flaps 1 Lever Set</td><td> Set Cowl 1 Flaps Lever</td><td>Set Cowl 1 Flaps Lever to {0} (0 to 16384)</td><td><ol start=0>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+</ol></td>
+<td><dl><dd>COWLFLAP1_SET</dd></dl></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Cowl Flaps 2 Lever Adjust</td><td>Adjust Cowl Flaps 2 Lever</td><td>{0} Cowl Flaps 2 Lever</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
 <td><dl><dt>Increase</dt><dd>INC_COWL_FLAPS2</dd><dt>Decrease</dt><dd>DEC_COWL_FLAPS2</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flaps 3</td><td>Cowl Flaps 3</td><td>Cowl Flaps 3 - {0}</td><td><ol start=0>
+<tr valign='top'><td>Cowl Flaps 2 Lever Set</td><td> Set Cowl 2 Flaps Lever</td><td>Set Cowl 2 Flaps Lever to {0} (0 to 16384)</td><td><ol start=0>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+</ol></td>
+<td><dl><dd>COWLFLAP2_SET</dd></dl></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Cowl Flaps 3 Lever Adjust</td><td>Adjust Cowl Flaps 3 Lever</td><td>{0} Cowl Flaps 3 Lever</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
 <td><dl><dt>Increase</dt><dd>INC_COWL_FLAPS3</dd><dt>Decrease</dt><dd>DEC_COWL_FLAPS3</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flaps 4</td><td>Cowl Flaps 4</td><td>Cowl Flaps 4 - {0}</td><td><ol start=0>
+<tr valign='top'><td>Cowl Flaps 3 Lever Set</td><td> Set Cowl 3 Flaps Lever</td><td>Set Cowl 3 Flaps Lever to {0} (0 to 16384)</td><td><ol start=0>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+</ol></td>
+<td><dl><dd>COWLFLAP3_SET</dd></dl></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Cowl Flaps 4 Lever Adjust</td><td>Adjust Cowl Flaps 4 Lever</td><td>{0} Cowl Flaps 4 Lever</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
 <td><dl><dt>Increase</dt><dd>INC_COWL_FLAPS4</dd><dt>Decrease</dt><dd>DEC_COWL_FLAPS4</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flaps All</td><td>Cowl Flaps All</td><td>Cowl Flaps All - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
+<tr valign='top'><td>Cowl Flaps 4 Lever Set</td><td> Set Cowl 4 Flaps Lever</td><td>Set Cowl 4 Flaps Lever to {0} (0 to 16384)</td><td><ol start=0>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
-<td><dl><dt>Increase</dt><dd>INC_COWL_FLAPS</dd><dt>Decrease</dt><dd>DEC_COWL_FLAPS</dd></dl></td>
+<td><dl><dd>COWLFLAP4_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Elevator</td><td>Elevator</td><td>Elevator - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Up</b>, Down</li>
@@ -834,7 +920,7 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Up</dt><dd>FLAPS_UP</dd><dt>Down</dt><dd>FLAPS_DOWN</dd><dt>Increase</dt><dd>FLAPS_INCR</dd><dt>Decrease</dt><dd>FLAPS_DECR</dd><dt>1</dt><dd>FLAPS_1</dd><dt>2</dt><dd>FLAPS_2</dd><dt>3</dt><dd>FLAPS_3</dd><dt>4</dt><dd>FLAPS_3</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Flaps Set</td><td> Set Flaps</td><td>Flaps set to {0} (0 to 16384)</td><td><ol start=0>
+<tr valign='top'><td>Flaps Set</td><td> Set Flaps</td><td>Set Flaps to {0} (0 to 16384)</td><td><ol start=0>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><dl><dd>FLAPS_SET</dd></dl></td>

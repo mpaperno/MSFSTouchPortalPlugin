@@ -1,4 +1,24 @@
-# MSFS Touch Portal Plugin - MP fork
+# MSFS Touch Portal Plugin
+
+## 1.0.0.0-beta1 (July-09-2022)
+* Adds support for integration with custom WASM module from the [WASimCommander project](https://github.com/mpaperno/WASimCommander) (WASimModule).
+    * Get and Set "Local" variables as well as practically any other 
+      [variable type](https://docs.flightsimulator.com/html/Additional_Information/Reverse_Polish_Notation.htm#Types) available in the MSFS "Gauge API".
+    * Provides a listing of currently available Local variables, automatically refreshed when aircraft changes in the simulator, and on demand.
+    * Option to _create_ new Local variables inside the Simulator engine.
+    * Execute any Calculator Code (using RPN, see link above) from within the Simulator engine, bringing control over practically any situation.
+    * Request calculated values (results from calculator code) as TP States, using the same options as current simulator variables 
+      (formatting, refresh rate, categorization, etc). Results can be in numeric or string format, and data can also be formatted as strings using RPN functions.
+    * All the new request types (local/other variables or calculated values) can be saved/loaded to/from configuratoin files, just like was already possible with SimVars.
+* Adds support for loading input event presets from the [HubHop database](https://hubhop.mobiflight.com).
+    * New Action: _Activate a Simulator Event From HubHop_ - Presents a "drill down" list of loaded events, selectable by vendor/aircraft and system. 
+      **Requires WASimModule or MobiFlight WASM modules** installed (more features available with the former).
+    * HubHop data can, optionally, be updated upon plugin startup and manually via a new action choice (_MSFS Plugin -> Connect & Update -> Update HubHop_).
+* Added support for using numeric values in hexadecimal notation (0xNNN). Easy "BCD" values, eg. frequency 339KHz is simply `0x03390000`.
+* Dynamic TP States (custom-added variables) are now sorted into their respective categories in TP selectors 
+  (instead of being in a "Dynamic" cateogry or just listed after the categories). Requires TP 3.0.10 or higher.
+* Added actions to _Set_ cowl flaps 1-4 to specific position.
+* The list of imported sim vars updated to include new `HSI_STATION_IDENT` and fix "settable" flag on `GPS_*` variables like `GPS_APPROACH_WP_TYPE`, etc.
 
 
 ## 0.7.0.2-mp (April-21-2022)
