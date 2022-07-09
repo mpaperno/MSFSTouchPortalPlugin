@@ -65,41 +65,61 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalActionMapping("FLAPS_3", "4")]
     public static readonly object FlapsHandlePercent;
 
-    [TouchPortalAction("FlapsSet", "Flaps Set", "MSFS", " Set Flaps", "Flaps set to {0} (0 to 16384)", true)]
+    [TouchPortalAction("FlapsSet", "Flaps Set", "MSFS", " Set Flaps", "Set Flaps to {0} (0 to 16384)", true)]
     [TouchPortalActionText("0", 0, 16384)]
     [TouchPortalActionMapping("FLAPS_SET")]
     public static readonly object FlapsSet;
 
 
-    [TouchPortalAction("CowlFlapsAll", "Cowl Flaps All", "MSFS", "Cowl Flaps All", "Cowl Flaps All - {0}", true)]
+    [TouchPortalAction("CowlFlapsAll", "Cowl Flap Levers - Adjust All", "MSFS", "Adjust All Cowl Flap Levers", "{0} All Cowl Flaps Levers", true)]
     [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
     [TouchPortalActionMapping("INC_COWL_FLAPS", "Increase")]
     [TouchPortalActionMapping("DEC_COWL_FLAPS", "Decrease")]
     public static readonly object CowlFlapsAll;
 
-    [TouchPortalAction("CowlFlaps1", "Cowl Flaps 1", "MSFS", "Cowl Flaps 1", "Cowl Flaps 1 - {0}", true)]
+    [TouchPortalAction("CowlFlaps1", "Cowl Flaps 1 Lever Adjust", "MSFS", "Adjust Cowl Flaps 1 Lever", "{0} Cowl Flaps 1 Lever", true)]
     [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
     [TouchPortalActionMapping("INC_COWL_FLAPS1", "Increase")]
     [TouchPortalActionMapping("DEC_COWL_FLAPS1", "Decrease")]
     public static readonly object CowlFlaps1;
 
-    [TouchPortalAction("CowlFlaps2", "Cowl Flaps 2", "MSFS", "Cowl Flaps 2", "Cowl Flaps 2 - {0}", true)]
+    [TouchPortalAction("CowlFlaps1Set", "Cowl Flaps 1 Lever Set", "MSFS", " Set Cowl 1 Flaps Lever", "Set Cowl 1 Flaps Lever to {0} (0 to 16384)", true)]
+    [TouchPortalActionText("0", 0, 16384)]
+    [TouchPortalActionMapping("COWLFLAP1_SET")]
+    public static readonly object CowlFlaps1Set;
+
+    [TouchPortalAction("CowlFlaps2", "Cowl Flaps 2 Lever Adjust", "MSFS", "Adjust Cowl Flaps 2 Lever", "{0} Cowl Flaps 2 Lever", true)]
     [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
     [TouchPortalActionMapping("INC_COWL_FLAPS2", "Increase")]
     [TouchPortalActionMapping("DEC_COWL_FLAPS2", "Decrease")]
     public static readonly object CowlFlaps2;
 
-    [TouchPortalAction("CowlFlaps3", "Cowl Flaps 3", "MSFS", "Cowl Flaps 3", "Cowl Flaps 3 - {0}", true)]
+    [TouchPortalAction("CowlFlaps2Set", "Cowl Flaps 2 Lever Set", "MSFS", " Set Cowl 2 Flaps Lever", "Set Cowl 2 Flaps Lever to {0} (0 to 16384)", true)]
+    [TouchPortalActionText("0", 0, 16384)]
+    [TouchPortalActionMapping("COWLFLAP2_SET")]
+    public static readonly object CowlFlaps2Set;
+
+    [TouchPortalAction("CowlFlaps3", "Cowl Flaps 3 Lever Adjust", "MSFS", "Adjust Cowl Flaps 3 Lever", "{0} Cowl Flaps 3 Lever", true)]
     [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
     [TouchPortalActionMapping("INC_COWL_FLAPS3", "Increase")]
     [TouchPortalActionMapping("DEC_COWL_FLAPS3", "Decrease")]
     public static readonly object CowlFlaps3;
 
-    [TouchPortalAction("CowlFlaps4", "Cowl Flaps 4", "MSFS", "Cowl Flaps 4", "Cowl Flaps 4 - {0}", true)]
+    [TouchPortalAction("CowlFlaps3Set", "Cowl Flaps 3 Lever Set", "MSFS", " Set Cowl 3 Flaps Lever", "Set Cowl 3 Flaps Lever to {0} (0 to 16384)", true)]
+    [TouchPortalActionText("0", 0, 16384)]
+    [TouchPortalActionMapping("COWLFLAP3_SET")]
+    public static readonly object CowlFlaps3Set;
+
+    [TouchPortalAction("CowlFlaps4", "Cowl Flaps 4 Lever Adjust", "MSFS", "Adjust Cowl Flaps 4 Lever", "{0} Cowl Flaps 4 Lever", true)]
     [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
     [TouchPortalActionMapping("INC_COWL_FLAPS4", "Increase")]
     [TouchPortalActionMapping("DEC_COWL_FLAPS4", "Decrease")]
     public static readonly object CowlFlaps4;
+
+    [TouchPortalAction("CowlFlaps4Set", "Cowl Flaps 4 Lever Set", "MSFS", " Set Cowl 4 Flaps Lever", "Set Cowl 4 Flaps Lever to {0} (0 to 16384)", true)]
+    [TouchPortalActionText("0", 0, 16384)]
+    [TouchPortalActionMapping("COWLFLAP4_SET")]
+    public static readonly object CowlFlaps4Set;
 
     #endregion
 
