@@ -2,9 +2,9 @@ name: verify-build
 
 on:
   push:
-    branches: [ mp/main, mp/next, mp/workflow_tests ]
+    branches: [ main, next, mp/workflow_tests ]
   pull_request:
-    branches: [ mp/main, mp/next ]
+    branches: [ main, next ]
 
 jobs:
   build:
