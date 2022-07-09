@@ -79,6 +79,7 @@ namespace MSFSTouchPortalPlugin.Services
 
       PluginLogger.OnMessageReady += new PluginLogger.MessageReadyHandler(OnPluginLoggerMessage);
       TouchPortalOptions.ActionDataIdSeparator = '.';  // split up action Data Ids
+      TouchPortalOptions.ValidateCommandParameters = false;  // bypass validation and exceptions
     }
 
     #region Startup, Shutdown and Processing Tasks      //////////////////
@@ -396,7 +397,7 @@ namespace MSFSTouchPortalPlugin.Services
       // Need a dynamic state?
       if (dynamicState && !_dynamicStateIds.Contains(simVar.TouchPortalStateId)) {
         _dynamicStateIds.Add(simVar.TouchPortalStateId);  // keep track for removing them later if needed
-        _client.CreateState(simVar.TouchPortalStateId, Categories.PrependFullCategoryName(simVar.CategoryId, simVar.Name), simVar.DefaultValue);
+        _client.CreateState(simVar.TouchPortalStateId, Categories.PrependFullCategoryName(simVar.CategoryId, simVar.Name), simVar.DefaultValue, Categories.FullCategoryName(simVar.CategoryId));
         _logger.LogTrace($"Created dynamic state {simVar.TouchPortalStateId}'.");
       }
 
