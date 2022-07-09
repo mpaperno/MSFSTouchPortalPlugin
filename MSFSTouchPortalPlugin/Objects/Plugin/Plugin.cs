@@ -10,12 +10,13 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     [TouchPortalAction(PluginActions.Connection, "Connect & Update",
       "Plugin actions: Toggle/On/Off SimConnect Connection, Reload State Config Files, Update HubHop Presets",
       "Plugin Action: {0}")]
-    [TouchPortalActionChoice(new[] { "Toggle", "On", "Off", "Reload States", "Update HubHop" }, Id = "Action")]
+    [TouchPortalActionChoice(new[] { "Toggle", "On", "Off", "Reload State Files", "Update Local Var. List", "Update HubHop Data" }, Id = "Action")]
     [TouchPortalActionMapping(PluginActions.ToggleConnection, "Toggle")]
     [TouchPortalActionMapping(PluginActions.Connect, "On")]
     [TouchPortalActionMapping(PluginActions.Disconnect, "Off")]
-    [TouchPortalActionMapping(PluginActions.ReloadStates, "Reload States")]
-    [TouchPortalActionMapping(PluginActions.UpdateHubHopPresets, "Update HubHop")]
+    [TouchPortalActionMapping(PluginActions.ReloadStates, "Reload State Files")]
+    [TouchPortalActionMapping(PluginActions.UpdateLocalVarsList, "Update Local Var. List")]
+    [TouchPortalActionMapping(PluginActions.UpdateHubHopPresets, "Update HubHop Data")]
     public static readonly object Connection;
 
     [TouchPortalAction(PluginActions.ActionRepeatInterval, "Action Repeat Interval",
@@ -62,23 +63,6 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     [TouchPortalActionText("", Id = "Value", Label = "Value")]
     public static readonly object SetHubHopEvent;
 
-    //[TouchPortalAction(PluginActions.SetSimVar, "Set Simulator Variable Value",
-    //  "Sets a value on any loaded State which is marked as settable. If a numeric value is required, using basic math operators and dynamic state values is possible.",
-    //  "Set Variable {0} to {1} (release AI: {2})",
-    //  holdable: true)]
-    //[TouchPortalActionChoice("[plugin not connected]", "", Id = "VarName", Label = "Simulator Variable")]
-    //[TouchPortalActionText("0", Id = "Value", Label = "Value")]
-    //[TouchPortalActionSwitch(false, Id = "RelAI", Label = "Release AI")]
-    //public static readonly object SetSimVar;
-
-    //[TouchPortalAction(PluginActions.SetLVar, "Set Airplane Local Variable",
-    //  "Sets a value on a \"local\" variable for the currently loaded aircraft. Using basic math operators and dynamic state values is possible.",
-    //  "Set Variable {0} to {1}",
-    //  holdable: true)]
-    //[TouchPortalActionChoice("[connect and load a flight]", "", Id = "VarName", Label = "Local Variable")]
-    //[TouchPortalActionText("0", Id = "Value", Label = "Value")]
-    //public static readonly object SetLVar;
-
     [TouchPortalAction(PluginActions.SetSimVar, "Set Variable Value From List",
       "Sets a value on a known named variable, which could be a Sim Var which is marked as settable, or a Local variable from currently loaded aircraft.\t\t\t\t\t** Requires WASimModule for Local Vars **",
       "Set Variable type {0} named {1} to {2} in Units (optional) {3} (release AI: {4})",
@@ -92,13 +76,14 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
 
     [TouchPortalAction(PluginActions.SetVariable, "Set Named Variable Value",
       "Set a Named Variable\n" +
-        "Sets a value on any named variable, by type of variable.\t\t\t\t\t** Requires WASimModule **",
-        "Set Variable Type {0} named {1} to {2} in Units (optional) {3} (release AI: {4})",
+        "Sets a value on any named variable, by type of variable. Local (L) variables can also be created.\t\t\t\t\t** Requires WASimModule **",
+        "Set Variable Type {0} named {1} to {2} in Units (optional) {3} (create L var: {4}) (release AI: {5})",
       holdable: true)]
     [TouchPortalActionChoice(new[] { "A: SimVar", "C: GPS", "H: HTML Event", "K: Key Event", "L: Local", "Z: Custom SimVar" }, Id = "VarType", Label = "Variable Type")]
     [TouchPortalActionText("", Id = "VarName", Label = "Variable Name")]
     [TouchPortalActionText("0", Id = "Value", Label = "Value")]
     [TouchPortalActionChoice("[connect to plugin]", "", Id = "Unit", Label = "Unit Name")]
+    [TouchPortalActionChoice(new[] { "N/A", "No", "Yes" }, Id = "Create", Label = "Create Local Var")]
     [TouchPortalActionSwitch(false, Id = "RelAI", Label = "Release AI")]
     public static readonly object SetVariable;
 
@@ -194,10 +179,18 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     [TouchPortalActionNumeric(0.009, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
     public static readonly object AddCalculatedValue;
 
+    [TouchPortalAction(PluginActions.UpdateVarValue, "Update a Variable Value",
+      "Request a value update for an added variable. This is especially useful for variables with a \"Once\" type Update Period.",
+      "From Category {0} Update Variable {1}")]
+    [TouchPortalActionChoice("[connect plugin]", "", Id = "CatId", Label = "Category")]
+    [TouchPortalActionChoice("[select a category]", "", Id = "VarName", Label = "Simulator Variable")]
+    public static readonly object UpdateVarValue;
+
     [TouchPortalAction(PluginActions.RemoveSimVar, "Remove a Simulator Variable",
       "Remove an existing Simulator Variable. Note that static TP States cannot be removed.",
-      "Remove Simulator Variable {0}")]
-    [TouchPortalActionChoice("[plugin not connected]", "", Id = "VarName", Label = "Simulator Variable")]
+      "From Category {0} Remove Variable {1}")]
+    [TouchPortalActionChoice("[connect plugin]", "", Id = "CatId", Label = "Category")]
+    [TouchPortalActionChoice("[select a category]", "", Id = "VarName", Label = "Simulator Variable")]
     public static readonly object RemoveSimVar;
 
     [TouchPortalAction(PluginActions.LoadSimVars, "Load SimVar Definitions From File",

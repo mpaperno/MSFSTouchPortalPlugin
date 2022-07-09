@@ -8,7 +8,6 @@
     // Action IDs
     Connection,
     ActionRepeatInterval,
-    UpdateHubHopPresets,
 
     SetCustomSimEvent,
     SetKnownSimEvent,
@@ -21,6 +20,7 @@
     AddKnownSimVar,
     AddNamedVariable,
     AddCalculatedValue,
+    UpdateVarValue,
     RemoveSimVar,
     SaveSimVars,
     LoadSimVars,
@@ -30,6 +30,8 @@
     Connect,
     Disconnect,
     ReloadStates,
+    UpdateHubHopPresets,
+    UpdateLocalVarsList,
 
     ActionRepeatIntervalInc,
     ActionRepeatIntervalDec,

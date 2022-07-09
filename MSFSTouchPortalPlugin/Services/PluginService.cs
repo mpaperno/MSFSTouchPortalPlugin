@@ -457,18 +457,12 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     private void UpdateSimVarLists() {
-      UpdateAllSimVarsList();
       UpdateSettableSimVarsList();
     }
 
     // List of settable SimVars for all instances
     private void UpdateSettableSimVarsList() {
       UpdateActionDataList(PluginActions.SetSimVar, "VarName", _statesDictionary.GetSimVarSelectorList(settable: true));
-    }
-
-    // List of all current SimVars
-    private void UpdateAllSimVarsList() {
-      UpdateActionDataList(PluginActions.RemoveSimVar, "VarName", _statesDictionary.GetSimVarSelectorList(settable: false));
     }
 
     // Unit lists
@@ -486,6 +480,8 @@ namespace MSFSTouchPortalPlugin.Services
       UpdateActionDataList(PluginActions.AddKnownSimVar, "CatId", Categories.ListUsable);
       UpdateActionDataList(PluginActions.AddNamedVariable, "CatId", Categories.ListUsable);
       UpdateActionDataList(PluginActions.AddCalculatedValue, "CatId", Categories.ListUsable);
+      UpdateActionDataList(PluginActions.UpdateVarValue, "CatId", Categories.ListUsable);
+      UpdateActionDataList(PluginActions.RemoveSimVar, "CatId", Categories.ListUsable);
     }
 
     // List of imported SimVariable categories
@@ -494,6 +490,12 @@ namespace MSFSTouchPortalPlugin.Services
         UpdateActionDataList(PluginActions.AddKnownSimVar, "SimCatName", _pluginConfig.ImportedSimVarCategoryNames);
       else
         UpdateActionDataList(PluginActions.AddKnownSimVar, "SimCatName", _pluginConfig.ImportedSimVarCategoryNames.Append("----------------------").Append("L: Local Variable"));
+    }
+
+    // List of all current variables per category
+    private void UpdateVariablesListPerCategory(PluginActions actId, string category, string instanceId) {
+      if (Categories.TryGetCategoryId(category, out Groups catId))
+        UpdateActionDataList(actId, "VarName", _statesDictionary.GetSimVarSelectorList(catId), instanceId);
     }
 
     // List of settable SimVars per action instance
@@ -544,6 +546,13 @@ namespace MSFSTouchPortalPlugin.Services
         var list = new[] { var.Unit }.Concat(Units.ListUsable);
         UpdateActionDataList(PluginActions.AddKnownSimVar, "Unit", list, instanceId);
       }
+    }
+
+    private void UpdateCreatableVariableType(string varType, string instanceId) {
+      if (varType.Length > 1 && varType[0] == 'L')
+        UpdateActionDataList(PluginActions.SetVariable, "Create", new[] { "No", "Yes" }, instanceId);
+      else
+        UpdateActionDataList(PluginActions.SetVariable, "Create", new[] { "N/A" }, instanceId);
     }
 
     // Events
@@ -670,6 +679,10 @@ namespace MSFSTouchPortalPlugin.Services
           _presets.UpdateIfNeededAsync().ConfigureAwait(false);
           break;
 
+        case PluginActions.UpdateLocalVarsList:
+          _simConnectService.RequestLookupList(WASimCommander.CLI.Enums.LookupItemType.LocalVariable);
+          break;
+
         case PluginActions.ActionRepeatIntervalInc:
         case PluginActions.ActionRepeatIntervalDec:
         case PluginActions.ActionRepeatIntervalSet: {
@@ -739,8 +752,6 @@ namespace MSFSTouchPortalPlugin.Services
         return;
       }
       _simConnectService.SetVariable('L', varName, dVal);
-      //varName = $"{dVal:F7} (>L:{varName})";
-      //_simConnectService.ExecuteCalculatorCode(varName);
     }
 
     // Parse and process PluginActions.SetVariable action
@@ -758,7 +769,10 @@ namespace MSFSTouchPortalPlugin.Services
         _logger.LogError($"Could not set numeric value '{value}' for LVar: '{varName}'; Error: {errMsg}");
         return;
       }
-      _simConnectService.SetVariable(varType[0], varName, dVal, data.GetValueOrDefault("Unit", ""));
+      bool createLvar = false;
+      if (varType[0] == 'L' && data.TryGetValue("Create", out var sCreate) && new BooleanString(sCreate))
+        createLvar = true;
+      _simConnectService.SetVariable(varType[0], varName, dVal, data.GetValueOrDefault("Unit", ""), createLvar);
     }
 
     //case PluginActions.AddCustomSimVar:
@@ -842,6 +856,17 @@ namespace MSFSTouchPortalPlugin.Services
         _logger.LogInformation((int)EventIds.PluginInfo, $"Removed SimVar '{simVar.SimVarName}'");
       else
         _logger.LogError($"Could not find definition for settable SimVar Id: '{varId}' from Name: '{varName}'");
+    }
+
+    private void RequestValueUpdateFromActionData(ActionData data) {
+      if (!data.TryGetValue("VarName", out var varName) || !TryGetSimVarIdFromActionData(varName, out string varId)) {
+        _logger.LogError($"Could not find valid Variable ID in action data: {ActionDataToKVPairString(data)}'");
+        return;
+      }
+      if (_statesDictionary.TryGet(varId, out var simVar))
+        _simConnectService.RequestVariableValueUpdate(simVar);
+      else
+        _logger.LogWarning($"Variable with ID '{varId}' not found.");
     }
 
     // Dynamic sim Events (actions)
@@ -964,6 +989,10 @@ namespace MSFSTouchPortalPlugin.Services
         case PluginActions.AddNamedVariable:
         case PluginActions.AddCalculatedValue:
           AddSimVarFromActionData(pluginEventId, data);
+          break;
+
+        case PluginActions.UpdateVarValue:
+          RequestValueUpdateFromActionData(data);
           break;
 
         case PluginActions.RemoveSimVar:
@@ -1148,6 +1177,15 @@ namespace MSFSTouchPortalPlugin.Services
         case PluginActions.SetSimVar:
           if (listParts[2] == "VarType")
             UpdateKnownVarsList(message.Value, message.InstanceId);
+          break;
+        case PluginActions.SetVariable:
+          if (listParts[2] == "VarType")
+            UpdateCreatableVariableType(message.Value, message.InstanceId);
+          break;
+        case PluginActions.UpdateVarValue:
+        case PluginActions.RemoveSimVar:
+          if (listParts[2] == "CatId")
+            UpdateVariablesListPerCategory(actId, message.Value, message.InstanceId);
           break;
         default:
           break;
