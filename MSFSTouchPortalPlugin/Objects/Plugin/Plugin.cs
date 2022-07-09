@@ -29,8 +29,10 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     [TouchPortalActionMapping(PluginActions.ActionRepeatIntervalDec, "Decrement")]
     public static readonly object ActionRepeatInterval;
 
-    [TouchPortalAction(PluginActions.SetCustomSimEvent, "Activate a Custom Simulator Event",
-      "Trigger a Simulator Event by name. The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.",
+
+    [TouchPortalAction(PluginActions.SetCustomSimEvent, "Activate a Named Simulator Event",
+      "Trigger a Simulator Event by name.\n" +
+        "The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.",
       "Activate Event {0} with value {1} (if any)",
       holdable: true)]
     [TouchPortalActionText("SIMULATOR_EVENT_NAME", Id = "EvtId", Label = "Event ID")]
@@ -38,66 +40,164 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     public static readonly object SetCustomSimEvent;
 
     [TouchPortalAction(PluginActions.SetKnownSimEvent, "Activate a Simulator Event From List",
-      "Trigger a Simulator Event. The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.",
+      "Trigger a Simulator Event.\n" +
+        "The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.",
       "From Category {0} Activate Event {1} with value {2} (if any)",
       holdable: true)]
-    [TouchPortalActionChoice("<plugin not connected>", "", Id = "SimCatName", Label = "Category")]
-    [TouchPortalActionChoice("<select a category>", "", Id = "EvtId", Label = "Event ID")]
+    [TouchPortalActionChoice("[plugin not connected]", "", Id = "SimCatName", Label = "Category")]
+    [TouchPortalActionChoice("[select a category]", "", Id = "EvtId", Label = "Event ID")]
     [TouchPortalActionText("", Id = "Value", Label = "Value")]
     public static readonly object SetKnownSimEvent;
 
-    [TouchPortalAction(PluginActions.SetSimVar, "Set Simulator Variable Value",
-      "Sets a value on any loaded State which is marked as settable. If a numeric value is required, using basic math operators and dynamic state values is possible.",
-      "Set Variable {0} to {1} (release AI: {2})",
+    [TouchPortalAction(PluginActions.SetHubHopEvent, "Activate a Simulator Event From HubHop",
+      "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t" +
+        "** Requires WASimModule or MobiFlight. **\n" +
+        "Trigger a Simulator Event from loaded HubHop data.\t\t\t\t\t" +
+        "\"Potentiometer\" type events are only supported with WASimModule (using the provided value, which should evaluate to numeric).",
+      "Aircraft/Device: {0} System: {1} Event Name: {2} with value {3} (if any)",
       holdable: true)]
-    [TouchPortalActionChoice("<plugin not connected>", "", Id = "VarName", Label = "Simulator Variable")]
+    [TouchPortalActionChoice("[plugin not connected]", "", Id = "VendorAircraft", Label = "Aircraft")]
+    [TouchPortalActionChoice("[select an aircraft]", "", Id = "System", Label = "System")]
+    [TouchPortalActionChoice("[select a system]", "", Id = "EvtId", Label = "Event Name")]
+    [TouchPortalActionText("", Id = "Value", Label = "Value")]
+    public static readonly object SetHubHopEvent;
+
+    //[TouchPortalAction(PluginActions.SetSimVar, "Set Simulator Variable Value",
+    //  "Sets a value on any loaded State which is marked as settable. If a numeric value is required, using basic math operators and dynamic state values is possible.",
+    //  "Set Variable {0} to {1} (release AI: {2})",
+    //  holdable: true)]
+    //[TouchPortalActionChoice("[plugin not connected]", "", Id = "VarName", Label = "Simulator Variable")]
+    //[TouchPortalActionText("0", Id = "Value", Label = "Value")]
+    //[TouchPortalActionSwitch(false, Id = "RelAI", Label = "Release AI")]
+    //public static readonly object SetSimVar;
+
+    //[TouchPortalAction(PluginActions.SetLVar, "Set Airplane Local Variable",
+    //  "Sets a value on a \"local\" variable for the currently loaded aircraft. Using basic math operators and dynamic state values is possible.",
+    //  "Set Variable {0} to {1}",
+    //  holdable: true)]
+    //[TouchPortalActionChoice("[connect and load a flight]", "", Id = "VarName", Label = "Local Variable")]
+    //[TouchPortalActionText("0", Id = "Value", Label = "Value")]
+    //public static readonly object SetLVar;
+
+    [TouchPortalAction(PluginActions.SetSimVar, "Set Variable Value From List",
+      "Sets a value on a known named variable, which could be a Sim Var which is marked as settable, or a Local variable from currently loaded aircraft.\t\t\t\t\t** Requires WASimModule for Local Vars **",
+      "Set Variable type {0} named {1} to {2} in Units (optional) {3} (release AI: {4})",
+      holdable: true)]
+    [TouchPortalActionChoice(new[] { "A: SimVar", "L: Local" }, Id = "VarType", Label = "Variable Type")]
+    [TouchPortalActionChoice("[select a type]", "", Id = "VarName", Label = "Variable Name")]
     [TouchPortalActionText("0", Id = "Value", Label = "Value")]
+    [TouchPortalActionChoice("[connect to plugin]", "", Id = "Unit", Label = "Unit Name")]
     [TouchPortalActionSwitch(false, Id = "RelAI", Label = "Release AI")]
     public static readonly object SetSimVar;
+
+    [TouchPortalAction(PluginActions.SetVariable, "Set Named Variable Value",
+      "Set a Named Variable\n" +
+        "Sets a value on any named variable, by type of variable.\t\t\t\t\t** Requires WASimModule **",
+        "Set Variable Type {0} named {1} to {2} in Units (optional) {3} (release AI: {4})",
+      holdable: true)]
+    [TouchPortalActionChoice(new[] { "A: SimVar", "C: GPS", "H: HTML Event", "K: Key Event", "L: Local", "Z: Custom SimVar" }, Id = "VarType", Label = "Variable Type")]
+    [TouchPortalActionText("", Id = "VarName", Label = "Variable Name")]
+    [TouchPortalActionText("0", Id = "Value", Label = "Value")]
+    [TouchPortalActionChoice("[connect to plugin]", "", Id = "Unit", Label = "Unit Name")]
+    [TouchPortalActionSwitch(false, Id = "RelAI", Label = "Release AI")]
+    public static readonly object SetVariable;
+
+    [TouchPortalAction(PluginActions.ExecCalcCode, "Execute Calculator Code",
+      "Execute Calculator Code\n" +
+      "Runs any entered string of RPN code through the 'execute_calculator_code' Gauge API function. You may use TP state value macros to insert dynamic data.",
+      "Execute this code: {0} (must be valid RPN format)                             ** Requires WASimModule **",
+      holdable: true)]
+    [TouchPortalActionText("1 (>H:AS1000_PFD_SOFTKEYS_1)", Id = "Code", Label = "Code")]
+    public static readonly object ExecCalcCode;
 
     // The spacing and titles here are very carefully chosen to help align labels on the top row with entry fields on the bottom row, including the default lists/values.
     // Do not change without testing in TP!
     [TouchPortalAction(PluginActions.AddCustomSimVar, "Request a Custom Simulator Variable",
       "Request Simulator Variable Name:                            Index (if req'd):               Category:                                    " +
-        "Units:                                                                               Format:                            Default Value:                 " +
+        "Units:                                                                " +
+        "Format:                            Default Value:                 " +
         "Settable:           Update Period:                   Update Interval:               Delta Epsilon:     ",
       "{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}")]
     [TouchPortalActionText("SIMULATOR VARIABLE FULL NAME", Id = "VarName", Label = "Simulator Variable Name")]
     [TouchPortalActionNumeric(0, 0, 99, false, Id = "VarIndex", Label = "Variable Index")]
-    [TouchPortalActionChoice("<connect plugin>", "", Id = "CatId", Label = "Category")]
-    [TouchPortalActionChoice("<connect to plugin>                                 ", "", Id = "Unit", Label = "Unit Name")]
+    [TouchPortalActionChoice("[connect plugin]", "", Id = "CatId", Label = "Category")]
+    [TouchPortalActionChoice("[connect to plugin]                                 ", "", Id = "Unit", Label = "Unit Name")]
     [TouchPortalActionText("F2", Id = "Format", Label = "Formatting String")]
     [TouchPortalActionText("0", Id = "DfltVal", Label = "Default Value")]
     [TouchPortalActionSwitch(false, Id = "CanSet", Label = "Settable")]
-    [TouchPortalActionChoice(new[] { /*"Never",*/ "Once", "VisualFrame", "SimFrame", "Second", "Millisecond", }, "SimFrame", Id = "UpdPer", Label = "Update Period")]
+    [TouchPortalActionChoice(new[] { /*"Never",*/ "Once", /*"VisualFrame",*/ "SimFrame", "Second", "Millisecond", }, "SimFrame", Id = "UpdPer", Label = "Update Period")]
     [TouchPortalActionNumeric(0, 0, int.MaxValue, false, Id = "UpdInt", Label = "Interval")]
-    [TouchPortalActionNumeric(0.0099999, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
+    [TouchPortalActionNumeric(0.009, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
     public static readonly object AddCustomSimVar;
 
     // The spacing and titles here are very carefully chosen to help align labels on the top row with entry fields on the bottom row, including the default lists/values.
     // Do not change without testing in TP!
-    [TouchPortalAction(PluginActions.AddKnownSimVar, "Request a Simulator Variable From List",
-      "From Simulator Category            Request Simulator Variable                                                                        " +
-        "Index (if req'd):                Plugin Category:                         Units:                                                                               " +
+    [TouchPortalAction(PluginActions.AddKnownSimVar, "Request a Variable From List",
+      "Request a Variable from Simulator\t\t\t\t\t** Local Variables support requires WASimModule **\n" +
+        "Category or Local Aircraft          " +
+        "Request Variable                                                                                        " +
+        "Index (if req'd):                " +
+        "Plugin Category:                         Units:                                                                 " +
         "Format:                            Default Value:                 Update Period:                  Update Interval:              Delta Epsilon:      ",
       "{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}")]
-    [TouchPortalActionChoice("<connect to plugin>", "", Id = "SimCatName", Label = "Category")]
-    [TouchPortalActionChoice("<select a category>                                                            ", "", Id = "VarName", Label = "Simulator Variable Name")]
+    [TouchPortalActionChoice("[connect to plugin]", "", Id = "SimCatName", Label = "Category or Type")]
+    [TouchPortalActionChoice("[select a category]                                                            ", "", Id = "VarName", Label = "Simulator Variable Name")]
     [TouchPortalActionNumeric(0, 0, 99, false, Id = "VarIndex", Label = "Variable Index")]
-    [TouchPortalActionChoice("<connect plugin>", "", Id = "CatId", Label = "Category")]
-    [TouchPortalActionChoice("<connect to plugin>                                 ", "", Id = "Unit", Label = "Unit Name")]
+    [TouchPortalActionChoice("[connect plugin]", "", Id = "CatId", Label = "Category")]
+    [TouchPortalActionChoice("[connect to plugin]                                 ", "number", Id = "Unit", Label = "Unit Name")]
     [TouchPortalActionText("F2", Id = "Format", Label = "Formatting String")]
     [TouchPortalActionText("0", Id = "DfltVal", Label = "Default Value")]
     //[TouchPortalActionSwitch(false, Id = "CanSet", Label = "Settable")]  // we should know if it's settable from the imported data
-    [TouchPortalActionChoice(new[] { /*"Never",*/ "Once", "VisualFrame", "SimFrame", "Second", "Millisecond", }, "SimFrame", Id = "UpdPer", Label = "Update Period")]
+    [TouchPortalActionChoice(new[] { /*"Never",*/ "Once", /*"VisualFrame",*/ "SimFrame", "Second", "Millisecond", }, "SimFrame", Id = "UpdPer", Label = "Update Period")]
     [TouchPortalActionNumeric(0, 0, int.MaxValue, false, Id = "UpdInt", Label = "Interval")]
-    [TouchPortalActionNumeric(0.0099999, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
+    [TouchPortalActionNumeric(0.009, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
     public static readonly object AddKnownSimVar;
+
+    // The spacing and titles here are very carefully chosen to help align labels on the top row with entry fields on the bottom row, including the default lists/values.
+    // Do not change without testing in TP!
+    [TouchPortalAction(PluginActions.AddNamedVariable, "Request a Named Variable",
+      "Request a Named Variable                       For indexed SimVars, include it in the name after a : (colon).\t\t\t\t\t** Requires WASimModule **\n" +
+        "Variable Type:                Name:                                                   " +
+        "Plugin Category:                         Units (optional):                                               " +
+        "Format:                            Default Value:                 Update Period:                Update Interval:              Delta Epsilon:     ",
+      "{0}{1}{2}{3}{4}{5}{6}{7}{8}")]
+    [TouchPortalActionChoice(new[] { "A: SimVar", "B: Input", "C: GPS", "E: Env.", "L: Local", "M: Mouse", "R: Rsrc.", "T: Token", "Z: Custom" }, Id = "VarType", Label = "Variable Type")]
+    [TouchPortalActionText("FULL VARIABLE NAME", Id = "VarName", Label = "Variable Name")]
+    //[TouchPortalActionNumeric(0, 0, 99, false, Id = "VarIndex", Label = "Variable Index")]
+    [TouchPortalActionChoice("[connect plugin]", "", Id = "CatId", Label = "Category")]
+    [TouchPortalActionChoice("[connect to plugin]                                 ", "number", Id = "Unit", Label = "Unit Name")]
+    [TouchPortalActionText("F2", Id = "Format", Label = "Formatting String")]
+    [TouchPortalActionText("0", Id = "DfltVal", Label = "Default Value")]
+    //[TouchPortalActionSwitch(false, Id = "CanSet", Label = "Settable")]
+    [TouchPortalActionChoice(new[] { /*"Never",*/ "Once", "SimFrame", "Second", "Millisecond", }, "SimFrame", Id = "UpdPer", Label = "Update Period")]
+    [TouchPortalActionNumeric(0, 0, int.MaxValue, false, Id = "UpdInt", Label = "Interval")]
+    [TouchPortalActionNumeric(0.009, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
+    public static readonly object AddNamedVariable;
+
+    // The spacing and titles here are very carefully chosen to help align labels on the top row with entry fields on the bottom row, including the default lists/values.
+    // Do not change without testing in TP!
+    [TouchPortalAction(PluginActions.AddCalculatedValue, "Request a Calculated Value",
+      "Request a Calculated Value\t\t\t\t\t** Requires WASimModule **\n" +
+        "Calculator Code:                                                                                                         " +
+        "Result Type:                  " +
+        "Plugin Category:                         State Name:                                                " +
+        "Format:                            Default Value:                 Update Period:                Update Interval:              Delta Epsilon:     ",
+      "{0}{1}{2}{3}{4}{5}{6}{7}{8}")]
+    [TouchPortalActionText("(A:TRAILING EDGE FLAPS LEFT ANGLE, degrees) 30 - abs 0.1 <", Id = "CalcCode", Label = "Calculator Code")]
+    [TouchPortalActionChoice(new[] { "Double", "Integer", "String", "Formatted" }, Id = "ResType", Label = "Result Type")]
+    [TouchPortalActionChoice("[connect plugin]", "", Id = "CatId", Label = "Category")]
+    [TouchPortalActionText("A name for the States list", Id = "VarName", Label = "State Name")]
+    [TouchPortalActionText("F2", Id = "Format", Label = "Formatting String")]
+    [TouchPortalActionText("0", Id = "DfltVal", Label = "Default Value")]
+    [TouchPortalActionChoice(new[] { /*"Never",*/ "Once", "SimFrame", "Second", "Millisecond", }, "SimFrame", Id = "UpdPer", Label = "Update Period")]
+    [TouchPortalActionNumeric(0, 0, int.MaxValue, false, Id = "UpdInt", Label = "Interval")]
+    [TouchPortalActionNumeric(0.009, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
+    public static readonly object AddCalculatedValue;
 
     [TouchPortalAction(PluginActions.RemoveSimVar, "Remove a Simulator Variable",
       "Remove an existing Simulator Variable. Note that static TP States cannot be removed.",
       "Remove Simulator Variable {0}")]
-    [TouchPortalActionChoice("<plugin not connected>", "", Id = "VarName", Label = "Simulator Variable")]
+    [TouchPortalActionChoice("[plugin not connected]", "", Id = "VarName", Label = "Simulator Variable")]
     public static readonly object RemoveSimVar;
 
     [TouchPortalAction(PluginActions.LoadSimVars, "Load SimVar Definitions From File",

@@ -12,9 +12,15 @@
 
     SetCustomSimEvent,
     SetKnownSimEvent,
+    SetHubHopEvent,
     SetSimVar,
+    SetVariable,
+    ExecCalcCode,
+
     AddCustomSimVar,
     AddKnownSimVar,
+    AddNamedVariable,
+    AddCalculatedValue,
     RemoveSimVar,
     SaveSimVars,
     LoadSimVars,
