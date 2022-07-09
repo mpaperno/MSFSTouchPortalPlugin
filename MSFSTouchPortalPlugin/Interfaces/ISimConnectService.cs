@@ -44,7 +44,8 @@ namespace MSFSTouchPortalPlugin.Interfaces
     bool ClearDataDefinition(Definition def);
     bool SubscribeToSystemEvent(Enum eventId, string eventName);
     bool ExecuteCalculatorCode(string code);
-    bool SetVariable(char varType, string varName, double value, string unit = "");
+    bool SetVariable(char varType, string varName, double value, string unit = "", bool createLocal = false);
     bool RequestLookupList(Enum listType);
+    bool RequestVariableValueUpdate(SimVarItem simVar);
   }
 }

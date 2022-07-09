@@ -501,10 +501,12 @@ namespace MSFSTouchPortalPlugin.Services
       return _wlib.executeCalculatorCode(code) == HR.OK;
     }
 
-    public bool SetVariable(char varType, string varName, double value, string unit = "") {
+    public bool SetVariable(char varType, string varName, double value, string unit = "", bool createLocal = false) {
       if (!WasmConnected || string.IsNullOrWhiteSpace(varName))
         return false;
       _logger.LogDebug($"Settings variable {varType} {varName} to {value}");
+      if (createLocal && varType == 'L')
+        return _wlib.setOrCreateLocalVariable(varName, value) == HR.OK;
       return _wlib.setVariable(new VariableRequest(varType, varName, unit), value) == HR.OK;
     }
 
@@ -513,6 +515,14 @@ namespace MSFSTouchPortalPlugin.Services
         return false;
       _wlib.list((LookupItemType)listType);
       return true;
+    }
+
+    public bool RequestVariableValueUpdate(SimVarItem simVar) {
+      if (!_addedDefinitions.TryGetValue(simVar.Def, out var dataProvider))
+        return false;
+      if (dataProvider == DataProvider.WASimClient)
+        return _wlib.updateDataRequest((uint)simVar.Def) == HR.OK;
+      return RequestDataOnSimObject(simVar);
     }
 
     #endregion Public Interface Methods
