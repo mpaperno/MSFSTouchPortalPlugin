@@ -8,6 +8,14 @@
     <Version>1.2.0</Version>
     <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath>
     <Configurations>Debug;Release;Publish</Configurations>
+    <Copyright>Copyright Tim Lewis, Maxim Paperno, and project contributors; All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/mpaperno/MSFSTouchPortalPlugin</PackageProjectUrl>
+    <DocumentationUrl>https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki</DocumentationUrl>
+    <RepositoryUrl>https://github.com/mpaperno/MSFSTouchPortalPlugin.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>GPLv3</PackageLicenseExpression>
+    <Description>Entry.tp JSON and Documentation MD generator for MSFS Touch Portal Plugin</Description>
+    <Authors>Tim Lewis, Maxim Paperno, and project contributors</Authors>
     <!--<CodeAnalysisRuleSet>..\.sonarlint\msfstouchportalplugincsharp.ruleset</CodeAnalysisRuleSet>-->
   </PropertyGroup>
 
@@ -59,7 +67,7 @@
     <TrimmerRootAssembly Include="mscorlib" />
     <TrimmerRootAssembly Include="netstandard" />
   </ItemGroup>
-  
+
   <!-- somehow this is required for trimming to work properly, otherwise we get an exception during build -->
   <ItemGroup Condition="'$(Configuration)'=='Publish'">
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
@@ -68,5 +76,5 @@
       <Private>true</Private>
     </Reference>
   </ItemGroup>
-  
+
 </Project>

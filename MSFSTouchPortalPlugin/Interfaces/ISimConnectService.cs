@@ -7,11 +7,16 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 namespace MSFSTouchPortalPlugin.Interfaces
 {
+  public enum WasmModuleStatus {
+    Unknown, NotFound, Found, Connected
+  }
+
   internal delegate void DataUpdateEventHandler(Definition def, Definition req, object data);
   internal delegate void RecvEventEventHandler(EventIds evenId, Groups categoryId, object data);
   internal delegate void ConnectEventHandler(SimulatorInfo info);
   internal delegate void DisconnectEventHandler();
   internal delegate void ExceptionEventHandler(RequestTrackingData data);
+  internal delegate void LocalVarsListUpdatedHandler(System.Collections.Generic.IReadOnlyDictionary<int, string> list);
 
   internal interface ISimConnectService : IDisposable {
     event DataUpdateEventHandler OnDataUpdateEvent;
@@ -19,8 +24,10 @@ namespace MSFSTouchPortalPlugin.Interfaces
     event ConnectEventHandler OnConnect;
     event DisconnectEventHandler OnDisconnect;
     event ExceptionEventHandler OnException;
+    event LocalVarsListUpdatedHandler OnLVarsListUpdated;
 
     bool IsConnected { get; }
+    WasmModuleStatus WasmStatus { get; }
 
     bool AddNotification(Groups group, Enum eventId);
     uint Connect(uint configIndex = 0);
@@ -36,5 +43,8 @@ namespace MSFSTouchPortalPlugin.Interfaces
     bool ReleaseAIControl(Definition def, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER);
     bool ClearDataDefinition(Definition def);
     bool SubscribeToSystemEvent(Enum eventId, string eventName);
+    bool ExecuteCalculatorCode(string code);
+    bool SetVariable(char varType, string varName, double value, string unit = "");
+    bool RequestLookupList(Enum listType);
   }
 }

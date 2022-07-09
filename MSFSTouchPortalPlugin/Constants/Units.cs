@@ -6,7 +6,7 @@ namespace MSFSTouchPortalPlugin.Constants {
   internal static class Units {
 
     private static readonly string[] _integralUnits = new string[] {
-      Enum, mask, flags, position16k, position32k, position128, Bco16, second, seconds, minute, minutes, hour, hours, day, days, hourover10, hoursover10, year, years
+      Enum, mask, flags, integer, position16k, position32k, position128, Bco16, second, seconds, minute, minutes, hour, hours, day, days, hourover10, hoursover10, year, years
     };
 
     private static readonly string[] _booleanUnits = new string[] { Bool, Boolean };
@@ -14,19 +14,19 @@ namespace MSFSTouchPortalPlugin.Constants {
     /// <summary>
     /// Returns true if the unit string corresponds to a string type.
     /// </summary>
-    internal static bool IsStringType(string unit) => unit.ToLower() == String;
+    internal static bool IsStringType(string unit) => unit != null_unit && unit.ToLower() == String;
     /// <summary>
     /// Returns true if the unit string corresponds to an integer type.
     /// </summary>
-    internal static bool IsIntegralType(string unit) => _integralUnits.Contains(unit);
+    internal static bool IsIntegralType(string unit) => unit != null_unit && _integralUnits.Contains(unit);
     /// <summary>
     /// Returns true if the unit string corresponds to a boolean type.
     /// </summary>
-    internal static bool IsBooleanType(string unit) => _booleanUnits.Contains(unit);
+    internal static bool IsBooleanType(string unit) => unit != null_unit && _booleanUnits.Contains(unit);
     /// <summary>
     /// Returns true if the unit string corresponds to a real (float/double) type.
     /// </summary>
-    internal static bool IsRealType(string unit) => !IsStringType(unit) && !IsBooleanType(unit) && !IsIntegralType(unit);
+    internal static bool IsRealType(string unit) => unit != null_unit && !IsStringType(unit) && !IsBooleanType(unit) && !IsIntegralType(unit);
 
     internal static string NormalizedUnit(string unit) {
       if (ListAll.FirstOrDefault(u => u.ToLower() == unit.ToLower()) is var result && result != null)
@@ -35,6 +35,9 @@ namespace MSFSTouchPortalPlugin.Constants {
     }
 
     #region Unit Names
+
+    internal const string null_unit = "";
+    internal const string integer = "integer";  // not std unit, like "number" but for ints
 
     internal const string amp = "amp";
     internal const string ampere = "ampere";
@@ -390,6 +393,7 @@ namespace MSFSTouchPortalPlugin.Constants {
     // eliminates duplicates and obscure stuff
     static public readonly string[] ListUsable = new string[]
     {
+      null_unit,
       amp,
       amps,
       atm,
@@ -461,7 +465,6 @@ namespace MSFSTouchPortalPlugin.Constants {
       kgfmeters,
       KgFSqCm,
       KHz,
-      kilogramforcepersquarecentimeter,
       kilogrammeters,
       kilograms,
       kilogramsmetersquared,
@@ -490,16 +493,16 @@ namespace MSFSTouchPortalPlugin.Constants {
       mask,
       mbars,
       meters,
-      meterscubed,
-      meterscubedpersecond,
+      metercubed,
+      metercubedpersecond,
       metersecond,
       meterslatitude,
-      metersperminute,
-      meterspersecond,
-      meterspersecondscaler256,
-      meterspersecondsquared,
-      metersscaler256,
-      meterssecond,
+      meterperminute,
+      meterpersecond,
+      meterpersecondscaler256,
+      meterpersecondsquared,
+      meterscaler256,
+      metersecond,
       MHz,
       miles,
       milesperhour,
@@ -591,6 +594,7 @@ namespace MSFSTouchPortalPlugin.Constants {
 
     static public readonly string[] ListAll = new string[]
     {
+      null_unit,
       amp,
       ampere,
       amperes,

@@ -4,12 +4,19 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>MSFSTouchPortalPlugin</RootNamespace>
-    <Version>0.7.0.2-mp</Version>
+    <Version>1.0.0.0</Version>
     <Platforms>x64</Platforms>
     <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath>
     <AnalysisLevel>5.0</AnalysisLevel>
-    <Configurations>Debug;Release;Publish</Configurations> 
-    <!--<CodeAnalysisRuleSet>..\.sonarlint\msfstouchportalplugincsharp.ruleset</CodeAnalysisRuleSet>-->
+    <Configurations>Debug;Release;Publish</Configurations>
+    <Copyright>Copyright Tim Lewis, Maxim Paperno, and project contributors; All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/mpaperno/MSFSTouchPortalPlugin</PackageProjectUrl>
+    <DocumentationUrl>https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki</DocumentationUrl>
+    <RepositoryUrl>https://github.com/mpaperno/MSFSTouchPortalPlugin.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>GPLv3</PackageLicenseExpression>
+    <Description>A plugin which provides a two-way interface between Touch Portal clients and Flight Simulators which use SimConnect.</Description>
+    <Authors>Tim Lewis, Maxim Paperno, and project contributors</Authors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -43,7 +50,7 @@
     <TrimmerRootAssembly Include="mscorlib" />
     <TrimmerRootAssembly Include="netstandard" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -55,21 +62,13 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-    <!--<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />-->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <!--<PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />-->
-    <!--<PackageReference Include="System.Runtime.Handles" Version="4.3.0" />-->
-    <!--<PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" />-->
-    <!--
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.34.0.42011">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    -->
+    <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
   </ItemGroup>
 
   <!-- SimConnect libs -->
@@ -85,14 +84,14 @@
     </ContentWithTargetPath>
   </ItemGroup>
 
-  <!-- Custom TouchPortalSDK lib -->
+  <!-- TouchPortal API lib -->
   <ItemGroup>
     <Reference Include="TouchPortalSDK, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>.\lib\TouchPortalSDK\TouchPortalSDK.dll</HintPath>
       <Private>true</Private>
       <EmbedInteropTypes>false</EmbedInteropTypes>
     </Reference>
-    <!--<PackageReference Include="TouchPortalSDK" Version="0.23.1" />-->
+    <!--<PackageReference Include="TouchPortal-CS-API" Version="1.44.2" />-->
   </ItemGroup>
 
   <!-- Custom SharpConfig lib -->
@@ -103,6 +102,32 @@
       <EmbedInteropTypes>false</EmbedInteropTypes>
     </Reference>
     <!--<PackageReference Include="SharpConfig" Version="3.2.9.1" />-->
+  </ItemGroup>
+
+  <!-- WASimCommander Client -->
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Reference Include="WASimCommander.WASimClient, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>.\lib\WASimCommander\WASimCommander.WASimClient.dll</HintPath>
+      <Private>true</Private>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Reference Include="WASimCommander.WASimClient_d, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>.\lib\WASimCommander\WASimCommander.WASimClient_d.dll</HintPath>
+      <Private>true</Private>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ContentWithTargetPath Include=".\lib\WASimCommander\Ijwhost.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>Ijwhost.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include=".\lib\WASimCommander\client_conf.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>client_conf.ini</TargetPath>
+    </ContentWithTargetPath>
   </ItemGroup>
 
   <!-- Config files to copy to output -->
@@ -119,11 +144,12 @@
     <None Update="Configuration\SimEvents.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <!-- SimConnect.cfg needs to go into the root -->
-    <ContentWithTargetPath Include="Configuration\SimConnect.cfg">
+    <None Update="Configuration\SimConnect.cfg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>SimConnect.cfg</TargetPath>
-    </ContentWithTargetPath>
+    </None>
+    <None Update="Configuration\HubHop\hubhop_presets.sqlite3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
