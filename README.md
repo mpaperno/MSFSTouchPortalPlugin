@@ -13,14 +13,10 @@
 
 ## Overview
 
-This plugin provided a two way interface between [Touch Portal](https://www.touch-portal.com/) software and Flight Simulators which use SimConnect, 
+This plugin provided a two way interface between [Touch Portal](https://www.touch-portal.com/) software and Flight Simulators which use SimConnect,
 such as Microsoft Flight Simulator 2020 (MSFS) and FS-X.
 
-A good starting point for pages would be to look at those created by Denham at [FltSim-msfs2020-Control](https://github.com/HiDTH/FltSim-msfs2020-Control).
-Another source to check out is FordMustang0288's repo: [MSFSTouchPortalPages](https://github.com/FordMustang0288/MSFSTouchPortalPages).
-A (slightly dated) installation and usage guide is available at _Simvol_ [How to use Touch Portal [with MSFS]](https://www.simvol.org/en/articles/tutorials/use-touch-portal).
-
-This project is a continuation of the original [MSFSTuchPortalPlugin by Tim Lewis](https://github.com/tlewis17/MSFSTouchPortalPlugin).
+This project is a continuation of the original [MSFSTouchPortalPlugin by Tim Lewis](https://github.com/tlewis17/MSFSTouchPortalPlugin).
 
 ## Features
 
@@ -30,12 +26,14 @@ This project is a continuation of the original [MSFSTuchPortalPlugin by Tim Lewi
 * Completely configurable to request any variable or trigger any event supported by the connected simulator, including with custom extensions like MobiFlight.
 * Supports simulator system events (such as "flight loaded" or "sim started") as Touch Portal Events.
 * Allows simultaneous usage from multiple networked Touch Portal devices.
+* Optional WASM module integration allows even greater expansion, with access to many variable types (including "Local" variables) and events/actions not normally
+  accessible via SimConnect alone.
 
 ## Documentation
 
-Auto-generated documentation on all actions, states, and settings can be found in [DOCUMENTATION.MD](DOCUMENTATION.MD).
+See the [Wiki](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/) for some guides and tips.
 
-A [nascent wiki](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/) is available with some tips.
+Auto-generated documentation on all actions, states, and settings can be found in [DOCUMENTATION.MD](DOCUMENTATION.MD).
 
 ## Installation & Usage
 
@@ -50,7 +48,7 @@ just do that and skip to step 5. There is also a [short guide](https://www.touch
     * When prompted by _Touch Portal_ to trust the plugin startup script, select "Yes" (the source code is public!).
 5. **By default the plugin will not attempt to connect to a flight simulator on startup.** You have two options:
    1. Create a new Touch Portal button which triggers the "MSFS - Plugin - Toggle/On/Off SimConnect Connection" action. (Also a good place to show the current connection status.)
-   2. Go to the plugin's settings, via the Touch Portal "gear" icon then navigate to _Settings -> Plugins -> "MSFS Touch Portal Plugin"_ and set the 
+   2. Go to the plugin's settings, via the Touch Portal "gear" icon then navigate to _Settings -> Plugins -> "MSFS Touch Portal Plugin"_ and set the
     "Connect To Flight Sim on Startup" setting to a value of `1` (one). Then save the settings. To restart the plugin, go back to the same plugin settings page and
     press the "Stop" button, then the "Start" button.  The plugin will keep attempting to connect to the simulator every 30 seconds.
 6. **For use with FS-X** (and compatible sims): Change the "SimConnect.cfg Index" plugin setting to `1` (one).
@@ -67,8 +65,21 @@ This is very much a work in progress!
 
 A comprehensive installation and usage guide was published on the _Simvol_ Web site: [How to use Touch Portal [with MSFS]](https://www.simvol.org/en/articles/tutorials/use-touch-portal).
 
-Sample Touch Portal page files can be found at FordMustang0288's [MSFSTouchPortalPages](https://github.com/FordMustang0288/MSFSTouchPortalPages)
-and Denham's [FltSim-msfs2020-Control](https://github.com/HiDTH/FltSim-msfs2020-Control)
+
+## Pages and Examples
+
+Here is a list of known pages which use this plugin. In no particular order, no endorsement, nor have I necessarily tried/tested all these. YMMV.
+
+* [FltSim-msfs2020-Control](https://github.com/HiDTH/FltSim-msfs2020-Control) by HiDTH @ GitHub
+* [Touch Portal Page H145](https://flightsim.to/file/35625/touch-portal-page-h145) by edheronde @ flighsim.to
+* [Touch Portal Page "Piston Single"](https://flightsim.to/file/7394/touch-portal-page-piston-single) by yushu @ flightsim.to
+* [Touch Portal Page for Fenix A320](https://flightsim.to/file/35834/touch-portal-page-for-fenix-a320) by FFEENNIIXX @ flightsim.to
+* [MSFSTouchPortalPages](https://github.com/FordMustang0288/MSFSTouchPortalPages) by FordMustang0288 @ GitHub
+* [Special page for A32NX](https://www.simvol.org/en/downloads/miscellaneous/touch-portal-special-page-a32nx) by Pacha35 @ SimVol
+* [A320neo FlyByWire + CJ4 Working Title](https://flightsim.to/file/7406/touchportal-a320neo-flybywire) by fgrooten @ flightsim.to  (possibly missing a credit to HiDTH)
+* [MSFS Throttle Quad - Views - AP](https://github.com/mpaperno/TJoy/tree/main/assets) by mpaperno @ GitHub (requires my TJoy Plugin - [screenshot](https://github.com/mpaperno/TJoy/blob/main/assets/MSFS%20Throttle%20Quad%20-%20Views%20-%20AP.jpeg))
+
+Please let me know if you publish a page (or buttons/assets) which I could add to this list.
 
 ## Update Notifications
 
@@ -105,7 +116,6 @@ My [TJoy Touch Portal Plugin](https://github.com/mpaperno/TJoy) is an interface 
 
 * Sliders ("connectors")
 * Custom SimVar/states setup GUI
-* WASM module integration for local vars and more
 
 ## References
 
