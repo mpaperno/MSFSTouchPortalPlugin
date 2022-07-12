@@ -565,7 +565,8 @@ The fields `uData`, `sData` and `fData` referenced below refer to \refwc{Command
         <member name="F:Log">
  "The send_key_event function transmits a WM_COMMAND application event. This function transmits a message with the following syntax: `PostMessage(hwndMain, WM_COMMAND, event_id, (LPARAM) value);`"\n\n
  In practice this means you can send a KEY Event ID directly to the simulator, bypassing SimConnect event name mappings or calculator code evaluation. The event IDs can be found in the MSFS SDK's `MSFS/Legacy/gauges.h` header file as `KEY_*` macros,
- and are also available via the `Lookup` command. Custom event IDs (registered by gauges or other modules) can also be triggered this way. There may be other uses for this command... TBD.
+ and are also available via the `Lookup` command. If this command is sent with `uData` == 0 and `sData` contains a string, a `LookupItemType::KeyEventId` lookup will be performed on the Key Event name first and the resulting ID (if any) used.\n\n
+ Custom event IDs (registered by gauges or other modules) can also be triggered this way. There may be other uses for this command... TBD.
 </member>
         <member name="F:SendKey">
  manner for subscriptions, by writing the new value to the related client data area. Note also that this command will force an upate of the data, without comparing the result to any (potentially) cached value from previous lookup.
