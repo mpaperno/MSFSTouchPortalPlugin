@@ -81,6 +81,25 @@ Here is a list of known pages which use this plugin. In no particular order, no 
 
 Please let me know if you publish a page (or buttons/assets) which I could add to this list.
 
+## Troubleshooting
+
+The plugin logs errors and warnings to a plain-text file. 7 days worth of logs are kept by default (a new file is started for each day). 
+The log files are located within the plugin's installation folder, which is in Touch Portal's configuration directory:<br />
+`C:\Users<User Name>\AppData\Roaming\TouchPortal\plugins\MSFSTouchPortalPlugin\logs` folder, where `<User Name>` is your Windows user name.
+
+**If something isn't working as expected, check the log.**
+
+Another way to quickly see latest log entries is by using the provided TP States and displaying them in a button area.
+
+- _MSFS - Plugin -> Most recent plugin log messages_ (`MSFSTouchPortalPlugin.Plugin.State.LogMessages`) - Shows the last dozen logged messages. Give this
+  one a good size "button" (eg. cell size 4x3 or so).
+- _MSFS - System -> Data from most recent Simulator System Event_ (`MSFSTouchPortalPlugin.SimSystem.State.SimSystemEventData`) - Shows one line of text from the last
+  significant "simulator event." In case an error or warning is logged, the log entry with the error should show here.
+
+You could also monitor the _MSFS - System -> Simulator System Event_ for the `Plugin Error` and/or `SimConnect Error` events. 
+For example you could have a button light up red when this event happens, so you can know to go check the log.
+
+
 ## Update Notifications
 
 The latest version of this software is always published on the GitHub [Releases](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases) page.
