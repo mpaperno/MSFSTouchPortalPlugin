@@ -257,6 +257,18 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
       MaxLength = 255
     };
 
+    public static readonly PluginSetting UpdateHubHopOnStartup = new PluginSetting("UpdateHubHopOnStartup", DataType.Switch) {
+      Name = "Update HubHop Data on Startup (0/1)",
+      Description = "Set to 1 to automatically load latest HubHop data when plugin starts. Set to 0 to disable. Updates can always be triggered manually via the Action *MSFS - Plugin -> Connect & Update*.",
+      Default = "0",
+    };
+
+    public static readonly PluginSetting SortLVarsAlpha = new PluginSetting("SortLVarsAlpha", DataType.Switch) {
+      Name = "Sort Local Variables Alphabetically (0/1)",
+      Description = "Set to `1` to have all Local ('L') simulator variables sorted in alphabetical order within selection lists. Setting to `0` will keep them in the original order they're loaded in on the simulator (by ascending ID).",
+      Default = "1",
+    };
+
     public static readonly PluginSetting ActionRepeatInterval = new PluginSetting("ActionRepeatInterval", DataType.Number) {
       Name = "Held Action Repeat Rate (ms)",
       Description = "Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Action Repeat Interval' action. This setting cannot be changed from the TP Plugin Settings page (even though it appears to be editable on there).",
@@ -265,12 +277,6 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
       MaxValue = int.MaxValue,
       ReadOnly = true,
       TouchPortalStateId = "ActionRepeatInterval"
-    };
-
-    public static readonly PluginSetting UpdateHubHopOnStartup = new PluginSetting("UpdateHubHopOnStartup", DataType.Switch) {
-      Name = "Update HubHop Data on Startup (0/1)",
-      Description = "Set to 1 to automatically load latest HubHop data when plugin starts. Set to 0 to disable. Updates can always be triggered manually via the Action *MSFS - Plugin -> Connect & Update*.",
-      Default = "0",
     };
 
   }

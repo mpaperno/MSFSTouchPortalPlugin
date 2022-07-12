@@ -507,6 +507,8 @@ namespace MSFSTouchPortalPlugin.Services
     private void UpdateLocalVarsList(PluginActions action, string instanceId) {
       if (_localVariablesList == null || !_localVariablesList.Any())
         UpdateActionDataList(action, "VarName", new[] { "<local variables list not available>" }, instanceId);
+      else if (Settings.SortLVarsAlpha.BoolValue)
+        UpdateActionDataList(action, "VarName", _localVariablesList.Values.OrderBy(m => m), instanceId);
       else
         UpdateActionDataList(action, "VarName", _localVariablesList.Values, instanceId);
     }
