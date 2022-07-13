@@ -31,8 +31,6 @@ namespace MSFSTouchPortalPlugin.Services
     const int SIM_RECONNECT_DELAY_SEC = 30;   // SimConnect connection attempts delay on failure
     const int MAX_LOG_MSGS_FOR_STATE  = 12;   // maximum number of log lines to send in the LogMessages state
 
-    private enum EntryFileType { Default, NoStates, Custom };
-
     private readonly IHostApplicationLifetime _hostApplicationLifetime;
     private readonly ILogger<PluginService> _logger;
     private readonly ITouchPortalClient _client;
@@ -41,6 +39,7 @@ namespace MSFSTouchPortalPlugin.Services
     private readonly PluginConfig _pluginConfig;
     private readonly HubHopPresetsCollection _presets;
 
+    private bool _quitting;                          // prevent recursion at shutdown
     private CancellationToken _cancellationToken;    // main run enable token passed from Program startup in StartAsync()
     private CancellationTokenSource _simTasksCTS;    // for _simTasksCancelToken
     private CancellationToken _simTasksCancelToken;  // used to shut down local task(s) only needed while simulator is connected
@@ -52,12 +51,8 @@ namespace MSFSTouchPortalPlugin.Services
     private Dictionary<string, PluginSetting> pluginSettingsDictionary = new();
     private IReadOnlyDictionary<int, string> _localVariablesList = null;
     private readonly SimVarCollection _statesDictionary = new();
-    private readonly List<string> _dynamicStateIds = new();  // keep track of dynamically created states for clearing them if/when reloading sim var state files
     private readonly ConcurrentDictionary<string, Timer> _repeatingActionTimers = new();  // storage for temporary repeating (held) action timers, index by action ID
     private readonly ConcurrentQueue<string> _logMessages = new();  // stores the last MAX_LOG_MSGS_FOR_STATE log messages for the LogMessages state value, used in PluginLogger callback
-
-    private bool _quitting;  // prevent recursion at shutdown
-    private EntryFileType _entryFileType = EntryFileType.Default;  // detected entry.tp States configuration type
 
     private static readonly System.Data.DataTable _expressionEvaluator = new();  // used to evaluate basic math in action data
 
@@ -344,32 +339,21 @@ namespace MSFSTouchPortalPlugin.Services
 
     // This is done once after TP connects or upon the "Reload States" action.
     // It is safe to be called multiple times if config files need to be reloaded. SimConnect does not have to be connected.
-    private void SetupSimVars() {
-      // We may need to generate all, some, or no states dynamically.
-      bool allStatesDynamic = (_entryFileType == EntryFileType.NoStates);
-      bool someStateDynamic = false;
-      string logMsg;
-      IReadOnlyCollection<SimVarItem> simVars;
-
-      // First check if we're using a custom config.
-      if (PluginConfig.HaveUserStateFiles) {
-        // if the user is NOT using dynamic states for everything (entry_no-states.tp) nor a custom entry.tp file,
-        // then lets figure out what the default states are so we can create any missing ones dynamically if needed.
-        if (_entryFileType == EntryFileType.Default)
-          someStateDynamic = _pluginConfig.DefaultStateIds.Any();
-        logMsg = $"custom state file(s) '{PluginConfig.UserStateFiles}' in '{PluginConfig.UserConfigFolder}'";
-      }
-      else {  // Default config
-        logMsg = $"default file '{PluginConfig.AppConfigFolder}/{PluginConfig.StatesConfigFile}'";
-      }
+    private void SetupSimVars()
+    {
       // Load the vars.  PluginConfig tracks which files should be loaded, defaults or custom.
-      simVars = _pluginConfig.LoadSimVarStateConfigs();
+      IReadOnlyCollection<SimVarItem> simVars = _pluginConfig.LoadSimVarStateConfigs();
 
-      _logger.LogInformation((int)EventIds.PluginInfo, $"Loaded {simVars.Count} SimVar States from {logMsg}.");
+      string logMsg;
+      if (PluginConfig.HaveUserStateFiles)
+        logMsg = $"custom state file(s) '{PluginConfig.UserStateFiles}' in '{PluginConfig.UserConfigFolder}'";
+      else
+        logMsg = $"default file '{PluginConfig.AppConfigFolder}/{PluginConfig.StatesConfigFile}'";
+      _logger.LogInformation((int)EventIds.PluginInfo, "Loaded {count} SimVar States from {message}.", simVars.Count, logMsg);
 
       // Now create the SimVars and track them. We're probably not connected to SimConnect at this point so the registration may happen later.
       foreach (var simVar in simVars)
-        AddSimVar(simVar, allStatesDynamic || (someStateDynamic && !_pluginConfig.DefaultStateIds.Contains(simVar.Id)), true);
+        AddSimVar(simVar, postponeUpdate: true);
 
       UpdateSimVarLists();
     }
@@ -380,7 +364,7 @@ namespace MSFSTouchPortalPlugin.Services
           _simConnectService.RegisterToSimConnect(simVar);
     }
 
-    private bool AddSimVar(SimVarItem simVar, bool dynamicState = true, bool postponeUpdate = false) {
+    private bool AddSimVar(SimVarItem simVar, bool postponeUpdate = false) {
       if (simVar == null)
         return false;
 
@@ -394,16 +378,12 @@ namespace MSFSTouchPortalPlugin.Services
 
       _statesDictionary.Add(simVar.Def, simVar);
 
-      // Need a dynamic state?
-      if (dynamicState && !_dynamicStateIds.Contains(simVar.TouchPortalStateId)) {
-        _dynamicStateIds.Add(simVar.TouchPortalStateId);  // keep track for removing them later if needed
-        _client.CreateState(simVar.TouchPortalStateId, Categories.PrependFullCategoryName(simVar.CategoryId, simVar.Name), simVar.DefaultValue, Categories.FullCategoryName(simVar.CategoryId));
-        _logger.LogTrace($"Created dynamic state {simVar.TouchPortalStateId}'.");
-      }
+      // Create a dynamic state
+      _client.CreateState(simVar.TouchPortalStateId, Categories.PrependFullCategoryName(simVar.CategoryId, simVar.Name), simVar.DefaultValue, Categories.FullCategoryName(simVar.CategoryId));
 
       if (!postponeUpdate)
         UpdateSimVarLists();
-      _logger.LogTrace($"Added SimVar: {simVar.ToDebugString()}");
+      _logger.LogTrace("Added SimVar: {simVar}", simVar.ToDebugString());
       return true;
     }
 
@@ -412,8 +392,7 @@ namespace MSFSTouchPortalPlugin.Services
       if (simVar == null || !_statesDictionary.Remove(simVar.Id))
         return false;
       _simConnectService.ClearDataDefinition(simVar.Def);
-      if (_dynamicStateIds.Remove(simVar.TouchPortalStateId))
-        _client.RemoveState(simVar.TouchPortalStateId);
+      _client.RemoveState(simVar.TouchPortalStateId);
       if (!postponeUpdate)
         UpdateSimVarLists();
       return true;
@@ -423,7 +402,7 @@ namespace MSFSTouchPortalPlugin.Services
       var simVars = _pluginConfig.LoadSimVarItems(true, filepath);
       if (simVars.Any()) {
         foreach (var simVar in simVars)
-          AddSimVar(simVar, true);
+          AddSimVar(simVar, postponeUpdate: true);
         UpdateSimVarLists();
         _logger.LogInformation((int)EventIds.PluginInfo, $"Loaded {simVars.Count} SimVar States from file '{filepath}'");
       }
@@ -842,7 +821,7 @@ namespace MSFSTouchPortalPlugin.Services
         simVar.CalcResultType = resType;   // this also sets the Unit type and hence the data type (number/integer/string)
       }
 
-      if (AddSimVar(simVar))
+      if (AddSimVar(simVar, postponeUpdate: false))
         _logger.LogInformation((int)EventIds.PluginInfo, $"Added new Value Request from action data: {simVar.ToDebugString()}");
       else
         _logger.LogError($"Failed to add Value Request from action data, check previous log messages. Data: {ActionDataToKVPairString(data)}");
@@ -1076,30 +1055,23 @@ namespace MSFSTouchPortalPlugin.Services
     #region TouchPortalSDK Events       ///////////////////////////////
 
     public void OnInfoEvent(InfoEvent message) {
-      var runtimeVer = string.Format("{0:X}", VersionInfo.GetProductVersionNumber() >> 8);  // strip the patch version
+      var runtimeVer = string.Format("{0:X}", VersionInfo.GetProductVersionNumber());
       _logger?.LogInformation(new EventId(1, "Connected"),
-        $"Touch Portal Connected with: TP v{message.TpVersionString}, SDK v{message.SdkVersion}, {PluginId} entry.tp v{message.PluginVersion}, " +
-        $"{VersionInfo.AssemblyName} running v{VersionInfo.GetProductVersionString()} ({runtimeVer})"
+        "Touch Portal Connected with: TP v{tpV}, SDK v{sdkV}, {pluginId} entry.tp v{plugV}, {plugName} running v{prodV} ({runV})",
+        message.TpVersionString, message.SdkVersion, PluginId, message.PluginVersion, VersionInfo.AssemblyName, VersionInfo.GetProductVersionString(), runtimeVer
       );
-
-      // convert the entry.tp version back to the actual decimal value
-      uint tpVer;
-      try   { tpVer = uint.Parse($"{message.PluginVersion}", System.Globalization.NumberStyles.HexNumber); }
-      catch { tpVer = VersionInfo.GetProductVersionNumber() >> 8; }
-      _entryFileType = (tpVer & PluginConfig.ENTRY_FILE_VER_MASK_NOSTATES) > 0 ? EntryFileType.NoStates
-          : (tpVer & PluginConfig.ENTRY_FILE_VER_MASK_CUSTOM) > 0 ? EntryFileType.Custom
-          : EntryFileType.Default;
-
-      _logger.LogInformation($"Detected {_entryFileType} type entry.tp definition file.");
 
       ProcessPluginSettings(message.Settings);
       if (Settings.ConnectSimOnStartup.BoolValue)  // we only care about the Settings value at startup
         _simAutoConnectDisable.Set();
 
+      // convert the entry.tp version back to the actual decimal value
+      if (!uint.TryParse($"{message.PluginVersion}", System.Globalization.NumberStyles.HexNumber, null, out uint tpVer))
+        tpVer = VersionInfo.GetProductVersionNumber();
+      // update version states
       UpdateTpStateValue("RunningVersion", runtimeVer);
-      UpdateTpStateValue("EntryVersion", $"{tpVer & 0xFFFFFF:X}");
-      UpdateTpStateValue("ConfigVersion", $"{tpVer >> 24:X}");
-
+      UpdateTpStateValue("EntryVersion", $"{tpVer:X}");
+      // update action data lists
       UpdateCategoryLists();
       UpdateUnitsLists();
       UpdateSimVarCategories();

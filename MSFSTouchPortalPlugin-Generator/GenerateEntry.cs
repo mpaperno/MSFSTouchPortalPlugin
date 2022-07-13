@@ -39,35 +39,17 @@ namespace MSFSTouchPortalPlugin_Generator
     public void Generate() {
 
       string basePath = $"%TP_PLUGIN_FOLDER%{_options.PluginFolder}/";
-      bool useCustomConfigs = _options.StateFiles.Any();
-
-      // Get version and see if we need a custom version number
+      // Get version number
       VersionInfo.AssemblyLocation = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _options.PluginId + ".dll");
-      uint vNum = VersionInfo.GetProductVersionNumber() >> 8;  // strip the patch level
-      // add custom config version if using custom files
-      if (useCustomConfigs) {
-        uint cVer = _options.ConfigVersion << PluginConfig.ENTRY_FILE_CONF_VER_SHIFT;
-        if (cVer > PluginConfig.ENTRY_FILE_VER_MASK_CUSTOM)
-          cVer = PluginConfig.ENTRY_FILE_VER_MASK_CUSTOM;
-        vNum |= cVer;
-      }
-
-      // read states config
-      // always include the internal plugin states
+      uint vNum = VersionInfo.GetProductVersionNumber();
+      // read the internal plugin states config
       IEnumerable<SimVarItem> simVars = _pluginConfig.LoadPluginStates();
-      if (useCustomConfigs) {
-        PluginConfig.UserConfigFolder = _options.StateFilesPath;
-        PluginConfig.UserStateFiles = string.Join(',', _options.StateFiles);
-        _logger.LogInformation($"Generating entry.tp v{vNum:X} to '{_options.OutputPath}' with Custom states from file(s): {PluginConfig.UserStateFiles}");
-      }
-      else {
-        _logger.LogInformation($"Generating entry.tp v{vNum:X} to '{_options.OutputPath}' with Default states.");
-      }
-      simVars = simVars.Concat(_pluginConfig.LoadSimVarStateConfigs());
+
+      _logger.LogInformation($"Generating entry.tp v{vNum:X} to '{_options.OutputPath}'.");
 
       // Setup Base Model
       var model = new Base {
-        Sdk = 3,
+        Sdk = 6,
         Version = vNum,
         Name = _options.PluginName,
         Id = _options.PluginId
@@ -209,19 +191,6 @@ namespace MSFSTouchPortalPlugin_Generator
 
       var result = JsonConvert.SerializeObject(model, Formatting.Indented);
       var dest = Path.Combine(_options.OutputPath, "entry.tp");
-      File.WriteAllText(dest, result);
-      _logger.LogInformation($"Generated '{dest}'.");
-
-      if (useCustomConfigs)
-        return;
-
-      // Generate the entry.tp version with no states; use version as runtime indicator for plugin
-      model.Version |= PluginConfig.ENTRY_FILE_VER_MASK_NOSTATES;
-      foreach (var cat in model.Categories)
-        if (!cat.Id.EndsWith(".Plugin"))
-          cat.States.Clear();
-      result = JsonConvert.SerializeObject(model, Formatting.Indented);
-      dest = Path.Combine(_options.OutputPath, "entry_no-states.tp");
       File.WriteAllText(dest, result);
       _logger.LogInformation($"Generated '{dest}'.");
     }

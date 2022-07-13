@@ -36,7 +36,6 @@ namespace MSFSTouchPortalPlugin_Generator {
         try { opts.StateFilesPath = Path.GetFullPath(opts.StateFilesPath); }
         catch (Exception e) { OnError($"StateFilesPath option error, not found or not accessible: {e.Message}"); }
       }
-      opts.ConfigVersion = Math.Clamp(opts.ConfigVersion, 1, 79);
 
       await Host.CreateDefaultBuilder(args).ConfigureServices((context, services) => {
         services

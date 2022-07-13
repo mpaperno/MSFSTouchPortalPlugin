@@ -11,17 +11,11 @@ namespace MSFSTouchPortalPlugin_Generator.Configuration
     public string OutputPath { get; set; }
 
     [Option('s', "StateFiles", Default = null, MetaValue = "<LIST>", Separator = ',', Required = false,
-      HelpText = "\nOne or more custom configuration files which define SimConnect variables to request as Touch Portal States. \n" +
+      HelpText = "\nOne or more custom configuration files which define Simulator Variables/Touch Portal States for documentation. \n" +
       "Separate multiple files with commas (eg. \"Engines,Fuel\"). The file extension is optional, \".ini\" is assumed. \n" +
       "The file names may optionally include folder paths, but the default location is according to the StateFilesPath option (see below). \n" +
       "To include the default set of variables/states, use the name \"Default\" as one of the names (in any position of the list).")]
     public System.Collections.Generic.IEnumerable<string> StateFiles { get; set; }
-
-    [Option('c', "ConfigVersion", Default = 1U, MetaValue = "<1-79>", Required = false,
-      HelpText = "\nWhen used with 'StateFiles' option, specifies a configuration version number (ignored otherwise). " +
-      "This number will be used in the first two digits of the generated plugin version in entry.tp file.\n" +
-      "Must be in the range of 1-79.")]
-    public uint ConfigVersion { get; set; }
 
     [Option('p', "StateFilesPath", Default = "", MetaValue = "<DIR>", Required = false,
       HelpText = "\nWhere to find the custom state configuration file(s) specified in 'StateFiles' parameter.\n" +
@@ -49,7 +43,7 @@ namespace MSFSTouchPortalPlugin_Generator.Configuration
       HelpText = "\nName of the plugin's folder once installed to TP.")]
     public string PluginFolder { get; set; }
 
-    [Option('u', "DocsUrl", Default = "", MetaValue = "<URL>", Required = false,
+    [Option('u', "DocsUrl", Default = "https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki", MetaValue = "<URL>", Required = false,
       HelpText = "\nURL to full project documentation, if any.")]
     public string DocumentationUrl { get; set; }
 

@@ -52,20 +52,12 @@ namespace MSFSTouchPortalPlugin_Generator
       var assembly = Assembly.GetExecutingAssembly();
       VersionInfo.AssemblyLocation = Path.Combine(Path.GetDirectoryName(assembly.Location), _options.PluginId + ".dll");
 
-      string docsUrl = _options.DocumentationUrl;
-      if (string.IsNullOrWhiteSpace(docsUrl)) {
-        var metaAttr = assembly.GetCustomAttributes<AssemblyMetadataAttribute>();
-        foreach (var att in metaAttr)
-          if (att.Key == "DocumentationUrl")
-            docsUrl = att.Value;
-      }
-
       // create the base model
       var model = new DocBase {
         Title = _options.PluginName + " Documentation",
         Overview = "This plugin provides a two-way interface between Touch Portal and Flight Simulators which use SimConnect, such as Microsoft Flight Simulator 2020 and FS-X.",
         Version = VersionInfo.GetProductVersionString(),
-        DocsUrl = docsUrl
+        DocsUrl = _options.DocumentationUrl
       };
 
       // read states config
@@ -74,9 +66,6 @@ namespace MSFSTouchPortalPlugin_Generator
       if (_options.StateFiles.Any()) {
         PluginConfig.UserConfigFolder = _options.StateFilesPath;
         PluginConfig.UserStateFiles = string.Join(',', _options.StateFiles);
-        model.Version += "<br/>" +
-          $"Custom configuration version {_options.ConfigVersion}<br/>" +
-          $"Custom State Definitions Source(s): {string.Join(", ", _options.StateFiles)}";
       }
       simVars = simVars.Concat(_pluginConfig.LoadSimVarStateConfigs());
 
