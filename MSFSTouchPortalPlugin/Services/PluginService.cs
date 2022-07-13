@@ -58,7 +58,7 @@ namespace MSFSTouchPortalPlugin.Services
     private readonly ISimConnectService _simConnectService;
     private readonly IReflectionService _reflectionService;
     private readonly PluginConfig _pluginConfig;
-    private readonly HubHopPresetsCollection _presets;
+    private readonly HubHopPresetsCollection _presets = new();
 
     private bool _quitting;                          // prevent recursion at shutdown
     private CancellationToken _cancellationToken;    // main run enable token passed from Program startup in StartAsync()
@@ -91,7 +91,8 @@ namespace MSFSTouchPortalPlugin.Services
       _pluginConfig = pluginConfig ?? throw new ArgumentNullException(nameof(pluginConfig));
 
       Configuration.HubHop.Common.Logger = _logger;
-      _presets = new HubHopPresetsCollection();
+      _presets.OnDataUpdateEvent += HubHop_OnDataUpdate;
+      _presets.OnDataErrorEvent += HubHop_OnDataError;
 
       PluginLogger.OnMessageReady += new PluginLogger.MessageReadyHandler(OnPluginLoggerMessage);
       TouchPortalOptions.ActionDataIdSeparator = '.';  // split up action Data Ids
@@ -160,9 +161,6 @@ namespace MSFSTouchPortalPlugin.Services
         _logger.LogCritical("Failed to connect to Touch Portal! Quitting.");
         return false;
       }
-
-      if (Settings.UpdateHubHopOnStartup.BoolValue)
-        _ = _presets.UpdateIfNeededAsync();
 
       // Setup SimConnect Events
       _simConnectService.OnDataUpdateEvent += SimConnectEvent_OnDataUpdateEvent;
@@ -270,6 +268,20 @@ namespace MSFSTouchPortalPlugin.Services
           UpdateSimSystemEventState(evId, message);
         UpdateTpStateValue("LogMessages", string.Join('\n', _logMessages.ToArray()));
       }
+    }
+
+    // HubHopPresetsCollection data update callback
+    void HubHop_OnDataUpdate(bool updated)
+    {
+      if (updated)
+        UpdateSimEventAircraft();
+      string logMsg = updated ? "HubHop Data Updated" : "No HubHop Updates Detected";
+      _logger.LogInformation((int)EventIds.PluginInfo, "{0}; Latest entry date: {1:u}", logMsg, _presets.LatestUpdateTime);
+    }
+
+    private void HubHop_OnDataError(LogLevel severity, string message)
+    {
+      _logger.Log(severity, (int)EventIds.PluginError, message);
     }
 
     #endregion Startup, Shutdown and Processing Tasks
@@ -655,6 +667,12 @@ namespace MSFSTouchPortalPlugin.Services
       UpdateSimConnectState();
     }
 
+    void UpdateHubHopData()
+    {
+      _logger.LogInformation((int)EventIds.PluginInfo, "HubHop Data Update Requested...");
+      _presets.UpdateIfNeededAsync(Settings.HubHopUpdateTimeout.IntValue).ConfigureAwait(false);
+    }
+
     // Handles some basic actions like sim connection and repeat rate, with optional data value(s).
     private void ProcessPluginCommandAction(PluginActions actionId, ActionData data = null) {
       switch (actionId) {
@@ -678,7 +696,7 @@ namespace MSFSTouchPortalPlugin.Services
           break;
 
         case PluginActions.UpdateHubHopPresets:
-          _presets.UpdateIfNeededAsync().ConfigureAwait(false);
+          UpdateHubHopData();
           break;
 
         case PluginActions.UpdateLocalVarsList:
@@ -1085,6 +1103,10 @@ namespace MSFSTouchPortalPlugin.Services
       ProcessPluginSettings(message.Settings);
       if (Settings.ConnectSimOnStartup.BoolValue)  // we only care about the Settings value at startup
         _simAutoConnectDisable.Set();
+      // Init HubHop database
+      if (_presets.OpenDataFile() && Settings.UpdateHubHopOnStartup.BoolValue)
+        UpdateHubHopData();
+
 
       // convert the entry.tp version back to the actual decimal value
       if (!uint.TryParse($"{message.PluginVersion}", System.Globalization.NumberStyles.HexNumber, null, out uint tpVer))

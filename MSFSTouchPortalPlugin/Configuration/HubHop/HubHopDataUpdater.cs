@@ -78,11 +78,11 @@ namespace MSFSTouchPortalPlugin.Configuration
       return true;  // default to needing an update
     }
 
-    public static async Task<bool> DownloadPresets(string destination = null) {
+    public static async Task<bool> DownloadPresets(string destination = null, int timeoutSec = 45) {
       if (destination == null)
         destination = Common.PresetsFile;
       try {
-        await DownloadSingleFile(new Uri(ApiBaseURL + ApiPresetsCmd), destination).ConfigureAwait(false);
+        await DownloadSingleFile(new Uri(ApiBaseURL + ApiPresetsCmd), destination, timeoutSec).ConfigureAwait(false);
         Common.Logger?.LogDebug($"DownloadPresets({destination}) was successful.");
         return true;
       }
@@ -92,19 +92,16 @@ namespace MSFSTouchPortalPlugin.Configuration
       return false;
     }
 
-    static async Task DownloadSingleFile(Uri uri, string filename) {
-      //SecurityProtocolType oldType = ServicePointManager.SecurityProtocol;
-      //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+    static async Task DownloadSingleFile(Uri uri, string filename, int timeoutSec) {
       string tmpFile = filename + ".tmp";
       using var client = new HttpClient();
       using (var fs = new FileStream(tmpFile, FileMode.OpenOrCreate)) {
-        client.Timeout = new TimeSpan(0, 0, 60);
+        client.Timeout = new TimeSpan(0, 0, timeoutSec);
         using var s = await client.GetStreamAsync(uri).ConfigureAwait(false);
         await s.CopyToAsync(fs);
       }
       File.Delete(filename);
       File.Move(tmpFile, filename);
-      //ServicePointManager.SecurityProtocol = oldType;
     }
 
   }

@@ -280,8 +280,17 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
 
     public static readonly PluginSetting UpdateHubHopOnStartup = new PluginSetting("UpdateHubHopOnStartup", DataType.Switch) {
       Name = "Update HubHop Data on Startup (0/1)",
-      Description = "Set to 1 to automatically load latest HubHop data when plugin starts. Set to 0 to disable. Updates can always be triggered manually via the Action *MSFS - Plugin -> Connect & Update*.",
+      Description = "Set to 1 to automatically load latest HubHop data when plugin starts. Set to 0 to disable. Updates can always be triggered manually via the Action *MSFS - Plugin -> Connect & Update*. " +
+                    "**Updates require a working Internet connection!**",
       Default = "0",
+    };
+
+    public static readonly PluginSetting HubHopUpdateTimeout = new PluginSetting("HubHopUpdateTimeout", DataType.Number) {
+      Name = "HubHop Data Update Timeout (seconds)",
+      Description = "Maximum number of seconds to wait for a HubHop data update check or download via the Internet.",
+      Default = "60",
+      MinValue = 0,
+      MaxValue = 600
     };
 
     public static readonly PluginSetting SortLVarsAlpha = new PluginSetting("SortLVarsAlpha", DataType.Switch) {

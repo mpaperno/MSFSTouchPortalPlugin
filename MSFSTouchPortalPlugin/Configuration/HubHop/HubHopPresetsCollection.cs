@@ -54,50 +54,68 @@ namespace MSFSTouchPortalPlugin.Configuration
     public HubHopPresetQuery(HubHopType type, string vendor, string aircraft, string system) : this(type, vendor, aircraft, system, null) { }
   }
 
+  internal delegate void HubHupDataUpdaEventHandler(bool updated);
+  internal delegate void HubHupDataErrorEventHandler(LogLevel severity, string message);
+
   internal class HubHopPresetsCollection : IDisposable
   {
     #region Public
 
-    public HubHopPresetsCollection(string dbfile = default) {
+    public event HubHupDataUpdaEventHandler OnDataUpdateEvent;
+    public event HubHupDataErrorEventHandler OnDataErrorEvent;
+    /// <summary> Returns the UTC update date/time of latest database entry, or zero if the database is empty or not loaded. </summary>
+    public DateTime LatestUpdateTime => DateTimeOffset.FromUnixTimeSeconds(_db?.ExecuteScalar<long>("SELECT MAX(CreatedDateTS) FROM HubHopPreset") ?? 0).UtcDateTime;
+
+    /// <summary> Opens the specified database file for reading and writing HubHop Data. The database must have the HubHopPreset table. Errors are reported via `OnDataErrorEvent` event handler. </summary>
+    /// <returns>True on success, false on failure.</returns>
+    public bool OpenDataFile(string dbfile = default) {
       // must open in ReadWrite otherwise it doesn't close properly if an async connection was used.... :-|
       try {
-        _db = new SQLiteConnection(dbfile == default ? Common.PresetsDb : dbfile, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.SharedCache);
+        if (dbfile == default)
+          dbfile = Common.PresetsDb;
+        _db = new SQLiteConnection(dbfile, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.SharedCache);
+        Common.Logger?.LogDebug("HubHopPresetsCollection: opened database: {file}", dbfile);
+        return true;
       }
       catch (Exception e) {
-        Common.Logger?.LogCritical(e, $"Unable to open database {(dbfile == default ? Common.PresetsDb : dbfile)}: {e.Message}");
+        OnDataErrorEvent?.Invoke(LogLevel.Critical, $"Unable to open database {(dbfile == default ? Common.PresetsDb : dbfile)}: {e.Message}");
+        Common.Logger?.LogCritical(e, $"HubHopPresetsCollection::OpenDataFile() - Cannot open database with Exception:");
       }
+      return false;
     }
 
-    public DateTime LatestUpdateTime => DateTimeOffset.FromUnixTimeSeconds(_db.ExecuteScalar<long>("SELECT MAX(CreatedDateTS) FROM HubHopPreset")).UtcDateTime;
-
-    public async Task UpdateIfNeededAsync() {
+    /// <summary> Asynchronously checks for latest HubHop preset and updates the database if needed. Status is "returned" using `OnDataUpdateEvent` or `OnDataErrorEvent`  event handlers. </summary>
+    /// <param name="downloadTimeoutSec">Timeout value for the update check and download process, in seconds.</param>
+    public async Task UpdateIfNeededAsync(int downloadTimeoutSec = 60) {
       if (_db == null)
         return;
       try {
-        var last = LatestUpdateTime;
-        bool updt = await HubHopDataUpdater.CheckForUpdates(last).ConfigureAwait(false);
+        bool updt = await HubHopDataUpdater.CheckForUpdates(LatestUpdateTime, downloadTimeoutSec).ConfigureAwait(false);
         if (!updt) {
-          Common.Logger?.LogInformation((int)EventIds.PluginInfo, "No HubHop Updates Detected; Latest entry date: " + LatestUpdateTime.ToString("u"));
+          OnDataUpdateEvent?.Invoke(false);
           return;
         }
-        if (await HubHopDataUpdater.DownloadPresets(Common.PresetsFile).ConfigureAwait(false)) {
+        if (await HubHopDataUpdater.DownloadPresets(Common.PresetsFile, downloadTimeoutSec).ConfigureAwait(false)) {
           if (await LoadAsync().ConfigureAwait(false)) {
             File.Delete(Common.PresetsFile);
-            Common.Logger?.LogInformation((int)EventIds.PluginInfo, "HubHop Data updated; Latest entry date: " + LatestUpdateTime.ToString("u"));
+            OnDataUpdateEvent?.Invoke(true);
           }
           else {
-            Common.Logger?.LogWarning("HubHop Updates database load failed.");
+            OnDataErrorEvent?.Invoke(LogLevel.Error, "HubHop Updates database load failed, check log.");
           }
         }
         else {
-          Common.Logger?.LogWarning("HubHop Updates download failed.");
+          OnDataErrorEvent?.Invoke(LogLevel.Warning, "HubHop Updates download failed, check log.");
         }
       }
       catch (Exception e) {
-        Common.Logger?.LogError(e, $"Update check failed with Exception: {e.Message}");
+        OnDataErrorEvent?.Invoke(LogLevel.Error, $"Update check failed with Exception: {e.Message}");
+        Common.Logger?.LogError(e, "HubHopPresetsCollection::UpdateIfNeededAsync() - Update check Exception:");
       }
     }
 
+    /// <summary> Asynchronously loads data from a JSON file of HubHop presets, updating or inserting entries as needed. Errors are reported via `OnDataErrorEvent` event handler. </summary>
+    /// <returns>Returns false before async operation if JSON parsing fails, otherwise returns true after completion.</returns>
     public async Task<bool> LoadAsync(string jsonFile = default) {
       if (_db == null || !TryLoadJson(jsonFile == default ? Common.PresetsFile : jsonFile, out JToken presets))
         return false;
@@ -106,12 +124,16 @@ namespace MSFSTouchPortalPlugin.Configuration
         db.RunInTransactionAsync((t) => { Load(presets, t); })
         .ContinueWith((t) => { db.CloseAsync(); });
       //Debug();
+      //_db.Execute("VACUUM");
       return true;
     }
 
+    /// <summary> Synchronously loads data from a JSON file of HubHop presets, updating or inserting entries as needed. Errors are reported via `OnDataErrorEvent` event handler. </summary>
+    /// <returns>Returns false if JSON parsing fails, otherwise returns true after completion.</returns>
     public bool Load(string jsonFile = default) {
       if (_db != null && TryLoadJson(jsonFile == default ? Common.PresetsFile : jsonFile, out JToken presets)) {
         _db.RunInTransaction(() => { Load(presets, _db); });
+        //_db.Execute("VACUUM");
         return true;
       }
       return false;
@@ -206,7 +228,7 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     #region Private
 
-    readonly SQLiteConnection _db;
+    SQLiteConnection _db = null;
 
     List<string> QueryStringScalars(string fieldName, HubHopPresetQuery qry) {
       var res = BuildQuery(fieldName, qry);
@@ -247,7 +269,7 @@ namespace MSFSTouchPortalPlugin.Configuration
       return new Tuple<string, object[]>(string.Format(_selectTemplate, fieldName, where, qry.OrderyBy), args.ToArray());
     }
 
-    static bool TryLoadJson(string filename, out JToken presets) {
+    bool TryLoadJson(string filename, out JToken presets) {
       presets = new JArray();
       var serializer = JsonSerializer.Create(Common.SerializerSettings);
       try {
@@ -257,10 +279,11 @@ namespace MSFSTouchPortalPlugin.Configuration
         if (presets.Type == JTokenType.Array)
           return true;
         else
-          Common.Logger?.LogError($"Unable to load {filename}, not a JSON array.");
+          OnDataErrorEvent?.Invoke(LogLevel.Error, $"Unable to load {filename}, not a JSON array.");
       }
       catch (Exception e) {
-        Common.Logger?.LogError(e, $"Unable to load {filename}: {e.Message}");
+        OnDataErrorEvent?.Invoke(LogLevel.Error, $"Exception on trying to load '{filename}': {e.Message}");
+        Common.Logger?.LogError(e, "HubHopPresetsCollection::TryLoadJson() - Exception:");
       }
       return false;
     }
@@ -328,28 +351,3 @@ namespace MSFSTouchPortalPlugin.Configuration
     #endregion Private
   }
 }
-
-#if false
-SQLITE_OPEN_READONLY         0x00000001  /* Ok for sqlite3_open_v2() */
-SQLITE_OPEN_READWRITE        0x00000002  /* Ok for sqlite3_open_v2() */
-SQLITE_OPEN_CREATE           0x00000004  /* Ok for sqlite3_open_v2() */
-SQLITE_OPEN_DELETEONCLOSE    0x00000008  /* VFS only */
-SQLITE_OPEN_EXCLUSIVE        0x00000010  /* VFS only */
-SQLITE_OPEN_AUTOPROXY        0x00000020  /* VFS only */
-SQLITE_OPEN_URI              0x00000040  /* Ok for sqlite3_open_v2() */
-SQLITE_OPEN_MEMORY           0x00000080  /* Ok for sqlite3_open_v2() */
-SQLITE_OPEN_MAIN_DB          0x00000100  /* VFS only */
-SQLITE_OPEN_TEMP_DB          0x00000200  /* VFS only */
-SQLITE_OPEN_TRANSIENT_DB     0x00000400  /* VFS only */
-SQLITE_OPEN_MAIN_JOURNAL     0x00000800  /* VFS only */
-SQLITE_OPEN_TEMP_JOURNAL     0x00001000  /* VFS only */
-SQLITE_OPEN_SUBJOURNAL       0x00002000  /* VFS only */
-SQLITE_OPEN_SUPER_JOURNAL    0x00004000  /* VFS only */
-SQLITE_OPEN_NOMUTEX          0x00008000  /* Ok for sqlite3_open_v2() */
-SQLITE_OPEN_FULLMUTEX        0x00010000  /* Ok for sqlite3_open_v2() */
-SQLITE_OPEN_SHAREDCACHE      0x00020000  /* Ok for sqlite3_open_v2() */
-SQLITE_OPEN_PRIVATECACHE     0x00040000  /* Ok for sqlite3_open_v2() */
-SQLITE_OPEN_WAL              0x00080000  /* VFS only */
-SQLITE_OPEN_NOFOLLOW         0x01000000  /* Ok for sqlite3_open_v2() */
-SQLITE_OPEN_EXRESCODE        0x02000000  /* Extended result codes */
-#endif
