@@ -2,7 +2,9 @@
 
 This plugin provides a two-way interface between Touch Portal and Flight Simulators which use SimConnect, such as Microsoft Flight Simulator 2020 and FS-X.
 
-This documentation generated for plugin v1.0.0.0
+For further documentation, please see https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki
+
+This documentation generated for plugin v1.0.0.1
 
 ---
 
@@ -87,14 +89,6 @@ The system path where custom user configuration files for sate definitions, SimC
 
 Note that using this plugin's installation folder for custom data storage is not recommended, since anything in there will likely get overwritten during a plugin update/re-install.
 
-### Held Action Repeat Rate (ms)
-
-| Read-only | Type | Default Value | Min. Value | Max. Value |
-| --- | --- | --- | --- | --- |
-| True | number | 450 | 50 | 2147483647 |
-
-Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Action Repeat Interval' action. This setting cannot be changed from the TP Plugin Settings page (even though it appears to be editable on there).
-
 ### Update HubHop Data on Startup (0/1)
 
 | Read-only | Type | Default Value | Min. Value | Max. Value |
@@ -102,6 +96,22 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 | False | number | 0 | 0 | 1 |
 
 Set to 1 to automatically load latest HubHop data when plugin starts. Set to 0 to disable. Updates can always be triggered manually via the Action *MSFS - Plugin -> Connect & Update*.
+
+### Sort Local Variables Alphabetically (0/1)
+
+| Read-only | Type | Default Value | Min. Value | Max. Value |
+| --- | --- | --- | --- | --- |
+| False | number | 1 | 0 | 1 |
+
+Set to `1` to have all Local ('L') simulator variables sorted in alphabetical order within selection lists. Setting to `0` will keep them in the original order they're loaded in on the simulator (by ascending ID).
+
+### Held Action Repeat Rate (ms)
+
+| Read-only | Type | Default Value | Min. Value | Max. Value |
+| --- | --- | --- | --- | --- |
+| True | number | 450 | 50 | 2147483647 |
+
+Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Action Repeat Interval' action. This setting cannot be changed from the TP Plugin Settings page (even though it appears to be editable on there).
 
 </details>
 
@@ -254,7 +264,6 @@ Calculator Code:                                                                
 | Connected |  | The status of SimConnect (true/false/connecting) | string |  | false|  |
 | RunningVersion |  | The running plugin version number. | number |  | 0|  |
 | EntryVersion |  | The loaded entry.tp plugin version number. | number |  | 0|  |
-| ConfigVersion |  | The loaded entry.tp custom configuration version. | number |  | 0|  |
 | LogMessages |  | Most recent plugin log messages. | string |  | |  |
 
 

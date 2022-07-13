@@ -1,5 +1,11 @@
 # MSFS Touch Portal Plugin
 
+## 1.0.0.1 (TBD)
+* Add new Setting option to sort Local ('L') variables list alphabetically.
+* Remove all static Sim Var states from entry.tp file -- all states are now dynamic.
+* Fix exception error when requesting variables with an empty Unit type.
+* New icon for the plugin executable.
+
 ## 1.0.0.0-beta1 (July-09-2022)
 * Adds support for integration with custom WASM module from the [WASimCommander project](https://github.com/mpaperno/WASimCommander) (WASimModule).
     * Get and Set "Local" variables as well as practically any other 

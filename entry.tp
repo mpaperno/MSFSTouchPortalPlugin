@@ -1,6 +1,6 @@
 {
-  "sdk": 3,
-  "version": 10000,
+  "sdk": 6,
+  "version": 1000001,
   "name": "MSFS Touch Portal Plugin",
   "id": "MSFSTouchPortalPlugin",
   "configuration": {
@@ -815,12 +815,6 @@
           "default": "0"
         },
         {
-          "id": "MSFSTouchPortalPlugin.Plugin.State.ConfigVersion",
-          "type": "text",
-          "desc": "MSFS - Plugin - The loaded entry.tp custom configuration version.",
-          "default": "0"
-        },
-        {
           "id": "MSFSTouchPortalPlugin.Plugin.State.LogMessages",
           "type": "text",
           "desc": "MSFS - Plugin - Most recent plugin log messages.",
@@ -1525,170 +1519,7 @@
         }
       ],
       "events": [],
-      "states": [
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoThrottleArm",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - Auto Throttle Armed",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoThrottleGoAround",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - Auto Throttle GoAround",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAirSpeedHold",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Air Speed Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAirSpeedVar",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Air Speed Value",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAltitudeHold",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Altitude Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAltitudeVar",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Altitude Value",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotApproachHold",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Approach Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAttitudeHold",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Attitude Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAvailable",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Availability",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotBackCourseHold",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Back Course Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotFlightDirector",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Flight Director Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotHeadingVar",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Heading Direction",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotHeadingHold",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Heading Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotMach",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Mach Hold",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotMachVar",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Mach Value",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotMaster",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Master Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotBanking",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Max Bank Angle",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotNavSelected",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Nav Selected Index",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotNav1Hold",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Nav1 Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotAttitudeVar",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Pitch Reference Value",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotVerticalSpeedHold",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Vertical Speed Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotVerticalSpeedVar",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Vertical Speed Value",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotWingLeveler",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - AutoPilot Wing Leveler",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotFlightDirectorCurrentBank",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - Flight Director Current Bank",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotFlightDirectorCurrentPitch",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - Flight Director Current Pitch",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotPitchHold",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - The status of Auto Pilot Pitch Hold button",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.AutoPilot.State.AutoPilotYawDampener",
-          "type": "text",
-          "desc": "MSFS - AutoPilot - Yaw Dampener Status",
-          "default": ""
-        }
-      ]
+      "states": []
     },
     {
       "id": "MSFSTouchPortalPlugin.Communication",
@@ -1736,56 +1567,7 @@
         }
       ],
       "events": [],
-      "states": [
-        {
-          "id": "MSFSTouchPortalPlugin.Communication.State.Com1ActiveFrequency",
-          "type": "text",
-          "desc": "MSFS - Communication - The frequency of the active COM1 radio",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Communication.State.Com2ActiveFrequency",
-          "type": "text",
-          "desc": "MSFS - Communication - The frequency of the active COM2 radio",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Communication.State.Nav1ActiveFrequency",
-          "type": "text",
-          "desc": "MSFS - Communication - The frequency of the active NAV1 radio",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Communication.State.Nav2ActiveFrequency",
-          "type": "text",
-          "desc": "MSFS - Communication - The frequency of the active NAV2 radio",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Communication.State.Com1StandbyFrequency",
-          "type": "text",
-          "desc": "MSFS - Communication - The frequency of the standby COM1 radio",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Communication.State.Com2StandbyFrequency",
-          "type": "text",
-          "desc": "MSFS - Communication - The frequency of the standby COM2 radio",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Communication.State.Nav1StandbyFrequency",
-          "type": "text",
-          "desc": "MSFS - Communication - The frequency of the standby NAV1 radio",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Communication.State.Nav2StandbyFrequency",
-          "type": "text",
-          "desc": "MSFS - Communication - The frequency of the standby NAV2 radio",
-          "default": ""
-        }
-      ]
+      "states": []
     },
     {
       "id": "MSFSTouchPortalPlugin.Electrical",
@@ -1959,98 +1741,7 @@
         }
       ],
       "events": [],
-      "states": [
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.AvionicsMasterSwitch",
-          "type": "text",
-          "desc": "MSFS - Electrical - Avionics Master Switch",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.LightBeaconOn",
-          "type": "text",
-          "desc": "MSFS - Electrical - Light Beacon Switch Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.LightBrakeOn",
-          "type": "text",
-          "desc": "MSFS - Electrical - Light Brake Switch or Light Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.LightCabinOn",
-          "type": "text",
-          "desc": "MSFS - Electrical - Light Cabin Switch Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.LightHeadOn",
-          "type": "text",
-          "desc": "MSFS - Electrical - Light Head Switch or Light Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.LightLandingOn",
-          "type": "text",
-          "desc": "MSFS - Electrical - Light Landing Switch Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.LightLogoOn",
-          "type": "text",
-          "desc": "MSFS - Electrical - Light Logo Switch Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.LightNavOn",
-          "type": "text",
-          "desc": "MSFS - Electrical - Light Nav Switch Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.LightPanelOn",
-          "type": "text",
-          "desc": "MSFS - Electrical - Light Panel Switch Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.LightRecognitionOn",
-          "type": "text",
-          "desc": "MSFS - Electrical - Light Recognition Switch Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.LightStrobeOn",
-          "type": "text",
-          "desc": "MSFS - Electrical - Light Strobe Switch Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.LightTaxiOn",
-          "type": "text",
-          "desc": "MSFS - Electrical - Light Taxi Switch Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.LightWingOn",
-          "type": "text",
-          "desc": "MSFS - Electrical - Light Wing Switch Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.MasterAlternator",
-          "type": "text",
-          "desc": "MSFS - Electrical - Master Alternator Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Electrical.State.MasterBattery",
-          "type": "text",
-          "desc": "MSFS - Electrical - Master Battery Status",
-          "default": ""
-        }
-      ]
+      "states": []
     },
     {
       "id": "MSFSTouchPortalPlugin.Engine",
@@ -2463,182 +2154,7 @@
         }
       ],
       "events": [],
-      "states": [
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.MasterIgnitionSwitch",
-          "type": "text",
-          "desc": "MSFS - Engine - Master Ignition Switch Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.MixtureEngine1",
-          "type": "text",
-          "desc": "MSFS - Engine - Mixture - Engine 1 - Percentage",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.MixtureEngine2",
-          "type": "text",
-          "desc": "MSFS - Engine - Mixture - Engine 2 - Percentage",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.MixtureEngine3",
-          "type": "text",
-          "desc": "MSFS - Engine - Mixture - Engine 3 - Percentage",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.MixtureEngine4",
-          "type": "text",
-          "desc": "MSFS - Engine - Mixture - Engine 4 - Percentage",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.Propeller1FeatherSw",
-          "type": "text",
-          "desc": "MSFS - Engine - Propeller - Engine 1 - Feather Switch State (bool)",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.Propeller1Feathered",
-          "type": "text",
-          "desc": "MSFS - Engine - Propeller - Engine 1 - Feathered (bool)",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.PropellerEngine1",
-          "type": "text",
-          "desc": "MSFS - Engine - Propeller - Engine 1 - Percentage",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.Propeller2FeatherSw",
-          "type": "text",
-          "desc": "MSFS - Engine - Propeller - Engine 2 - Feather Switch State (bool)",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.Propeller2Feathered",
-          "type": "text",
-          "desc": "MSFS - Engine - Propeller - Engine 2 - Feathered (bool)",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.PropellerEngine2",
-          "type": "text",
-          "desc": "MSFS - Engine - Propeller - Engine 2 - Percentage",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.Propeller3FeatherSw",
-          "type": "text",
-          "desc": "MSFS - Engine - Propeller - Engine 3 - Feather Switch State (bool)",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.Propeller3Feathered",
-          "type": "text",
-          "desc": "MSFS - Engine - Propeller - Engine 3 - Feathered (bool)",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.PropellerEngine3",
-          "type": "text",
-          "desc": "MSFS - Engine - Propeller - Engine 3 - Percentage",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.Propeller4FeatherSw",
-          "type": "text",
-          "desc": "MSFS - Engine - Propeller - Engine 4 - Feather Switch State (bool)",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.Propeller4Feathered",
-          "type": "text",
-          "desc": "MSFS - Engine - Propeller - Engine 4 - Feathered (bool)",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.PropellerEngine4",
-          "type": "text",
-          "desc": "MSFS - Engine - Propeller - Engine 4 - Percentage",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.RPMN1Engine1",
-          "type": "text",
-          "desc": "MSFS - Engine - RPM - Engine 1",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.RPMN1Engine2",
-          "type": "text",
-          "desc": "MSFS - Engine - RPM - Engine 2",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.RPMN1Engine3",
-          "type": "text",
-          "desc": "MSFS - Engine - RPM - Engine 3",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.RPMN1Engine4",
-          "type": "text",
-          "desc": "MSFS - Engine - RPM - Engine 4",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.RPMPropeller1",
-          "type": "text",
-          "desc": "MSFS - Engine - RPM - Propeller 1",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.RPMPropeller2",
-          "type": "text",
-          "desc": "MSFS - Engine - RPM - Propeller 2",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.RPMPropeller3",
-          "type": "text",
-          "desc": "MSFS - Engine - RPM - Propeller 3",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.RPMPropeller4",
-          "type": "text",
-          "desc": "MSFS - Engine - RPM - Propeller 4",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.ThrottleEngine1",
-          "type": "text",
-          "desc": "MSFS - Engine - Throttle - Engine 1 - Percentage",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.ThrottleEngine2",
-          "type": "text",
-          "desc": "MSFS - Engine - Throttle - Engine 2 - Percentage",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.ThrottleEngine3",
-          "type": "text",
-          "desc": "MSFS - Engine - Throttle - Engine 3 - Percentage",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Engine.State.ThrottleEngine4",
-          "type": "text",
-          "desc": "MSFS - Engine - Throttle - Engine 4 - Percentage",
-          "default": ""
-        }
-      ]
+      "states": []
     },
     {
       "id": "MSFSTouchPortalPlugin.Environment",
@@ -2769,104 +2285,7 @@
         }
       ],
       "events": [],
-      "states": [
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.State.AntiIceEng1",
-          "type": "text",
-          "desc": "MSFS - Environment - Anti-Ice Engine 1",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.State.AntiIceEng2",
-          "type": "text",
-          "desc": "MSFS - Environment - Anti-Ice Engine 2",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.State.AntiIceEng3",
-          "type": "text",
-          "desc": "MSFS - Environment - Anti-Ice Engine 3",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.State.AntiIceEng4",
-          "type": "text",
-          "desc": "MSFS - Environment - Anti-Ice Engine 4",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.State.AntiIcePanelSwitch",
-          "type": "text",
-          "desc": "MSFS - Environment - Panel Anti-Ice Switch",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.State.PitotHeat",
-          "type": "text",
-          "desc": "MSFS - Environment - Pitot Heat Status",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.State.PitotHeatSwitch1",
-          "type": "text",
-          "desc": "MSFS - Environment - Pitot Heat Switch 1 State (0=Off; 1=On; 2=Auto)",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.State.PitotHeatSwitch2",
-          "type": "text",
-          "desc": "MSFS - Environment - Pitot Heat Switch 2 State (0=Off; 1=On; 2=Auto)",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.State.PitotHeatSwitch3",
-          "type": "text",
-          "desc": "MSFS - Environment - Pitot Heat Switch 3 State (0=Off; 1=On; 2=Auto)",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.State.PitotHeatSwitch4",
-          "type": "text",
-          "desc": "MSFS - Environment - Pitot Heat Switch 4 State (0=Off; 1=On; 2=Auto)",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.State.AntiIcePropeller1Switch",
-          "type": "text",
-          "desc": "MSFS - Environment - Propeller 1 Deice Switch",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.State.AntiIcePropeller2Switch",
-          "type": "text",
-          "desc": "MSFS - Environment - Propeller 2 Deice Switch",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.State.AntiIcePropeller3Switch",
-          "type": "text",
-          "desc": "MSFS - Environment - Propeller 3 Deice Switch",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.State.AntiIcePropeller4Switch",
-          "type": "text",
-          "desc": "MSFS - Environment - Propeller 4 Deice Switch",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.State.AntiIceStructuralSwitch",
-          "type": "text",
-          "desc": "MSFS - Environment - Structural Deice Switch",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.State.AntiIceWindshieldSwitch",
-          "type": "text",
-          "desc": "MSFS - Environment - Windshield Deice Switch",
-          "default": ""
-        }
-      ]
+      "states": []
     },
     {
       "id": "MSFSTouchPortalPlugin.Failures",
@@ -2915,98 +2334,7 @@
       "imagepath": "%TP_PLUGIN_FOLDER%MSFS-TouchPortal-Plugin/airplane_takeoff24.png",
       "actions": [],
       "events": [],
-      "states": [
-        {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.AirSpeedIndicated",
-          "type": "text",
-          "desc": "MSFS - Flight Instruments - Air speed indicated in Knots",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.AirSpeedMach",
-          "type": "text",
-          "desc": "MSFS - Flight Instruments - Air speed indicated in Mach",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.AirSpeedTrue",
-          "type": "text",
-          "desc": "MSFS - Flight Instruments - Air speed true in Knots",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.FlapSpeedExceeeded",
-          "type": "text",
-          "desc": "MSFS - Flight Instruments - Flap Speed Exceeded Warning true/false",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.GroundAltitude",
-          "type": "text",
-          "desc": "MSFS - Flight Instruments - Ground level in Feet",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.GroundVelocity",
-          "type": "text",
-          "desc": "MSFS - Flight Instruments - Ground Speed in Knots",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.OverspeedWarning",
-          "type": "text",
-          "desc": "MSFS - Flight Instruments - Overspeed Warning true/false",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneAltitudeAGL",
-          "type": "text",
-          "desc": "MSFS - Flight Instruments - Plane Altitude AGL in Feet",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneAltitude",
-          "type": "text",
-          "desc": "MSFS - Flight Instruments - Plane Altitude in Feet",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneBankAngle",
-          "type": "text",
-          "desc": "MSFS - Flight Instruments - Plane Bank Angle in Degrees",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneHeadingMagnetic",
-          "type": "text",
-          "desc": "MSFS - Flight Instruments - Plane Heading (Magnetic North) in Degrees",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlaneHeadingTrue",
-          "type": "text",
-          "desc": "MSFS - Flight Instruments - Plane Heading (True North) in Degrees",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.PlanePitchAngle",
-          "type": "text",
-          "desc": "MSFS - Flight Instruments - Plane Pitch Angle in Degrees",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.StallWarning",
-          "type": "text",
-          "desc": "MSFS - Flight Instruments - Stall Warning true/false",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightInstruments.State.VerticalSpeed",
-          "type": "text",
-          "desc": "MSFS - Flight Instruments - Vertical Speed in feet per minute",
-          "default": ""
-        }
-      ]
+      "states": []
     },
     {
       "id": "MSFSTouchPortalPlugin.FlightSystems",
@@ -3643,116 +2971,7 @@
         }
       ],
       "events": [],
-      "states": [
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.AileronTrim",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Aileron Trim Angle",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.AileronTrimPct",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Aileron Trim Percent",
-          "default": "0"
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.CowlFlaps1Percent",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Cowl Flaps 1 Opened Percentage",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.CowlFlaps2Percent",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Cowl Flaps 2 Opened Percentage",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.CowlFlaps3Percent",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Cowl Flaps 3 Opened Percentage",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.CowlFlaps4Percent",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Cowl Flaps 4 Opened Percentage",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.ElevatorTrim",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Elevator Trim Angle",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.ElevatorTrimPct",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Elevator Trim Percent",
-          "default": "0"
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.FlapsHandlePercent",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Flaps Handle Percentage",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.ParkingBrakeIndicator",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Parking Brake Indicator true/false",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.RudderTrim",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Rudder Trim Angle",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.RudderTrimPct",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Rudder Trim Percent",
-          "default": "0"
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.SpoilersArmed",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Spoilers Armed (0/1)",
-          "default": "0"
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.SpoilersAvailable",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Spoilers Available (0/1)",
-          "default": "0"
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.SpoilersHandlePosition",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Spoilers Handle Position (0 - 16384)",
-          "default": "0"
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.SpoilersLeftPosition",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Spoilers Left Position Percent",
-          "default": "0"
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.SpoilersRightPosition",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Spoilers Right Position Percent",
-          "default": "0"
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.FlightSystems.State.GearTotalExtended",
-          "type": "text",
-          "desc": "MSFS - Flight Systems - Total percentage of gear extended",
-          "default": ""
-        }
-      ]
+      "states": []
     },
     {
       "id": "MSFSTouchPortalPlugin.Fuel",
@@ -4033,57 +3252,15 @@
       ],
       "states": [
         {
-          "id": "MSFSTouchPortalPlugin.SimSystem.State.AtcId",
-          "type": "text",
-          "desc": "MSFS - System - Aircraft Id used by ATC",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.SimSystem.State.AircraftTitle",
-          "type": "text",
-          "desc": "MSFS - System - Aircraft Title",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.SimSystem.State.AtcAirline",
-          "type": "text",
-          "desc": "MSFS - System - Airline used by ATC",
-          "default": ""
-        },
-        {
           "id": "MSFSTouchPortalPlugin.SimSystem.State.SimSystemEventData",
           "type": "text",
           "desc": "MSFS - System - Data from the most recent Simulator System Event, if any.",
           "default": ""
         },
         {
-          "id": "MSFSTouchPortalPlugin.SimSystem.State.AtcFlightNumber",
-          "type": "text",
-          "desc": "MSFS - System - Flight Number used by ATC",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.SimSystem.State.AtcModel",
-          "type": "text",
-          "desc": "MSFS - System - Model of aircraft used by ATC",
-          "default": ""
-        },
-        {
           "id": "MSFSTouchPortalPlugin.SimSystem.State.SimSystemEvent",
           "type": "text",
           "desc": "MSFS - System - Most recent Simulator System Event name.",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.SimSystem.State.SimulationRate",
-          "type": "text",
-          "desc": "MSFS - System - The current simulation rate",
-          "default": ""
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.SimSystem.State.AtcType",
-          "type": "text",
-          "desc": "MSFS - System - Type of aircraft used by ATC",
           "default": ""
         }
       ]
@@ -4125,15 +3302,6 @@
       "readOnly": false
     },
     {
-      "name": "Held Action Repeat Rate (ms)",
-      "type": "number",
-      "default": "450",
-      "minValue": 50.0,
-      "maxValue": 2147483647.0,
-      "isPassword": false,
-      "readOnly": true
-    },
-    {
       "name": "Update HubHop Data on Startup (0/1)",
       "type": "number",
       "default": "0",
@@ -4141,6 +3309,24 @@
       "maxValue": 1.0,
       "isPassword": false,
       "readOnly": false
+    },
+    {
+      "name": "Sort Local Variables Alphabetically (0/1)",
+      "type": "number",
+      "default": "1",
+      "minValue": 0.0,
+      "maxValue": 1.0,
+      "isPassword": false,
+      "readOnly": false
+    },
+    {
+      "name": "Held Action Repeat Rate (ms)",
+      "type": "number",
+      "default": "450",
+      "minValue": 50.0,
+      "maxValue": 2147483647.0,
+      "isPassword": false,
+      "readOnly": true
     }
   ]
 }
