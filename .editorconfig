@@ -3,7 +3,7 @@
 indent_style=space
 indent_size = 2
 insert_final_newline=true
-csharp_new_line_before_open_brace=properties,types
+csharp_new_line_before_open_brace= methods,properties,types
 
 # CA1416: Validate platform compatibility
 dotnet_diagnostic.CA1416.severity = none

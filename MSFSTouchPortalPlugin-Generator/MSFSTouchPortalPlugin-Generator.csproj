@@ -5,7 +5,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>MSFSTouchPortalPlugin_Generator</RootNamespace>
     <Platforms>x64</Platforms>
-    <Version>1.2.0</Version>
+    <Version>1.3.0</Version>
     <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath>
     <Configurations>Debug;Release;Publish</Configurations>
     <Copyright>Copyright Tim Lewis, Maxim Paperno, and project contributors; All rights reserved.</Copyright>
@@ -16,7 +16,9 @@
     <PackageLicenseExpression>GPLv3</PackageLicenseExpression>
     <Description>Entry.tp JSON and Documentation MD generator for MSFS Touch Portal Plugin</Description>
     <Authors>Tim Lewis, Maxim Paperno, and project contributors</Authors>
-    <!--<CodeAnalysisRuleSet>..\.sonarlint\msfstouchportalplugincsharp.ruleset</CodeAnalysisRuleSet>-->
+    <ApplicationIcon>..\app-icon.ico</ApplicationIcon>
+    <ErrorReport>none</ErrorReport>
+    <Company>MSFS Touch Portal Plugin Project</Company>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -31,17 +33,12 @@
     <DefineConstants />
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
+    <Optimize>True</Optimize>
     <AllowedReferenceRelatedFileExtensions>
       <!-- Prevent .pdb, .xml, etc from being copied to output folder -->
       .dll
     </AllowedReferenceRelatedFileExtensions>
   </PropertyGroup>
-
-  <!--
-  <ItemGroup>
-    <AdditionalFiles Include="..\.sonarlint\msfstouchportalplugin\CSharp\SonarLint.xml" Link="SonarLint.xml" />
-  </ItemGroup>
-  -->
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />

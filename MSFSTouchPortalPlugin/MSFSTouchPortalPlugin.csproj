@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>MSFSTouchPortalPlugin</RootNamespace>
-    <Version>1.0.0.0</Version>
+    <Version>1.0.0.1</Version>
     <Platforms>x64</Platforms>
     <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath>
     <AnalysisLevel>5.0</AnalysisLevel>
@@ -17,6 +17,9 @@
     <PackageLicenseExpression>GPLv3</PackageLicenseExpression>
     <Description>A plugin which provides a two-way interface between Touch Portal clients and Flight Simulators which use SimConnect.</Description>
     <Authors>Tim Lewis, Maxim Paperno, and project contributors</Authors>
+    <ApplicationIcon>..\app-icon.ico</ApplicationIcon>
+    <ErrorReport>none</ErrorReport>
+    <Company>MSFS Touch Portal Plugin Project</Company>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -34,6 +37,7 @@
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
     <DefineConstants />
+    <Optimize>True</Optimize>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
@@ -43,6 +47,10 @@
     <TrimMode>copyused</TrimMode>
     <PublishSingleFile>False</PublishSingleFile>
     <PublishReadyToRun>False</PublishReadyToRun>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <!-- required for trimming otherwise we get missing dependencies at runtime -->
@@ -55,7 +63,6 @@
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <!--<AdditionalFiles Include="..\.sonarlint\msfstouchportalplugin\CSharp\SonarLint.xml" Link="SonarLint.xml" />-->
   </ItemGroup>
 
   <ItemGroup>
