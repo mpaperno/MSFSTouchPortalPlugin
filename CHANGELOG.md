@@ -1,9 +1,14 @@
 # MSFS Touch Portal Plugin
 
 ## 1.0.0.1 (TBD)
-* Add new Setting option to sort Local ('L') variables list alphabetically.
-* Remove all static Sim Var states from entry.tp file -- all states are now dynamic.
-* Fix exception error when requesting variables with an empty Unit type.
+* Removed all static Sim Var states from entry.tp file -- all states are now dynamic.
+* Added new Setting option to sort Local ('L') variables list alphabetically.
+* Added new Setting option to control HubHop data update timeout value.
+* Fixed exception error when requesting variables with an empty Unit type.
+* Fixed selections in _Activate a Simulator Event From HubHop_ action not updating properly after HubHop data update until plugin is restarted 
+  ([#32](https://github.com/mpaperno/MSFSTouchPortalPlugin/issues/32))
+* Improved user feedback for HubHop data update events (initiated/updated/failed).
+* Increased length of version number shown in Touch Portal by 2 digits to include all 4 parts of dotted version (1.0.0.1 = 1000001).
 * New icon for the plugin executable.
 
 ## 1.0.0.0-beta1 (July-09-2022)
