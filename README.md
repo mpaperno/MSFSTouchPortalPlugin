@@ -20,7 +20,7 @@ This project is a continuation of the original [MSFSTouchPortalPlugin by Tim Lew
 
 ## Features
 
-* Connects automatically through SimConnect.
+* Connects to local or remote simulators with SimConnect.
 * Allows getting data variables from simulator at regular intervals, such as flight instruments, control surfaces, or switch states.
 * Allows triggering any interactive aircraft event via a Touch Portal Action, such as setting switches, adjusting control surfaces, radio frequencies, and so on.
 * Completely configurable to request any variable or trigger any event supported by the connected simulator, including with custom extensions like MobiFlight.
@@ -35,6 +35,8 @@ See the [Wiki](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/) for some
 
 Auto-generated documentation on all actions, states, and settings can be found in [DOCUMENTATION.MD](DOCUMENTATION.MD).
 
+**NEW IN THE WIKI:** Assets - [Pages, Buttons, & Graphics](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) to get started with.
+
 ## Installation & Usage
 
 1. Get the latest release of this plugin from the  [Releases](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases) page.
@@ -47,21 +49,16 @@ just do that and skip to step 5. There is also a [short guide](https://www.touch
 4. Restart _Touch Portal_
     * When prompted by _Touch Portal_ to trust the plugin startup script, select "Yes" (the source code is public!).
 5. **By default the plugin will not attempt to connect to a flight simulator on startup.** You have two options:
-   1. Create a new Touch Portal button which triggers the "MSFS - Plugin - Toggle/On/Off SimConnect Connection" action. (Also a good place to show the current connection status.)
+   1. Create a new [Touch Portal button](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) 
+     which triggers the "MSFS - Plugin - Toggle/On/Off SimConnect Connection" action. (Also a good place to show the current connection status.)
    2. Go to the plugin's settings, via the Touch Portal "gear" icon then navigate to _Settings -> Plugins -> "MSFS Touch Portal Plugin"_ and set the
     "Connect To Flight Sim on Startup" setting to a value of `1` (one). Then save the settings. To restart the plugin, go back to the same plugin settings page and
     press the "Stop" button, then the "Start" button.  The plugin will keep attempting to connect to the simulator every 30 seconds.
 6. **For use with FS-X** (and compatible sims): Change the "SimConnect.cfg Index" plugin setting to `1` (one).
 
 
-After that you will have a list of new actions you can choose from. Also "Dynamic Text" variables are now available. You can see them from the Dynamic Text Updater,
-or you can add an option for "On Plugin State Change" then select the corresponding state and "Changes to".
-
-For buttons you use this like:
-
-"On Plugin State Changes AutoPilot Master changes to 1" Then add whatever logic you want like button visuals. Duplicate this and add one for "does not change to 1" and that is when a button turns off.
-
-This is very much a work in progress!
+Check out the [Pages, Buttons, & Graphics](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) for examples to get started with, and see below for
+a full list of known pages.
 
 A comprehensive installation and usage guide was published on the _Simvol_ Web site: [How to use Touch Portal [with MSFS]](https://www.simvol.org/en/articles/tutorials/use-touch-portal).
 
@@ -70,13 +67,14 @@ A comprehensive installation and usage guide was published on the _Simvol_ Web s
 
 Here is a list of known pages which use this plugin. In no particular order, no endorsement, nor have I necessarily tried/tested all these. YMMV.
 
-* [FltSim-msfs2020-Control](https://github.com/HiDTH/FltSim-msfs2020-Control) by HiDTH @ GitHub
+* [Pages, Buttons, & Graphics](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) in the Wiki
+* [FltSim-msfs2020-Control](https://github.com/HiDTH/FltSim-msfs2020-Control) by HiDTH @ GitHub  (**Page background graphic may cause issues, replacement at link above**)
 * [Touch Portal Page H145](https://flightsim.to/file/35625/touch-portal-page-h145) by edheronde @ flighsim.to
 * [Touch Portal Page "Piston Single"](https://flightsim.to/file/7394/touch-portal-page-piston-single) by yushu @ flightsim.to
 * [Touch Portal Page for Fenix A320](https://flightsim.to/file/35834/touch-portal-page-for-fenix-a320) by FFEENNIIXX @ flightsim.to
 * [MSFSTouchPortalPages](https://github.com/FordMustang0288/MSFSTouchPortalPages) by FordMustang0288 @ GitHub
 * [Special page for A32NX](https://www.simvol.org/en/downloads/miscellaneous/touch-portal-special-page-a32nx) by Pacha35 @ SimVol
-* [A320neo FlyByWire + CJ4 Working Title](https://flightsim.to/file/7406/touchportal-a320neo-flybywire) by fgrooten @ flightsim.to  (possibly missing a credit to HiDTH)
+* [A320neo FlyByWire + CJ4 Working Title](https://flightsim.to/file/7406/touchportal-a320neo-flybywire) by fgrooten @ flightsim.to
 * [MSFS Throttle Quad - Views - AP](https://github.com/mpaperno/TJoy/tree/main/assets) by mpaperno @ GitHub (requires my TJoy Plugin - [screenshot](https://github.com/mpaperno/TJoy/blob/main/assets/MSFS%20Throttle%20Quad%20-%20Views%20-%20AP.jpeg))
 
 Please let me know if you publish a page (or buttons/assets) which I could add to this list.
@@ -100,6 +98,13 @@ You could also monitor the _MSFS - System -> Simulator System Event_ for the `Pl
 For example you could have a button light up red when this event happens, so you can know to go check the log.
 
 
+## Support and Discussion
+
+Please use the GitHub [Issues](https://github.com/mpaperno/MSFSTouchPortalPlugin/issues) pages for bug reports and concise feature requests.
+Use the [Discussions](https://github.com/mpaperno/MSFSTouchPortalPlugin/discussions) pages for general conversation on any related topic like suggestions or support questions.
+
+There is also a Touch Portal Discord server discussion room at [#msfs2020](https://discord.com/channels/548426182698467339/750791488501448887)
+
 ## Update Notifications
 
 The latest version of this software is always published on the GitHub [Releases](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases) page.
@@ -119,13 +124,6 @@ _Releases_ option, then hit _Apply_ button.
   * https://gitpunch.com/
 
 I will also post update notices in the Touch Portal Discord server room [#msfs2020](https://discord.com/channels/548426182698467339/750791488501448887)
-
-## Support and Discussion
-
-Please use the GitHub [Issues](https://github.com/mpaperno/MSFSTouchPortalPlugin/issues) pages for bug reports and concise feature requests.
-Use the [Discussions](https://github.com/mpaperno/MSFSTouchPortalPlugin/discussions) pages for general conversation on any related topic like suggestions or support questions.
-
-There is also a Touch Portal Discord server discussion room at [#msfs2020](https://discord.com/channels/548426182698467339/750791488501448887)
 
 ## Related Plugin(s)
 
