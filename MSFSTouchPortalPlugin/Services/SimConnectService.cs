@@ -322,7 +322,7 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     void WASMLib_OnValueChanged(DataRequestRecord dr) {
-      _logger.LogDebug($"Got WASM data for Request: {dr}");
+      _logger.LogTrace($"Got WASM data for Request: {dr}");
       if (dr.requestId == 0)
         RequestLookupList(LookupItemType.LocalVariable);  // request local vars list when the "ATC MODEL" changes.
       else
