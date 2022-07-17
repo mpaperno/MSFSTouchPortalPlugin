@@ -48,19 +48,28 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string Id { get; set; }
     public string Name { get; set; }
     public List<DocAction> Actions { get; set; } = new();
+    public List<DocConnector> Connectors { get; set; } = new();
     public List<DocState> States { get; set; } = new();
     public List<DocEvent> Events { get; set; } = new();
   }
 
-  public class DocAction {
+  public class DocActionBase
+  {
     public string Name { get; set; }
     public string Description { get; set; }
-    public string Type { get; set; }
     public string Format { get; set; }
-    public bool HasHoldFunctionality { get; set; } = false;
     public List<DocActionData> Data { get; set; } = new();
+  }
+
+  public class DocAction : DocActionBase
+  {
+    public string Type { get; set; }
+    public bool HasHoldFunctionality { get; set; } = false;
     public List<DocActionMapping> Mappings { get; set; } = new();
   }
+
+  public class DocConnector : DocActionBase
+  { }
 
   public class DocActionData {
     public string Type { get; set; }

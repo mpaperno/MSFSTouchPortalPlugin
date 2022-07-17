@@ -34,7 +34,7 @@ namespace MSFSTouchPortalPlugin.Attributes
     public TouchPortalActionAttribute[] Actions { get; set; } = Array.Empty<TouchPortalActionAttribute>();
     public object[] States { get; set; } = Array.Empty<object>();
     public object[] Events { get; set; } = Array.Empty<object>();
-    public object[] Connectors { get; set; } = Array.Empty<object>();
+    public TouchPortalConnectorAttribute[] Connectors { get; set; } = Array.Empty<TouchPortalConnectorAttribute>();
 
     public TouchPortalCategoryAttribute(Groups id) {
       Id = id;

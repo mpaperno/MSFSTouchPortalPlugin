@@ -58,16 +58,27 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     [Required, MinLength(5)]
     public string Name { get; set; }
     public string Imagepath { get; set; } = string.Empty;
-    public List<TouchPortalAction> Actions { get; set; } = new List<TouchPortalAction>();
-    public List<TouchPortalEvent> Events { get; set; } = new List<TouchPortalEvent>();
-    public List<TouchPortalState> States { get; set; } = new List<TouchPortalState>();
+    public List<TouchPortalAction> Actions { get; set; } = new();
+    public List<TouchPortalConnector> Connectors { get; set; } = new();
+    public List<TouchPortalEvent> Events { get; set; } = new();
+    public List<TouchPortalState> States { get; set; } = new();
   }
 
-  class TouchPortalAction {
+  class TouchPortalActionBase
+  {
     [Required, MinLength(5)]
+    [JsonProperty(Order = -2)]
     public string Id { get; set; }
     [Required, MinLength(5)]
+    [JsonProperty(Order = -2)]
     public string Name { get; set; }
+    [Required, MinLength(2)]
+    public string Format { get; set; }
+    public List<TouchPortalActionData> Data { get; set; } = new List<TouchPortalActionData>();
+  }
+
+  class TouchPortalAction : TouchPortalActionBase
+  {
     [Required, MinLength(2)]
     public string Prefix { get; set; }
     [Required, MinLength(2)]
@@ -76,10 +87,10 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string Description { get; set; }
     public bool TryInline { get; set; } = true;
     public bool HasHoldFunctionality { get; set; } = false;
-    [Required, MinLength(2)]
-    public string Format { get; set; }
-    public List<TouchPortalActionData> Data { get; set; } = new List<TouchPortalActionData>();
   }
+
+  class TouchPortalConnector : TouchPortalActionBase
+  { }
 
   class TouchPortalActionData {
     [Required, MinLength(5)]

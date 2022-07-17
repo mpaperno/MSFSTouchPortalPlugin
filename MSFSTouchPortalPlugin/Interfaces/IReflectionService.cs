@@ -36,6 +36,7 @@ namespace MSFSTouchPortalPlugin.Interfaces
     string GetSimEventNameById(int id);
     void AddSimEventNameMapping(Enum id, SimEventRecord record);
     IEnumerable<TouchPortalActionAttribute> GetActionAttributes(Groups catId);
+    IEnumerable<TouchPortalConnectorAttribute> GetConnectorAttributes(Groups catId);
     IEnumerable<TouchPortalCategoryAttribute> GetCategoryAttributes();
     IEnumerable<TouchPortalEvent> GetEvents(Groups catId, bool fullStateId = false);
   }

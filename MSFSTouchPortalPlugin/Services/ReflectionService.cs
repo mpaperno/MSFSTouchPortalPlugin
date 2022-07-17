@@ -62,7 +62,8 @@ namespace MSFSTouchPortalPlugin.Services
       foreach (Groups catId in Enum.GetValues<Groups>()) {
         if (catId != Groups.None)
           ret.Add(new TouchPortalCategoryAttribute(catId) {
-            Actions = GetActionAttributes(catId).ToArray()
+            Actions = GetActionAttributes(catId).ToArray(),
+            Connectors = GetConnectorAttributes(catId).ToArray()
           });
       }
       return ret;
@@ -76,6 +77,21 @@ namespace MSFSTouchPortalPlugin.Services
           if (m.GetCustomAttribute<TouchPortalActionAttribute>() is var actionAttrib && actionAttrib != null) {
             actionAttrib.Data = m.GetCustomAttributes<TouchPortalActionDataAttribute>(true).ToArray();
             actionAttrib.Mappings = m.GetCustomAttributes<TouchPortalActionMappingAttribute>(true).ToArray();
+            ret.Add(actionAttrib);
+          }
+        }
+      }
+      return ret;
+    }
+
+    public IEnumerable<TouchPortalConnectorAttribute> GetConnectorAttributes(Groups catId)
+    {
+      List<TouchPortalConnectorAttribute> ret = new();
+      var container = _assemblyTypes.Where(t => t.IsClass && t.GetCustomAttribute<TouchPortalCategoryAttribute>()?.Id == catId);
+      foreach (var c in container) {
+        foreach (var m in c.GetMembers()) {
+          if (m.GetCustomAttribute<TouchPortalConnectorAttribute>() is var actionAttrib && actionAttrib != null) {
+            actionAttrib.Data = m.GetCustomAttributes<TouchPortalActionDataAttribute>(true).ToArray();
             ret.Add(actionAttrib);
           }
         }

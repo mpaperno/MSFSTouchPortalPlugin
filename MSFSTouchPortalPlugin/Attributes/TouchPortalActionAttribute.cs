@@ -24,43 +24,76 @@ using System;
 
 namespace MSFSTouchPortalPlugin.Attributes
 {
+
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-  public class TouchPortalActionAttribute : Attribute
+  public class TouchPortalActionBaseAttribute : Attribute
   {
     public string Id { get; set; }
     public Enum EnumId { get; set; } = default;
     public string Name { get; set; }
-    public string Prefix { get; set; }
     public string Description { get; set; }
     public string Format { get; set; }
-    public string Type { get; set; }
-    public bool HasHoldFunctionality { get; set; }
     public TouchPortalActionDataAttribute[] Data { get; set; } = Array.Empty<TouchPortalActionDataAttribute>();
-    public TouchPortalActionMappingAttribute[] Mappings { get; set; } = Array.Empty<TouchPortalActionMappingAttribute>();
 
-    public TouchPortalActionAttribute(string id, string name, string description, string format, bool holdable = false) {
-      SetupProperties(id, name, "MSFS", description, format, holdable, "communicate");
+    public TouchPortalActionBaseAttribute(string id, string name, string description, string format)
+    {
+      SetupProperties(id, default, name, description, format);
     }
 
-    public TouchPortalActionAttribute(PluginActions id, string name, string description, string format, bool holdable = false) {
-      SetupProperties(id.ToString(), name, "MSFS", description, format, holdable, "communicate");
+    public TouchPortalActionBaseAttribute(PluginActions id, string name, string description, string format)
+    {
+      SetupProperties(id.ToString(), id, name, description, format);
       EnumId = id;
     }
 
-    public TouchPortalActionAttribute(string id, string name, string prefix, string description, string format, bool holdable = false) {
-      SetupProperties(id, name, prefix, description, format, holdable, "communicate");
-    }
-
-    private void SetupProperties(string id, string name, string prefix, string description, string format, bool holdable, string type) {
+    private void SetupProperties(string id, Enum eId, string name, string description, string format)
+    {
       Id = id;
+      EnumId = eId;
       Name = name;
-      Prefix = prefix;
       Description = description;
       Format = format;
+    }
+  }
+
+  public class TouchPortalActionAttribute : TouchPortalActionBaseAttribute
+  {
+    public string Prefix { get; set; }
+    public string Type { get; set; }
+    public bool HasHoldFunctionality { get; set; }
+    public TouchPortalActionMappingAttribute[] Mappings { get; set; } = Array.Empty<TouchPortalActionMappingAttribute>();
+
+    public TouchPortalActionAttribute(string id, string name, string description, string format, bool holdable = false) :
+      base(id, name, description, format)
+    {
+      SetupProperties(holdable);
+    }
+
+    public TouchPortalActionAttribute(PluginActions id, string name, string description, string format, bool holdable = false) :
+      base(id, name, description, format)
+    {
+      SetupProperties(holdable);
+    }
+
+    public TouchPortalActionAttribute(string id, string name, string prefix, string description, string format, bool holdable = false) :
+      base(id, name, description, format)
+    {
+      SetupProperties(holdable, prefix);
+    }
+
+    private void SetupProperties(bool holdable, string prefix = "MSFS", string type = "communicate") {
+      Prefix = prefix;
       Type = type;
       HasHoldFunctionality = holdable;
     }
   }
+
+  public class TouchPortalConnectorAttribute : TouchPortalActionBaseAttribute
+  {
+    public TouchPortalConnectorAttribute(PluginActions id, string name, string description, string format) :
+      base(id, name, description, format) { }
+  }
+
 
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
   public class TouchPortalActionDataAttribute : Attribute

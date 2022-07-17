@@ -20,6 +20,7 @@ and is also available at <http://www.gnu.org/licenses/>.
 */
 
 using Microsoft.Extensions.Logging;
+using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Helpers;
@@ -57,8 +58,29 @@ namespace MSFSTouchPortalPlugin_Generator
       };
     }
 
-    public void Generate() {
+    static void SerializeActionData(TouchPortalActionBase action, TouchPortalActionDataAttribute[] attribData)
+    {
+      int i = 0;
+      foreach (var attrib in attribData) {
+        string dataId = (string.IsNullOrWhiteSpace(attrib.Id) ? i.ToString() : attrib.Id);
+        var data = new TouchPortalActionData {
+          Id = $"{action.Id}.Data.{dataId}",
+          Type = attrib.Type,
+          Label = attrib.Label ?? "Action",
+          DefaultValue = attrib.GetDefaultValue(),
+          ValueChoices = attrib.ChoiceValues,
+          MinValue = attrib.MinValue,
+          MaxValue = attrib.MaxValue,
+          AllowDecimals = attrib.AllowDecimals,
+        };
+        ++i;
+        action.Data.Add(data);
+      }
+      action.Format = string.Format(action.Format, action.Data.Select(d => $"{{${d.Id}$}}").ToArray());
+    }
 
+    public void Generate()
+    {
       string basePath = $"%TP_PLUGIN_FOLDER%{_options.PluginFolder}/";
       // Get version number
       VersionInfo.AssemblyLocation = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _options.PluginId + ".dll");
@@ -106,25 +128,8 @@ namespace MSFSTouchPortalPlugin_Generator
           };
 
           // Action Data
-          if (actionAttrib.Data.Any()) {
-            int i = 0;
-            foreach (var attrib in actionAttrib.Data) {
-              string dataId = (string.IsNullOrWhiteSpace(attrib.Id) ? i.ToString() : attrib.Id);
-              var data = new TouchPortalActionData {
-                Id = $"{action.Id}.Data.{dataId}",
-                Type = attrib.Type,
-                Label = attrib.Label ?? "Action",
-                DefaultValue = attrib.GetDefaultValue(),
-                ValueChoices = attrib.ChoiceValues,
-                MinValue = attrib.MinValue,
-                MaxValue = attrib.MaxValue,
-                AllowDecimals = attrib.AllowDecimals,
-              };
-              ++i;
-              action.Data.Add(data);
-            }
-            action.Format = string.Format(action.Format, action.Data.Select(d => $"{{${d.Id}$}}").ToArray());
-          }  // action data
+          if (actionAttrib.Data.Any())
+            SerializeActionData(action, actionAttrib.Data);
 
           // validate unique ID
           if (category.Actions.FirstOrDefault(a => a.Id == action.Id) == null)
@@ -133,6 +138,26 @@ namespace MSFSTouchPortalPlugin_Generator
             _logger.LogWarning($"Duplicate action ID found: '{action.Id}', skipping.'");
 
         }  // actions
+
+        // Connectors
+        foreach (var connAttrib in catAttrib.Connectors) {
+          var action = new TouchPortalConnector {
+            Id = $"{actionCatId}.Conn.{connAttrib.Id}",
+            Name = connAttrib.Name,
+            Format = connAttrib.Format
+          };
+
+          // Connector Data
+          if (connAttrib.Data.Any())
+            SerializeActionData(action, connAttrib.Data);
+
+          // validate unique ID
+          if (category.Connectors.FirstOrDefault(a => a.Id == action.Id) == null)
+            category.Connectors.Add(action);
+          else
+            _logger.LogWarning($"Duplicate connector ID found: '{action.Id}', skipping.'");
+
+        }  // connectors
 
         // States
         var categoryStates = simVars.Where(s => s.CategoryId == catAttrib.Id);

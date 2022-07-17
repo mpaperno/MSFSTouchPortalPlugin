@@ -20,6 +20,7 @@ and is also available at <http://www.gnu.org/licenses/>.
 */
 
 using Microsoft.Extensions.Logging;
+using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
@@ -65,6 +66,21 @@ namespace MSFSTouchPortalPlugin_Generator
       var dest = Path.Combine(_options.OutputPath, "DOCUMENTATION.md");
       File.WriteAllText(dest, result);
       _logger.LogInformation($"Generated '{dest}'.");
+    }
+
+    static void SerializeActionData(DocActionBase action, TouchPortalActionDataAttribute[] attribData)
+    {
+      foreach (var attrib in attribData) {
+        var data = new DocActionData {
+          Type = attrib.Type,
+          DefaultValue = attrib.GetDefaultValue()?.ToString(),
+          Values = attrib.ChoiceValues != null ? string.Join(", ", attrib.ChoiceValues) : "",
+          MinValue = attrib.MinValue,
+          MaxValue = attrib.MaxValue,
+          AllowDecimals = attrib.AllowDecimals,
+        };
+        action.Data.Add(data);
+      }
     }
 
     private DocBase CreateModel() {
@@ -114,18 +130,9 @@ namespace MSFSTouchPortalPlugin_Generator
           };
           category.Actions.Add(action);
 
-          // Action data
-          foreach (var attrib in actionAttrib.Data) {
-            var data = new DocActionData {
-              Type = attrib.Type,
-              DefaultValue = attrib.GetDefaultValue()?.ToString(),
-              Values = attrib.ChoiceValues != null ? string.Join(", ", attrib.ChoiceValues) : "",
-              MinValue = attrib.MinValue,
-              MaxValue = attrib.MaxValue,
-              AllowDecimals = attrib.AllowDecimals,
-            };
-            action.Data.Add(data);
-          }
+          // Action Data
+          if (actionAttrib.Data.Any())
+            SerializeActionData(action, actionAttrib.Data);
 
           // Action data mappings, but Plugin category doesn't show them anyway
           if (catAttrib.Id == Groups.Plugin)
@@ -144,6 +151,20 @@ namespace MSFSTouchPortalPlugin_Generator
             action.Mappings.Add(map);
           }
         }  // actions
+
+        // Connectors
+        foreach (var connAttrib in catAttrib.Connectors) {
+          var action = new DocConnector {
+            Name = connAttrib.Name,
+            Description = connAttrib.Description,
+            Format = connAttrib.Format,
+          };
+
+          // Connector Data
+          if (connAttrib.Data.Any())
+            SerializeActionData(action, connAttrib.Data);
+          category.Connectors.Add(action);
+        }  // connectors
 
         // Add States
         var categoryStates = simVars.Where(s => s.CategoryId == catAttrib.Id);
@@ -205,8 +226,31 @@ namespace MSFSTouchPortalPlugin_Generator
       return model;
     }
 
+    static void CreateActionDataMd(StringBuilder s, DocActionBase act)
+    {
+      s.Append($"<tr valign='top'><td>{act.Name}</td><td>{act.Description}</td><td>{act.Format}</td>");
+      // I first tried by making a nested table to list the data, but it looked like ass on GitHub due to their CSS which forces a table width and (as of Feb '22). -MP
+      s.Append("<td><ol start=0>\n");
+      act.Data.ForEach(ad => {
+        s.Append($"<li>[{ad.Type}] &nbsp; ");
+        if (ad.Type == "choice")
+          s.Append(new Regex(Regex.Escape(ad.DefaultValue)).Replace(ad.Values, $"<b>{ad.DefaultValue}</b>", 1));  // only replace 1st occurrence of default string
+        else if (!string.IsNullOrWhiteSpace(ad.DefaultValue))
+          s.Append($"<b>{ad.DefaultValue}</b>");
+        else
+          s.Append("&lt;empty&gt;");
+        int prec = ad.AllowDecimals ? 2 : 0;
+        if (!double.IsNaN(ad.MinValue))
+          s.Append($" &nbsp; <sub>&lt;min: {ad.MinValue.ToString($"F{prec}")}&gt;</sub>");
+        if (!double.IsNaN(ad.MaxValue))
+          s.Append($" <sub>&lt;max: {ad.MaxValue.ToString($"F{prec}")}&gt;</sub>");  // seriously... printf("%.*f", prec, val) anyone?
+        s.Append("</li>\n");
+      });
+      s.Append("</ol></td>\n");
+    }
+
     private static string CreateMarkdown(DocBase model) {
-      var s = new StringBuilder(75 * 1024);
+      var s = new StringBuilder(85 * 1024);
 
       s.Append($"# {model.Title}\n\n");
       s.Append($"{model.Overview}\n\n");
@@ -266,26 +310,8 @@ namespace MSFSTouchPortalPlugin_Generator
             "<th>On<br/>Hold</sub></div></th>" +
             "</tr>\n");
           cat.Actions.ForEach(act => {
-            s.Append($"<tr valign='top'><td>{act.Name}</td><td>{act.Description}</td><td>{act.Format}</td>");
             // Loop action data
-            // I first tried by making a nested table to list the data, but it looked like ass on GitHub due to their CSS which forces a table width and (as of Feb '22). -MP
-            s.Append("<td><ol start=0>\n");
-            act.Data.ForEach(ad => {
-              s.Append($"<li>[{ad.Type}] &nbsp; ");
-              if (ad.Type == "choice")
-                s.Append(new Regex(Regex.Escape(ad.DefaultValue)).Replace(ad.Values, $"<b>{ad.DefaultValue}</b>", 1));  // only replace 1st occurrence of default string
-              else if (!string.IsNullOrWhiteSpace(ad.DefaultValue))
-                s.Append($"<b>{ad.DefaultValue}</b>");
-              else
-                s.Append("&lt;empty&gt;");
-              int prec = ad.AllowDecimals ? 2 : 0;
-              if (!double.IsNaN(ad.MinValue))
-                s.Append($" &nbsp; <sub>&lt;min: {ad.MinValue.ToString($"F{prec}")}&gt;</sub>");
-              if (!double.IsNaN(ad.MaxValue))
-                s.Append($" <sub>&lt;max: {ad.MaxValue.ToString($"F{prec}")}&gt;</sub>");  // seriously... printf("%.*f", prec, val) anyone?
-              s.Append("</li>\n");
-            });
-            s.Append("</ol></td>\n");
+            CreateActionDataMd(s, act);
             // mappings (only for SimConnect events)
             if (cat.CategoryId != Groups.Plugin) {
               s.Append("<td>");
@@ -304,6 +330,23 @@ namespace MSFSTouchPortalPlugin_Generator
             }
             // has hold
             s.Append($"<td align='center'>{(act.HasHoldFunctionality ? "&#9745;" : "")}</td></tr>\n");  // U+2611 Ballot Box with Check Emoji
+          });
+          s.Append("</table>\n\n\n");
+        }
+
+        // Loop Connectors
+        if (cat.Connectors.Any()) {
+          s.Append("#### Connectors\n\n");
+          s.Append("<table>\n");   // use HTML table for row valign attribute
+          s.Append("<tr valign='bottom'>" +
+            "<th>Name</th>" +
+            "<th>Description</th>" +
+            "<th>Format</th>" +
+            "<th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th>" +
+            "</tr>\n");
+          cat.Connectors.ForEach(act => {
+            // Loop action data
+            CreateActionDataMd(s, act);
           });
           s.Append("</table>\n\n\n");
         }
