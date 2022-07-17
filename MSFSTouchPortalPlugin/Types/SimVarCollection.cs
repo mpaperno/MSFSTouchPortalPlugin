@@ -178,7 +178,7 @@ namespace MSFSTouchPortalPlugin.Types
         ret = _idxByDef.Remove(item.Def, out _);
         _idxById.Remove(item.Id, out _);
         _idxBySimName.Remove(item.SimVarName, out _);
-        if (!_idxByCategory.ContainsKey(item.CategoryId))
+        if (_idxByCategory.ContainsKey(item.CategoryId))
           _idxByCategory[item.CategoryId].Remove(item.Def);
         if (item.CanSet)
           _settableVars.Remove(item);
@@ -215,11 +215,14 @@ namespace MSFSTouchPortalPlugin.Types
       return list.OrderBy(n => n);
     }
 
-    public IOrderedEnumerable<string> GetSimVarSelectorList(Groups categoryId) {
-      List<Definition> cat = _idxByCategory[categoryId];
+    public IOrderedEnumerable<string> GetSimVarSelectorList(Groups categoryId, bool settable = false)
+    {
+      if (!_idxByCategory.ContainsKey(categoryId))
+        return new List<string>().OrderBy(n => n);
+      List <Definition> cat = _idxByCategory[categoryId];
       List<string> list = new(cat.Count);
       foreach (Definition v in cat)
-        if (Get(v) is var sv && sv != null)
+        if (Get(v) is var sv && sv != null && (!settable || sv.CanSet))
           list.Add(sv.TouchPortalSelector);
       return list.OrderBy(n => n);
     }
