@@ -164,6 +164,18 @@ namespace MSFSTouchPortalPlugin.Types
       }
     }
 
+    public static implicit operator double(SimVarItem simVar)
+    {
+      if (!simVar.ValInit)
+        return 0;
+      return simVar.Value switch {
+        double v => v,
+        uint v => v,
+        long v => v,
+        _ => 0,
+      };
+    }
+
     /// <summary>
     /// The actual system Type used for Value property. This is determined automatically when setting the Unit type.
     /// The return type could be null if Value type is null. Changing this property will clear any current value!
