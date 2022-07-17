@@ -201,8 +201,8 @@ namespace MSFSTouchPortalPlugin.Configuration
       if (parsedIndex > 0 && index == 0)
         index = parsedIndex;
       if (index > 0) {
-        simVar.Id += parsedIndex.ToString();
-        simVar.SimVarName += ":" + Math.Clamp(parsedIndex, 1, 99).ToString();
+        simVar.Id += index.ToString();
+        simVar.SimVarName += ":" + Math.Clamp(index, 1, 99).ToString();
       }
       simVar.CategoryId = catId;
       simVar.Unit = unit ?? "number";
@@ -214,7 +214,7 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     static void SetSimVarItemTpMetaData(SimVarItem simVar) {
       simVar.TouchPortalStateId = $"{RootName}.{simVar.CategoryId}.State.{simVar.Id}";
-      simVar.TouchPortalSelector = Categories.PrependCategoryName(simVar.CategoryId, simVar.Name) + $"  [{simVar.Id}]";
+      simVar.TouchPortalSelector = $"{simVar.Name} ({simVar.Unit}) [{simVar.Id}]";
     }
 
 
@@ -231,8 +231,8 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static")]
     public bool TryGetImportedSimEventIdFromSelector(string selector, out string eventId) {
-      eventId = selector?.Split(" - ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).First() ?? string.Empty;
-      return !string.IsNullOrEmpty(eventId);
+      eventId = selector?.Split('-', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).First() ?? string.Empty;
+      return !string.IsNullOrWhiteSpace(eventId);
     }
 
 
