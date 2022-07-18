@@ -32,8 +32,10 @@ namespace MSFSTouchPortalPlugin.Enums
     SetKnownSimEvent,
     SetHubHopEvent,
     SetSimVar,
+    SetLocalVar,
     SetVariable,
     ExecCalcCode,
+    SetConnectorValue,
 
     AddCustomSimVar,
     AddKnownSimVar,
