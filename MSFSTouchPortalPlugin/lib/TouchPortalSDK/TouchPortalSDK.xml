@@ -1,0 +1,717 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TouchPortalSDK</name>
+    </assembly>
+    <members>
+        <member name="P:TouchPortalSDK.Clients.TouchPortalClient.IsConnected">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalClient" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalClient.TouchPortalSDK#Interfaces#ITouchPortalClient#Connect">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalClient" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalClient.TouchPortalSDK#Interfaces#ITouchPortalClient#Close">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalClient" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalClient.TouchPortalSDK#Interfaces#ICommandHandler#SettingUpdate(System.String,System.String)">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ICommandHandler" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalClient.TouchPortalSDK#Interfaces#ICommandHandler#CreateState(System.String,System.String,System.String,System.String)">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ICommandHandler" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalClient.TouchPortalSDK#Interfaces#ICommandHandler#RemoveState(System.String)">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ICommandHandler" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalClient.TouchPortalSDK#Interfaces#ICommandHandler#StateUpdate(System.String,System.String)">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ICommandHandler" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalClient.TouchPortalSDK#Interfaces#ICommandHandler#ChoiceUpdate(System.String,System.String[],System.String)">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ICommandHandler" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalClient.TouchPortalSDK#Interfaces#ICommandHandler#UpdateActionData(System.String,System.Double,System.Double,TouchPortalSDK.Messages.Models.Enums.ActionDataType,System.String)">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ICommandHandler" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalClient.TouchPortalSDK#Interfaces#ICommandHandler#ShowNotification(System.String,System.String,System.String,TouchPortalSDK.Messages.Models.NotificationOptions[])">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ICommandHandler" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalClient.TouchPortalSDK#Interfaces#ICommandHandler#ConnectorUpdate(System.String,System.Int32)">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ICommandHandler" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalClient.TouchPortalSDK#Interfaces#ICommandHandler#ConnectorUpdateShort(System.String,System.Int32)">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ICommandHandler" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalClient.TouchPortalSDK#Interfaces#ICommandHandler#SendMessage(System.String)">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ICommandHandler" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalClient.OnError(System.String,System.Exception)">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.IMessageHandler" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalClient.TouchPortalSDK#Interfaces#IMessageHandler#OnMessage(System.Byte[])">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.IMessageHandler" />
+        </member>
+        <member name="P:TouchPortalSDK.Clients.TouchPortalSocket.IsConnected">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalSocket" />
+        </member>
+        <member name="P:TouchPortalSDK.Clients.TouchPortalSocket.ReceiveBufferSize">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalSocket" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalSocket.Connect">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalSocket" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalSocket.Listen">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalSocket" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalSocket.SendMessage(System.String)">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalSocket" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalSocket.SendMessage(System.ReadOnlySpan{System.Byte})">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalSocket" />
+        </member>
+        <member name="M:TouchPortalSDK.Clients.TouchPortalSocket.CloseSocket">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalSocket" />
+        </member>
+        <member name="T:TouchPortalSDK.Configuration.ConnectorIdParser">
+            <summary>
+            Parses a "long"  connectorId string from a ConnectorShortIdNotification message into a
+            dict of key value pairs.
+            </summary>
+            Example connectorId:
+            pc_pluginID_connectorId|actionDataId1=dataValue1|actionDataId2=dataValue2
+            where the "pc_pluginID_" part is prepended by TP to the actual connectorId.
+            This helper will first split split the string on the pipe delimeter,
+            and then further into key/value pairs split on the equals sign.
+            The result of the parsing (if any) is available from the Data property.
+            The first member of the initial split on the pipe char is saved in the
+            ConnectorIdPart property. If a pluginId is passed to the class c'tor, then
+            the leading "pc_pluginId_" part will be stripped out of the ConnectorIdPart result.
+        </member>
+        <member name="M:TouchPortalSDK.Configuration.ConnectorIdParser.#ctor(System.String,System.String)">
+            <param name="connectorId"></param>
+            <param name="pluginId"></param>
+        </member>
+        <member name="M:TouchPortalSDK.Configuration.MessageResolver.ResolveMessage(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Resolves and parses a JSON string from byte array into a <see cref="T:TouchPortalSDK.Interfaces.ITouchPortalMessage"/> event Type.
+            </summary>
+            <param name="message">byte array of UTF8-encdoed chars.</param>
+            <returns>A resolved <see cref="T:TouchPortalSDK.Interfaces.ITouchPortalMessage"/> type or <c>null</c> if the event type is unknown.</returns>
+            <exception cref="T:System.Text.Json.JsonException">In case of any JSON string parsing errors.</exception>
+        </member>
+        <member name="M:TouchPortalSDK.Configuration.ServiceProviderFactory.#ctor(System.IServiceProvider)">
+            <summary>
+            Constructor used if registered through AddTouchPortalSdk.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.Configuration.ServiceProviderFactory.Create(TouchPortalSDK.ITouchPortalEventHandler)">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalClientFactory" />
+        </member>
+        <member name="M:TouchPortalSDK.Configuration.ServiceProviderFactory.Create(TouchPortalSDK.Interfaces.IMessageHandler)">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalSocketFactory" />
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ICommandHandler.SendMessage(System.String)">
+            <summary>
+            Send a custom command. There is no state tracking for this.
+            </summary>
+            <param name="message"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ICommandHandler.CreateState(System.String,System.String,System.String,System.String)">
+            <summary>
+            Creates a dynamic state in Touch Portal Memory.
+            This state will disappear when restarting Touch Portal.
+            You will need to persist them yourself and reload them on plugin load.
+            </summary>
+            <param name="stateId"></param>
+            <param name="desc">Description of the created state (name in menus).</param>
+            <param name="defaultValue">Default value of this state, default is empty string.</param>
+            <param name="parentGroup">Parent group of this state (TP API v6). Default is an empty string.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ICommandHandler.SettingUpdate(System.String,System.String)">
+            <summary>
+            Updates a setting in Touch Portal.
+            </summary>
+            <param name="name"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ICommandHandler.RemoveState(System.String)">
+            <summary>
+            Removes the dynamic state from Touch Portal.
+            </summary>
+            <param name="stateId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ICommandHandler.StateUpdate(System.String,System.String)">
+            <summary>
+            Value that can be displayed, or an event can trigger on.
+            Values are not persisted, and will fallback to default value on restart.
+            - Plugin: Defined in the Entry.tp
+            - Dynamic: Created or removed at runtime. (in memory only)
+            - Global: Defined in the Touch Portal UI. (state definition persisted in %AppData%\TouchPortal\states.tp)
+            </summary>
+            <param name="stateId"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ICommandHandler.ChoiceUpdate(System.String,System.String[],System.String)">
+            <summary>
+            Updates the drop down choices in the Touch Portal UI.
+            InstanceId can be used to dynamically update a dropdown based on the value chosen from another dropdown.
+            </summary>
+            <param name="choiceId">Id of UI dropdown.</param>
+            <param name="values">Values as string array that you can choose from.</param>
+            <param name="instanceId">if set (fetched from listChange event), this will only update this particular list.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ICommandHandler.UpdateActionData(System.String,System.Double,System.Double,TouchPortalSDK.Messages.Models.Enums.ActionDataType,System.String)">
+            <summary>
+            Updates the constraints of a data value.
+            </summary>
+            <param name="dataId">Id of action the number box.</param>
+            <param name="minValue">Min value the field can be.</param>
+            <param name="maxValue">Max value the field can be.</param>
+            <param name="dataType">Type of the data field.</param>
+            <param name="instanceId">if set (fetched from listChange event), this will only update this particular list.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ICommandHandler.ShowNotification(System.String,System.String,System.String,TouchPortalSDK.Messages.Models.NotificationOptions[])">
+            <summary>
+            Adds a notification to the Touch Portal UI. Ex. if the plugin has a updated version.
+            </summary>
+            <param name="notificationId">If of the notification.</param>
+            <param name="title">Title on the notification shown to the user.</param>
+            <param name="message">Text / description of the notification shown to the user.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ICommandHandler.ConnectorUpdate(System.String,System.Int32)">
+            <summary>
+            Sends a connector value update to Touch Portal using the long form of the connector ID.
+            </summary>
+            <param name="connectorId">The long ID of the connector to update. The string "pc_{pluginId}_" is automatically prepended
+            before sending to TP. The total length must not exceed 200 chars.</param>
+            <param name="value">The value to send, must be between 0 and 100, inclusive.</param>
+            <returns>true on success, false otherwise.</returns>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ICommandHandler.ConnectorUpdateShort(System.String,System.Int32)">
+            <summary>
+            Sends a connector value update to Touch Portal using the short form of the connector ID.
+            </summary>
+            <param name="shortId">The short ID of the connector to update. This is obtained from a <see cref="!:ShortConnectorIdNotification"/> event.</param>
+            <param name="value">The value to send, must be between 0 and 100, inclusive.</param>
+            <returns>true on success, false otherwise.</returns>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.IMessageHandler.OnMessage(System.Byte[])">
+            <summary>
+            Method for handling raw messages events, in UTF8 encoded json byte array.
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.IMessageHandler.OnError(System.String,System.Exception)">
+            <summary>
+            Method for notifying the message handler of hard errors (handler should probably disconnect after this).
+            </summary>
+            <param name="message"></param>
+            <param name="exception"></param>
+        </member>
+        <member name="P:TouchPortalSDK.Interfaces.ITouchPortalClient.IsConnected">
+            <summary>
+            The connection state of this client. `true` when an active socket to Touch Portal is open.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ITouchPortalClient.Connect">
+            <summary>
+            Connects, pairs, and listens to the Touch Portal application.
+            </summary>
+            <returns>connection success status</returns>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ITouchPortalClient.Close">
+            <summary>
+            Closes the connection to Touch Portal and shutdowns the plugin in a safe manner.
+            </summary>
+        </member>
+        <member name="T:TouchPortalSDK.Interfaces.ITouchPortalClientFactory">
+            <summary>
+            Factory interface for creating a Touch Portal client.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ITouchPortalClientFactory.Create(TouchPortalSDK.ITouchPortalEventHandler)">
+            <summary>
+            Create a Touch Portal Client
+            </summary>
+            <param name="eventHandler">Handler the events from Touch Portal, normally the plugin instance.</param>
+            <returns>Touch Portal Client</returns>
+        </member>
+        <member name="P:TouchPortalSDK.Interfaces.ITouchPortalMessage.Type">
+            <summary>
+            Type of the message, see Touch Portal API documentation.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ITouchPortalMessage.GetIdentifier">
+            <summary>
+            Gets a unique identifier for a command/event.
+            (Type, Id, Instance)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:TouchPortalSDK.Interfaces.ITouchPortalSocket.IsConnected">
+            <summary>
+            The connection state of the Socket being used internally.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Interfaces.ITouchPortalSocket.ReceiveBufferSize">
+            <summary>
+            Size of the receive buffer in bytes, for possible tuning.
+            Needs to hold at least one full TP message at a time, but should not be too large
+            since the unused space is still moved around in memory during line splitting process.
+            This must be set <b>before</b> <see cref="M:TouchPortalSDK.Interfaces.ITouchPortalSocket.Listen"/> is called.
+            Default is 2048.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ITouchPortalSocket.Connect">
+            <summary>
+            Connects to Touch Portal.
+            </summary>
+            <returns>success flag</returns>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ITouchPortalSocket.Listen">
+            <summary>
+            Starts the listener thread, and listens for events from Touch Portal.
+            </summary>
+            <returns>success flag</returns>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ITouchPortalSocket.SendMessage(System.String)">
+            <summary>
+            Sends a string message to Touch Portal. The string is encoded to UTF8 before sending.
+            </summary>
+            <param name="jsonMessage">The fully formatted JSON to send.</param>
+            <returns>success flag</returns>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ITouchPortalSocket.SendMessage(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Sends a JSON message which is already encoded to a UTF8 byte array.
+            </summary>
+            <param name="messageBytes">UTF8 bytes of the fully formatted JSON to send.</param>
+            <returns>success flag</returns>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ITouchPortalSocket.CloseSocket">
+            <summary>
+            Closes the socket.
+            </summary>
+        </member>
+        <member name="T:TouchPortalSDK.Interfaces.ITouchPortalSocketFactory">
+            <summary>
+            Factory interface for creating a Touch Portal socket.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.Interfaces.ITouchPortalSocketFactory.Create(TouchPortalSDK.Interfaces.IMessageHandler)">
+            <summary>
+            Create a Touch Portal Socket
+            </summary>
+            <param name="messageHandler">Handler the json events from the Socket, normally the client instance.</param>
+            <returns>Touch Portal Socket</returns>
+        </member>
+        <member name="T:TouchPortalSDK.ITouchPortalEventHandler">
+            <summary>
+            Interface used to register a plugin that can handle events from Touch Portal.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.ITouchPortalEventHandler.PluginId">
+            <summary>
+            EventHandler must define a pluginId to receive plugin events.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.ITouchPortalEventHandler.OnInfoEvent(TouchPortalSDK.Messages.Events.InfoEvent)">
+            <summary>
+            Method to call when Touch Portal is connected.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.ITouchPortalEventHandler.OnListChangedEvent(TouchPortalSDK.Messages.Events.ListChangeEvent)">
+            <summary>
+            Method to call when an item is selected from dropdown in Action Creation of a button.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.ITouchPortalEventHandler.OnBroadcastEvent(TouchPortalSDK.Messages.Events.BroadcastEvent)">
+            <summary>
+            Method is called when an broadcast message is sent.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.ITouchPortalEventHandler.OnSettingsEvent(TouchPortalSDK.Messages.Events.SettingsEvent)">
+            <summary>
+            Settings are first received as a part of the OnInfoEvent.
+            Then updated through this event if either user changes a setting in Touch Portal, or the SettingUpdate is successfully triggered.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.ITouchPortalEventHandler.OnActionEvent(TouchPortalSDK.Messages.Events.ActionEvent)">
+            <summary>
+            Method to call when a user presses a button on their device.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.ITouchPortalEventHandler.OnNotificationOptionClickedEvent(TouchPortalSDK.Messages.Events.NotificationOptionClickedEvent)">
+            <summary>
+            Called when a user clicks on a notification option.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.ITouchPortalEventHandler.OnConnecterChangeEvent(TouchPortalSDK.Messages.Events.ConnectorChangeEvent)">
+            <summary>
+            Method to call when a user moves a slider on their device.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.ITouchPortalEventHandler.OnShortConnectorIdNotificationEvent(TouchPortalSDK.Messages.Events.ShortConnectorIdNotificationEvent)">
+            <summary>
+            Called when TP reports a new instance of your connector, either at startup or if user adds/modifies one.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.ITouchPortalEventHandler.OnClosedEvent(System.String)">
+            <summary>
+            Method to call when we loose connection to Touch Portal.
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:TouchPortalSDK.ITouchPortalEventHandler.OnUnhandledEvent(System.String)">
+            <summary>
+            Messages that are unknown, and therefor we cannot deserialize to a known type.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.Messages.Commands.ChoiceUpdateCommand.GetIdentifier">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalMessage" />
+        </member>
+        <member name="M:TouchPortalSDK.Messages.Commands.CreateStateCommand.GetIdentifier">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalMessage" />
+        </member>
+        <member name="M:TouchPortalSDK.Messages.Commands.PairCommand.GetIdentifier">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalMessage" />
+        </member>
+        <member name="M:TouchPortalSDK.Messages.Commands.RemoveStateCommand.GetIdentifier">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalMessage" />
+        </member>
+        <member name="M:TouchPortalSDK.Messages.Commands.SettingUpdateCommand.GetIdentifier">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalMessage" />
+        </member>
+        <member name="M:TouchPortalSDK.Messages.Commands.ShowNotificationCommand.GetIdentifier">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalMessage" />
+        </member>
+        <member name="M:TouchPortalSDK.Messages.Commands.StateUpdateCommand.GetIdentifier">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalMessage" />
+        </member>
+        <member name="M:TouchPortalSDK.Messages.Commands.UpdateActionDataCommand.GetIdentifier">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalMessage" />
+        </member>
+        <member name="T:TouchPortalSDK.Messages.Events.ActionEvent">
+            <summary>
+            <para>
+                Action type event. `Type` attribute can be one of the following:
+            </para>
+            <list type="bullet">
+            <item>
+                <term>action</term>
+                <description>User presses an action button on the device.</description>
+            </item>
+            <item>
+                <term>down</term>
+                <description>Finger holds down the action on the device. This event happens only if the action enables the hasHoldFunctionality.</description>
+            </item>
+            <item>
+                <term>up</term>
+                <description>Finger released the action on the device. This event happens only if the action enables the hasHoldFunctionality.</description>
+            </item>
+            </list>
+            </summary>
+            <inheritdoc cref="T:TouchPortalSDK.Messages.Events.DataContainerEventBase" />
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.ActionEvent.ActionId">
+            <summary>
+            The id of the action.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.Messages.Events.ActionEvent.GetPressState">
+            <summary>
+            Returns the Action type.
+            </summary>
+            <returns><see cref="T:TouchPortalSDK.Messages.Models.Enums.Press"/> enum</returns>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.BroadcastEvent.Type">
+            <summary>
+            Broadcast type is a global event all plugins will receive.
+            In 2.3 the only event is og PageChange at the Device.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.BroadcastEvent.Event">
+            <summary>
+            Event that was broadcast, ex. pageChange
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.BroadcastEvent.PageName">
+            <summary>
+            Name of the page the device is currently on. Ex. "(main)"
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.Messages.Events.BroadcastEvent.GetIdentifier">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalMessage" />
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.CloseEvent.Type">
+            <summary>
+            Touch Portal closes/stops the plugin or shuts down.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.CloseEvent.PluginId">
+            <summary>
+            The id of the plugin.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.Messages.Events.CloseEvent.GetIdentifier">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalMessage" />
+        </member>
+        <member name="T:TouchPortalSDK.Messages.Events.ConnectorChangeEvent">
+            <inheritdoc cref="T:TouchPortalSDK.Messages.Events.DataContainerEventBase" />
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.ConnectorChangeEvent.ConnectorId">
+            <summary>
+            The connector ID. Alias for DataContainerEventBase::Id.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.ConnectorChangeEvent.Value">
+            <summary>
+            Current value of the connector.
+            </summary>
+        </member>
+        <member name="T:TouchPortalSDK.Messages.Events.DataContainerEventBase">
+            <summary>
+            Base class for events which have data members, such as actions and connectors.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.DataContainerEventBase.Type">
+            <summary>
+            The Touch Portal event name.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.DataContainerEventBase.PluginId">
+            <summary>
+            The id of the plugin.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.DataContainerEventBase.Id">
+            <summary>
+            The id of the action/connector.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.DataContainerEventBase.Data">
+            <summary>
+            Data is name = value pairs dictionary of options the user has selected for this action.
+            Ex. data1: dropdown1
+                data2: dropdown2
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.DataContainerEventBase.Item(System.String)">
+            <summary>
+            Indexer to get data values.
+            </summary>
+            <param name="dataId">the id of the datafield.</param>
+            <returns>the value of the data field as string or null if not exists</returns>
+        </member>
+        <member name="M:TouchPortalSDK.Messages.Events.DataContainerEventBase.GetValue(System.String,System.String)">
+            <summary>
+            Returns the value of the selected item in an action data field.
+            This value can be null in some cases, and will be null if data field is miss written.
+            </summary>
+            <param name="dataId">the id of the datafield.</param>
+            <param name="defaultValue">Default value to return if the dataId wasn't found.</param>
+            <returns>the value of the data field as string or null if not exists</returns>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.InfoEvent.Type">
+            <summary>
+            Event from Touch Portal when a connection is established.
+            This event includes information about the Touch Portal service.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.InfoEvent.Status">
+            <summary>
+            Status ex. "paired"
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.InfoEvent.SdkVersion">
+            <summary>
+            Version of the SDK this version of Touch Portal knows about.
+            Ex. 2
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.InfoEvent.TpVersionString">
+            <summary>
+            Touch Portal version as string.
+            Major, Minor, Patch: M.m.ppp
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.InfoEvent.TpVersionCode">
+            <summary>
+            Touch Portal version as int.
+            Format: Major * 10000 + Minor * 1000 + patch.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.InfoEvent.PluginVersion">
+            <summary>
+            Plugin version as code.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.InfoEvent.Settings">
+            <summary>
+            Values in settings.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.Messages.Events.InfoEvent.GetIdentifier">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalMessage" />
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.ListChangeEvent.Type">
+            <summary>
+            When setting up an action in the Touch Portal UI. This event is fired if the user selects and item in the dropdown for a choice list.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.ListChangeEvent.PluginId">
+            <summary>
+            The id of the plugin.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.ListChangeEvent.ActionId">
+            <summary>
+            The actionId the list (dropdown) is a part of.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.ListChangeEvent.ListId">
+            <summary>
+            The dataId the list (dropdown) is built upon.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.ListChangeEvent.InstanceId">
+            <summary>
+            InstanceId is a unique name that identified the action the user is changing.
+            A button might have multiple actions, and a action might be bound to multiple buttons.
+            This id will be different. However, it can also be null.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.ListChangeEvent.Value">
+            <summary>
+            Value of the selected list (dropdown).
+            Might be null if nothing is selected, ex. choices updated to something else.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.Messages.Events.ListChangeEvent.GetIdentifier">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalMessage" />
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.NotificationOptionClickedEvent.Type">
+            <summary>
+            Notification option in Touch Portal UI clicked by a user.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.NotificationOptionClickedEvent.NotificationId">
+            <summary>
+            Id of the notification.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.NotificationOptionClickedEvent.OptionId">
+            <summary>
+            The option clicked by the user.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.Messages.Events.NotificationOptionClickedEvent.GetIdentifier">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalMessage" />
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.SettingsEvent.Type">
+            <summary>
+            Plugin settings changed in TouchPortal UI.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.SettingsEvent.Values">
+            <summary>
+            Values in settings.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.Messages.Events.SettingsEvent.GetIdentifier">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalMessage" />
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.ShortConnectorIdNotificationEvent.Data">
+            <summary>
+            Data is name = value pairs dictionary of the connector data members extracted
+            from the connectorId string.
+            It is populated only when the Data or ActualConnectorId members are first requested (lazy loading),
+            or can be pre-populated by calling the ParseData() method.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Events.ShortConnectorIdNotificationEvent.ActualConnectorId">
+            <summary>
+            Contains the actual connector ID, which is the first part of the sent
+            connectorId field, before the first "|" delimiter, and also with the
+            "pc_pluginId_" prefix stripped out.
+            It is populated only when the ActualConnectorId or Data are first requested (lazy loading),
+            or can be pre-populated by calling the ParseData() method.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.Messages.Events.ShortConnectorIdNotificationEvent.ParseData">
+            <summary>
+            Parse the long connectorId string into key/value pairs of data fields it represents.
+            Populates the Data and ActualConnectorId properties.
+            </summary>
+        </member>
+        <member name="T:TouchPortalSDK.Messages.Models.Enums.ActionDataType">
+            <summary>
+            Allowed data types for DataValue
+            </summary>
+        </member>
+        <member name="F:TouchPortalSDK.Messages.Models.Enums.Press.Tap">
+            <summary>
+            Standard action tap/click.
+            When this is not a on hold action.
+            </summary>
+        </member>
+        <member name="F:TouchPortalSDK.Messages.Models.Enums.Press.Up">
+            <summary>
+            On Hold action, on end of press of a hold button.
+            Usually triggers with same behaviour as Tap actions.
+            </summary>
+        </member>
+        <member name="F:TouchPortalSDK.Messages.Models.Enums.Press.Down">
+            <summary>
+            On Hold action, on start of press of a hold button.
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Models.Setting.Name">
+            <summary>
+            Name of the setting property
+            </summary>
+        </member>
+        <member name="P:TouchPortalSDK.Messages.Models.Setting.Value">
+            <summary>
+            Value of the setting property
+            </summary>
+        </member>
+        <member name="T:TouchPortalSDK.TouchPortalFactory">
+            <summary>
+            Factories are a pattern that works well with callbacks.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.TouchPortalFactory.#ctor(TouchPortalSDK.TouchPortalOptions,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Private so we don't expose the socket factory.
+            </summary>
+        </member>
+        <member name="M:TouchPortalSDK.TouchPortalFactory.CreateClient(TouchPortalSDK.ITouchPortalEventHandler,TouchPortalSDK.TouchPortalOptions,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Factory for creating the Touch Portal client.
+            </summary>
+            <param name="eventHandler">Handler the events from Touch Portal, normally the plugin instance.</param>
+            <param name="options">Optional options, if null, default values are selected.</param>
+            <param name="loggerFactory">Optional logger factory, if null, no logger is created.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchPortalSDK.TouchPortalFactory.TouchPortalSDK#Interfaces#ITouchPortalClientFactory#Create(TouchPortalSDK.ITouchPortalEventHandler)">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalClientFactory" />
+        </member>
+        <member name="M:TouchPortalSDK.TouchPortalFactory.TouchPortalSDK#Interfaces#ITouchPortalSocketFactory#Create(TouchPortalSDK.Interfaces.IMessageHandler)">
+            <inheritdoc cref="T:TouchPortalSDK.Interfaces.ITouchPortalSocketFactory" />
+        </member>
+        <member name="P:TouchPortalSDK.TouchPortalOptions.ActionDataIdSeparator">
+            <summary> If this is set to a non-null character, will split each incoming `action.data.id` value on this char and only keep the last part. </summary>
+        </member>
+        <member name="P:TouchPortalSDK.TouchPortalOptions.ValidateCommandParameters">
+            <summary> Set to `true` to skip validation of parameter values for all Command types. /// </summary>
+        </member>
+    </members>
+</doc>
