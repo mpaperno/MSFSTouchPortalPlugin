@@ -20,85 +20,125 @@ and is also available at <http://www.gnu.org/licenses/>.
 
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Linq;
 using Stopwatch = System.Diagnostics.Stopwatch;
+using ConnectorEvent = TouchPortalSDK.Messages.Events.ConnectorChangeEvent;
+using ShortIdEvent = TouchPortalSDK.Messages.Events.ShortConnectorIdNotificationEvent;
+using ActionData = TouchPortalSDK.Messages.Models.ActionData;
 
 namespace MSFSTouchPortalPlugin.Helpers
 {
 
   internal class ConnectorTrackingData
   {
+    public static int CONNECTOR_DOWN_TIMEOUT_SEC = 5;
+
     public string connectorId = default;
+    public string shortId = default;
     public int lastValue = -1;
     public bool isDown = false;
-    public long lastUpdate = 0;
+    public long nextTimeout = 0;
+    public float fbRangeMin = 0;
+    public float fbRangeMax = 0;
+    //public string fbVariable;
+    //public string mappingId;
 
-    public ConnectorTrackingData(string id, int value, bool isdown = false)
+    public bool IsStillDown {
+      get {
+        if (isDown && Stopwatch.GetTimestamp() >= nextTimeout)
+          isDown = false;
+        return isDown;
+      }
+    }
+
+    public void UpdateTimeout()
+    {
+      if (isDown)
+        nextTimeout = Stopwatch.GetTimestamp() + (Stopwatch.Frequency * CONNECTOR_DOWN_TIMEOUT_SEC);
+    }
+
+    public ConnectorTrackingData(string id = default, int value = -1, bool isdown = false)
     {
       connectorId = id;
       lastValue = value;
       isDown = isdown;
-      lastUpdate = Stopwatch.GetTimestamp();
-    }
-  }
-
-  internal class ConnectorInstanceTrackingData
-  {
-    public string shortId = default;
-    public int fbRangeMin = 0;
-    public int fbRangeMax = 0;
-
-    public ConnectorInstanceTrackingData(string shortId, int rangeMin, int rangeMax)
-    {
-      this.shortId = shortId;
-      fbRangeMin = rangeMin;
-      fbRangeMax = rangeMax;
+      UpdateTimeout();
     }
   }
 
   internal class ConnectorTracker
   {
     private readonly ConcurrentDictionary<string, ConnectorTrackingData> _connectors = new();
-    private readonly ConcurrentDictionary<string, Dictionary<string, ConnectorInstanceTrackingData>> _instances = new();
-    //private readonly ConcurrentDictionary<string, string> _connectorsLongToShortMap = new();
+    private readonly ConcurrentDictionary<string, Dictionary<string, ConnectorTrackingData>> _stateIdIndex = new();
 
-    /// <summary> Creates or updates a connector record and returns true if the passed value doesn't equal the last value or if this is a new connector. </summary>
-    public bool UpdateConnectorValue(string connectorId, int value)
+    static string MappingId(string connectorId, ActionData data)
     {
-      if (!_connectors.TryGetValue(connectorId, out ConnectorTrackingData data)) {
-        data = new ConnectorTrackingData(connectorId, value, true);
-        _connectors.TryAdd(connectorId, data);
-        return true;
-      }
-      data.isDown = data.lastValue != value;
-      data.lastValue = value;
-      data.lastUpdate = Stopwatch.GetTimestamp();
-      return data.isDown;
+      return connectorId.Split('.').Last() + "|" + string.Join("|", data.Select(d => d.Key + "=" + d.Value));
     }
 
-    public ConnectorInstanceTrackingData SaveConnectorInstance(Enums.Groups catId, string varId, string shortId, int rangeMin, int rangeMax)
+    ConnectorTrackingData GetOrCreateTrackingData(string connectorId, ActionData actionData, int value = -1)
     {
-      return SaveConnectorInstance(catId.ToString() + '.' + varId, shortId, rangeMin, rangeMax);
-    }
-
-    public ConnectorInstanceTrackingData SaveConnectorInstance(string stateId, string shortId, int rangeMin, int rangeMax)
-    {
-      var list = _instances.GetOrAdd(stateId, new Dictionary<string, ConnectorInstanceTrackingData>());
-      if (!list.TryGetValue(shortId, out ConnectorInstanceTrackingData data)) {
-        data = new ConnectorInstanceTrackingData(shortId, rangeMin, rangeMax);
-        list.Add(shortId, data);
+      string mappingId = MappingId(connectorId, actionData);
+      if (!_connectors.TryGetValue(mappingId, out ConnectorTrackingData data)) {
+        data = new ConnectorTrackingData(connectorId, value);
+        //data.mappingId = mappingId;
+        bool ok;
+        try { ok = _connectors.TryAdd(mappingId, data); }
+        catch { ok = false; }
+        if (!ok)
+          return null;
       }
       return data;
     }
 
+    public ConnectorTrackingData GetDataForEvent(ConnectorEvent ev)
+    {
+      return _connectors.GetValueOrDefault(MappingId(ev.ConnectorId, ev.Data));
+    }
+
+    public ConnectorTrackingData GetDataForEvent(ShortIdEvent ev)
+    {
+      return _connectors.GetValueOrDefault(MappingId(ev.ActualConnectorId, ev.Data));
+    }
+
+    /// <summary> Creates or updates a connector record and returns true if the passed value doesn't equal the last value or if this is a new connector. </summary>
+    public bool UpdateConnectorValue(ConnectorEvent ev)
+    {
+      if (GetOrCreateTrackingData(ev.ConnectorId, ev.Data, ev.Value) is var data && data != null) {
+        data.isDown = data.lastValue != ev.Value;
+        data.lastValue = ev.Value;
+        data.UpdateTimeout();
+        return data.isDown;
+      }
+      return false;
+    }
+
+    /// <summary> Creates or updates a connector record from a ShortConnectorIdNotification event and pre-parsed category ID, state ID, and feedback range values. </summary>
+    public void SaveConnectorInstance(ShortIdEvent ev, Enums.Groups catId, string varId, float rangeMin, float rangeMax)
+    {
+      if (GetOrCreateTrackingData(ev.ActualConnectorId, ev.Data) is var data && data != null) {
+        data.shortId = ev.ShortId;
+        data.fbRangeMin = rangeMin;
+        data.fbRangeMax = rangeMax;
+        SaveConnectorInstance(catId.ToString() + '.' + varId, data);
+      }
+    }
+
+    void SaveConnectorInstance(string stateId, ConnectorTrackingData trackingData)
+    {
+      var list = _stateIdIndex.GetOrAdd(stateId, new Dictionary<string, ConnectorTrackingData>());
+      list[trackingData.shortId] = trackingData;
+    }
+
 #nullable enable
-    public IReadOnlyCollection<ConnectorInstanceTrackingData>? GetInstancesForStateId(Enums.Groups catId, string varId)
+    public IReadOnlyCollection<ConnectorTrackingData>? GetInstancesForStateId(Enums.Groups catId, string varId)
     {
       return GetInstancesForStateId(catId.ToString() + '.' + varId);
     }
 
-    public IReadOnlyCollection<ConnectorInstanceTrackingData>? GetInstancesForStateId(string stateId)
+    public IReadOnlyCollection<ConnectorTrackingData>? GetInstancesForStateId(string stateId)
     {
-      if (_instances.TryGetValue(stateId, out var ret))
+      if (_stateIdIndex.TryGetValue(stateId, out var ret))
         return ret.Values;
       return null;
     }
