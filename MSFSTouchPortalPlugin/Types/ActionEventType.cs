@@ -49,7 +49,7 @@ namespace MSFSTouchPortalPlugin.Types
 
     public ActionEventType() { }
 
-    /// <summary> c'tor for dynamically added actions with just one sim event, which returns the generated event ID of actual type SimEventClientId </summary>
+    /// <summary> c'tor for dynamically added actions with just one sim event, which returns the generated event ID of actual type EventIds </summary>
     public ActionEventType(string actionId, Groups categoryId, bool hasValue, out Enum eventId) {
       Id = eventId = NextId();
       ActionId = actionId;

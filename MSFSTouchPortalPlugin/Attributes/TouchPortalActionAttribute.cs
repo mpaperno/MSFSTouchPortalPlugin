@@ -144,7 +144,7 @@ namespace MSFSTouchPortalPlugin.Attributes
       DefaultValue = defaultValue;
     }
 
-    public TouchPortalActionTextAttribute(string defaultValue, int minValue, int maxValue) : base(DataType.Text) {
+    public TouchPortalActionTextAttribute(string defaultValue, double minValue, double maxValue) : base(DataType.Text) {
       DefaultValue = defaultValue;
       MinValue = minValue;
       MaxValue = maxValue;
