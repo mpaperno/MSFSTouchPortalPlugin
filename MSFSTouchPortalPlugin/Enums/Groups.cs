@@ -24,6 +24,7 @@ namespace MSFSTouchPortalPlugin.Enums {
     None = 0,
     Plugin,
     AutoPilot,
+    Camera,
     Communication,
     Electrical,
     Engine,

@@ -18,7 +18,7 @@ and is also available at <http://www.gnu.org/licenses/>.
 */
 
 using MSFSTouchPortalPlugin.Enums;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace MSFSTouchPortalPlugin.Constants
 {
@@ -30,11 +30,12 @@ namespace MSFSTouchPortalPlugin.Constants
     internal static string CategoryDefaultImage { get; set; } = "airplane_takeoff24.png";
 
 
-    private static readonly string[] categoryNames = new string[]
+    private static readonly List<string> categoryNames = new()
     {
       /* None, */               "None",
       /* Plugin, */             "Plugin",
       /* AutoPilot, */          "AutoPilot",
+      /* Camera, */             "Camera & Views",
       /* Communication, */      "Communication",
       /* Electrical, */         "Electrical",
       /* Engine, */             "Engine",
@@ -46,8 +47,10 @@ namespace MSFSTouchPortalPlugin.Constants
       /* SimSystem, */          "System",
     };
 
-    public static string[] ListAll => categoryNames;
-    public static string[] ListUsable => categoryNames[2..^0];  // w/out None and Plugin
+    private static readonly List<string> usableCategoryNames = categoryNames.GetRange(1, categoryNames.Count - 2);
+
+    public static IReadOnlyCollection<string> ListAll => categoryNames;
+    public static IReadOnlyCollection<string> ListUsable => usableCategoryNames;  // w/out None and Plugin
 
     /// <summary>
     /// Returns the category name for given enum value, or a blank string if the id is invalid..
@@ -62,13 +65,13 @@ namespace MSFSTouchPortalPlugin.Constants
     /// Returns the category ID for given name, or Groups.None if the string is invalid..
     /// </summary>
     internal static Groups CategoryId(string name) =>
-      categoryNames.ToList().IndexOf(name) is var idx && idx > -1 ? (Groups)idx : Groups.None;
+      categoryNames.IndexOf(name) is var idx && idx > -1 ? (Groups)idx : Groups.None;
 
     /// <summary>
     /// Places the category ID for given name in the out parameter, and returns true if string was valid.
     /// </summary>
     internal static bool TryGetCategoryId(string name, out Groups id) {
-      if (categoryNames.ToList().IndexOf(name) is var idx && idx > -1) {
+      if (categoryNames.IndexOf(name) is var idx && idx > -1) {
         id = (Groups)idx;
         return true;
       }

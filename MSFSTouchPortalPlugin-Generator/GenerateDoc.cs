@@ -114,7 +114,6 @@ namespace MSFSTouchPortalPlugin_Generator
           Id = $"{_options.PluginId}.{catAttrib.Id}",
           Name = catAttrib.Name
         };
-        model.Categories.Add(category);
 
         // workaround for backwards compat with mis-named actions in category InstrumentsSystems.Fuel
         string actionCatId = _options.PluginId + "." + Categories.ActionCategoryId(catAttrib.Id);
@@ -197,13 +196,18 @@ namespace MSFSTouchPortalPlugin_Generator
           category.Events.Add(tpEv);
         }
 
+        if (!category.Actions.Any() && !category.Connectors.Any() && !category.States.Any() && !category.Events.Any())
+          continue;
+
         // Sort the actions and states for SimConnect groups
         if (catAttrib.Id != Groups.Plugin) {
           category.Actions = category.Actions.OrderBy(c => c.Name).ToList();
+          category.Connectors = category.Connectors.OrderBy(c => c.Name).ToList();
           category.States = category.States.OrderBy(c => c.Description).ToList();
-          category.States = category.States.OrderBy(c => c.Description).ToList();
+          category.Events = category.Events.OrderBy(c => c.Name).ToList();
         }
 
+        model.Categories.Add(category);
       }  // categories loop
 
       // Settings
