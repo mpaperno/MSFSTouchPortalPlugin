@@ -27,12 +27,15 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
   [TouchPortalCategory(Groups.Fuel)]
   internal static class FuelMapping {
 
-    [TouchPortalAction("AddFuel", "Add Fuel", "MSFS", "Add Fuel (1 to 65535 or zero for 25% of capacity)", "Add {0} amount of Fuel", true)]
+    [TouchPortalAction("AddFuel", "Add Fuel", "Add Fuel (1 to 65535 or zero for 25% of capacity)", true,
+      "Add {0} amount of Fuel",
+      "Add Fuel\nin Value Range:"
+    )]
     [TouchPortalActionText("0", 0, 65535)]
     [TouchPortalActionMapping("ADD_FUEL_QUANTITY")]
     public static readonly object ADD_FUEL;
 
-    [TouchPortalAction("FuelSelectors", "Fuel Selectors", "MSFS", "Fuel Selectors", "Fuel Selector {0} - {1}")]
+    [TouchPortalAction("FuelSelectors", "Fuel Selectors", "Fuel Selector {0} - {1}")]
     [TouchPortalActionChoice(new [] { "1", "2", "3", "4" })]
     [TouchPortalActionChoice(new [] { "All", "Off", "Left", "Right", "Left - Main", "Right - Main", "Left - Aux", "Right - Aux", "Center" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_OFF", new[] { "1", "Off" })]
@@ -76,7 +79,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     [TouchPortalActionMapping("FUEL_SELECTOR_4_CENTER", new[] { "4", "Center" })]
     public static readonly object FUEL_SELECTORS;
 
-    [TouchPortalAction("Primers", "Toggle All/Specific Primers", "MSFS", "Toggle All/Specific Primers", "Toggle Primers - {0}")]
+    [TouchPortalAction("Primers", "Primers", "Toggle Primer(s): {0}")]
     [TouchPortalActionChoice(new [] { "All", "1", "2", "3", "4" })]
     [TouchPortalActionMapping("TOGGLE_PRIMER", "All")]
     [TouchPortalActionMapping("TOGGLE_PRIMER1", "1")]
@@ -85,18 +88,18 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     [TouchPortalActionMapping("TOGGLE_PRIMER4", "4")]
     public static readonly object PRIMERS;
 
-    [TouchPortalAction("FuelDump", "Fuel Dump - Toggle", "MSFS", "Toggles the Fuel Dump", "Toggle Fuel Dump")]
+    [TouchPortalAction("FuelDump", "Fuel Dump - Toggle", "Toggle Fuel Dump")]
     [TouchPortalActionMapping("FUEL_DUMP_TOGGLE")]
     public static readonly object FUEL_DUMP;
 
-    [TouchPortalAction("CrossFeed", "Toggle/Open/Off Cross Feed", "MSFS", "Toggle/Open/Off Cross Feed", "Cross Feed - {0}")]
+    [TouchPortalAction("CrossFeed", "Cross Feed Switch", "Cross Feed - {0}")]
     [TouchPortalActionChoice(new [] { "Toggle", "Open", "Off" }, "Open")]
     [TouchPortalActionMapping("CROSS_FEED_TOGGLE", "Toggle")]
     [TouchPortalActionMapping("CROSS_FEED_OPEN", "Open")]
     [TouchPortalActionMapping("CROSS_FEED_OFF", "Off")]
     public static readonly object CROSS_FEED;
 
-    [TouchPortalAction("FuelValve", "Toggle All/Specific Fuel Valve", "MSFS", "Toggle All/Specific Fuel Valve", "Toggle Fuel Valve - {0}")]
+    [TouchPortalAction("FuelValve", "Fuel Valve", "Toggle Fuel Valve: {0}")]
     [TouchPortalActionChoice(new [] { "All", "1", "2", "3", "4" })]
     [TouchPortalActionMapping("TOGGLE_FUEL_VALVE_ALL", "All")]
     [TouchPortalActionMapping("TOGGLE_FUEL_VALVE_ENG1", "1")]
@@ -107,11 +110,11 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
 
     #region Fuel Pump
 
-    [TouchPortalAction("FuelPump", "Fuel Pump - Toggle", "MSFS", "Toggles the Fuel Pump", "Toggle Fuel Pump")]
+    [TouchPortalAction("FuelPump", "Fuel Pump", "Toggle Fuel Pump")]
     [TouchPortalActionMapping("FUEL_PUMP")]
     public static readonly object FUEL_PUMP;
 
-    [TouchPortalAction("ElectricFuelPump", "Electric Fuel Pump - Toggle", "MSFS", "Toggles the Electric Fuel Pump", "Toggle Electric Fuel Pump - {0}")]
+    [TouchPortalAction("ElectricFuelPump", "Electric Fuel Pump", "Toggle Electric Fuel Pump: {0}")]
     [TouchPortalActionChoice(new [] { "All", "1", "2", "3", "4" })]
     [TouchPortalActionMapping("TOGGLE_ELECT_FUEL_PUMP", "All")]
     [TouchPortalActionMapping("TOGGLE_ELECT_FUEL_PUMP1", "1")]
