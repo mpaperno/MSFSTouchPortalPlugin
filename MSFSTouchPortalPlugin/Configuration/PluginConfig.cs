@@ -201,8 +201,10 @@ namespace MSFSTouchPortalPlugin.Configuration
       if (parsedIndex > 0 && index == 0)
         index = parsedIndex;
       if (index > 0) {
-        simVar.Id += index.ToString();
-        simVar.SimVarName += ":" + Math.Clamp(index, 1, 99).ToString();
+        string sIdx = Math.Clamp(index, 1, 99).ToString();
+        simVar.Id += sIdx;
+        simVar.SimVarName += ':' + sIdx;
+        simVar.Name += ' ' + sIdx;
       }
       simVar.CategoryId = catId;
       simVar.Unit = unit ?? "number";
