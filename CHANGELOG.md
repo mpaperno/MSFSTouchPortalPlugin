@@ -1,6 +1,6 @@
 # MSFS Touch Portal Plugin
 
-## 1.1.0.0 (TBD)
+## 1.1.0.0-beta1 (July-19-2022)
 * Added Connector (Slider) functionality with feedback capabilities (eg. move slider in response to simulator event).
 * Added 29 new connectors to set variables, trigger events with value ranges, or use as visual value indicators.
 * Added new "Camera & Views" category for custom states.
@@ -22,7 +22,7 @@
 * Brake Axis Left/Right Set
 
 ### Updated Actions
-* The "Set Simulator Varirable" and "Set Local Variable" actions have been split into 2 (restores pre-v1.0 version of the former).
+* The "Set Simulator Variable" and "Set Local Variable" actions have been split into 2 (restores pre-v1.0 version of the former).
 * Cowl Flaps 1-4 Set consolidated into one action/connector with choice of flaps.
 * Updated some action names in AP, Fuel, Engine, Flight System categories for consistency and clarity. Removed some redundant descriptions.
 
@@ -32,7 +32,7 @@
 * Added new Setting option to sort Local ('L') Airplane variables list alphabetically.
 * Added new Setting option to control HubHop data update timeout value.
 * Fixed exception error when requesting variables with an empty Unit type.
-* Fixed selections in "Activate a Simulator Event From HubHop" action not updating properly after HubHop data update until plugin is restarted 
+* Fixed selections in "Activate a Simulator Event From HubHop" action not updating properly after HubHop data update until plugin is restarted
   ([#32](https://github.com/mpaperno/MSFSTouchPortalPlugin/issues/32)).
 * Fixed "Activate a Simulator Event From List" was broken in last version (produced SimConnect errors).
 * Fixed that state names for requested indexed SimVars didn't include the proper index number.
@@ -43,21 +43,21 @@
 ---
 ## 1.0.0.0-beta1 (July-09-2022)
 * Adds support for integration with custom WASM module from the [WASimCommander project](https://github.com/mpaperno/WASimCommander) (WASimModule).
-    * Get and Set "Local" variables as well as practically any other 
+    * Get and Set "Local" variables as well as practically any other
       [variable type](https://docs.flightsimulator.com/html/Additional_Information/Reverse_Polish_Notation.htm#Types) available in the MSFS "Gauge API".
     * Provides a listing of currently available Local variables, automatically refreshed when aircraft changes in the simulator, and on demand.
     * Option to _create_ new Local variables inside the Simulator engine.
     * Execute any Calculator Code (using RPN, see link above) from within the Simulator engine, bringing control over practically any situation.
-    * Request calculated values (results from calculator code) as TP States, using the same options as current simulator variables 
+    * Request calculated values (results from calculator code) as TP States, using the same options as current simulator variables
       (formatting, refresh rate, categorization, etc). Results can be in numeric or string format, and data can also be formatted as strings using RPN functions.
-    * All the new request types (local/other variables or calculated values) can be saved/loaded to/from configuratoin files, just like was already possible with SimVars.
+    * All the new request types (local/other variables or calculated values) can be saved/loaded to/from configuration files, just like was already possible with SimVars.
 * Adds support for loading input event presets from the [HubHop database](https://hubhop.mobiflight.com).
-    * New Action: _Activate a Simulator Event From HubHop_ - Presents a "drill down" list of loaded events, selectable by vendor/aircraft and system. 
+    * New Action: _Activate a Simulator Event From HubHop_ - Presents a "drill down" list of loaded events, selectable by vendor/aircraft and system.
       **Requires WASimModule or MobiFlight WASM modules** installed (more features available with the former).
     * HubHop data can, optionally, be updated upon plugin startup and manually via a new action choice (_MSFS Plugin -> Connect & Update -> Update HubHop_).
 * Added support for using numeric values in hexadecimal notation (0xNNN). Easy "BCD" values, eg. frequency 339KHz is simply `0x03390000`.
-* Dynamic TP States (custom-added variables) are now sorted into their respective categories in TP selectors 
-  (instead of being in a "Dynamic" cateogry or just listed after the categories). Requires TP 3.0.10 or higher.
+* Dynamic TP States (custom-added variables) are now sorted into their respective categories in TP selectors
+  (instead of being in a "Dynamic" category or just listed after the categories). Requires TP 3.0.10 or higher.
 * Added actions to _Set_ cowl flaps 1-4 to specific position.
 * The list of imported sim vars updated to include new `HSI_STATION_IDENT` and fix "settable" flag on `GPS_*` variables like `GPS_APPROACH_WP_TYPE`, etc.
 
@@ -93,29 +93,29 @@
 #### Simulator Variables (SimVars)
 * All SimVar/Touch Portal State definitions loaded from easily editable .ini configuration files.
 * Can load custom state config file(s) at startup or via new TP Action.
-* Request any arbitrary [Simulation Variable](https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Simulation_Variables.htm) by name to be sent as a TP State via 2 new TP Actions, 
+* Request any arbitrary [Simulation Variable](https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Simulation_Variables.htm) by name to be sent as a TP State via 2 new TP Actions,
   with ability to save added variables to a config. file.
 * New TP Action to **Set** a value on any settable SimVar. The Action presents a dynamic list of loaded SimVars which are configured to be settable.
 
 #### Events
-* Run any arbitrary [Simulator Event](https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Event_IDs.htm) (action), with optional value, 
+* Run any arbitrary [Simulator Event](https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Event_IDs.htm) (action), with optional value,
   either selected from a list of known (imported) events or any custom event name (allows full MobiFlight compatibility, for example).
-* Adds ability to monitor [Simulator System Events](https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_SubscribeToSystemEvent.htm) 
+* Adds ability to monitor [Simulator System Events](https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_SubscribeToSystemEvent.htm)
   via a new _Touch Portal_ Event (and corresponding State).
 * New _Touch Portal_ Events to indicate simulator connection status, connection timeout, simulator errors/warnings, and plugin errors and informative events.
 * A new TP State to transmit corresponding event data, if any, such as name of flight being loaded (for sim System Events) or details about error/information events (log messages).
 
 #### Performance
 The changes below lead to considerable performance improvements and much quicker state updates (when the values change), while also being more efficient.
-* SimVars/states are now updated via "push" from SimConnect at a settable period and interval (defaults to every "Sim Frame" eg. ~60Hz) vs. being polled individually every 250ms. 
+* SimVars/states are now updated via "push" from SimConnect at a settable period and interval (defaults to every "Sim Frame" eg. ~60Hz) vs. being polled individually every 250ms.
   Custom update polling period can also be set per SimVar in milliseconds.
 * SimVars are only updated if changed by a configurable epsilon value, eg. for a decimal value SimConnect will not send update unless it changes by more than 0.001.
-* Implemented custom version of the Touch Portal C# client/API layer which is several times more performant and, among other things, 
+* Implemented custom version of the Touch Portal C# client/API layer which is several times more performant and, among other things,
   allows our plugin to exit cleanly if stopped (send any last state updates, shut down SimConnect connection properly, etc).
 
 #### Others
-* Add ability to use a custom [SimConnect.cfg](https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_CFG_Definition.htm) file for simulator connection properties -- 
-  this allows (among other things) to easily use the plugin on a Touch Portal instance running on a different networked computer than the simulator, 
+* Add ability to use a custom [SimConnect.cfg](https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_CFG_Definition.htm) file for simulator connection properties --
+  this allows (among other things) to easily use the plugin on a Touch Portal instance running on a different networked computer than the simulator,
   including multiple plugin instances which can be used on multiple TP client devices.
 * Add new LogMessags TP State which contains the last 12 plugin log entries (same entries as can be found in the log file, but fewer of them and with shorter formatting).
 

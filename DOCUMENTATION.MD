@@ -4,7 +4,7 @@ This plugin provides a two-way interface between Touch Portal and Flight Simulat
 
 For further documentation, please see https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki
 
-This documentation generated for plugin v1.0.1.0
+This documentation generated for plugin v1.1.0.0
 
 ---
 
@@ -141,42 +141,51 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 <tr valign='top'><td>Action Repeat Interval</td><td>Held Action Repeat Rate (ms)</td><td>Repeat Interval: {0} to/by: {1} ms</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Set</b>, Increment, Decrement</li>
 <li>[text] &nbsp; <b>450</b> &nbsp; <sub>&lt;min: 50&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
+<li>[text] &nbsp; <b>Plugin</b></li>
+<li>[text] &nbsp; <b>[ActionRepeatInterval]</b></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Activate a Named Simulator Event</td><td>Trigger a Simulator Event by name.
+<tr valign='top'><td>Activate a Named Simulator Event</td><td>Trigger or set value of a Simulator Event by name.
 The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.</td><td>Activate Event {0} with value {1} (if any)</td><td><ol start=0>
 <li>[text] &nbsp; <b>SIMULATOR_EVENT_NAME</b></li>
-<li>[text] &nbsp; &lt;empty&gt;</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Activate a Simulator Event From List</td><td>Trigger a Simulator Event.
+<tr valign='top'><td>Activate a Simulator Event From List</td><td>Trigger or set value of a Simulator Event selected from a list of imported events.
 The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.</td><td>From Category {0} Activate Event {1} with value {2} (if any)</td><td><ol start=0>
 <li>[choice] &nbsp; <b></b>[plugin not connected]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
-<li>[text] &nbsp; &lt;empty&gt;</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Activate a Simulator Event From HubHop</td><td>																** Requires WASimModule or MobiFlight. **
+<tr valign='top'><td>Activate an Input Event From HubHop</td><td>																** Requires WASimModule or MobiFlight. **
 Trigger a Simulator Event from loaded HubHop data.					"Potentiometer" type events are only supported with WASimModule (using the provided value, which should evaluate to numeric).</td><td>Aircraft/Device: {0} System: {1} Event Name: {2} with value {3} (if any)</td><td><ol start=0>
 <li>[choice] &nbsp; <b></b>[plugin not connected]</li>
 <li>[choice] &nbsp; <b></b>[select an aircraft]</li>
 <li>[choice] &nbsp; <b></b>[select a system]</li>
-<li>[text] &nbsp; &lt;empty&gt;</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Set Variable Value From List</td><td>Sets a value on a known named variable, which could be a Sim Var which is marked as settable, or a Local variable from currently loaded aircraft.					** Requires WASimModule for Local Vars **</td><td>Set Variable type {0} named {1} to {2} in Units (optional) {3} (release AI: {4})</td><td><ol start=0>
-<li>[choice] &nbsp; <b>A: SimVar</b>, L: Local</li>
-<li>[choice] &nbsp; <b></b>[select a type]</li>
-<li>[text] &nbsp; <b>0</b></li>
+<tr valign='top'><td>Set Simulator Variable (SimVar)</td><td>Sets the value of a Simulator Variable selected from a list of Sim Vars which are marked as settable.</td><td>From Category:{0}Set Variable:{1}To:{2} (Release AI:{3})</td><td><ol start=0>
 <li>[choice] &nbsp; <b></b>[connect to plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category or type]</li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 <li>[switch] &nbsp; <b>False</b></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Set Airplane Local Variable</td><td>Sets a value on a Local variable from currently loaded aircraft.					** Requires WASimModule **</td><td>Set Variable:{0}To:{1}in Units (opt){2}</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b>[connect to plugin]</li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect to plugin]</li>
+</ol></td>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Set Named Variable Value</td><td>Set a Named Variable
-Sets a value on any named variable, by type of variable. Local (L) variables can also be created.					** Requires WASimModule **</td><td>Set Variable Type {0} named {1} to {2} in Units (optional) {3} (create L var: {4}) (release AI: {5})</td><td><ol start=0>
+Sets a value on any named variable, by type of variable. Local (L) variables can also be created. SimVar types require a Unit specifier.					** Requires WASimModule **</td><td>Set
+Variable Type:{0}Named:{1} to Value:{2} in Units
+(opt){3} (Create 'L' var: {4}) (release AI: {5})</td><td><ol start=0>
 <li>[choice] &nbsp; <b>A: SimVar</b>, C: GPS, H: HTML Event, K: Key Event, L: Local, Z: Custom SimVar</li>
 <li>[text] &nbsp; &lt;empty&gt;</li>
-<li>[text] &nbsp; <b>0</b></li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect to plugin]</li>
 <li>[choice] &nbsp; <b>N/A</b>, No, Yes</li>
 <li>[switch] &nbsp; <b>False</b></li>
@@ -187,11 +196,11 @@ Runs any entered string of RPN code through the 'execute_calculator_code' Gauge 
 <li>[text] &nbsp; <b>1 (>H:AS1000_PFD_SOFTKEYS_1)</b></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Request a Custom Simulator Variable</td><td>Request Simulator Variable Name:                            Index (if req'd):               Category:                                    Units:                                                                Format:                            Default Value:                 Settable:           Update Period:                   Update Interval:               Delta Epsilon:     </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}</td><td><ol start=0>
+<tr valign='top'><td>Request a Custom Simulator Variable</td><td>Request Simulator Variable Name:                            Index (if req'd):               Units:                                                                Category:                                    Format:                            Default Value:                 Settable:           Update Period:                   Update Interval:               Delta Epsilon:     </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}</td><td><ol start=0>
 <li>[text] &nbsp; <b>SIMULATOR VARIABLE FULL NAME</b></li>
 <li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 99&gt;</sub></li>
-<li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[connect to plugin]                                 </li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[text] &nbsp; <b>F2</b></li>
 <li>[text] &nbsp; <b>0</b></li>
 <li>[switch] &nbsp; <b>False</b></li>
@@ -201,12 +210,12 @@ Runs any entered string of RPN code through the 'execute_calculator_code' Gauge 
 </ol></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Request a Variable From List</td><td>Request a Variable from Simulator					** Local Variables support requires WASimModule **
-Category or Local Aircraft          Request Variable                                                                                        Index (if req'd):                Plugin Category:                         Units:                                                                 Format:                            Default Value:                 Update Period:                  Update Interval:              Delta Epsilon:      </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}</td><td><ol start=0>
+Category or Local Aircraft          Request Variable                                                                                               Index (if req'd):                Units:                                                                 Plugin Category:                         Format:                            Default Value:                 Update Period:                  Update Interval:              Delta Epsilon:      </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}</td><td><ol start=0>
 <li>[choice] &nbsp; <b></b>[connect to plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]                                                            </li>
 <li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 99&gt;</sub></li>
-<li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; [connect to plugin]                                 </li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[text] &nbsp; <b>F2</b></li>
 <li>[text] &nbsp; <b>0</b></li>
 <li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
@@ -215,11 +224,11 @@ Category or Local Aircraft          Request Variable                            
 </ol></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Request a Named Variable</td><td>Request a Named Variable                       For indexed SimVars, include it in the name after a : (colon).					** Requires WASimModule **
-Variable Type:                Name:                                                   Plugin Category:                         Units (optional):                                               Format:                            Default Value:                 Update Period:                Update Interval:              Delta Epsilon:     </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}</td><td><ol start=0>
+Variable Type:                Name:                                                   Units (optional):                                               Plugin Category:                         Format:                            Default Value:                 Update Period:                Update Interval:              Delta Epsilon:     </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>A: SimVar</b>, B: Input, C: GPS, E: Env., L: Local, M: Mouse, R: Rsrc., T: Token, Z: Custom</li>
 <li>[text] &nbsp; <b>FULL VARIABLE NAME</b></li>
-<li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; [connect to plugin]                                 </li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[text] &nbsp; <b>F2</b></li>
 <li>[text] &nbsp; <b>0</b></li>
 <li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
@@ -262,6 +271,124 @@ Calculator Code:                                                                
 </table>
 
 
+#### Connectors
+
+<table>
+<tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th></tr>
+<tr valign='top'><td>Action Repeat Interval</td><td>Held Action Repeat Rate (ms)</td><td>Set Repeat Interval in Range (ms):{3}-{4}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Set</b>, Increment, Decrement</li>
+<li>[text] &nbsp; <b>Plugin</b></li>
+<li>[text] &nbsp; <b>[ActionRepeatInterval]</b></li>
+<li>[number] &nbsp; <b>1000</b> &nbsp; <sub>&lt;min: 50&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
+<li>[number] &nbsp; <b>50</b> &nbsp; <sub>&lt;min: 50&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Activate a Named Simulator Event</td><td>Trigger or set value of a Simulator Event by name.
+The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.</td><td>Set Event:{0}Value
+Range:{1}-{2}| Feedback From
+| State (opt):{3}{4}
+Range:{5}-{6}</td><td><ol start=0>
+<li>[text] &nbsp; <b>SIMULATOR_EVENT_NAME</b></li>
+<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Activate a Simulator Event From List</td><td>Trigger or set value of a Simulator Event selected from a list of imported events.
+The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.</td><td>From
+Category:{0}Activate
+Event:{1}Value
+Range:{2}-{3}| Feedback From
+| State (opt):{4}{5}
+Range:{6}-{7}</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b>[plugin not connected]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Activate an Input Event From HubHop</td><td>																** Requires WASimModule or MobiFlight. **
+Trigger a Simulator Event from loaded HubHop data.					"Potentiometer" type events are only supported with WASimModule (using the provided value, which should evaluate to numeric).</td><td>Aircraft
+Device:{0}System:{1}Event
+Name:{2}Value
+Range:{3}-{4}| Feedback From
+| State (opt):{5}{6}
+Range:{7}-{8}</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b>[plugin not connected]</li>
+<li>[choice] &nbsp; <b></b>[select an aircraft]</li>
+<li>[choice] &nbsp; <b></b>[select a system]</li>
+<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Set Simulator Variable (SimVar)</td><td>Sets the value of a Simulator Variable selected from a list of Sim Vars which are marked as settable.</td><td>From Category:{0}Set Variable:{1}Value
+Range:{3}-{4}</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b>[connect to plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category or type]</li>
+<li>[switch] &nbsp; <b>False</b></li>
+<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Set Airplane Local Variable</td><td>Sets a value on a Local variable from currently loaded aircraft.					** Requires WASimModule **</td><td>Set Variable:{0}Units:
+(opt){1}Value
+Range{2}-{3}| Feedback From
+| State (opt):{4}{5}
+Range:{6}-{7}</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b>[connect to plugin]</li>
+<li>[choice] &nbsp; <b></b>[connect to plugin]</li>
+<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Set Named Variable Value</td><td>Sets a value on any named variable of various types. SimVar types require a Unit specifier.					** Requires WASimModule **</td><td>Variable
+Type:{0}Name:{1}Units
+(opt):{2}Value
+Range:{3}-{4}| Feedback From
+| State (opt):{5}{6}
+Range:{7}-{8}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>A: SimVar</b>, C: GPS, H: HTML Event, K: Key Event, L: Local, Z: Custom SimVar</li>
+<li>[text] &nbsp; &lt;empty&gt;</li>
+<li>[choice] &nbsp; <b></b>[connect to plugin]</li>
+<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Execute Calculator Code</td><td>Runs any entered string of RPN code through the 'execute_calculator_code' Gauge API function. Use an '@' placeholder for the connector value.			** Requires WASimModule **</td><td>Calculator Code:
+(@ as placeholder(s) for value){0}Value
+Range:{1}-{2}| Feedback From
+| State (opt):{3}{4}
+Range:{5}-{6}</td><td><ol start=0>
+<li>[text] &nbsp; <b>@ 1 (>K:2:PANEL_LIGHTS_POWER_SETTING_SET)</b></li>
+<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Visual Feedback Connector</td><td>This connector provides only visual feedback by setting the position of a slider based on an existing State/variable value.</td><td>Set Connector Value Based on
+Feedback From Category:{0}Variable:{1}Value Range:{2}-{3}</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+</ol></td>
+</table>
+
+
 #### States
 
  **Base Id:** MSFSTouchPortalPlugin.Plugin.State.
@@ -286,161 +413,224 @@ Calculator Code:                                                                
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
-<tr valign='top'><td>Airspeed Hold</td><td>Toggle/On/Off the airspeed hold for auto pilot</td><td>Airspeed Hold - {0}</td><td><ol start=0>
+<tr valign='top'><td>Airspeed Hold Switch</td><td></td><td>Airspeed Hold - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_AIRSPEED_HOLD</dd><dt>On</dt><dd>AP_AIRSPEED_ON</dd><dt>Off</dt><dd>AP_AIRSPEED_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Airspeed Hold Value</td><td>Adjusts the airspeed hold value</td><td>Airspeed Hold Value - {0}</td><td><ol start=0>
+<tr valign='top'><td>Airspeed Hold Value Adjust</td><td></td><td>Airspeed Hold Value - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Select</b>, Increase, Decrease</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Select</dt><dd>AIRSPEED_BUG_SELECT</dd><dt>Increase</dt><dd>AP_SPD_VAR_INC</dd><dt>Decrease</dt><dd>AP_SPD_VAR_DEC</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Airspeed Value Set</td><td>Sets the airspeed value</td><td>Set Airspeed Hold Value to {0}</td><td><ol start=0>
+<tr valign='top'><td>Airspeed Hold Value Set</td><td></td><td>Set Airspeed Hold Value to {0}</td><td><ol start=0>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 5000&gt;</sub></li>
 </ol></td>
 <td><dl><dd>AP_SPD_VAR_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Altitude Hold</td><td>Toggle/On/Off the altitude hold for auto pilot</td><td>Altitude Hold - {0}</td><td><ol start=0>
+<tr valign='top'><td>Altitude Hold Switch</td><td></td><td>Altitude Hold - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_ALT_HOLD</dd><dt>On</dt><dd>AP_ALT_HOLD_ON</dd><dt>Off</dt><dd>AP_ALT_HOLD_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Altitude Hold Value Adj/Sel</td><td>Adjusts or selects the altitude hold value</td><td>Altitude Hold Value - {0}</td><td><ol start=0>
+<tr valign='top'><td>Altitude Hold Value Adj/Sel</td><td></td><td>Altitude Hold Value - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Select</b>, Increase, Decrease</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Increase</dt><dd>AP_ALT_VAR_INC</dd><dt>Decrease</dt><dd>AP_ALT_VAR_DEC</dd><dt>Select</dt><dd>ALTITUDE_BUG_SELECT</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Altitude Hold Value Set</td><td>Sets the altitude hold value</td><td>Altitude Hold Value - {0} to {1}</td><td><ol start=0>
+<tr valign='top'><td>Altitude Hold Value Set</td><td></td><td>Altitude Hold Value {0} to {1}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Set English</b>, Set Metric</li>
 <li>[text] &nbsp; <b>0</b></li>
 </ol></td>
 <td><dl><dt>Set English</dt><dd>AP_ALT_VAR_SET_ENGLISH</dd><dt>Set Metric</dt><dd>AP_ALT_VAR_SET_METRIC</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>AP Max Bank Angle</td><td>Increase/Decrease the max bank angle</td><td>Max Bank Angle - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
-</ol></td>
-<td><dl><dt>Increase</dt><dd>AP_MAX_BANK_INC</dd><dt>Decrease</dt><dd>AP_MAX_BANK_DEC</dd></dl></td>
-<td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Approach Mode</td><td>Toggle/On/Off the approach mode for auto pilot</td><td>Approach Mode - {0}</td><td><ol start=0>
+<tr valign='top'><td>Approach Mode Switch</td><td></td><td>Approach Mode - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_APR_HOLD</dd><dt>On</dt><dd>AP_APR_HOLD_ON</dd><dt>Off</dt><dd>AP_APR_HOLD_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Attitude Hold</td><td>Toggle/On/Off the attitude hold for auto pilot</td><td>Attitude Hold - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_ATT_HOLD</dd><dt>On</dt><dd>AP_ATT_HOLD_ON</dd><dt>Off</dt><dd>AP_ATT_HOLD_OFF</dd></dl></details></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Attitude Hold Pitch Value</td><td>Sets the attitude hold pitch value</td><td>Attitude Hold Pitch Value - {0}</td><td><ol start=0>
+<tr valign='top'><td>Attitude Hold Pitch Value Adjust</td><td></td><td>Attitude Hold Pitch Value {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Select</b>, Increase, Decrease</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Increase</dt><dd>AP_PITCH_REF_INC_UP</dd><dt>Decrease</dt><dd>AP_PITCH_REF_INC_DN</dd><dt>Select</dt><dd>AP_PITCH_REF_SELECT</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Attitude Hold Pitch Value Set</td><td>Sets the airspeed value</td><td>Set Attitude Hold Pitch Value to {0} (-16384 to +16384)</td><td><ol start=0>
+<tr valign='top'><td>Attitude Hold Pitch Value Set</td><td></td><td>Set Attitude Hold Pitch Value to {0} (-16384 to +16384)</td><td><ol start=0>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><dl><dd>AP_PITCH_REF_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Auto Brake</td><td>Increase/Decrease the auto brake</td><td>Auto Brake - {0}</td><td><ol start=0>
+<tr valign='top'><td>Attitude Hold Switch</td><td></td><td>Attitude Hold - {0}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
+</ol></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_ATT_HOLD</dd><dt>On</dt><dd>AP_ATT_HOLD_ON</dd><dt>Off</dt><dd>AP_ATT_HOLD_OFF</dd></dl></details></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Auto Brake Adjust</td><td></td><td>Auto Brake - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
 <td><dl><dt>Increase</dt><dd>INCREASE_AUTOBRAKE_CONTROL</dd><dt>Decrease</dt><dd>DECREASE_AUTOBRAKE_CONTROL</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Auto Throttle Mode</td><td>Toggles the Arm/GoAround modes for auto throttle</td><td>Toggle Auto Throttle - {0}</td><td><ol start=0>
+<tr valign='top'><td>Auto Throttle Mode Switch</td><td></td><td>Toggle Auto Throttle - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Arm</b>, GoAround</li>
 </ol></td>
 <td><dl><dt>Arm</dt><dd>AUTO_THROTTLE_ARM</dd><dt>GoAround</dt><dd>AUTO_THROTTLE_TO_GA</dd></dl></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>AutoPilot</td><td>Toggle/On/Off Auto Pilot</td><td>Auto Pilot Master - {0}</td><td><ol start=0>
+<tr valign='top'><td>AutoPilot Switch</td><td></td><td>Auto Pilot Master - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_MASTER</dd><dt>On</dt><dd>AUTOPILOT_ON</dd><dt>Off</dt><dd>AUTOPILOT_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Back Course Mode</td><td>Toggle/On/Off the back course mode for auto pilot</td><td>Back Course Mode - {0}</td><td><ol start=0>
+<tr valign='top'><td>Back Course Mode Switch</td><td></td><td>Back Course Mode - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_BC_HOLD</dd><dt>On</dt><dd>AP_BC_HOLD_ON</dd><dt>Off</dt><dd>AP_BC_HOLD_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Flight Director</td><td>Toggle the Flight Director for auto pilot</td><td>Toggle Flight Director On/Off</td><td><ol start=0>
-</ol></td>
-<td><dl><dd>TOGGLE_FLIGHT_DIRECTOR</dd></dl></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Flight Director Pitch Sync</td><td>Syncs the Flight Director with the current pitch</td><td>Flight Director Pitch Sync</td><td><ol start=0>
+<tr valign='top'><td>Flight Director Pitch Sync Switch</td><td></td><td>Sync Flight Director Pitch</td><td><ol start=0>
 </ol></td>
 <td><dl><dd>SYNC_FLIGHT_DIRECTOR_PITCH</dd></dl></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Heading Hold</td><td>Toggle/On/Off the heading hold for auto pilot</td><td>Heading Hold - {0}</td><td><ol start=0>
+<tr valign='top'><td>Flight Director Switch</td><td></td><td>Toggle Flight Director On/Off</td><td><ol start=0>
+</ol></td>
+<td><dl><dd>TOGGLE_FLIGHT_DIRECTOR</dd></dl></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Heading Hold Switch</td><td></td><td>Heading Hold - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_HDG_HOLD</dd><dt>On</dt><dd>AP_HDG_HOLD_ON</dd><dt>Off</dt><dd>AP_HDG_HOLD_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Heading Hold Value Adj/Sel</td><td>Adjusts the heading hold value</td><td>Heading Hold Value - {0}</td><td><ol start=0>
+<tr valign='top'><td>Heading Hold Value Adj/Sel</td><td></td><td>Heading Hold Value - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Select</b>, Increase, Decrease</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Increase</dt><dd>HEADING_BUG_INC</dd><dt>Decrease</dt><dd>HEADING_BUG_DEC</dd><dt>Select</dt><dd>HEADING_BUG_SELECT</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Heading Hold Value Set</td><td>Sets the heading hold value</td><td>Heading Hold Value - {0}</td><td><ol start=0>
+<tr valign='top'><td>Heading Hold Value Set</td><td></td><td>Set Heading Hold Value - {0}</td><td><ol start=0>
 <li>[text] &nbsp; <b>1</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 359&gt;</sub></li>
 </ol></td>
 <td><dl><dd>HEADING_BUG_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Localizer</td><td>Toggle/On/Off the localizer for auto pilot</td><td>Localizer - {0}</td><td><ol start=0>
+<tr valign='top'><td>Localizer Switch</td><td></td><td>Localizer - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_LOC_HOLD</dd><dt>On</dt><dd>AP_LOC_HOLD_ON</dd><dt>Off</dt><dd>AP_LOC_HOLD_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Mach Hold</td><td>Toggle/On/Off the mach hold for auto pilot</td><td>Mach Hold - {0}</td><td><ol start=0>
+<tr valign='top'><td>Mach Hold Switch</td><td></td><td>Mach Hold - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_MACH_HOLD</dd><dt>On</dt><dd>AP_MACH_ON</dd><dt>Off</dt><dd>AP_MACH_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Mach Hold Value</td><td>Sets the mach hold value</td><td>Mach Hold Value - {0}</td><td><ol start=0>
+<tr valign='top'><td>Mach Hold Value Adjust</td><td></td><td>Mach Hold Value - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; Select, <b>Increase</b>, Decrease</li>
 </ol></td>
 <td><dl><dt>Increase</dt><dd>AP_MACH_VAR_INC</dd><dt>Decrease</dt><dd>AP_MACH_VAR_DEC</dd></dl></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Mach Hold Value Set</td><td>Sets the mach hold value</td><td>Set Mach Hold Value to {0}</td><td><ol start=0>
+<tr valign='top'><td>Mach Hold Value Set</td><td></td><td>Set Mach Hold Value to {0}</td><td><ol start=0>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 20&gt;</sub></li>
 </ol></td>
 <td><dl><dd>AP_MACH_VAR_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Nav Mode - Set</td><td>Sets the nav to 1 or 2 for Nav mode</td><td>Nav Mode - {0} </td><td><ol start=0>
+<tr valign='top'><td>Max Bank Angle Adjust</td><td></td><td>Max Bank Angle - {0}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
+</ol></td>
+<td><dl><dt>Increase</dt><dd>AP_MAX_BANK_INC</dd><dt>Decrease</dt><dd>AP_MAX_BANK_DEC</dd></dl></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Nav Mode Set</td><td>Sets the nav to 1 or 2 for Nav mode</td><td>Nav Mode - {0} </td><td><ol start=0>
 <li>[number] &nbsp; <b>1</b> &nbsp; <sub>&lt;min: 1&gt;</sub> <sub>&lt;max: 2&gt;</sub></li>
 </ol></td>
 <td><dl><dd>AP_NAV_SELECT_SET</dd></dl></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Nav1 Mode</td><td>Toggle/On/Off the Nav1 mode for auto pilot</td><td>Nav1 Mode - {0}</td><td><ol start=0>
+<tr valign='top'><td>Nav1 Mode Switch</td><td></td><td>Nav1 Mode - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_NAV1_HOLD</dd><dt>On</dt><dd>AP_NAV1_HOLD_ON</dd><dt>Off</dt><dd>AP_NAV1_HOLD_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Vertical Speed</td><td>Toggle the Vertical Speed for auto pilot</td><td>Vertical Speed - {0}</td><td><ol start=0>
+<tr valign='top'><td>Vertical Speed Switch</td><td></td><td>Vertical Speed - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_VS_HOLD</dd><dt>On</dt><dd>AP_VS_ON</dd><dt>Off</dt><dd>AP_VS_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Vertical Speed Value</td><td>Adjusts or selects the vertical speed value</td><td>Vertical Speed Value - {0}</td><td><ol start=0>
+<tr valign='top'><td>Vertical Speed Value Adjust</td><td></td><td>Vertical Speed Value - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Select</b>, Increase, Decrease, Set Current</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Select</dt><dd>VSI_BUG_SELECT</dd><dt>Increase</dt><dd>AP_VS_VAR_INC</dd><dt>Decrease</dt><dd>AP_VS_VAR_DEC</dd><dt>Set Current</dt><dd>AP_VS_VAR_SET_CURRENT</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Vertical Speed Value Set</td><td>Sets the vertical speed value</td><td>Vertical Speed Hold Value - {0} to {1}</td><td><ol start=0>
+<tr valign='top'><td>Vertical Speed Value Set</td><td></td><td>Vertical Speed Hold {0} to Value {1}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Set English</b>, Set Metric</li>
 <li>[text] &nbsp; <b>1</b> &nbsp; <sub>&lt;min: -5000&gt;</sub> <sub>&lt;max: 5000&gt;</sub></li>
 </ol></td>
 <td><dl><dt>Set English</dt><dd>AP_VS_VAR_SET_ENGLISH</dd><dt>Set Metric</dt><dd>AP_VS_VAR_SET_METRIC</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Wing Leveler</td><td>Toggle/On/Off the Wing Leveler for auto pilot</td><td>Wing Leveler - {0}</td><td><ol start=0>
+<tr valign='top'><td>Wing Leveler Switch</td><td></td><td>Wing Leveler - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_WING_LEVELER</dd><dt>On</dt><dd>AP_WING_LEVELER_ON</dd><dt>Off</dt><dd>AP_WING_LEVELER_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Yaw Dampener</td><td>Toggle/On/Off the Yaw Dampener</td><td>Yaw Dampener - {0}</td><td><ol start=0>
+<tr valign='top'><td>Yaw Dampener Switch</td><td></td><td>Yaw Dampener - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>YAW_DAMPER_TOGGLE</dd><dt>On</dt><dd>YAW_DAMPER_ON</dd><dt>Off</dt><dd>YAW_DAMPER_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
+</table>
+
+
+#### Connectors
+
+<table>
+<tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th></tr>
+<tr valign='top'><td>Airspeed Hold Value Set</td><td></td><td>Set Airspeed Hold
+in Value Range:{0}-{1}| Feedback From
+| State (opt):{2}{3}
+Range:{4}-{5}</td><td><ol start=0>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 5000&gt;</sub></li>
+<li>[number] &nbsp; <b>5000</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 5000&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Attitude Hold Pitch Value Set</td><td></td><td>Set Attitude Pitch Hold
+in Value Range:{0}-{1}| Feedback From
+| State (opt):{2}{3}
+Range:{4}-{5}</td><td><ol start=0>
+<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Heading Hold Value Set</td><td></td><td>Set Heading Hold
+in Value Range:{0}-{1}| Feedback From
+| State (opt):{2}{3}
+Range:{4}-{5}</td><td><ol start=0>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 359&gt;</sub></li>
+<li>[number] &nbsp; <b>359</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 359&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Mach Hold Value Set</td><td></td><td>Set Mach Hold
+in Value Range:{0}-{1}| Feedback From
+| State (opt):{2}{3}
+Range:{4}-{5}</td><td><ol start=0>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 20&gt;</sub></li>
+<li>[number] &nbsp; <b>20</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 20&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Vertical Speed Value Set</td><td></td><td>Vertical Speed Hold {0}in Value
+Range:{1}-{2}| Feedback From
+| State (opt):{3}{4}
+Range:{5}-{6}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Set English</b>, Set Metric</li>
+<li>[number] &nbsp; <b>-5000</b> &nbsp; <sub>&lt;min: -5000&gt;</sub> <sub>&lt;max: 5000&gt;</sub></li>
+<li>[number] &nbsp; <b>5000</b> &nbsp; <sub>&lt;min: -5000&gt;</sub> <sub>&lt;max: 5000&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
 </table>
 
 
@@ -609,72 +799,132 @@ Calculator Code:                                                                
 </ol></td>
 <td><dl><dt>Start</dt><dd>ENGINE_AUTO_START</dd><dt>Shutdown</dt><dd>ENGINE_AUTO_SHUTDOWN</dd></dl></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Magnetos Set</td><td>Set Magneto Switch Position</td><td>Magneto Switch {0} to position {1} (0-4)</td><td><ol start=0>
-<li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 4&gt;</sub></li>
+<tr valign='top'><td>Magnetos Switch - All</td><td></td><td>All Magnetos - {0}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Start</b>, Off, Right, Left, Both, Decrease, Increase, Select (for +/-)</li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>1</dt><dd>MAGNETO1_SET</dd><dt>2</dt><dd>MAGNETO2_SET</dd><dt>3</dt><dd>MAGNETO3_SET</dd><dt>4</dt><dd>MAGNETO4_SET</dd></dl></details></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Off</dt><dd>MAGNETO_OFF</dd><dt>Right</dt><dd>MAGNETO_RIGHT</dd><dt>Left</dt><dd>MAGNETO_LEFT</dd><dt>Both</dt><dd>MAGNETO_BOTH</dd><dt>Start</dt><dd>MAGNETO_START</dd><dt>Decrease</dt><dd>MAGNETO_DECR</dd><dt>Increase</dt><dd>MAGNETO_INCR</dd><dt>Select (for +/-)</dt><dd>MAGNETO</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Magnetos Specific</td><td>Toggle Magneto Specific</td><td>Toggle Magneto {0} - {1}</td><td><ol start=0>
+<tr valign='top'><td>Magnetos Switch - Individual</td><td></td><td>Magneto {0} - {1}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
 <li>[choice] &nbsp; <b>Start</b>, Off, Right, Left, Both, Decrease, Increase</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>1+Off</dt><dd>MAGNETO1_OFF</dd><dt>1+Right</dt><dd>MAGNETO1_RIGHT</dd><dt>1+Left</dt><dd>MAGNETO1_LEFT</dd><dt>1+Both</dt><dd>MAGNETO1_BOTH</dd><dt>1+Start</dt><dd>MAGNETO1_START</dd><dt>1+Decrease</dt><dd>MAGNETO1_DECR</dd><dt>1+Increase</dt><dd>MAGNETO1_INCR</dd><dt>2+Off</dt><dd>MAGNETO2_OFF</dd><dt>2+Right</dt><dd>MAGNETO2_RIGHT</dd><dt>2+Left</dt><dd>MAGNETO2_LEFT</dd><dt>2+Both</dt><dd>MAGNETO2_BOTH</dd><dt>2+Start</dt><dd>MAGNETO2_START</dd><dt>2+Decrease</dt><dd>MAGNETO2_DECR</dd><dt>2+Increase</dt><dd>MAGNETO2_INCR</dd><dt>3+Off</dt><dd>MAGNETO3_OFF</dd><dt>3+Right</dt><dd>MAGNETO3_RIGHT</dd><dt>3+Left</dt><dd>MAGNETO3_LEFT</dd><dt>3+Both</dt><dd>MAGNETO3_BOTH</dd><dt>3+Start</dt><dd>MAGNETO3_START</dd><dt>3+Decrease</dt><dd>MAGNETO3_DECR</dd><dt>3+Increase</dt><dd>MAGNETO3_INCR</dd><dt>4+Off</dt><dd>MAGNETO4_OFF</dd><dt>4+Right</dt><dd>MAGNETO4_RIGHT</dd><dt>4+Left</dt><dd>MAGNETO4_LEFT</dd><dt>4+Both</dt><dd>MAGNETO4_BOTH</dd><dt>4+Start</dt><dd>MAGNETO4_START</dd><dt>4+Decrease</dt><dd>MAGNETO4_DECR</dd><dt>4+Increase</dt><dd>MAGNETO4_INCR</dd></dl></details></td>
 <td align='center'></td></tr>
+<tr valign='top'><td>Magnetos Switch Set</td><td></td><td>Set Magneto Switch {0} to position {1} (0-4)</td><td><ol start=0>
+<li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 4&gt;</sub></li>
+</ol></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>1</dt><dd>MAGNETO1_SET</dd><dt>2</dt><dd>MAGNETO2_SET</dd><dt>3</dt><dd>MAGNETO3_SET</dd><dt>4</dt><dd>MAGNETO4_SET</dd></dl></details></td>
+<td align='center'></td></tr>
 <tr valign='top'><td>Master Ignition Switch</td><td>Toggle Master Ignition Switch</td><td>Toggle Master Ignition Switch</td><td><ol start=0>
 </ol></td>
 <td><dl><dd>TOGGLE_MASTER_IGNITION_SWITCH</dd></dl></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Mixture</td><td>Sets all mixtures</td><td>All Mixtures - {0}</td><td><ol start=0>
+<tr valign='top'><td>Mixture Adjust - All</td><td></td><td>All Mixtures - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Rich</b>, Increase, Increase Small, Decrease, Decrease Small, Lean, Best</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Rich</dt><dd>MIXTURE_RICH</dd><dt>Increase</dt><dd>MIXTURE_INCR</dd><dt>Increase Small</dt><dd>MIXTURE_INCR_SMALL</dd><dt>Decrease</dt><dd>MIXTURE_DECR</dd><dt>Decrease Small</dt><dd>MIXTURE_DECR_SMALL</dd><dt>Lean</dt><dd>MIXTURE_LEAN</dd><dt>Best</dt><dd>MIXTURE_SET_BEST</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Mixture Specific</td><td>Sets mixture on specific engine</td><td>Mixture {0} - {1}</td><td><ol start=0>
+<tr valign='top'><td>Mixture Adjust - Individual</td><td></td><td>Mixture {0} - {1}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
 <li>[choice] &nbsp; <b>Rich</b>, Increase, Increase Small, Decrease, Decrease Small, Lean</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>1+Rich</dt><dd>MIXTURE1_RICH</dd><dt>1+Increase</dt><dd>MIXTURE1_INCR</dd><dt>1+Increase Small</dt><dd>MIXTURE1_INCR_SMALL</dd><dt>1+Decrease</dt><dd>MIXTURE1_DECR</dd><dt>1+Decrease Small</dt><dd>MIXTURE1_DECR_SMALL</dd><dt>1+Lean</dt><dd>MIXTURE1_LEAN</dd><dt>2+Rich</dt><dd>MIXTURE2_RICH</dd><dt>2+Increase</dt><dd>MIXTURE2_INCR</dd><dt>2+Increase Small</dt><dd>MIXTURE2_INCR_SMALL</dd><dt>2+Decrease</dt><dd>MIXTURE2_DECR</dd><dt>2+Decrease Small</dt><dd>MIXTURE2_DECR_SMALL</dd><dt>2+Lean</dt><dd>MIXTURE2_LEAN</dd><dt>3+Rich</dt><dd>MIXTURE3_RICH</dd><dt>3+Increase</dt><dd>MIXTURE3_INCR</dd><dt>3+Increase Small</dt><dd>MIXTURE3_INCR_SMALL</dd><dt>3+Decrease</dt><dd>MIXTURE3_DECR</dd><dt>3+Decrease Small</dt><dd>MIXTURE3_DECR_SMALL</dd><dt>3+Lean</dt><dd>MIXTURE3_LEAN</dd><dt>4+Rich</dt><dd>MIXTURE4_RICH</dd><dt>4+Increase</dt><dd>MIXTURE4_INCR</dd><dt>4+Increase Small</dt><dd>MIXTURE4_INCR_SMALL</dd><dt>4+Decrease</dt><dd>MIXTURE4_DECR</dd><dt>4+Decrease Small</dt><dd>MIXTURE4_DECR_SMALL</dd><dt>4+Lean</dt><dd>MIXTURE4_LEAN</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Propeller Pitch</td><td>Adjusts propeller pitch levers/feather</td><td>Pitch {0} - {1}</td><td><ol start=0>
+<tr valign='top'><td>Mixture Set</td><td></td><td>Set Mixture {0} to {1} (-16384 to +16384)</td><td><ol start=0>
+<li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+</ol></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>All</dt><dd>MIXTURE_SET</dd><dt>1</dt><dd>MIXTURE1_SET</dd><dt>2</dt><dd>MIXTURE2_SET</dd><dt>3</dt><dd>MIXTURE3_SET</dd><dt>4</dt><dd>MIXTURE4_SET</dd></dl></details></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Propeller Pitch Adjust</td><td></td><td>Pitch {0} - {1}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
 <li>[choice] &nbsp; <b>Increment</b>, Increment Small, Decrement, Decrement Small, Min (hi pitch), Max (lo pitch), Toggle Feather Switch</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>All+Increment</dt><dd>PROP_PITCH_INCR</dd><dt>All+Increment Small</dt><dd>PROP_PITCH_INCR_SMALL</dd><dt>All+Decrement</dt><dd>PROP_PITCH_DECR</dd><dt>All+Decrement Small</dt><dd>PROP_PITCH_DECR_SMALL</dd><dt>All+Min (hi pitch)</dt><dd>PROP_PITCH_HI</dd><dt>All+Max (lo pitch)</dt><dd>PROP_PITCH_LO</dd><dt>All+Toggle Feather Switch</dt><dd>TOGGLE_FEATHER_SWITCHES</dd><dt>1+Increment</dt><dd>PROP_PITCH1_INCR</dd><dt>1+Increment Small</dt><dd>PROP_PITCH1_INCR_SMALL</dd><dt>1+Decrement</dt><dd>PROP_PITCH1_DECR</dd><dt>1+Decrement Small</dt><dd>PROP_PITCH1_DECR_SMALL</dd><dt>1+Min (hi pitch)</dt><dd>PROP_PITCH1_HI</dd><dt>1+Max (lo pitch)</dt><dd>PROP_PITCH1_LO</dd><dt>1+Toggle Feather Switch</dt><dd>TOGGLE_FEATHER_SWITCH_1</dd><dt>2+Increment</dt><dd>PROP_PITCH2_INCR</dd><dt>2+Increment Small</dt><dd>PROP_PITCH2_INCR_SMALL</dd><dt>2+Decrement</dt><dd>PROP_PITCH2_DECR</dd><dt>2+Decrement Small</dt><dd>PROP_PITCH2_DECR_SMALL</dd><dt>2+Min (hi pitch)</dt><dd>PROP_PITCH2_HI</dd><dt>2+Max (lo pitch)</dt><dd>PROP_PITCH2_LO</dd><dt>2+Toggle Feather Switch</dt><dd>TOGGLE_FEATHER_SWITCH_2</dd><dt>3+Increment</dt><dd>PROP_PITCH3_INCR</dd><dt>3+Increment Small</dt><dd>PROP_PITCH3_INCR_SMALL</dd><dt>3+Decrement</dt><dd>PROP_PITCH3_DECR</dd><dt>3+Decrement Small</dt><dd>PROP_PITCH3_DECR_SMALL</dd><dt>3+Min (hi pitch)</dt><dd>PROP_PITCH3_HI</dd><dt>3+Max (lo pitch)</dt><dd>PROP_PITCH3_LO</dd><dt>3+Toggle Feather Switch</dt><dd>TOGGLE_FEATHER_SWITCH_3</dd><dt>4+Increment</dt><dd>PROP_PITCH4_INCR</dd><dt>4+Increment Small</dt><dd>PROP_PITCH4_INCR_SMALL</dd><dt>4+Decrement</dt><dd>PROP_PITCH4_DECR</dd><dt>4+Decrement Small</dt><dd>PROP_PITCH4_DECR_SMALL</dd><dt>4+Min (hi pitch)</dt><dd>PROP_PITCH4_HI</dd><dt>4+Max (lo pitch)</dt><dd>PROP_PITCH4_LO</dd><dt>4+Toggle Feather Switch</dt><dd>TOGGLE_FEATHER_SWITCH_4</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Propeller Pitch Set</td><td>Sets propeller pitch lever to value</td><td>Set Propeller {0} Pitch to {1} (0 to 16384)</td><td><ol start=0>
+<tr valign='top'><td>Propeller Pitch Set</td><td></td><td>Set Propeller {0} Pitch to {1} (0 to 16384)</td><td><ol start=0>
 <li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>All</dt><dd>PROP_PITCH_SET</dd><dt>1</dt><dd>PROP_PITCH1_SET</dd><dt>2</dt><dd>PROP_PITCH2_SET</dd><dt>3</dt><dd>PROP_PITCH3_SET</dd><dt>4</dt><dd>PROP_PITCH4_SET</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Throttle</td><td>Sets all throttles</td><td>All Throttles - {0}</td><td><ol start=0>
+<tr valign='top'><td>Starters</td><td></td><td>Toggle Starter - {0}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
+</ol></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>All</dt><dd>TOGGLE_ALL_STARTERS</dd><dt>1</dt><dd>TOGGLE_STARTER1</dd><dt>2</dt><dd>TOGGLE_STARTER2</dd><dt>3</dt><dd>TOGGLE_STARTER3</dd><dt>4</dt><dd>TOGGLE_STARTER4</dd></dl></details></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Throttle Adjust - All</td><td></td><td>All Throttles - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Full</b>, Increase, Increase Small, Decrease, Decrease Small, Cut, 10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90%</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Full</dt><dd>THROTTLE_FULL</dd><dt>Increase</dt><dd>THROTTLE_INCR</dd><dt>Increase Small</dt><dd>THROTTLE_INCR_SMALL</dd><dt>Decrease</dt><dd>THROTTLE_DECR</dd><dt>Decrease Small</dt><dd>THROTTLE_DECR_SMALL</dd><dt>Cut</dt><dd>THROTTLE_CUT</dd><dt>10%</dt><dd>THROTTLE_10</dd><dt>20%</dt><dd>THROTTLE_20</dd><dt>30%</dt><dd>THROTTLE_30</dd><dt>40%</dt><dd>THROTTLE_40</dd><dt>50%</dt><dd>THROTTLE_50</dd><dt>60%</dt><dd>THROTTLE_60</dd><dt>70%</dt><dd>THROTTLE_70</dd><dt>80%</dt><dd>THROTTLE_80</dd><dt>90%</dt><dd>THROTTLE_90</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Throttle Set</td><td>Sets all or specific Throttle(s) to specific value</td><td>Set Throttle {0} to {1} (-16384 to +16384)</td><td><ol start=0>
-<li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
-<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>All</dt><dd>THROTTLE_SET</dd><dt>1</dt><dd>THROTTLE1_SET</dd><dt>2</dt><dd>THROTTLE2_SET</dd><dt>3</dt><dd>THROTTLE3_SET</dd><dt>4</dt><dd>THROTTLE4_SET</dd></dl></details></td>
-<td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Throttle Specific</td><td>Sets Throttle on specific engine</td><td>Throttle {0} - {1}</td><td><ol start=0>
+<tr valign='top'><td>Throttle Adjust - Individual</td><td></td><td>Throttle {0} - {1}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
 <li>[choice] &nbsp; <b>Full</b>, Increase, Increase Small, Decrease, Decrease Small, Cut</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>1+Full</dt><dd>THROTTLE1_FULL</dd><dt>1+Increase</dt><dd>THROTTLE1_INCR</dd><dt>1+Increase Small</dt><dd>THROTTLE1_INCR_SMALL</dd><dt>1+Decrease</dt><dd>THROTTLE1_DECR</dd><dt>1+Decrease Small</dt><dd>THROTTLE1_DECR_SMALL</dd><dt>1+Cut</dt><dd>THROTTLE1_CUT</dd><dt>2+Full</dt><dd>THROTTLE2_FULL</dd><dt>2+Increase</dt><dd>THROTTLE2_INCR</dd><dt>2+Increase Small</dt><dd>THROTTLE2_INCR_SMALL</dd><dt>2+Decrease</dt><dd>THROTTLE2_DECR</dd><dt>2+Decrease Small</dt><dd>THROTTLE2_DECR_SMALL</dd><dt>2+Cut</dt><dd>THROTTLE2_CUT</dd><dt>3+Full</dt><dd>THROTTLE3_FULL</dd><dt>3+Increase</dt><dd>THROTTLE3_INCR</dd><dt>3+Increase Small</dt><dd>THROTTLE3_INCR_SMALL</dd><dt>3+Decrease</dt><dd>THROTTLE3_DECR</dd><dt>3+Decrease Small</dt><dd>THROTTLE3_DECR_SMALL</dd><dt>3+Cut</dt><dd>THROTTLE3_CUT</dd><dt>4+Full</dt><dd>THROTTLE4_FULL</dd><dt>4+Increase</dt><dd>THROTTLE4_INCR</dd><dt>4+Increase Small</dt><dd>THROTTLE4_INCR_SMALL</dd><dt>4+Decrease</dt><dd>THROTTLE4_DECR</dd><dt>4+Decrease Small</dt><dd>THROTTLE4_DECR_SMALL</dd><dt>4+Cut</dt><dd>THROTTLE4_CUT</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Toggle All Magnetos</td><td>Toggle All Magnetos</td><td>Toggle All Magnetos - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Start</b>, Off, Right, Left, Both, Decrease, Increase, Select (for +/-)</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Off</dt><dd>MAGNETO_OFF</dd><dt>Right</dt><dd>MAGNETO_RIGHT</dd><dt>Left</dt><dd>MAGNETO_LEFT</dd><dt>Both</dt><dd>MAGNETO_BOTH</dd><dt>Start</dt><dd>MAGNETO_START</dd><dt>Decrease</dt><dd>MAGNETO_DECR</dd><dt>Increase</dt><dd>MAGNETO_INCR</dd><dt>Select (for +/-)</dt><dd>MAGNETO</dd></dl></details></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Toggle Starters</td><td>Toggle Starters</td><td>Toggle Starter - {0}</td><td><ol start=0>
+<tr valign='top'><td>Throttle Set</td><td></td><td>Set Throttle {0} to {1} (-16384 to +16384)</td><td><ol start=0>
 <li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>All</dt><dd>TOGGLE_ALL_STARTERS</dd><dt>1</dt><dd>TOGGLE_STARTER1</dd><dt>2</dt><dd>TOGGLE_STARTER2</dd><dt>3</dt><dd>TOGGLE_STARTER3</dd><dt>4</dt><dd>TOGGLE_STARTER4</dd></dl></details></td>
-<td align='center'></td></tr>
+<td><details><summary><sub>details</sub></summary><dl><dt>All</dt><dd>THROTTLE_SET</dd><dt>1</dt><dd>THROTTLE1_SET</dd><dt>2</dt><dd>THROTTLE2_SET</dd><dt>3</dt><dd>THROTTLE3_SET</dd><dt>4</dt><dd>THROTTLE4_SET</dd></dl></details></td>
+<td align='center'>&#9745;</td></tr>
+</table>
+
+
+#### Connectors
+
+<table>
+<tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th></tr>
+<tr valign='top'><td>Magnetos Switch Set</td><td></td><td>Set Magneto Switch{0}in Range:{1}-{2}| Feedback From
+| State (opt):{3}{4}
+Range:{5}-{6}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 4&gt;</sub></li>
+<li>[number] &nbsp; <b>4</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 4&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Mixture Set</td><td></td><td>Set Mixture{0}in Value
+Range:{1}-{2}| Feedback From
+| State (opt):{3}{4}
+Range:{5}-{6}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Propeller Pitch Set</td><td></td><td>Set Propeller{0}Pitch in
+Value Range:{1}-{2}| Feedback From
+| State (opt):{3}{4}
+Range:{5}-{6}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Throttle Set</td><td></td><td>Set Throttle{0}in Value
+Range:{1}-{2}| Feedback From
+| State (opt):{3}{4}
+Range:{5}-{6}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
+<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
 </table>
 
 
@@ -842,150 +1092,261 @@ Calculator Code:                                                                
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
-<tr valign='top'><td>Aileron Trim</td><td>Aileron Trim</td><td>Aileron Trim - {0}</td><td><ol start=0>
+<tr valign='top'><td>Aileron Trim Adjust</td><td></td><td>Adjust Aileron Trim {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Left</b>, Right</li>
 </ol></td>
 <td><dl><dt>Left</dt><dd>AILERON_TRIM_LEFT</dd><dt>Right</dt><dd>AILERON_TRIM_RIGHT</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Aileron Trim Set</td><td> Set Aileron Trim</td><td>Aileron Trim set to {0}% (-100 - +100)</td><td><ol start=0>
+<tr valign='top'><td>Aileron Trim Set</td><td></td><td>Set Aileron Trim to {0}% (-100 - +100)</td><td><ol start=0>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -100&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
 </ol></td>
 <td><dl><dd>AILERON_TRIM_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Ailerons</td><td>Ailerons</td><td>Ailerons - {0}</td><td><ol start=0>
+<tr valign='top'><td>Ailerons Adjust</td><td></td><td>Adjust Ailerons {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Center</b>, Left, Right</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Center</dt><dd>CENTER_AILER_RUDDER</dd><dt>Left</dt><dd>AILERONS_LEFT</dd><dt>Right</dt><dd>AILERONS_RIGHT</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Ailerons Set</td><td> Set Ailerons</td><td>Ailerons set to {0} (-16384 to +16384)</td><td><ol start=0>
+<tr valign='top'><td>Ailerons Set</td><td> Set Ailerons</td><td>Set Ailerons to {0} (-16384 to +16384)</td><td><ol start=0>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><dl><dd>AILERON_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Brakes</td><td>Brakes</td><td>Brakes - {0}</td><td><ol start=0>
+<tr valign='top'><td>Brake Axis Set</td><td></td><td>Set Brake Axis {0} to {1} (0 to 16384)</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Left</b>, Right</li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+</ol></td>
+<td><dl><dt>Left</dt><dd>AXIS_LEFT_BRAKE_SET</dd><dt>Right</dt><dd>AXIS_RIGHT_BRAKE_SET</dd></dl></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Brakes Activate</td><td></td><td>Activate {0} Brakes</td><td><ol start=0>
 <li>[choice] &nbsp; <b>All</b>, Left, Right</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>All</dt><dd>BRAKES</dd><dt>Left</dt><dd>BRAKES_LEFT</dd><dt>Right</dt><dd>BRAKES_RIGHT</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flap Levers - Adjust All</td><td>Adjust All Cowl Flap Levers</td><td>{0} All Cowl Flaps Levers</td><td><ol start=0>
+<tr valign='top'><td>Cowl Flap Levers - Adjust All</td><td></td><td>{0} All Cowl Flaps Levers</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
 <td><dl><dt>Increase</dt><dd>INC_COWL_FLAPS</dd><dt>Decrease</dt><dd>DEC_COWL_FLAPS</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flaps 1 Lever Adjust</td><td>Adjust Cowl Flaps 1 Lever</td><td>{0} Cowl Flaps 1 Lever</td><td><ol start=0>
+<tr valign='top'><td>Cowl Flaps 1 Lever Adjust</td><td></td><td>{0} Cowl Flaps 1 Lever</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
 <td><dl><dt>Increase</dt><dd>INC_COWL_FLAPS1</dd><dt>Decrease</dt><dd>DEC_COWL_FLAPS1</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flaps 1 Lever Set</td><td> Set Cowl 1 Flaps Lever</td><td>Set Cowl 1 Flaps Lever to {0} (0 to 16384)</td><td><ol start=0>
-<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
-</ol></td>
-<td><dl><dd>COWLFLAP1_SET</dd></dl></td>
-<td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flaps 2 Lever Adjust</td><td>Adjust Cowl Flaps 2 Lever</td><td>{0} Cowl Flaps 2 Lever</td><td><ol start=0>
+<tr valign='top'><td>Cowl Flaps 2 Lever Adjust</td><td></td><td>{0} Cowl Flaps 2 Lever</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
 <td><dl><dt>Increase</dt><dd>INC_COWL_FLAPS2</dd><dt>Decrease</dt><dd>DEC_COWL_FLAPS2</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flaps 2 Lever Set</td><td> Set Cowl 2 Flaps Lever</td><td>Set Cowl 2 Flaps Lever to {0} (0 to 16384)</td><td><ol start=0>
-<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
-</ol></td>
-<td><dl><dd>COWLFLAP2_SET</dd></dl></td>
-<td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flaps 3 Lever Adjust</td><td>Adjust Cowl Flaps 3 Lever</td><td>{0} Cowl Flaps 3 Lever</td><td><ol start=0>
+<tr valign='top'><td>Cowl Flaps 3 Lever Adjust</td><td></td><td>{0} Cowl Flaps 3 Lever</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
 <td><dl><dt>Increase</dt><dd>INC_COWL_FLAPS3</dd><dt>Decrease</dt><dd>DEC_COWL_FLAPS3</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flaps 3 Lever Set</td><td> Set Cowl 3 Flaps Lever</td><td>Set Cowl 3 Flaps Lever to {0} (0 to 16384)</td><td><ol start=0>
-<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
-</ol></td>
-<td><dl><dd>COWLFLAP3_SET</dd></dl></td>
-<td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flaps 4 Lever Adjust</td><td>Adjust Cowl Flaps 4 Lever</td><td>{0} Cowl Flaps 4 Lever</td><td><ol start=0>
+<tr valign='top'><td>Cowl Flaps 4 Lever Adjust</td><td></td><td>{0} Cowl Flaps 4 Lever</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
 <td><dl><dt>Increase</dt><dd>INC_COWL_FLAPS4</dd><dt>Decrease</dt><dd>DEC_COWL_FLAPS4</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flaps 4 Lever Set</td><td> Set Cowl 4 Flaps Lever</td><td>Set Cowl 4 Flaps Lever to {0} (0 to 16384)</td><td><ol start=0>
+<tr valign='top'><td>Cowl Flaps Lever Set</td><td></td><td>Set Cowl {0} Flaps Lever to {0} (0 to 16384)</td><td><ol start=0>
+<li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
-<td><dl><dd>COWLFLAP4_SET</dd></dl></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>1</dt><dd>COWLFLAP1_SET</dd><dt>2</dt><dd>COWLFLAP2_SET</dd><dt>3</dt><dd>COWLFLAP3_SET</dd><dt>4</dt><dd>COWLFLAP4_SET</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Elevator</td><td>Elevator</td><td>Elevator - {0}</td><td><ol start=0>
+<tr valign='top'><td>Elevator Adjust</td><td></td><td>Adjust Elevator {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Up</b>, Down</li>
 </ol></td>
 <td><dl><dt>Up</dt><dd>ELEV_UP</dd><dt>Down</dt><dd>ELEV_DOWN</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Elevator Set</td><td> Set Elevator</td><td>Elevator set to {0} (-16384 to +16384)</td><td><ol start=0>
+<tr valign='top'><td>Elevator Set</td><td>Set Elevator</td><td>Set Elevator to {0} (-16384 to +16384)</td><td><ol start=0>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><dl><dd>ELEVATOR_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Elevator Trim</td><td>Elevator Trim</td><td>Elevator Trim - {0}</td><td><ol start=0>
+<tr valign='top'><td>Elevator Trim Adjust</td><td></td><td>Adjust Elevator Trim {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Up</b>, Down</li>
 </ol></td>
 <td><dl><dt>Down</dt><dd>ELEV_TRIM_DN</dd><dt>Up</dt><dd>ELEV_TRIM_UP</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Elevator Trim Set</td><td> Set Elevator Trim</td><td>Elevator Trim set to {0} (-16384 to +16384)</td><td><ol start=0>
+<tr valign='top'><td>Elevator Trim Set</td><td></td><td>Set Elevator Trim to {0} (-16384 to +16384)</td><td><ol start=0>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><dl><dd>ELEVATOR_TRIM_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Flaps</td><td>Flaps</td><td>Flaps - {0}</td><td><ol start=0>
+<tr valign='top'><td>Flaps Adjust</td><td></td><td>Flaps {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Up</b>, Down, Increase, Decrease, 1, 2, 3, 4</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Up</dt><dd>FLAPS_UP</dd><dt>Down</dt><dd>FLAPS_DOWN</dd><dt>Increase</dt><dd>FLAPS_INCR</dd><dt>Decrease</dt><dd>FLAPS_DECR</dd><dt>1</dt><dd>FLAPS_1</dd><dt>2</dt><dd>FLAPS_2</dd><dt>3</dt><dd>FLAPS_3</dd><dt>4</dt><dd>FLAPS_3</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Flaps Set</td><td> Set Flaps</td><td>Set Flaps to {0} (0 to 16384)</td><td><ol start=0>
+<tr valign='top'><td>Flaps Handle Set</td><td>Set Flaps Handle Position</td><td>Set Flaps Handle to {0} (0 to 16384)</td><td><ol start=0>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><dl><dd>FLAPS_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Gear Manipulation</td><td>Gear Manipulation</td><td>Gear - {0}</td><td><ol start=0>
+<tr valign='top'><td>Gear Manipulation</td><td></td><td>Gear {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, Up, Down, Pump</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>GEAR_TOGGLE</dd><dt>Up</dt><dd>GEAR_UP</dd><dt>Down</dt><dd>GEAR_DOWN</dd><dt>Pump</dt><dd>GEAR_PUMP</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Rudder</td><td>Rudder</td><td>Rudder - {0}</td><td><ol start=0>
+<tr valign='top'><td>Parking Brake Toggle</td><td></td><td>Toggle the Parking Brake On/Off</td><td><ol start=0>
+</ol></td>
+<td><dl><dd>PARKING_BRAKES</dd></dl></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Rudder Adjust</td><td></td><td>Adjust Rudder {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Center</b>, Left, Right</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Center</dt><dd>RUDDER_CENTER</dd><dt>Left</dt><dd>RUDDER_LEFT</dd><dt>Right</dt><dd>RUDDER_RIGHT</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Rudder Set</td><td> Set Rudder</td><td>Rudder set to {0} (-16384 to +16384)</td><td><ol start=0>
+<tr valign='top'><td>Rudder Set</td><td> Set Rudder</td><td>Set Rudder to {0} (-16384 to +16384)</td><td><ol start=0>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><dl><dd>RUDDER_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Rudder Trim</td><td>Rudder Trim</td><td>Rudder Trim - {0}</td><td><ol start=0>
+<tr valign='top'><td>Rudder Trim Adjust</td><td></td><td>Adjust Rudder Trim {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Left</b>, Right</li>
 </ol></td>
 <td><dl><dt>Left</dt><dd>RUDDER_TRIM_LEFT</dd><dt>Right</dt><dd>RUDDER_TRIM_RIGHT</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Rudder Trim Set</td><td> Set Rudder Trim</td><td>Rudder Trim set to {0}% (-100 - +100)</td><td><ol start=0>
+<tr valign='top'><td>Rudder Trim Set</td><td></td><td>Set Rudder Trim to {0}% (-100 - +100)</td><td><ol start=0>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -100&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
 </ol></td>
 <td><dl><dd>RUDDER_TRIM_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Spoilers</td><td>Spoilers</td><td>Spoilers - {0}</td><td><ol start=0>
+<tr valign='top'><td>Spoilers Action</td><td></td><td>Spoilers {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>SPOILERS_TOGGLE</dd><dt>On</dt><dd>SPOILERS_ON</dd><dt>Off</dt><dd>SPOILERS_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Spoilers Arm</td><td>Spoilers Arm</td><td>Spoilers Arm - {0}</td><td><ol start=0>
+<tr valign='top'><td>Spoilers Arm</td><td></td><td>Spoilers Arm {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>SPOILERS_ARM_TOGGLE</dd><dt>On</dt><dd>SPOILERS_ARM_ON</dd><dt>Off</dt><dd>SPOILERS_ARM_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Spoilers Set</td><td> Set Spoilers</td><td>Set Spoilers handle position to {0} (0 to 16384)</td><td><ol start=0>
+<tr valign='top'><td>Spoilers Set</td><td></td><td>Set Spoilers handle position to {0} (0 to 16384)</td><td><ol start=0>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><dl><dd>SPOILERS_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Toggle Parking Brake</td><td>Toggle Parking Brake</td><td>Toggle Parking Brake</td><td><ol start=0>
+</table>
+
+
+#### Connectors
+
+<table>
+<tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th></tr>
+<tr valign='top'><td>Aileron Trim Set</td><td></td><td>Set Aileron Trim
+in Value Range (%):{0}-{1}| Feedback From
+| State (opt):{2}{3}
+Range:{4}-{5}</td><td><ol start=0>
+<li>[number] &nbsp; <b>-100</b> &nbsp; <sub>&lt;min: -100&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
+<li>[number] &nbsp; <b>100</b> &nbsp; <sub>&lt;min: -100&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 </ol></td>
-<td><dl><dd>PARKING_BRAKES</dd></dl></td>
-<td align='center'></td></tr>
+<tr valign='top'><td>Ailerons Set</td><td> Set Ailerons</td><td>Set Ailerons
+in Value Range:{0}-{1}| Feedback From
+| State (opt):{2}{3}
+Range:{4}-{5}</td><td><ol start=0>
+<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Brake Axis Set</td><td></td><td>Set Brake Axis{0}in Value
+ Range:{1}-{2}| Feedback From
+| State (opt):{3}{4}
+Range:{5}-{6}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Left</b>, Right</li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Cowl Flaps Lever Set</td><td></td><td>Set Cowl{0}Flaps Lever
+in Value Range:{1}-{2}| Feedback From
+| State (opt):{3}{4}
+Range:{5}-{6}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Elevator Set</td><td>Set Elevator</td><td>Set Elevator
+in Value Range:{0}-{1}| Feedback From
+| State (opt):{2}{3}
+Range:{4}-{5}</td><td><ol start=0>
+<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Elevator Trim Set</td><td></td><td>Set Elevator Trim
+in Value Range:{0}-{1}| Feedback From
+| State (opt):{2}{3}
+Range:{4}-{5}</td><td><ol start=0>
+<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Flaps Handle Set</td><td>Set Flaps Handle Position</td><td>Set Flaps Handle
+in Value Range:{0}-{1}| Feedback From
+| State (opt):{2}{3}
+Range:{4}-{5}</td><td><ol start=0>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Rudder Set</td><td> Set Rudder</td><td>Set Rudder
+in Value Range:{0}-{1}| Feedback From
+| State (opt):{2}{3}
+Range:{4}-{5}</td><td><ol start=0>
+<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Rudder Trim Set</td><td></td><td>Set Rudder Trim
+in Value Range (%):{0}-{1}| Feedback From
+| State (opt):{2}{3}
+Range:{4}-{5}</td><td><ol start=0>
+<li>[number] &nbsp; <b>-100</b> &nbsp; <sub>&lt;min: -100&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
+<li>[number] &nbsp; <b>100</b> &nbsp; <sub>&lt;min: -100&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Spoilers Set</td><td></td><td>Set Spoilers Handle
+Position in Value Range:{0}-{1}| Feedback From
+| State (opt):{2}{3}
+Range:{4}-{5}</td><td><ol start=0>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
 </table>
 
 
@@ -1031,40 +1392,58 @@ Calculator Code:                                                                
 </ol></td>
 <td><dl><dd>ADD_FUEL_QUANTITY</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Electric Fuel Pump - Toggle</td><td>Toggles the Electric Fuel Pump</td><td>Toggle Electric Fuel Pump - {0}</td><td><ol start=0>
+<tr valign='top'><td>Cross Feed Switch</td><td></td><td>Cross Feed - {0}</td><td><ol start=0>
+<li>[choice] &nbsp; Toggle, <b>Open</b>, Off</li>
+</ol></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>CROSS_FEED_TOGGLE</dd><dt>Open</dt><dd>CROSS_FEED_OPEN</dd><dt>Off</dt><dd>CROSS_FEED_OFF</dd></dl></details></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Electric Fuel Pump</td><td></td><td>Toggle Electric Fuel Pump: {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>All</dt><dd>TOGGLE_ELECT_FUEL_PUMP</dd><dt>1</dt><dd>TOGGLE_ELECT_FUEL_PUMP1</dd><dt>2</dt><dd>TOGGLE_ELECT_FUEL_PUMP2</dd><dt>3</dt><dd>TOGGLE_ELECT_FUEL_PUMP3</dd><dt>4</dt><dd>TOGGLE_ELECT_FUEL_PUMP4</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Fuel Dump - Toggle</td><td>Toggles the Fuel Dump</td><td>Toggle Fuel Dump</td><td><ol start=0>
+<tr valign='top'><td>Fuel Dump - Toggle</td><td></td><td>Toggle Fuel Dump</td><td><ol start=0>
 </ol></td>
 <td><dl><dd>FUEL_DUMP_TOGGLE</dd></dl></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Fuel Pump - Toggle</td><td>Toggles the Fuel Pump</td><td>Toggle Fuel Pump</td><td><ol start=0>
+<tr valign='top'><td>Fuel Pump</td><td></td><td>Toggle Fuel Pump</td><td><ol start=0>
 </ol></td>
 <td><dl><dd>FUEL_PUMP</dd></dl></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Fuel Selectors</td><td>Fuel Selectors</td><td>Fuel Selector {0} - {1}</td><td><ol start=0>
+<tr valign='top'><td>Fuel Selectors</td><td></td><td>Fuel Selector {0} - {1}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
 <li>[choice] &nbsp; <b>All</b>, Off, Left, Right, Left - Main, Right - Main, Left - Aux, Right - Aux, Center</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>1+Off</dt><dd>FUEL_SELECTOR_OFF</dd><dt>1+All</dt><dd>FUEL_SELECTOR_ALL</dd><dt>1+Left</dt><dd>FUEL_SELECTOR_LEFT</dd><dt>1+Right</dt><dd>FUEL_SELECTOR_RIGHT</dd><dt>1+Left - Main</dt><dd>FUEL_SELECTOR_LEFT_MAIN</dd><dt>1+Right - Main</dt><dd>FUEL_SELECTOR_RIGHT_MAIN</dd><dt>1+Left - Aux</dt><dd>FUEL_SELECTOR_LEFT_AUX</dd><dt>1+Right - Aux</dt><dd>FUEL_SELECTOR_RIGHT_AUX</dd><dt>1+Center</dt><dd>FUEL_SELECTOR_CENTER</dd><dt>2+Off</dt><dd>FUEL_SELECTOR_2_OFF</dd><dt>2+All</dt><dd>FUEL_SELECTOR_2_ALL</dd><dt>2+Left</dt><dd>FUEL_SELECTOR_2_LEFT</dd><dt>2+Right</dt><dd>FUEL_SELECTOR_2_RIGHT</dd><dt>2+Left - Main</dt><dd>FUEL_SELECTOR_2_LEFT_MAIN</dd><dt>2+Right - Main</dt><dd>FUEL_SELECTOR_2_RIGHT_MAIN</dd><dt>2+Left - Aux</dt><dd>FUEL_SELECTOR_2_LEFT_AUX</dd><dt>2+Right - Aux</dt><dd>FUEL_SELECTOR_2_RIGHT_AUX</dd><dt>2+Center</dt><dd>FUEL_SELECTOR_2_CENTER</dd><dt>3+Off</dt><dd>FUEL_SELECTOR_3_OFF</dd><dt>3+All</dt><dd>FUEL_SELECTOR_3_ALL</dd><dt>3+Left</dt><dd>FUEL_SELECTOR_3_LEFT</dd><dt>3+Right</dt><dd>FUEL_SELECTOR_3_RIGHT</dd><dt>3+Left - Main</dt><dd>FUEL_SELECTOR_3_LEFT_MAIN</dd><dt>3+Right - Main</dt><dd>FUEL_SELECTOR_3_RIGHT_MAIN</dd><dt>3+Left - Aux</dt><dd>FUEL_SELECTOR_3_LEFT_AUX</dd><dt>3+Right - Aux</dt><dd>FUEL_SELECTOR_3_RIGHT_AUX</dd><dt>3+Center</dt><dd>FUEL_SELECTOR_3_CENTER</dd><dt>4+Off</dt><dd>FUEL_SELECTOR_4_OFF</dd><dt>4+All</dt><dd>FUEL_SELECTOR_4_ALL</dd><dt>4+Left</dt><dd>FUEL_SELECTOR_4_LEFT</dd><dt>4+Right</dt><dd>FUEL_SELECTOR_4_RIGHT</dd><dt>4+Right - Main</dt><dd>FUEL_SELECTOR_4_RIGHT_MAIN</dd><dt>4+Left - Main</dt><dd>FUEL_SELECTOR_4_LEFT_MAIN</dd><dt>4+Left - Aux</dt><dd>FUEL_SELECTOR_4_LEFT_AUX</dd><dt>4+Right - Aux</dt><dd>FUEL_SELECTOR_4_RIGHT_AUX</dd><dt>4+Center</dt><dd>FUEL_SELECTOR_4_CENTER</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Toggle All/Specific Fuel Valve</td><td>Toggle All/Specific Fuel Valve</td><td>Toggle Fuel Valve - {0}</td><td><ol start=0>
+<tr valign='top'><td>Fuel Valve</td><td></td><td>Toggle Fuel Valve: {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>All</dt><dd>TOGGLE_FUEL_VALVE_ALL</dd><dt>1</dt><dd>TOGGLE_FUEL_VALVE_ENG1</dd><dt>2</dt><dd>TOGGLE_FUEL_VALVE_ENG2</dd><dt>3</dt><dd>TOGGLE_FUEL_VALVE_ENG3</dd><dt>4</dt><dd>TOGGLE_FUEL_VALVE_ENG4</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Toggle All/Specific Primers</td><td>Toggle All/Specific Primers</td><td>Toggle Primers - {0}</td><td><ol start=0>
+<tr valign='top'><td>Primers</td><td></td><td>Toggle Primer(s): {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>All</dt><dd>TOGGLE_PRIMER</dd><dt>1</dt><dd>TOGGLE_PRIMER1</dd><dt>2</dt><dd>TOGGLE_PRIMER2</dd><dt>3</dt><dd>TOGGLE_PRIMER3</dd><dt>4</dt><dd>TOGGLE_PRIMER4</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Toggle/Open/Off Cross Feed</td><td>Toggle/Open/Off Cross Feed</td><td>Cross Feed - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; Toggle, <b>Open</b>, Off</li>
+</table>
+
+
+#### Connectors
+
+<table>
+<tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th></tr>
+<tr valign='top'><td>Add Fuel</td><td>Add Fuel (1 to 65535 or zero for 25% of capacity)</td><td>Add Fuel
+in Value Range:{0}-{1}| Feedback From
+| State (opt):{2}{3}
+Range:{4}-{5}</td><td><ol start=0>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 65535&gt;</sub></li>
+<li>[number] &nbsp; <b>65535</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 65535&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>CROSS_FEED_TOGGLE</dd><dt>Open</dt><dd>CROSS_FEED_OPEN</dd><dt>Off</dt><dd>CROSS_FEED_OFF</dd></dl></details></td>
-<td align='center'></td></tr>
 </table>
 
 
