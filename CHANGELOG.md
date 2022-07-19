@@ -4,9 +4,12 @@
 * Added Connector (Slider) functionality with feedback capabilities (eg. move slider in response to simulator event).
 * Added 29 new connectors to set variables, trigger events with value ranges, or use as visual value indicators.
 * Added new "Camera & Views" category for custom states.
+* **Changed** "On Hold" actions to fire the associated event right away instead of waiting for the first delay time.<br />
+  (Seems TP now (?) sends "Press" events on button release vs. press, so the previous feature of being able to map a different event to the initial press no longer really works out.)
+* Failed actions will no longer repeat when "held."
 
 ### New Connectors
-* All 18 existing (and 2 new) "Set" Actions (where a value is needed)
+* All 18 existing (and 2 new) "Set" Actions (engines, surfaces, AP bugs, etc).
 * Set Action Repeat Interval
 * Set a Named Simulator Event Value
 * Set a Known Simulator Event Value
