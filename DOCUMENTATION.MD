@@ -4,7 +4,7 @@ This plugin provides a two-way interface between Touch Portal and Flight Simulat
 
 For further documentation, please see https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki
 
-This documentation generated for plugin v1.0.0.1
+This documentation generated for plugin v1.0.1.0
 
 ---
 
@@ -95,7 +95,15 @@ Note that using this plugin's installation folder for custom data storage is not
 | --- | --- | --- | --- | --- |
 | False | number | 0 | 0 | 1 |
 
-Set to 1 to automatically load latest HubHop data when plugin starts. Set to 0 to disable. Updates can always be triggered manually via the Action *MSFS - Plugin -> Connect & Update*.
+Set to 1 to automatically load latest HubHop data when plugin starts. Set to 0 to disable. Updates can always be triggered manually via the Action *MSFS - Plugin -> Connect & Update*. **Updates require a working Internet connection!**
+
+### HubHop Data Update Timeout (seconds)
+
+| Read-only | Type | Default Value | Min. Value | Max. Value |
+| --- | --- | --- | --- | --- |
+| False | number | 60 | 0 | 600 |
+
+Maximum number of seconds to wait for a HubHop data update check or download via the Internet.
 
 ### Sort Local Variables Alphabetically (0/1)
 

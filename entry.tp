@@ -1,6 +1,6 @@
 {
   "sdk": 6,
-  "version": 1000001,
+  "version": 1000100,
   "name": "MSFS Touch Portal Plugin",
   "id": "MSFSTouchPortalPlugin",
   "configuration": {
@@ -3307,6 +3307,15 @@
       "default": "0",
       "minValue": 0.0,
       "maxValue": 1.0,
+      "isPassword": false,
+      "readOnly": false
+    },
+    {
+      "name": "HubHop Data Update Timeout (seconds)",
+      "type": "number",
+      "default": "60",
+      "minValue": 0.0,
+      "maxValue": 600.0,
       "isPassword": false,
       "readOnly": false
     },
