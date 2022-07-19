@@ -932,6 +932,10 @@ namespace MSFSTouchPortalPlugin.Services
         // No WASM module... try to use a named MobiFlight event... I guess. Then fall through and treat it as any other custom named action event.
         eventName = "MobiFlight." + p.Label;
       }
+      // Check for known/imported type, which may have special formatting applied to the name
+      else if (actId == PluginActions.SetKnownSimEvent && _pluginConfig.TryGetImportedSimEventIdFromSelector(eventName, out var cleanEventName)) {
+        eventName = cleanEventName;
+      }
 
       Enum eventId;
       // dynamically added event actions have no mappings, the ActionEventType.Id is the SimEventClientId
