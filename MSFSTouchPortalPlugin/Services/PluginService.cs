@@ -710,7 +710,7 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     // Handles some basic actions like sim connection and repeat rate, with optional data value(s).
-    void ProcessPluginCommandAction(PluginActions actionId, ActionData data, int connValue)
+    bool ProcessPluginCommandAction(PluginActions actionId, ActionData data, int connValue)
     {
       switch (actionId) {
         case PluginActions.ToggleConnection:
@@ -737,8 +737,7 @@ namespace MSFSTouchPortalPlugin.Services
           break;
 
         case PluginActions.UpdateLocalVarsList:
-          _simConnectService.RequestLookupList(WASimCommander.CLI.Enums.LookupItemType.LocalVariable);
-          break;
+          return _simConnectService.RequestLookupList(WASimCommander.CLI.Enums.LookupItemType.LocalVariable);
 
         case PluginActions.ActionRepeatIntervalInc:
         case PluginActions.ActionRepeatIntervalDec:
@@ -754,8 +753,9 @@ namespace MSFSTouchPortalPlugin.Services
               break;
             }
           }
-          else if (!ConvertSliderValueRange(connValue, data, out value))
-            return;
+          else if (!ConvertSliderValueRange(connValue, data, out value)) {
+            return false;
+          }
 
           if (actionId == PluginActions.ActionRepeatIntervalInc)
             value = Settings.ActionRepeatInterval.RealValue + value;
@@ -769,14 +769,15 @@ namespace MSFSTouchPortalPlugin.Services
           break;
         }
       }
+      return true;
     }
 
     // Parse and process PluginActions.SetSimVar action or connector
-    void SetSimVarValueFromActionData(ActionData data, int connValue = -1)
+    bool SetSimVarValueFromActionData(ActionData data, int connValue = -1)
     {
       if (!data.TryGetValue("VarName", out var varName) || !TryGetSimVarIdFromActionData(varName, out string varId) /*|| !data.TryGetValue("CatId", out var catName)*/ ) {
         _logger.LogError("Could not parse Variable Name parameter for Set SimVar from data: {data}", ActionDataToKVPairString(data));
-        return;
+        return false;
       }
 
       string value = default;
@@ -785,49 +786,49 @@ namespace MSFSTouchPortalPlugin.Services
       if (connValue < 0) {
         if (!data.TryGetValue("Value", out value)) {
           _logger.LogError("Could not find Value parameter for Set SimVar from data: {data}", ActionDataToKVPairString(data));
-          return;
+          return false;
         }
       }
       // Validate and convert slider value into range
       else if (!ConvertSliderValueRange(connValue, data, out dVal)) {
         // no valid value
-        return;
+        return false;
       }
 
       if (!_statesDictionary.TryGet(varId, out SimVarItem simVar)) {
         _logger.LogError("Could not find definition for settable SimVar Id: '{varId}' Name: '{varName}'", varId, varName);
-        return;
+        return false;
       }
 
       if (simVar.IsStringType) {
         if (!simVar.SetValue(new StringVal(value))) {
           _logger.LogError("Could not set string value '{value}' for SimVar Id: '{varId}' Name: '{varName}'", value, varId, varName);
-          return;
+          return false;
         }
       }
       else {
         if (double.IsNaN(dVal) && !TryEvaluateValue(value, out dVal, out var errMsg)) {
           _logger.LogError("Could not set numeric value '{value}' for SimVar Id: '{varId}' Name: '{varName}'; Error: {errMsg}", value, varId, varName, errMsg);
-          return;
+          return false;
         }
         if (!simVar.SetValue(dVal)) {
           _logger.LogError("Could not set numeric value '{dVal}' for SimVar Id: '{varId}' Name: '{varName}'", dVal, varId, varName);
-          return;
+          return false;
         }
       }
       if (data.TryGetValue("RelAi", out var relAi) && new BooleanString(relAi) && !_simConnectService.ReleaseAIControl(simVar.Def))
-        return;
+        return false;
 
       //_logger.LogTrace("Sending value {simVar} value {value}", simVar.Id, (double)simVar);
-      _simConnectService.SetDataOnSimObject(simVar);
+      return _simConnectService.SetDataOnSimObject(simVar);
     }
 
     // Parse and process PluginActions.SetKnownVariable action or connector for a local variable
-    void SetLVarValueFromActionData(ActionData data, int connValue = -1)
+    bool SetLVarValueFromActionData(ActionData data, int connValue = -1)
     {
       if (!data.TryGetValue("VarName", out var varName) || string.IsNullOrWhiteSpace(varName)) {
         _logger.LogError("Could not parse required action parameters for Set Local Variable from data: {data}", ActionDataToKVPairString(data));
-        return;
+        return false;
       }
 
       double dVal;
@@ -835,28 +836,28 @@ namespace MSFSTouchPortalPlugin.Services
       if (connValue < 0) {
         if (!data.TryGetValue("Value", out var value)) {
           _logger.LogError("Could not find Value parameter for Set Simulator Variable from data: {data}", ActionDataToKVPairString(data));
-          return;
+          return false;
         }
         if (!TryEvaluateValue(value, out dVal, out var errMsg)) {
           _logger.LogError("Could not set numeric value '{value}' for LVar: '{varName}'; Error: {errMsg}", value, varName, errMsg);
-          return;
+          return false;
         }
       }
       // Validate and convert slider value into range
       else if (!ConvertSliderValueRange(connValue, data, out dVal)) {
-        return;
+        return false;
       }
-      _simConnectService.SetVariable('L', varName, dVal, data.GetValueOrDefault("Unit", string.Empty));
+      return _simConnectService.SetVariable('L', varName, dVal, data.GetValueOrDefault("Unit", string.Empty));
     }
 
     // Parse and process PluginActions.SetVariable action or connector
-    void SetVariableFromActionData(ActionData data, int connValue = -1)
+    bool SetVariableFromActionData(ActionData data, int connValue = -1)
     {
       if (!data.TryGetValue("VarType", out var varType) ||
           !data.TryGetValue("VarName", out var varName) || string.IsNullOrWhiteSpace(varName))
       {
         _logger.LogError("Could not parse Variable Type and/or Name parameters for Set Variable from data: {data}", ActionDataToKVPairString(data));
-        return;
+        return false;
       }
 
       double dVal;
@@ -865,36 +866,36 @@ namespace MSFSTouchPortalPlugin.Services
       if (connValue < 0) {
         if (!data.TryGetValue("Value", out var value)) {
           _logger.LogError("Could not find Value parameter for Set Variable from data: {data}", ActionDataToKVPairString(data));
-          return;
+          return false;
         }
         if (!TryEvaluateValue(value, out dVal, out var errMsg)) {
           _logger.LogError("Could not set numeric value '{value}' for LVar: '{varName}'; Error: {errMsg}", value, varName, errMsg);
-          return;
+          return false;
         }
         if (varType[0] == 'L' && data.TryGetValue("Create", out var sCreate) && new BooleanString(sCreate))
           createLvar = true;
       }
       // Validate and convert slider value into range
       else if (!ConvertSliderValueRange(connValue, data, out dVal)) {
-        return;
+        return false;
       }
 
       _logger.LogTrace("Setting variable {0} to value {1}", varName, dVal);
-      _simConnectService.SetVariable(varType[0], varName, dVal, data.GetValueOrDefault("Unit", string.Empty), createLvar);
+      return _simConnectService.SetVariable(varType[0], varName, dVal, data.GetValueOrDefault("Unit", string.Empty), createLvar);
     }
 
     //case PluginActions.AddCustomSimVar:
     //case PluginActions.AddKnownSimVar:
     //case PluginActions.AddNamedVariable:
     //case PluginActions.AddCalculatedValue:
-    void AddSimVarFromActionData(PluginActions actId, ActionData data)
+    bool AddSimVarFromActionData(PluginActions actId, ActionData data)
     {
       if (!data.TryGetValue("VarName", out var varName) || string.IsNullOrWhiteSpace(varName) ||
           !data.TryGetValue("CatId", out var sCatId)    || !Categories.TryGetCategoryId(sCatId, out Groups catId) ||
           (!data.TryGetValue("Unit", out var sUnit) && actId != PluginActions.AddCalculatedValue)
       ) {
         _logger.LogError($"Could not parse required action parameters for {actId} from data: {ActionDataToKVPairString(data)}");
-        return;
+        return false;
       }
 
       uint index = 0;
@@ -908,18 +909,18 @@ namespace MSFSTouchPortalPlugin.Services
       else if (actId == PluginActions.AddNamedVariable) {
         if (!data.TryGetValue("VarType", out var sVarType)) {
           _logger.LogError($"Could not get variable type parameter for {actId} from data: {ActionDataToKVPairString(data)}");
-          return;
+          return false;
         }
         varType = sVarType[0];
       }
       else if (actId == PluginActions.AddCalculatedValue) {
         if (!data.TryGetValue("CalcCode", out sCalcCode) || string.IsNullOrWhiteSpace(sCalcCode)) {
           _logger.LogError($"Could not get valid CalcCode parameter for {actId} from data: {ActionDataToKVPairString(data)}");
-          return;
+          return false;
         }
         if (!data.TryGetValue("ResType", out var sResType) || !Enum.TryParse(sResType, out resType)) {
           _logger.LogError($"Could not parse ResultType parameter for {actId} from data: {ActionDataToKVPairString(data)}");
-          return;
+          return false;
         }
         varType = 'Q';
       }
@@ -949,44 +950,49 @@ namespace MSFSTouchPortalPlugin.Services
         simVar.CalcResultType = resType;   // this also sets the Unit type and hence the data type (number/integer/string)
       }
 
-      if (AddSimVar(simVar, postponeUpdate: false))
+      if (AddSimVar(simVar, postponeUpdate: false) is bool ret && ret)
         _logger.LogInformation((int)EventIds.PluginInfo, "Added new Value Request from action data: {simVar}", simVar.ToDebugString());
       else
         _logger.LogError("Failed to add Value Request from action data, check previous log messages. Data: {data}", ActionDataToKVPairString(data));
+      return ret;
     }
 
-    private void RemoveSimVarByActionDataName(ActionData data) {
+    bool RemoveSimVarByActionDataName(ActionData data)
+    {
       if (!data.TryGetValue("VarName", out var varName) || !TryGetSimVarIdFromActionData(varName, out string varId)) {
         _logger.LogError($"Could not find valid SimVar ID in action data: {ActionDataToKVPairString(data)}'");
-        return;
+        return false;
       }
       SimVarItem simVar = _statesDictionary[varId];
-      if (simVar != null && RemoveSimVar(simVar))
+      if ((simVar != null && RemoveSimVar(simVar)) is bool ret && ret)
         _logger.LogInformation((int)EventIds.PluginInfo, $"Removed SimVar '{simVar.SimVarName}'");
       else
         _logger.LogError($"Could not find definition for settable SimVar Id: '{varId}' from Name: '{varName}'");
+      return ret;
     }
 
-    private void RequestValueUpdateFromActionData(ActionData data) {
+    bool RequestValueUpdateFromActionData(ActionData data)
+    {
       if (!data.TryGetValue("VarName", out var varName) || !TryGetSimVarIdFromActionData(varName, out string varId)) {
         _logger.LogError($"Could not find valid Variable ID in action data: {ActionDataToKVPairString(data)}'");
-        return;
+        return false;
       }
-      if (_statesDictionary.TryGet(varId, out var simVar))
+      if (_statesDictionary.TryGet(varId, out var simVar) is bool ret && ret)
         _simConnectService.RequestVariableValueUpdate(simVar);
       else
         _logger.LogWarning($"Variable with ID '{varId}' not found.");
+      return ret;
     }
 
     // Dynamic sim Events (actions and connectors)
     //case PluginActions.SetCustomSimEvent:
     //case PluginActions.SetKnownSimEvent:
     //case PluginActions.SetHubHopEvent:
-    void ProcessSimEventFromActionData(PluginActions actId, ActionData data, int connValue = -1)
+    bool ProcessSimEventFromActionData(PluginActions actId, ActionData data, int connValue = -1)
     {
       if (!data.TryGetValue("EvtId", out var eventName)) {
         _logger.LogError("Could not find Event Name parameter for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
-        return;
+        return false;
       }
 
       string sValue = default;
@@ -995,13 +1001,13 @@ namespace MSFSTouchPortalPlugin.Services
       if (connValue < 0) {
         if (!data.TryGetValue("Value", out sValue)) {
           _logger.LogError("Could not find Value parameter for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
-          return;
+          return false;
         }
       }
       // Validate and convert slider value into range
       else if (!ConvertSliderValueRange(connValue, data, out dVal)) {
         // no valid value
-        return;
+        return false;
       }
 
       eventName = eventName.Trim();
@@ -1009,12 +1015,12 @@ namespace MSFSTouchPortalPlugin.Services
       if (actId == PluginActions.SetHubHopEvent) {
         if (!data.TryGetValue("VendorAircraft", out var sVa) || !data.TryGetValue("System", out var sSystem)) {
           _logger.LogError("Could not find required action parameters for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
-          return;
+          return false;
         }
         HubHopPreset p = _presets.PresetByName(eventName, HubHopType.AllInputs, sVa, sSystem);
         if (p == null) {
           _logger.LogError($"Could not find Preset for action data: {ActionDataToKVPairString(data)}");
-          return;
+          return false;
         }
 
         // Handle the preset action
@@ -1025,13 +1031,12 @@ namespace MSFSTouchPortalPlugin.Services
           if (p.PresetType == HubHopType.InputPotentiometer && eventName.IndexOf('@') > -1) {
             if (double.IsNaN(dVal) && !TryEvaluateValue(sValue, out dVal, out var errMsg)) {
               _logger.LogError("Data conversion for string '{sValue}' failed for {actId} on with Error: {errMsg}.", sValue, actId, errMsg);
-              return;
+              return false;
             }
             eventName = eventName.Replace("@", dVal.ToString("0.#######", System.Globalization.CultureInfo.InvariantCulture));
           }
           _logger.LogDebug("Sending: " + eventName);
-          _simConnectService.ExecuteCalculatorCode(eventName);
-          return;
+          return _simConnectService.ExecuteCalculatorCode(eventName);
         }
 
         // No WASM module... try to use a named MobiFlight event... I guess. Then fall through and treat it as any other custom named action event.
@@ -1052,60 +1057,61 @@ namespace MSFSTouchPortalPlugin.Services
       }
 
       if (_simConnectService.IsConnected)
-        ProcessSimEvent(ev, ev.Id, sValue, (uint)Math.Round(dVal, 0));
+        return ProcessSimEvent(ev, ev.Id, sValue, (uint)Math.Round(dVal, 0));
+      return false;
     }
 
-    void ProcessCalculatorEventFromActionData(PluginActions actId, ActionData data, int connValue = -1)
+    bool ProcessCalculatorEventFromActionData(PluginActions actId, ActionData data, int connValue = -1)
     {
       if (!data.TryGetValue("Code", out var calcCode) || string.IsNullOrWhiteSpace(calcCode)) {
         _logger.LogError("Calculator Code parameter missing or empty for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
-        return;
+        return false;
       }
       double dVal = double.NaN;
       // Validate action value
       if (connValue < 0) {
         if (data.TryGetValue("Value", out var sValue) && !TryEvaluateValue(sValue, out dVal, out var errMsg)) {
           _logger.LogError("Data conversion for string '{sValue}' failed for {actId} on with Error: {errMsg}.", sValue, actId, errMsg);
-          return;
+          return false;
         }
       }
       // Validate and convert slider value into range
       else if (!ConvertSliderValueRange(connValue, data, out dVal)) {
-        return;
+        return false;
       }
       if (!double.IsNaN(dVal))
         calcCode = calcCode.Replace("@", dVal.ToString("F6"));
-      _simConnectService.ExecuteCalculatorCode(calcCode);
+      return _simConnectService.ExecuteCalculatorCode(calcCode);
     }
 
 
     // Main TP Action event handlers
 
-    void ProcessEvent(DataContainerEventBase actionEvent)
+    bool ProcessEvent(DataContainerEventBase actionEvent)
     {
       var idParts = actionEvent.Id.Split('.', StringSplitOptions.RemoveEmptyEntries);
       if (idParts.Length < 4) {
         _logger.LogWarning("Malformed action ID '{0}'", actionEvent.Id);
-        return;
+        return false;
       }
       string sActId = idParts[^3] + '.' + idParts[^1];
       if (!actionsDictionary.TryGetValue(sActId, out ActionEventType action)) {
         _logger.LogWarning("Unknown action ID '{0}'", sActId);
-        return;
+        return false;
       }
 
       int connValue = (actionEvent.GetType() == typeof(ConnectorChangeEvent)) ? ((ConnectorChangeEvent)actionEvent).Value : -1;
       if (action.CategoryId == Groups.Plugin) {
         ProcessInternalEvent(action, actionEvent.Data, connValue);
-        return;
+        return true;
       }
 
       if (!_simConnectService.IsConnected)
-        return;
+        return false;
 
       var dataArry = actionEvent.Data.Values.ToArray();
       if (!action.TryGetEventMapping(in dataArry, out Enum eventId))
-        return;
+        return false;
 
       string valStr = null;
       if (connValue < 0) {
@@ -1116,12 +1122,12 @@ namespace MSFSTouchPortalPlugin.Services
         connValue = (int)Math.Round(dVal, 0);
       }
       else {
-        return;
+        return false;
       }
-      ProcessSimEvent(action, eventId, valStr, (uint)connValue);
+      return ProcessSimEvent(action, eventId, valStr, (uint)connValue);
     }
 
-    void ProcessInternalEvent(ActionEventType action, ActionData data, int connValue = -1)
+    bool ProcessInternalEvent(ActionEventType action, ActionData data, int connValue = -1)
     {
       PluginActions pluginEventId = (PluginActions)action.Id;
       _logger.LogTrace("Firing Internal Event - action: {actId}; enum: {pluginEventId}; connVal {connVal}; data: {data}", action.ActionId, pluginEventId, connValue, ActionDataToKVPairString(data));
@@ -1130,73 +1136,67 @@ namespace MSFSTouchPortalPlugin.Services
         case PluginActions.ActionRepeatInterval: {
           // preserve backwards compatibility with old actions which used indexed data IDs
           if ((data.TryGetValue("Action", out var actId) || data.TryGetValue("0", out actId)) && action.TryGetEventMapping(actId, out Enum eventId))
-            ProcessPluginCommandAction((PluginActions)eventId, data, connValue);
-          else
-            _logger.LogError($"Could not parse required action parameters for {actId} from data: {data}", action.ActionId, ActionDataToKVPairString(data));
-          break;
+            return ProcessPluginCommandAction((PluginActions)eventId, data, connValue);
+          _logger.LogError($"Could not parse required action parameters for {actId} from data: {data}", action.ActionId, ActionDataToKVPairString(data));
+          return false;
         }
 
         case PluginActions.SetSimVar:
-          SetSimVarValueFromActionData(data, connValue);
-          break;
+          return SetSimVarValueFromActionData(data, connValue);
 
         case PluginActions.SetLocalVar:
-          SetLVarValueFromActionData(data, connValue);
-          break;
+          return SetLVarValueFromActionData(data, connValue);
 
         case PluginActions.SetVariable:
-          SetVariableFromActionData(data, connValue);
-          break;
+          return SetVariableFromActionData(data, connValue);
 
         case PluginActions.SetCustomSimEvent:
         case PluginActions.SetKnownSimEvent:
         case PluginActions.SetHubHopEvent:
-          ProcessSimEventFromActionData(pluginEventId, data, connValue);
-          break;
+          return ProcessSimEventFromActionData(pluginEventId, data, connValue);
 
         case PluginActions.ExecCalcCode:
-          ProcessCalculatorEventFromActionData(pluginEventId, data, connValue);
-          break;
+          return ProcessCalculatorEventFromActionData(pluginEventId, data, connValue);
 
         case PluginActions.AddCustomSimVar:
         case PluginActions.AddKnownSimVar:
         case PluginActions.AddNamedVariable:
         case PluginActions.AddCalculatedValue:
-          AddSimVarFromActionData(pluginEventId, data);
-          break;
+          return AddSimVarFromActionData(pluginEventId, data);
 
         case PluginActions.UpdateVarValue:
-          RequestValueUpdateFromActionData(data);
-          break;
+          return RequestValueUpdateFromActionData(data);
 
         case PluginActions.RemoveSimVar:
-          RemoveSimVarByActionDataName(data);
-          break;
+          return RemoveSimVarByActionDataName(data);
 
         case PluginActions.LoadSimVars: {
-          if (data.TryGetValue("VarsFile", out var filepath) && !string.IsNullOrWhiteSpace(filepath))
+          if (data.TryGetValue("VarsFile", out var filepath) && !string.IsNullOrWhiteSpace(filepath)) {
             LoadCustomSimVarsFromFile(filepath.Trim());
-          break;
+            return true;
+          }
+          return false;
         }
 
         case PluginActions.SaveSimVars: {
           if (data.TryGetValue("VarsFile", out var filepath) && !string.IsNullOrWhiteSpace(filepath)) {
             bool customOnly = !action.TryGetEventMapping(data.GetValueOrDefault("VarsSet", "Custom"), out Enum eventId) || (PluginActions)eventId == PluginActions.SaveCustomSimVars;
             SaveSimVarsToFile(filepath.Trim(), customOnly);
+            return true;
           }
-          break;
+          return false;
         }
 
         case PluginActions.SetConnectorValue:
           // ignore, has no action.
-          break;
+          return false;
         default:
           _logger.LogWarning("Unknown action ID '{0}'", pluginEventId.ToString());
-          break;
+          return false;
       }
     }
 
-    void ProcessSimEvent(ActionEventType action, Enum eventId, string value = null, uint uValue = 0)
+    bool ProcessSimEvent(ActionEventType action, Enum eventId, string value = null, uint uValue = 0)
     {
       if (!string.IsNullOrWhiteSpace(value)) {
         double dataReal = double.NaN;
@@ -1207,7 +1207,7 @@ namespace MSFSTouchPortalPlugin.Services
               _logger.LogError(
                 "Data conversion for string '{value}' failed for action '{actId}' on sim event '{evName}' with Error: {errMsg}.",
                 value, action.ActionId, _reflectionService.GetSimEventNameById(eventId), errMsg);
-              return;
+              return false;
             }
             break;
           case DataType.Switch:
@@ -1225,7 +1225,7 @@ namespace MSFSTouchPortalPlugin.Services
       _logger.LogTrace(
         "Firing Sim Event - action: {actionId}; category: {catId}; name: {name}; data {uValue}",
         action.ActionId, action.CategoryId, _reflectionService.GetSimEventNameById(eventId), uValue);
-      _simConnectService.TransmitClientEvent(action.CategoryId, eventId, uValue);
+      return _simConnectService.TransmitClientEvent(action.CategoryId, eventId, uValue);
     }
 
     // Handles an array of `Setting` types sent from TP/API. This could come from either the
@@ -1296,21 +1296,25 @@ namespace MSFSTouchPortalPlugin.Services
       ProcessPluginSettings(message.Values);
     }
 
-    public void OnActionEvent(ActionEvent message) {
+    public void OnActionEvent(ActionEvent message)
+    {
       // Actions used in TP "On Hold" events will send "down" and "up" events, in that order (usually).
-      // "On Pressed" actions will have an "action" event. These are all abstracted into TouchPortalSDK enums.
-      // Note that an "On Hold" action ("down" event) is _not_ triggered upon initial press. This allow different
-      // actions per button, and button designer can still choose to duplicate the Hold action in the Pressed handler.
-      switch (message.GetPressState()) {
-        case TouchPortalSDK.Messages.Models.Enums.Press.Down:
+      // "On Pressed" actions will have a "action" event (Tap) when it is _released_.
+      switch (message.GetPressState())
+      {
+        case TouchPortalSDK.Messages.Models.Enums.Press.Down: {
           // "On Hold" activated ("down" event). Try to add this action to the repeating/scheduled actions queue, unless it already exists.
           var timer = new Timer(Settings.ActionRepeatInterval.IntValue);
           timer.Elapsed += delegate { ProcessEvent(message); };
-          if (_repeatingActionTimers.TryAdd(message.ActionId, timer))
-            timer.Start();
-          else
+          if (_repeatingActionTimers.TryAdd(message.ActionId, timer)) {
+            if (ProcessEvent(message))  // fire the event first and see if it event succeeds
+              timer.Start();
+          }
+          else {
             timer.Dispose();
+          }
           break;
+        }
 
         case TouchPortalSDK.Messages.Models.Enums.Press.Up:
           // "On Hold" released ("up" event). Mark action for removal from repeating queue.
