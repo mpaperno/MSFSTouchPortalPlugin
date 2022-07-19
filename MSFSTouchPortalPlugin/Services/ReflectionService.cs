@@ -39,17 +39,16 @@ namespace MSFSTouchPortalPlugin.Services
     public static string TouchPortalBaseId { get; set; } = ExecutingAssembly.GetName().Name;
 
     private readonly Type[] _assemblyTypes = ExecutingAssembly.GetTypes();
-
     private readonly ILogger<ReflectionService> _logger;
-
-    public ReflectionService(ILogger<ReflectionService> logger) {
-      _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
     // Mapping of the generated SimConnect client event ID Enum to the SimConnect event name and group id.
     // Primarily used to register events with SimConnect, but can also be useful for debug/logging.
     // Structure is: <Event ID> -> new { string EventName, Enums.Groups GroupId }
     private static readonly Dictionary<Enum, SimEventRecord> clientEventIdToNameMap = new();
+
+    public ReflectionService(ILogger<ReflectionService> logger)
+    {
+      _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
     public ref readonly Dictionary<Enum, SimEventRecord> GetClientEventIdToNameMap() => ref clientEventIdToNameMap;
     public string GetSimEventNameById(Enum id) => clientEventIdToNameMap.TryGetValue(id, out var entry) ? entry.EventName : "[unknown event]";
@@ -70,28 +69,71 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     public IEnumerable<TouchPortalActionAttribute> GetActionAttributes(Groups catId) {
-      List<TouchPortalActionAttribute> ret = new();
-      var container = _assemblyTypes.Where(t => t.IsClass && t.GetCustomAttribute<TouchPortalCategoryAttribute>()?.Id == catId);
-      foreach (var c in container) {
-        foreach (var m in c.GetMembers()) {
-          if (m.GetCustomAttribute<TouchPortalActionAttribute>() is var actionAttrib && actionAttrib != null) {
-            actionAttrib.Data = m.GetCustomAttributes<TouchPortalActionDataAttribute>(true).ToArray();
-            actionAttrib.Mappings = m.GetCustomAttributes<TouchPortalActionMappingAttribute>(true).ToArray();
-            ret.Add(actionAttrib);
-          }
-        }
-      }
-      return ret;
+      return GetActionBaseAttributes<TouchPortalActionAttribute>(catId);
     }
 
     public IEnumerable<TouchPortalConnectorAttribute> GetConnectorAttributes(Groups catId)
     {
-      List<TouchPortalConnectorAttribute> ret = new();
+      List<TouchPortalConnectorAttribute> attribs = new(); //GetActionBaseAttributes<TouchPortalConnectorAttribute>(catId).ToList();
+      // Generate connectors from compatible actions or explicit connector attributes.
+      var actionAttribs = GetActionBaseAttributes<TouchPortalActionBaseAttribute>(catId).Where(m => m.GetType() == typeof(TouchPortalConnectorAttribute) || m.ConnectorFormat != null);
+      foreach (var actAttr in actionAttribs) {
+        TouchPortalConnectorAttribute conn = null;
+        List<TouchPortalActionDataAttribute> connData;
+        string format = string.Empty;
+        TouchPortalConnectorMetaAttribute metaAttrib = actAttr.ParentObject.GetCustomAttribute<TouchPortalConnectorMetaAttribute>();
+        if (actAttr.GetType() == typeof(TouchPortalConnectorAttribute)) {
+          conn = actAttr as TouchPortalConnectorAttribute;
+          connData = conn.Data.ToList();
+          format = conn.Format;
+        }
+        else {
+          TouchPortalActionDataAttribute valueAttrib = actAttr.Data.FirstOrDefault(m => (m.GetType() == typeof(TouchPortalActionTextAttribute) || m.GetType() == typeof(TouchPortalActionNumericAttribute)) && !double.IsNaN(m.MinValue));
+          if (valueAttrib == null)
+            continue;
+          connData = actAttr.Data.Where(m => m != valueAttrib).ToList();
+          format = actAttr.ConnectorFormat;
+          if (metaAttrib == null)
+            metaAttrib = new TouchPortalConnectorMetaAttribute(valueAttrib.MinValue, valueAttrib.MaxValue, valueAttrib.MinValue, valueAttrib.MaxValue, valueAttrib.AllowDecimals);
+        }
+        if (metaAttrib != null) {
+          int fmtN = metaAttrib.RangeStartIndex < 0 ? connData.Count : metaAttrib.RangeStartIndex;
+          format += $"{{{fmtN++}}}-{{{fmtN++}}}";
+          connData.Add(new TouchPortalActionNumericAttribute(metaAttrib.DefaultMin, metaAttrib.MinValue, metaAttrib.MaxValue, metaAttrib.AllowDecimals) { Id = "RangeMin", Label = "Value Range Minimum" });
+          connData.Add(new TouchPortalActionNumericAttribute(metaAttrib.DefaultMax, metaAttrib.MinValue, metaAttrib.MaxValue, metaAttrib.AllowDecimals) { Id = "RangeMax", Label = "Value Range Maximum" });
+          if (metaAttrib.UseFeedback) {
+            format += $"| Feedback From\n| State (opt):{{{fmtN++}}}{{{fmtN++}}}\nRange:{{{fmtN++}}}-{{{fmtN}}}";
+            connData.Add(new TouchPortalActionChoiceAttribute("[connect plugin]", "") { Id = "FbCatId", Label = "Feedback Category" });
+            connData.Add(new TouchPortalActionChoiceAttribute("[select a category]", "") { Id = "FbVarName", Label = "Feedback Variable" });
+            connData.Add(new TouchPortalActionTextAttribute("", float.MinValue, float.MaxValue) { Id = "FbRangeMin", Label = "Feedback Range Minimum" });
+            connData.Add(new TouchPortalActionTextAttribute("", float.MinValue, float.MaxValue) { Id = "FbRangeMax", Label = "Feedback Range Maximum" });
+          }
+        }
+        if (conn == null) {
+          conn = new (actAttr.Id, actAttr.Name, actAttr.Description, format) {
+            Data = connData.ToArray(),
+            Mappings = actAttr.Mappings
+          };
+        }
+        else if (metaAttrib != null) {
+          conn.Format = format;
+          conn.Data = connData.ToArray();
+        }
+        attribs.Add(conn);
+      }
+      return attribs;
+    }
+
+    IEnumerable<T> GetActionBaseAttributes<T>(Groups catId) where T : TouchPortalActionBaseAttribute
+    {
+      List<T> ret = new();
       var container = _assemblyTypes.Where(t => t.IsClass && t.GetCustomAttribute<TouchPortalCategoryAttribute>()?.Id == catId);
       foreach (var c in container) {
         foreach (var m in c.GetMembers()) {
-          if (m.GetCustomAttribute<TouchPortalConnectorAttribute>() is var actionAttrib && actionAttrib != null) {
+          if (m.GetCustomAttribute<T>() is var actionAttrib && actionAttrib != null) {
             actionAttrib.Data = m.GetCustomAttributes<TouchPortalActionDataAttribute>(true).ToArray();
+            actionAttrib.Mappings = m.GetCustomAttributes<TouchPortalActionMappingAttribute>(true).ToArray();
+            actionAttrib.ParentObject = m;
             ret.Add(actionAttrib);
           }
         }
@@ -130,7 +172,7 @@ namespace MSFSTouchPortalPlugin.Services
           DataAttributes = actAttr.Data.ToDictionary(d => d.Id, d => d)
         };
         // Put into returned collection
-        if (!returnDict.TryAdd($"{TouchPortalBaseId}.{Groups.Plugin}.Action.{act.ActionId}", act)) {
+        if (!returnDict.TryAdd($"{Groups.Plugin}.{act.ActionId}", act)) {
           _logger.LogWarning($"Duplicate action ID found for Plugin action '{act.ActionId}', skipping.'");
           continue;
         }
@@ -171,13 +213,8 @@ namespace MSFSTouchPortalPlugin.Services
             ActionId = actAttr.Id
           };
           // Put into returned collection
-          if (!returnDict.TryAdd($"{TouchPortalBaseId}.{catAttr.Id}.Action.{act.ActionId}", act)) {
+          if (!returnDict.TryAdd($"{catAttr.Id}.{act.ActionId}", act)) {
             _logger.LogWarning($"Duplicate action ID found for action '{act.ActionId}' in category '{catAttr.Id}', skipping.'");
-            continue;
-          }
-          // Check for mappings
-          if (!actAttr.Mappings.Any()) {
-            _logger.LogWarning($"No ActionMapping attributes found for action '{act.ActionId}' in category '{catAttr.Id}', skipping.'");
             continue;
           }
           // Loop over all the data attributes to find the "choice" types for mapping and also the index of any free-form data value field

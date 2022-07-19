@@ -33,67 +33,129 @@ namespace MSFSTouchPortalPlugin.Attributes
     public string Name { get; set; }
     public string Description { get; set; }
     public string Format { get; set; }
+    public string ConnectorFormat { get; set; } = null;
+    public System.Reflection.MemberInfo ParentObject { get; set; } = null;
     public TouchPortalActionDataAttribute[] Data { get; set; } = Array.Empty<TouchPortalActionDataAttribute>();
+    public TouchPortalActionMappingAttribute[] Mappings { get; set; } = Array.Empty<TouchPortalActionMappingAttribute>();
 
-    public TouchPortalActionBaseAttribute(string id, string name, string description, string format)
+    public TouchPortalActionBaseAttribute(string id, string name, string description, string format, string connectorFormat = null)
     {
-      SetupProperties(id, default, name, description, format);
+      SetupProperties(id, default, name, description, format, connectorFormat);
     }
 
-    public TouchPortalActionBaseAttribute(PluginActions id, string name, string description, string format)
+    public TouchPortalActionBaseAttribute(PluginActions id, string name, string description, string format, string connectorFormat = null)
     {
-      SetupProperties(id.ToString(), id, name, description, format);
-      EnumId = id;
+      SetupProperties(id.ToString(), id, name, description, format, connectorFormat);
     }
 
-    private void SetupProperties(string id, Enum eId, string name, string description, string format)
+    private void SetupProperties(string id, Enum eId, string name, string description, string format, string connectorFormat = null)
     {
       Id = id;
       EnumId = eId;
       Name = name;
       Description = description;
       Format = format;
+      ConnectorFormat = connectorFormat;
     }
   }
 
   public class TouchPortalActionAttribute : TouchPortalActionBaseAttribute
   {
-    public string Prefix { get; set; }
-    public string Type { get; set; }
+    public string Prefix { get; set; } = "MSFS";
+    public string Type { get; set; } = "communicate";
     public bool HasHoldFunctionality { get; set; }
-    public TouchPortalActionMappingAttribute[] Mappings { get; set; } = Array.Empty<TouchPortalActionMappingAttribute>();
+
+    public TouchPortalActionAttribute(string id, string name, string format, bool holdable = false) :
+      base(id, name, string.Empty, format)
+    {
+      HasHoldFunctionality = holdable;
+    }
 
     public TouchPortalActionAttribute(string id, string name, string description, string format, bool holdable = false) :
       base(id, name, description, format)
     {
-      SetupProperties(holdable);
+      HasHoldFunctionality = holdable;
     }
 
-    public TouchPortalActionAttribute(PluginActions id, string name, string description, string format, bool holdable = false) :
-      base(id, name, description, format)
+    public TouchPortalActionAttribute(string id, string name, bool holdable, string format, string connectorFormat) :
+      base(id, name, string.Empty, format, connectorFormat)
     {
-      SetupProperties(holdable);
+      HasHoldFunctionality = holdable;
+    }
+
+    public TouchPortalActionAttribute(string id, string name, string description, bool holdable, string format, string connectorFormat) :
+      base(id, name, description, format, connectorFormat)
+    {
+      HasHoldFunctionality = holdable;
     }
 
     public TouchPortalActionAttribute(string id, string name, string prefix, string description, string format, bool holdable = false) :
       base(id, name, description, format)
     {
-      SetupProperties(holdable, prefix);
-    }
-
-    private void SetupProperties(bool holdable, string prefix = "MSFS", string type = "communicate") {
       Prefix = prefix;
-      Type = type;
       HasHoldFunctionality = holdable;
     }
+
+    public TouchPortalActionAttribute(PluginActions id, string name, string description, string format, bool holdable = false) :
+      base(id, name, description, format)
+    {
+      HasHoldFunctionality = holdable;
+    }
+
+    public TouchPortalActionAttribute(PluginActions id, string name, string description, string format, string connectorFormat, bool holdable) :
+      base(id, name, description, format, connectorFormat)
+    {
+      HasHoldFunctionality = holdable;
+    }
+
   }
 
   public class TouchPortalConnectorAttribute : TouchPortalActionBaseAttribute
   {
     public TouchPortalConnectorAttribute(PluginActions id, string name, string description, string format) :
       base(id, name, description, format) { }
+    public TouchPortalConnectorAttribute(string id, string name, string description, string format) :
+      base(id, name, description, format)
+    { }
   }
 
+  // -----------------------------------
+  // TouchPortalConnectorMetaAttribute
+  // -----------------------------------
+
+  [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+  public class TouchPortalConnectorMetaAttribute : Attribute
+  {
+    public double DefaultMin { get; set; } = -16384;
+    public double DefaultMax { get; set; } = 16384;
+    public double MinValue { get; set; } = float.MinValue;
+    public double MaxValue { get; set; } = float.MaxValue;
+    public int RangeStartIndex { get; set; } = -1;
+    public bool AllowDecimals { get; set; } = true;
+    public bool UseFeedback { get; set; } = true;
+
+    public TouchPortalConnectorMetaAttribute() { }
+    public TouchPortalConnectorMetaAttribute(bool decimals, bool feedback = true)
+    {
+      AllowDecimals = decimals;
+      UseFeedback = feedback;
+    }
+    public TouchPortalConnectorMetaAttribute(double defaultMin, double defaultMax, bool decimals = true, bool feedback = true)
+    {
+      DefaultMin = defaultMin;   DefaultMax = defaultMax;
+      AllowDecimals = decimals;  UseFeedback = feedback;
+    }
+    public TouchPortalConnectorMetaAttribute(double defaultMin, double defaultMax, double minValue, double maxValue, bool decimals = true, bool feedback = true)
+    {
+      DefaultMin = defaultMin;  DefaultMax = defaultMax;
+      MinValue = minValue;      MaxValue = maxValue;
+      AllowDecimals = decimals; UseFeedback = feedback;
+    }
+  }
+
+  // -----------------------------------
+  // Data Attributes
+  // -----------------------------------
 
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
   public class TouchPortalActionDataAttribute : Attribute
