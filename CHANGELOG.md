@@ -1,16 +1,20 @@
 # MSFS Touch Portal Plugin
 
 ## 1.0.0.1 (TBD)
+## 1.0.1.0 (July-19-2022)
 * Removed all static Sim Var states from entry.tp file -- all states are now dynamic.
-* Added new Setting option to sort Local ('L') variables list alphabetically.
+* Added new Setting option to sort Local ('L') Airplane variables list alphabetically.
 * Added new Setting option to control HubHop data update timeout value.
 * Fixed exception error when requesting variables with an empty Unit type.
-* Fixed selections in _Activate a Simulator Event From HubHop_ action not updating properly after HubHop data update until plugin is restarted 
-  ([#32](https://github.com/mpaperno/MSFSTouchPortalPlugin/issues/32))
+* Fixed selections in "Activate a Simulator Event From HubHop" action not updating properly after HubHop data update until plugin is restarted 
+  ([#32](https://github.com/mpaperno/MSFSTouchPortalPlugin/issues/32)).
+* Fixed "Activate a Simulator Event From List" was broken in last version (produced SimConnect errors).
+* Fixed that state names for requested indexed SimVars didn't include the proper index number.
 * Improved user feedback for HubHop data update events (initiated/updated/failed).
 * Increased length of version number shown in Touch Portal by 2 digits to include all 4 parts of dotted version (1.0.0.1 = 1000001).
 * New icon for the plugin executable.
 
+---
 ## 1.0.0.0-beta1 (July-09-2022)
 * Adds support for integration with custom WASM module from the [WASimCommander project](https://github.com/mpaperno/WASimCommander) (WASimModule).
     * Get and Set "Local" variables as well as practically any other 
@@ -31,7 +35,20 @@
 * Added actions to _Set_ cowl flaps 1-4 to specific position.
 * The list of imported sim vars updated to include new `HSI_STATION_IDENT` and fix "settable" flag on `GPS_*` variables like `GPS_APPROACH_WP_TYPE`, etc.
 
+### New Actions
+* Activate a Simulator Event From HubHop  <sup>(requires WASimModule or MobiFlight WASM)</sup>
+* Set Airplane Local Variable  <sup>(requires WASimModule)</sup>
+* Set Named Variable Value  <sup>(requires WASimModule)</sup>
+* Execute Calculator Code  <sup>(requires WASimModule)</sup>
+* Request a Named Variable  <sup>(requires WASimModule)</sup>
+* Request a Calculated Value  <sup>(requires WASimModule)</sup>
+* Update a Variable Value  <sup>(requires WASimModule)</sup>
+* Cowl Flaps 1-4 Lever Set
+* Cowl Flap Levers - Adjust All
+* Update Local (Airplane) Variables List  <sup>(requires WASimModule)</sup>
+* Update HubHopData
 
+---
 ## 0.7.0.2-mp (April-21-2022)
 * Fixes an issue that prevented MobiFlight events from working.
 * Fixes possible plugin crash when trying to re-connect to MSFS after it has crashed.
