@@ -58,7 +58,7 @@ namespace MSFSTouchPortalPlugin_Generator
       };
     }
 
-    static void SerializeActionData(TouchPortalActionBase action, TouchPortalActionDataAttribute[] attribData)
+    bool SerializeActionData(TouchPortalActionBase action, TouchPortalActionDataAttribute[] attribData)
     {
       int i = 0;
       foreach (var attrib in attribData) {
@@ -76,7 +76,14 @@ namespace MSFSTouchPortalPlugin_Generator
         ++i;
         action.Data.Add(data);
       }
-      action.Format = string.Format(action.Format, action.Data.Select(d => $"{{${d.Id}$}}").ToArray());
+      try {
+        action.Format = string.Format(action.Format, action.Data.Select(d => $"{{${d.Id}$}}").ToArray());
+      }
+      catch {
+        _logger.LogError("Failed to format {0} for {1} with data {2}", action.Format, action.Id, string.Join(',', action.Data.Select(d => $"{{${d.Id}$}}")));
+        return false;
+      }
+      return true;
     }
 
     public void Generate()
@@ -128,8 +135,8 @@ namespace MSFSTouchPortalPlugin_Generator
           };
 
           // Action Data
-          if (actionAttrib.Data.Any())
-            SerializeActionData(action, actionAttrib.Data);
+          if (actionAttrib.Data.Any() && !SerializeActionData(action, actionAttrib.Data))
+            continue;
 
           // validate unique ID
           if (category.Actions.FirstOrDefault(a => a.Id == action.Id) == null)
@@ -148,8 +155,8 @@ namespace MSFSTouchPortalPlugin_Generator
           };
 
           // Connector Data
-          if (connAttrib.Data.Any())
-            SerializeActionData(action, connAttrib.Data);
+          if (connAttrib.Data.Any() && !SerializeActionData(action, connAttrib.Data))
+            continue;
 
           // validate unique ID
           if (category.Connectors.FirstOrDefault(a => a.Id == action.Id) == null)
