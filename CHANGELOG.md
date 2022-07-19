@@ -1,6 +1,32 @@
 # MSFS Touch Portal Plugin
 
-## 1.0.0.1 (TBD)
+## 1.1.0.0 (TBD)
+* Added Connector (Slider) functionality with feedback capabilities (eg. move slider in response to simulator event).
+* Added 29 new connectors to set variables, trigger events with value ranges, or use as visual value indicators.
+* Added new "Camera & Views" category for custom states.
+
+### New Connectors
+* All 18 existing (and 2 new) "Set" Actions (where a value is needed)
+* Set Action Repeat Interval
+* Set a Named Simulator Event Value
+* Set a Known Simulator Event Value
+* Set HubHop Input Event Value  <sup>(requires WASimModule)</sup>
+* Set Simulator Variable (SimVar)
+* Set Airplane Local Variable  <sup>(requires WASimModule)</sup>
+* Set Named Variable Value  <sup>(requires WASimModule)</sup>
+* Execute Calculator Code With Value  <sup>(requires WASimModule)</sup>
+* Visual Feedback Connector (for reflecting the value of a State)
+
+### New Actions and Connectors
+* Mixture Lever Set
+* Brake Axis Left/Right Set
+
+### Updated Actions
+* The "Set Simulator Varirable" and "Set Local Variable" actions have been split into 2 (restores pre-v1.0 version of the former).
+* Cowl Flaps 1-4 Set consolidated into one action/connector with choice of flaps.
+* Updated some action names in AP, Fuel, Engine, Flight System categories for consistency and clarity. Removed some redundant descriptions.
+
+---
 ## 1.0.1.0 (July-19-2022)
 * Removed all static Sim Var states from entry.tp file -- all states are now dynamic.
 * Added new Setting option to sort Local ('L') Airplane variables list alphabetically.

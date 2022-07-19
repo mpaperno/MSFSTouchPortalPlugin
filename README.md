@@ -23,6 +23,8 @@ This project is a continuation of the original [MSFSTouchPortalPlugin by Tim Lew
 * Connects to local or remote simulators with SimConnect.
 * Allows getting data variables from simulator at regular intervals, such as flight instruments, control surfaces, or switch states.
 * Allows triggering any interactive aircraft event via a Touch Portal Action, such as setting switches, adjusting control surfaces, radio frequencies, and so on.
+* NEW: Use Touch Portal "Sliders" to control a value within any range, and/or provide visual feedback to simulator variable changes 
+  (eg. a throttle slider can both control the sim throttle and show the actual position when the throttle is moved with mouse/joystick/keyboard).
 * Completely configurable to request any variable or trigger any event supported by the connected simulator, including with custom extensions like MobiFlight.
 * Supports simulator system events (such as "flight loaded" or "sim started") as Touch Portal Events.
 * Allows simultaneous usage from multiple networked Touch Portal devices.
@@ -68,7 +70,8 @@ A comprehensive installation and usage guide was published on the _Simvol_ Web s
 Here is a list of known pages which use this plugin. In no particular order, no endorsement, nor have I necessarily tried/tested all these. YMMV.
 
 * [Pages, Buttons, & Graphics](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) in the Wiki
-* [FltSim-msfs2020-Control](https://github.com/HiDTH/FltSim-msfs2020-Control) by HiDTH @ GitHub  (**Page background graphic may cause issues, replacement at link above**)
+* [FltSim-msfs2020-Control](https://github.com/HiDTH/FltSim-msfs2020-Control) by HiDTH @ GitHub<br />
+  (**Page background graphic may cause issues, replacement at link above. This is a cool page, but is complex and somewhat outdated, and some parts may not work properly!** The author seems to have stopped updates/support for it.)
 * [Touch Portal Page H145](https://flightsim.to/file/35625/touch-portal-page-h145) by edheronde @ flighsim.to
 * [Touch Portal Page "Piston Single"](https://flightsim.to/file/7394/touch-portal-page-piston-single) by yushu @ flightsim.to
 * [Touch Portal Page for Fenix A320](https://flightsim.to/file/35834/touch-portal-page-for-fenix-a320) by FFEENNIIXX @ flightsim.to
@@ -130,8 +133,6 @@ I will also post update notices in the Touch Portal Discord server room [#msfs20
 My [TJoy Touch Portal Plugin](https://github.com/mpaperno/TJoy) is an interface between Touch Portal and several virtual joystick/game pad emulation drivers like _vJoy_, _vXBox_, and _ViGEm Bus_.
 
 ## TODO
-
-* Sliders ("connectors")
 * Custom SimVar/states setup GUI
 
 ## References
