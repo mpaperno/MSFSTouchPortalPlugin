@@ -110,36 +110,20 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalActionMapping("FLAPS_SET")]
     public static readonly object FlapsSet;
 
-
-    [TouchPortalAction("CowlFlapsAll", "Cowl Flap Levers - Adjust All", "{0} All Cowl Flaps Levers", true)]
+    [TouchPortalAction("CowlFlapsAll", "Cowl Flap Levers Adjust", "Cowl Flaps Lever {0} {1}", true)]
     [TouchPortalActionChoice()]
-    [TouchPortalActionMapping("INC_COWL_FLAPS", "Increase")]
-    [TouchPortalActionMapping("DEC_COWL_FLAPS", "Decrease")]
-    public static readonly object CowlFlapsAll;
-
-    [TouchPortalAction("CowlFlaps1", "Cowl Flaps 1 Lever Adjust", "{0} Cowl Flaps 1 Lever", true)]
     [TouchPortalActionChoice()]
-    [TouchPortalActionMapping("INC_COWL_FLAPS1", "Increase")]
-    [TouchPortalActionMapping("DEC_COWL_FLAPS1", "Decrease")]
-    public static readonly object CowlFlaps1;
-
-    [TouchPortalAction("CowlFlaps2", "Cowl Flaps 2 Lever Adjust", "{0} Cowl Flaps 2 Lever", true)]
-    [TouchPortalActionChoice()]
-    [TouchPortalActionMapping("INC_COWL_FLAPS2", "Increase")]
-    [TouchPortalActionMapping("DEC_COWL_FLAPS2", "Decrease")]
-    public static readonly object CowlFlaps2;
-
-    [TouchPortalAction("CowlFlaps3", "Cowl Flaps 3 Lever Adjust", "{0} Cowl Flaps 3 Lever", true)]
-    [TouchPortalActionChoice()]
-    [TouchPortalActionMapping("INC_COWL_FLAPS3", "Increase")]
-    [TouchPortalActionMapping("DEC_COWL_FLAPS3", "Decrease")]
-    public static readonly object CowlFlaps3;
-
-    [TouchPortalAction("CowlFlaps4", "Cowl Flaps 4 Lever Adjust", "{0} Cowl Flaps 4 Lever", true)]
-    [TouchPortalActionChoice()]
-    [TouchPortalActionMapping("INC_COWL_FLAPS4", "Increase")]
-    [TouchPortalActionMapping("DEC_COWL_FLAPS4", "Decrease")]
-    public static readonly object CowlFlaps4;
+    [TouchPortalActionMapping("INC_COWL_FLAPS",  "All", "Increase")]
+    [TouchPortalActionMapping("DEC_COWL_FLAPS",  "All", "Decrease")]
+    [TouchPortalActionMapping("INC_COWL_FLAPS1", "1", "Increase")]
+    [TouchPortalActionMapping("DEC_COWL_FLAPS1", "1", "Decrease")]
+    [TouchPortalActionMapping("INC_COWL_FLAPS2", "2", "Increase")]
+    [TouchPortalActionMapping("DEC_COWL_FLAPS2", "2", "Decrease")]
+    [TouchPortalActionMapping("INC_COWL_FLAPS3", "3", "Increase")]
+    [TouchPortalActionMapping("DEC_COWL_FLAPS3", "3", "Decrease")]
+    [TouchPortalActionMapping("INC_COWL_FLAPS4", "4", "Increase")]
+    [TouchPortalActionMapping("DEC_COWL_FLAPS4", "4", "Decrease")]
+    public static readonly object CowlFlapsAdjust;
 
     [TouchPortalAction("CowlFlaps1Set", "Cowl Flaps Lever Set", true,
       "Set Cowl {0} Flaps Lever to {0} (0 to 16384)",
@@ -152,6 +136,33 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalActionMapping("COWLFLAP3_SET", "3")]
     [TouchPortalActionMapping("COWLFLAP4_SET", "4")]
     public static readonly object CowlFlapsSet;
+
+    // Deprecated
+    [TouchPortalAction("CowlFlapsAll", "Cowl Flap Levers - Adjust All", "{0} All Cowl Flaps Levers", true, Deprecated = true)]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("INC_COWL_FLAPS", "Increase")]
+    [TouchPortalActionMapping("DEC_COWL_FLAPS", "Decrease")]
+    public static readonly object CowlFlapsAll;
+    [TouchPortalAction("CowlFlaps1", "Cowl Flaps 1 Lever Adjust", "{0} Cowl Flaps 1 Lever", true, Deprecated = true)]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("INC_COWL_FLAPS1", "Increase")]
+    [TouchPortalActionMapping("DEC_COWL_FLAPS1", "Decrease")]
+    public static readonly object CowlFlaps1;
+    [TouchPortalAction("CowlFlaps2", "Cowl Flaps 2 Lever Adjust", "{0} Cowl Flaps 2 Lever", true, Deprecated = true)]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("INC_COWL_FLAPS2", "Increase")]
+    [TouchPortalActionMapping("DEC_COWL_FLAPS2", "Decrease")]
+    public static readonly object CowlFlaps2;
+    [TouchPortalAction("CowlFlaps3", "Cowl Flaps 3 Lever Adjust", "{0} Cowl Flaps 3 Lever", true, Deprecated = true)]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("INC_COWL_FLAPS3", "Increase")]
+    [TouchPortalActionMapping("DEC_COWL_FLAPS3", "Decrease")]
+    public static readonly object CowlFlaps3;
+    [TouchPortalAction("CowlFlaps4", "Cowl Flaps 4 Lever Adjust", "{0} Cowl Flaps 4 Lever", true, Deprecated = true)]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("INC_COWL_FLAPS4", "Increase")]
+    [TouchPortalActionMapping("DEC_COWL_FLAPS4", "Decrease")]
+    public static readonly object CowlFlaps4;
 
     #endregion
 

@@ -28,7 +28,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
   internal static class ElectricalMapping {
     #region Avionics
 
-    [TouchPortalAction("AvionicsMasterSwitch", "Avionics Master", "Toggle Avionics Master", "Toggle Avionics Master")]
+    [TouchPortalAction("AvionicsMasterSwitch", "Avionics Master Switch", "Toggle Avionics Master")]
     [TouchPortalActionMapping("TOGGLE_AVIONICS_MASTER")]
     public static readonly object TOGGLE_AVIONICS_MASTER;
 
@@ -36,52 +36,133 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
 
     #region Alternator & Battery
 
-    [TouchPortalAction("MasterAlternator", "Master Alternator", "Toggle Master Alternator", "Toggle Master Alternator")]
-    [TouchPortalActionMapping("TOGGLE_MASTER_ALTERNATOR")]
-    public static readonly object MASTER_ALTERNATOR;
-
-    [TouchPortalAction("MasterBattery", "Master Battery", "Toggle Master Battery", "Toggle Master Battery")]
+    [TouchPortalAction("MasterBattery", "Master Battery", "Toggle Master Battery")]
     [TouchPortalActionMapping("TOGGLE_MASTER_BATTERY")]
     public static readonly object MASTER_BATTERY;
 
-    [TouchPortalAction("MasterBatteryAlternator", "Master Battery & Alternator", "Toggle Master Battery & Alternator", "Toggle Master Battery & Alternator")]
+    [TouchPortalAction("MasterBatteryAlternator", "Master Battery & Alternator", "Toggle Master Battery & Alternator")]
     [TouchPortalActionMapping("TOGGLE_MASTER_BATTERY_ALTERNATOR")]
     public static readonly object MASTER_BATTERY_ALTERNATOR;
 
-    [TouchPortalAction("AlternatorIndex", "Alternator - Specific", "Toggle Specific Alternator", "Toggle Alternator - {0}")]
+    [TouchPortalAction("AlternatorIndex", "Alternator Switches", "Toggle Alternator - {0}")]
     [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("TOGGLE_MASTER_ALTERNATOR", "Master")]
     [TouchPortalActionMapping("TOGGLE_ALTERNATOR1", "1")]
     [TouchPortalActionMapping("TOGGLE_ALTERNATOR2", "2")]
     [TouchPortalActionMapping("TOGGLE_ALTERNATOR3", "3")]
     [TouchPortalActionMapping("TOGGLE_ALTERNATOR4", "4")]
     public static readonly object ALTERNATOR_INDEX;
 
+    // Deprecated
+    [TouchPortalAction("MasterAlternator", "Master Alternator", "Toggle Master Alternator", Deprecated = true)]
+    [TouchPortalActionMapping("TOGGLE_MASTER_ALTERNATOR")]
+    public static readonly object MASTER_ALTERNATOR;
+
     #endregion
 
     #region Lights
 
-    [TouchPortalAction("StrobeLights", "Toggle/On/Off Strobe Lights", "Strobe Lights - {0}")]
-    [TouchPortalActionChoice(new[] { "Toggle", "On", "Off" })]
-    [TouchPortalActionMapping("STROBES_TOGGLE", "Toggle")]
-    [TouchPortalActionMapping("STROBES_ON", "On")]
-    [TouchPortalActionMapping("STROBES_OFF", "Off")]
-    public static readonly object STROBE_LIGHTS;
-
-    [TouchPortalAction("PanelLights", "Toggle/On/Off Panel Lights", "Panel Lights - {0}")]
-    [TouchPortalActionChoice(new[] { "Toggle", "On", "Off" })]
-    [TouchPortalActionMapping("PANEL_LIGHTS_TOGGLE", "Toggle")]
-    [TouchPortalActionMapping("PANEL_LIGHTS_ON", "On")]
-    [TouchPortalActionMapping("PANEL_LIGHTS_OFF", "Off")]
-    public static readonly object PANEL_LIGHTS;
-
-    [TouchPortalAction("LandingLights", "Toggle/On/Off Landing Lights", "Landing Lights - {0}")]
-    [TouchPortalActionChoice(new[] { "Toggle", "On", "Off" })]
+    [TouchPortalAction("LandingLights", "Landing Lights Switch/Direction", "Landing Lights - {0}")]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("LANDING_LIGHTS_TOGGLE", "Toggle")]
     [TouchPortalActionMapping("LANDING_LIGHTS_ON", "On")]
     [TouchPortalActionMapping("LANDING_LIGHTS_OFF", "Off")]
+    [TouchPortalActionMapping("LANDING_LIGHT_LEFT", "Left")]
+    [TouchPortalActionMapping("LANDING_LIGHT_RIGHT", "Right")]
+    [TouchPortalActionMapping("LANDING_LIGHT_UP", "Up")]
+    [TouchPortalActionMapping("LANDING_LIGHT_DOWN", "Down")]
+    [TouchPortalActionMapping("LANDING_LIGHT_HOME", "Home")]
     public static readonly object LANDING_LIGHTS;
 
-    [TouchPortalAction("ToggleLights", "Toggle All/Specific Lights", "Toggle Lights - {0}")]
+    [TouchPortalAction("LightSwitches", "Light Switches", "NOTE: The 'All', 'Logo' and 'Recognition' lights can only be Toggled.", "Switch {0} Light {1}")]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("ALL_LIGHTS_TOGGLE",         "All",         "Toggle")]
+    [TouchPortalActionMapping("TOGGLE_BEACON_LIGHTS",      "Beacon",      "Toggle")]
+    [TouchPortalActionMapping("TOGGLE_CABIN_LIGHTS",       "Cabin",       "Toggle")]
+    [TouchPortalActionMapping("GLARESHIELD_LIGHTS_TOGGLE", "Glareshield", "Toggle")]
+    [TouchPortalActionMapping("LANDING_LIGHTS_TOGGLE",     "Landing",     "Toggle")]
+    [TouchPortalActionMapping("TOGGLE_LOGO_LIGHTS",        "Logo",        "Toggle")]
+    [TouchPortalActionMapping("TOGGLE_NAV_LIGHTS",         "Nav",         "Toggle")]
+    [TouchPortalActionMapping("PANEL_LIGHTS_TOGGLE",       "Panel",       "Toggle")]
+    [TouchPortalActionMapping("PEDESTRAL_LIGHTS_TOGGLE",   "Pedestal",    "Toggle")]
+    [TouchPortalActionMapping("TOGGLE_RECOGNITION_LIGHTS", "Recognition", "Toggle")]
+    [TouchPortalActionMapping("STROBES_TOGGLE",            "Strobe",      "Toggle")]
+    [TouchPortalActionMapping("TOGGLE_TAXI_LIGHTS",        "Taxi",        "Toggle")]
+    [TouchPortalActionMapping("TOGGLE_WING_LIGHTS",        "Wing",        "Toggle")]
+    //[TouchPortalActionMapping("ALL_LIGHTS_TOGGLE",       "All",         "On")]
+    [TouchPortalActionMapping("BEACON_LIGHTS_ON",          "Beacon",      "On")]
+    [TouchPortalActionMapping("CABIN_LIGHTS_ON",           "Cabin",       "On")]
+    [TouchPortalActionMapping("GLARESHIELD_LIGHTS_ON",     "Glareshield", "On")]
+    [TouchPortalActionMapping("LANDING_LIGHTS_ON",         "Landing",     "On")]
+    //[TouchPortalActionMapping("LOGO_LIGHTS_SEY",         "Logo",        "On")]
+    [TouchPortalActionMapping("NAV_LIGHTS_ON",             "Nav",         "On")]
+    [TouchPortalActionMapping("PANEL_LIGHTS_ON",           "Panel",       "On")]
+    [TouchPortalActionMapping("PEDESTRAL_LIGHTS_ON",       "Pedestal",    "On")]
+    //[TouchPortalActionMapping("RECOGNITION_LIGHTS_SET"   "Recognition", "On")]
+    [TouchPortalActionMapping("STROBES_ON",                "Strobe",      "On")]
+    [TouchPortalActionMapping("TAXI_LIGHTS_ON",            "Taxi",        "On")]
+    [TouchPortalActionMapping("WING_LIGHTS_ON",            "Wing",        "On")]
+    //[TouchPortalActionMapping("ALL_LIGHTS_TOGGLE",       "All",         "Off")]
+    [TouchPortalActionMapping("BEACON_LIGHTS_OFF",         "Beacon",      "Off")]
+    [TouchPortalActionMapping("CABIN_LIGHTS_OFF",          "Cabin",       "Off")]
+    [TouchPortalActionMapping("GLARESHIELD_LIGHTS_OFF",    "Glareshield", "Off")]
+    [TouchPortalActionMapping("LANDING_LIGHTS_OFF",        "Landing",     "Off")]
+    //[TouchPortalActionMapping("LOGO_LIGHTS_SEY",         "Logo",        "Off")]
+    [TouchPortalActionMapping("NAV_LIGHTS_OFF",            "Nav",         "Off")]
+    [TouchPortalActionMapping("PANEL_LIGHTS_OFF",          "Panel",       "Off")]
+    [TouchPortalActionMapping("PEDESTRAL_LIGHTS_OFF",      "Pedestal",    "Off")]
+    //[TouchPortalActionMapping("RECOGNITION_LIGHTS_SET",  "Recognition", "Off")]
+    [TouchPortalActionMapping("STROBES_OFF",               "Strobe",      "Off")]
+    [TouchPortalActionMapping("TAXI_LIGHTS_OFF",           "Taxi",        "Off")]
+    [TouchPortalActionMapping("WING_LIGHTS_OFF",           "Wing",        "Off")]
+    public static readonly object LIGHT_SWITCHES;
+
+    // Preserve backwards compatibility with hidden data field and mappings.
+
+    [TouchPortalAction("LightPorentiometerSet", "Light Dimming", true,
+      "Set Light Potentiometer {0} to {0} (0 to 100)",
+      "Set Light Potentiometer {0}in Value\nRange:"
+    )]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionText("0", 0, 100)]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_SET",   "0")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_1_SET", "1")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_2_SET", "2")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_3_SET", "3")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_4_SET", "4")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_5_SET", "5")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_6_SET", "6")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_7_SET", "7")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_8_SET", "8")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_9_SET", "9")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_10_SET", "10")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_11_SET", "11")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_12_SET", "12")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_13_SET", "13")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_14_SET", "14")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_15_SET", "15")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_16_SET", "16")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_17_SET", "17")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_18_SET", "18")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_19_SET", "19")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_20_SET", "20")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_21_SET", "21")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_22_SET", "22")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_23_SET", "23")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_24_SET", "24")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_25_SET", "25")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_26_SET", "26")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_27_SET", "27")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_28_SET", "28")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_29_SET", "29")]
+    [TouchPortalActionMapping("LIGHT_POTENTIOMETER_30_SET", "30")]
+    public static readonly object LIGHT_POTENTIOMETER_SET;
+
+
+    // Preserve backwards compatibility with hidden actions,
+
+    [TouchPortalAction("ToggleLights", "Toggle All/Specific Lights", "Toggle Lights - {0}", Deprecated = true)]
     [TouchPortalActionChoice(new[] { "All", "Beacon", "Taxi", "Logo", "Recognition", "Wing", "Nav", "Cabin" })]
     [TouchPortalActionMapping("ALL_LIGHTS_TOGGLE", "All")]
     [TouchPortalActionMapping("TOGGLE_BEACON_LIGHTS", "Beacon")]
@@ -92,6 +173,20 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     [TouchPortalActionMapping("TOGGLE_NAV_LIGHTS", "Nav")]
     [TouchPortalActionMapping("TOGGLE_CABIN_LIGHTS", "Cabin")]
     public static readonly object ALL_LIGHTS;
+
+    [TouchPortalAction("StrobeLights", "Toggle/On/Off Strobe Lights", "Strobe Lights - {0}", Deprecated = true)]
+    [TouchPortalActionChoice(new[] { "Toggle", "On", "Off" })]
+    [TouchPortalActionMapping("STROBES_TOGGLE", "Toggle")]
+    [TouchPortalActionMapping("STROBES_ON", "On")]
+    [TouchPortalActionMapping("STROBES_OFF", "Off")]
+    public static readonly object STROBE_LIGHTS;
+
+    [TouchPortalAction("PanelLights", "Toggle/On/Off Panel Lights", "Panel Lights - {0}", Deprecated = true)]
+    [TouchPortalActionChoice(new[] { "Toggle", "On", "Off" })]
+    [TouchPortalActionMapping("PANEL_LIGHTS_TOGGLE", "Toggle")]
+    [TouchPortalActionMapping("PANEL_LIGHTS_ON", "On")]
+    [TouchPortalActionMapping("PANEL_LIGHTS_OFF", "Off")]
+    public static readonly object PANEL_LIGHTS;
 
     #endregion
 
