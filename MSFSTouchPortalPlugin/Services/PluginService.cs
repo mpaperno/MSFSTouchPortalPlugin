@@ -1117,6 +1117,7 @@ namespace MSFSTouchPortalPlugin.Services
       if (connValue < 0) {
         if (action.ValueIndex > -1 && action.ValueIndex < dataArry.Length)
           valStr = dataArry[action.ValueIndex];
+        connValue = 0;  // don't send -1 to SimConnect
       }
       else if (ConvertSliderValueRange(connValue, actionEvent.Data, out var dVal)) {
         connValue = (int)Math.Round(dVal, 0);
