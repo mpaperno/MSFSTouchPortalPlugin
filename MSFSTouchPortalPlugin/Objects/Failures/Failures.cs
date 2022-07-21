@@ -27,10 +27,10 @@ namespace MSFSTouchPortalPlugin.Objects.Failures
   [TouchPortalCategory(Groups.Failures)]
   internal static class FailuresMapping {
 
-    [TouchPortalAction("Failures", "Failures", "MSFS", "Toggle Failures", "Toggle Failures - {0}")]
-    [TouchPortalActionChoice(new [] { "Electrical", "Vacuum", "Pitot", "Static Port", "Hydraulic", "Total Brake", "Left Brake", "Right Brake", "Engine 1", "Engine 2", "Engine 3", "Engine 4" })]
-    [TouchPortalActionMapping("TOGGLE_VACUUM_FAILURE", "Vacuum")]
+    [TouchPortalAction("Failures", "Failures", "Toggle Failure - {0}")]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("TOGGLE_ELECTRICAL_FAILURE", "Electrical")]
+    [TouchPortalActionMapping("TOGGLE_VACUUM_FAILURE", "Vacuum")]
     [TouchPortalActionMapping("TOGGLE_PITOT_BLOCKAGE", "Pitot")]
     [TouchPortalActionMapping("TOGGLE_STATIC_PORT_BLOCKAGE", "Static Port")]
     [TouchPortalActionMapping("TOGGLE_HYDRAULIC_FAILURE", "Hydraulic")]

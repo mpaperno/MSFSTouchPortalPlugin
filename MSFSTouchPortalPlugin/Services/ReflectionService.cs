@@ -134,6 +134,22 @@ namespace MSFSTouchPortalPlugin.Services
             actionAttrib.Data = m.GetCustomAttributes<TouchPortalActionDataAttribute>(true).ToArray();
             actionAttrib.Mappings = m.GetCustomAttributes<TouchPortalActionMappingAttribute>(true).ToArray();
             actionAttrib.ParentObject = m;
+            var emptyChoices = actionAttrib.Data.Where(m => m is TouchPortalActionChoiceAttribute && m.ChoiceValues.Length == 0).ToArray();
+            if (emptyChoices.Any() && actionAttrib.Mappings.Any()) {
+              var choiceCount = emptyChoices.Count();
+              //List<string>[] choices = new List<string>[choiceCount];
+              foreach (var map in actionAttrib.Mappings) {
+                for (int i = 0; i < choiceCount; ++i) {
+                  var choiceEl = emptyChoices[i] as TouchPortalActionChoiceAttribute;
+                  if (map.Values.Length > i && map.Values[i] is var choice && !choiceEl.ChoiceValues.Contains(choice)) {
+                    choiceEl.ChoiceValues = choiceEl.ChoiceValues.Append(choice).ToArray();
+                    if (string.IsNullOrEmpty(choiceEl.DefaultValue))
+                      choiceEl.DefaultValue = choice;
+                  }
+                }
+              }
+            }
+
             ret.Add(actionAttrib);
           }
         }

@@ -123,6 +123,8 @@ namespace MSFSTouchPortalPlugin_Generator
 
         // Actions
         foreach (var actionAttrib in catAttrib.Actions) {
+          if (actionAttrib.Deprecated)
+            continue;
           var action = new TouchPortalAction {
             Id = $"{actionCatId}.Action.{actionAttrib.Id}",
             Name = actionAttrib.Name,

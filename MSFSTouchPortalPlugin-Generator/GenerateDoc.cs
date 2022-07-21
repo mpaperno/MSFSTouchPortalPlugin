@@ -120,6 +120,8 @@ namespace MSFSTouchPortalPlugin_Generator
 
         // Add Actions
         foreach (var actionAttrib in catAttrib.Actions) {
+          if (actionAttrib.Deprecated)
+            continue;
           var action = new DocAction {
             Name = actionAttrib.Name,
             Description = actionAttrib.Description,

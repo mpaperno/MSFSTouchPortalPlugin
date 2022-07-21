@@ -29,7 +29,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     #region Ailerons
 
     [TouchPortalAction("Ailerons", "Ailerons Adjust", "Adjust Ailerons {0}", true)]
-    [TouchPortalActionChoice(new [] { "Center", "Left", "Right" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("CENTER_AILER_RUDDER", "Center")]
     [TouchPortalActionMapping("AILERONS_LEFT", "Left")]
     [TouchPortalActionMapping("AILERONS_RIGHT", "Right")]
@@ -48,7 +48,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     #region Elevator
 
     [TouchPortalAction("Elevator", "Elevator Adjust", "Adjust Elevator {0}", true)]
-    [TouchPortalActionChoice(new[] { "Up", "Down" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("ELEV_UP", "Up")]
     [TouchPortalActionMapping("ELEV_DOWN", "Down")]
     public static readonly object Elevator;
@@ -66,7 +66,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     #region Brakes
 
     [TouchPortalAction("Brakes", "Brakes Activate", "Activate {0} Brakes", true)]
-    [TouchPortalActionChoice(new [] { "All", "Left", "Right" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("BRAKES", "All")]
     [TouchPortalActionMapping("BRAKES_LEFT", "Left")]
     [TouchPortalActionMapping("BRAKES_RIGHT", "Right")]
@@ -76,7 +76,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
       "Set Brake Axis {0} to {1} (0 to 16384)",
       "Set Brake Axis{0}in Value\n Range:"
     )]
-    [TouchPortalActionChoice(new[] { "Left", "Right" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AXIS_LEFT_BRAKE_SET", "Left")]
     [TouchPortalActionMapping("AXIS_RIGHT_BRAKE_SET", "Right")]
     [TouchPortalActionText("0", 0, 16384)]
@@ -91,7 +91,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     #region Flaps
 
     [TouchPortalAction("Flaps", "Flaps Adjust", "Flaps {0}")]
-    [TouchPortalActionChoice(new [] { "Up", "Down", "Increase", "Decrease", "1", "2", "3", "4" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("FLAPS_UP", "Up")]
     [TouchPortalActionMapping("FLAPS_DOWN", "Down")]
     [TouchPortalActionMapping("FLAPS_INCR", "Increase")]
@@ -112,31 +112,31 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
 
 
     [TouchPortalAction("CowlFlapsAll", "Cowl Flap Levers - Adjust All", "{0} All Cowl Flaps Levers", true)]
-    [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("INC_COWL_FLAPS", "Increase")]
     [TouchPortalActionMapping("DEC_COWL_FLAPS", "Decrease")]
     public static readonly object CowlFlapsAll;
 
     [TouchPortalAction("CowlFlaps1", "Cowl Flaps 1 Lever Adjust", "{0} Cowl Flaps 1 Lever", true)]
-    [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("INC_COWL_FLAPS1", "Increase")]
     [TouchPortalActionMapping("DEC_COWL_FLAPS1", "Decrease")]
     public static readonly object CowlFlaps1;
 
     [TouchPortalAction("CowlFlaps2", "Cowl Flaps 2 Lever Adjust", "{0} Cowl Flaps 2 Lever", true)]
-    [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("INC_COWL_FLAPS2", "Increase")]
     [TouchPortalActionMapping("DEC_COWL_FLAPS2", "Decrease")]
     public static readonly object CowlFlaps2;
 
     [TouchPortalAction("CowlFlaps3", "Cowl Flaps 3 Lever Adjust", "{0} Cowl Flaps 3 Lever", true)]
-    [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("INC_COWL_FLAPS3", "Increase")]
     [TouchPortalActionMapping("DEC_COWL_FLAPS3", "Decrease")]
     public static readonly object CowlFlaps3;
 
     [TouchPortalAction("CowlFlaps4", "Cowl Flaps 4 Lever Adjust", "{0} Cowl Flaps 4 Lever", true)]
-    [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("INC_COWL_FLAPS4", "Increase")]
     [TouchPortalActionMapping("DEC_COWL_FLAPS4", "Decrease")]
     public static readonly object CowlFlaps4;
@@ -145,7 +145,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
       "Set Cowl {0} Flaps Lever to {0} (0 to 16384)",
       "Set Cowl{0}Flaps Lever\nin Value Range:"
     )]
-    [TouchPortalActionChoice(new[] { "1", "2", "3", "4" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionText("0", 0, 16384)]
     [TouchPortalActionMapping("COWLFLAP1_SET", "1")]
     [TouchPortalActionMapping("COWLFLAP2_SET", "2")]
@@ -158,7 +158,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     #region Gear
 
     [TouchPortalAction("Gear", "Gear Manipulation", "Gear {0}", true)]
-    [TouchPortalActionChoice(new [] { "Toggle", "Up", "Down", "Pump" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("GEAR_TOGGLE", "Toggle")]
     [TouchPortalActionMapping("GEAR_UP", "Up")]
     [TouchPortalActionMapping("GEAR_DOWN", "Down")]
@@ -170,7 +170,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     #region Rudder
 
     [TouchPortalAction("Rudder", "Rudder Adjust", "Adjust Rudder {0}", true)]
-    [TouchPortalActionChoice(new [] { "Center", "Left", "Right" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("RUDDER_CENTER", "Center")]
     [TouchPortalActionMapping("RUDDER_LEFT", "Left")]
     [TouchPortalActionMapping("RUDDER_RIGHT", "Right")]
@@ -190,7 +190,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     // https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Control_Variables.htm#spoilers
 
     [TouchPortalAction("Spoilers", "Spoilers Action", "Spoilers {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("SPOILERS_TOGGLE", "Toggle")]
     [TouchPortalActionMapping("SPOILERS_ON", "On")]
     [TouchPortalActionMapping("SPOILERS_OFF", "Off")]
@@ -205,7 +205,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     public static readonly object SpoilersHandlePosition;
 
     [TouchPortalAction("SpoilersArm", "Spoilers Arm", "Spoilers Arm {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("SPOILERS_ARM_TOGGLE", "Toggle")]
     [TouchPortalActionMapping("SPOILERS_ARM_ON", "On")]
     [TouchPortalActionMapping("SPOILERS_ARM_OFF", "Off")]
@@ -216,7 +216,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     #region Trimming
 
     [TouchPortalAction("AileronTrim", "Aileron Trim Adjust", "Adjust Aileron Trim {0}", true)]
-    [TouchPortalActionChoice(new [] { "Left", "Right" }, "Left")]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AILERON_TRIM_LEFT", "Left")]
     [TouchPortalActionMapping("AILERON_TRIM_RIGHT", "Right")]
     public static readonly object AileronTrim;
@@ -231,9 +231,9 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
 
 
     [TouchPortalAction("ElevatorTrim", "Elevator Trim Adjust", "Adjust Elevator Trim {0}", true)]
-    [TouchPortalActionChoice(new [] { "Up", "Down" })]
-    [TouchPortalActionMapping("ELEV_TRIM_DN", "Down")]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("ELEV_TRIM_UP", "Up")]
+    [TouchPortalActionMapping("ELEV_TRIM_DN", "Down")]
     public static readonly object ElevatorTrim;
 
     [TouchPortalAction("ElevatorTrimSet", "Elevator Trim Set", true,
@@ -246,7 +246,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
 
 
     [TouchPortalAction("RudderTrim", "Rudder Trim Adjust", "Adjust Rudder Trim {0}", true)]
-    [TouchPortalActionChoice(new [] { "Left", "Right" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("RUDDER_TRIM_LEFT", "Left")]
     [TouchPortalActionMapping("RUDDER_TRIM_RIGHT", "Right")]
     public static readonly object RudderTrim;

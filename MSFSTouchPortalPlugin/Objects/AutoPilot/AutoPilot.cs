@@ -30,7 +30,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     #region AutoPilot Master
 
     [TouchPortalAction("AutoPilotMaster", "AutoPilot Switch", "Auto Pilot Master - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_MASTER", "Toggle")]
     [TouchPortalActionMapping("AUTOPILOT_ON", "On")]
     [TouchPortalActionMapping("AUTOPILOT_OFF", "Off")]
@@ -41,17 +41,17 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     #region Attitude
 
     [TouchPortalAction("AutoPilotAttitude", "Attitude Hold Switch", "Attitude Hold - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_ATT_HOLD", "Toggle")]
     [TouchPortalActionMapping("AP_ATT_HOLD_ON", "On")]
     [TouchPortalActionMapping("AP_ATT_HOLD_OFF", "Off")]
     public static readonly object AP_ATTITUDE;
 
     [TouchPortalAction("AutoPilotAttitudeVar", "Attitude Hold Pitch Value Adjust", "Attitude Hold Pitch Value {0}", true)]
-    [TouchPortalActionChoice(new [] { "Select", "Increase", "Decrease" })]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("AP_PITCH_REF_SELECT", "Select")]
     [TouchPortalActionMapping("AP_PITCH_REF_INC_UP", "Increase")]
     [TouchPortalActionMapping("AP_PITCH_REF_INC_DN", "Decrease")]
-    [TouchPortalActionMapping("AP_PITCH_REF_SELECT", "Select")]
     public static readonly object AP_ATTITUDE_PITCH;
 
     [TouchPortalAction("AutoPilotAttitudeSet", "Attitude Hold Pitch Value Set", true,
@@ -67,7 +67,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     #region Approach
 
     [TouchPortalAction("AutoPilotApproach", "Approach Mode Switch", "Approach Mode - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_APR_HOLD", "Toggle")]
     [TouchPortalActionMapping("AP_APR_HOLD_ON", "On")]
     [TouchPortalActionMapping("AP_APR_HOLD_OFF", "Off")]
@@ -78,7 +78,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     #region Bank
 
     [TouchPortalAction("AutoPilotBanking", "Max Bank Angle Adjust", "Max Bank Angle - {0}", true)]
-    [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_MAX_BANK_INC", "Increase")]
     [TouchPortalActionMapping("AP_MAX_BANK_DEC", "Decrease")]
     public static readonly object AP_MAX_BANK;
@@ -88,17 +88,17 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     #region Heading
 
     [TouchPortalAction("AutoPilotHeading", "Heading Hold Switch", "Heading Hold - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_HDG_HOLD",     "Toggle")]
     [TouchPortalActionMapping("AP_HDG_HOLD_ON",  "On")]
     [TouchPortalActionMapping("AP_HDG_HOLD_OFF", "Off")]
     public static readonly object AP_HEADING;
 
     [TouchPortalAction("AutoPilotHeadingVar", "Heading Hold Value Adj/Sel", "Heading Hold Value - {0}", true)]
-    [TouchPortalActionChoice(new [] { "Select", "Increase", "Decrease" })]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("HEADING_BUG_SELECT", "Select")]
     [TouchPortalActionMapping("HEADING_BUG_INC",    "Increase")]
     [TouchPortalActionMapping("HEADING_BUG_DEC",    "Decrease")]
-    [TouchPortalActionMapping("HEADING_BUG_SELECT", "Select")]
     public static readonly object AP_HEADING_VAR;
 
     [TouchPortalAction("AutoPilotHeadingSet", "Heading Hold Value Set", true,
@@ -114,7 +114,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     #region Altitude
 
     [TouchPortalAction("AutoPilotAltitude", "Altitude Hold Switch", "Altitude Hold - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_ALT_HOLD", "Toggle")]
     [TouchPortalActionMapping("AP_ALT_HOLD_ON", "On")]
     [TouchPortalActionMapping("AP_ALT_HOLD_OFF", "Off")]
@@ -122,14 +122,14 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
 
 
     [TouchPortalAction("AutoPilotAltitudeVar", "Altitude Hold Value Adj/Sel", "Altitude Hold Value - {0}", true)]
-    [TouchPortalActionChoice(new [] { "Select", "Increase", "Decrease" })]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("ALTITUDE_BUG_SELECT", "Select")]
     [TouchPortalActionMapping("AP_ALT_VAR_INC", "Increase")]
     [TouchPortalActionMapping("AP_ALT_VAR_DEC", "Decrease")]
-    [TouchPortalActionMapping("ALTITUDE_BUG_SELECT", "Select")]
     public static readonly object AP_ALTITUDE_VAR;
 
     [TouchPortalAction("AutoPilotAltitudeSet", "Altitude Hold Value Set", "Altitude Hold Value {0} to {1}", true)]
-    [TouchPortalActionChoice(new[] { "Set English", "Set Metric" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionText("0")]
     [TouchPortalActionMapping("AP_ALT_VAR_SET_ENGLISH", "Set English")]
     [TouchPortalActionMapping("AP_ALT_VAR_SET_METRIC", "Set Metric")]
@@ -140,7 +140,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     #region Back Course
 
     [TouchPortalAction("AutoPilotBackCourse", "Back Course Mode Switch", "Back Course Mode - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_BC_HOLD", "Toggle")]
     [TouchPortalActionMapping("AP_BC_HOLD_ON", "On")]
     [TouchPortalActionMapping("AP_BC_HOLD_OFF", "Off")]
@@ -151,7 +151,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     #region Nav1
 
     [TouchPortalAction("AutoPilotNav1", "Nav1 Mode Switch", "Nav1 Mode - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_NAV1_HOLD", "Toggle")]
     [TouchPortalActionMapping("AP_NAV1_HOLD_ON", "On")]
     [TouchPortalActionMapping("AP_NAV1_HOLD_OFF", "Off")]
@@ -167,7 +167,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     #region Vertical Speed
 
     [TouchPortalAction("AutoPilotVerticalSpeed", "Vertical Speed Switch", "Vertical Speed - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_VS_HOLD", "Toggle")]
     [TouchPortalActionMapping("AP_VS_ON", "On")]
     [TouchPortalActionMapping("AP_VS_OFF", "Off")]
@@ -185,7 +185,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
       "Vertical Speed Hold {0} to Value {1}",
       "Vertical Speed Hold {0}in Value\nRange:"
     )]
-    [TouchPortalActionChoice(new[] { "Set English", "Set Metric" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionText("1", -5000, 5000)]
     [TouchPortalActionMapping("AP_VS_VAR_SET_ENGLISH", "Set English")]
     [TouchPortalActionMapping("AP_VS_VAR_SET_METRIC", "Set Metric")]
@@ -196,14 +196,14 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     #region Airspeed
 
     [TouchPortalAction("AutoPilotAirSpeed", "Airspeed Hold Switch", "Airspeed Hold - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_AIRSPEED_HOLD", "Toggle")]
     [TouchPortalActionMapping("AP_AIRSPEED_ON", "On")]
     [TouchPortalActionMapping("AP_AIRSPEED_OFF", "Off")]
     public static readonly object AP_AIRSPEED;
 
     [TouchPortalAction("AutoPilotAirSpeedVar", "Airspeed Hold Value Adjust", "Airspeed Hold Value - {0}", true)]
-    [TouchPortalActionChoice(new [] { "Select", "Increase", "Decrease" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AIRSPEED_BUG_SELECT", "Select")]
     [TouchPortalActionMapping("AP_SPD_VAR_INC", "Increase")]
     [TouchPortalActionMapping("AP_SPD_VAR_DEC", "Decrease")]
@@ -222,7 +222,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     #region AutoThrottle
 
     [TouchPortalAction("AutoThrottle", "Auto Throttle Mode Switch", "Toggle Auto Throttle - {0}")]
-    [TouchPortalActionChoice(new [] { "Arm", "GoAround" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AUTO_THROTTLE_ARM", "Arm")]
     [TouchPortalActionMapping("AUTO_THROTTLE_TO_GA", "GoAround")]
     public static readonly object AUTO_THROTTLE;
@@ -232,7 +232,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     #region AutoBrake
 
     [TouchPortalAction("AutoBrake", "Auto Brake Adjust", "Auto Brake - {0}", true)]
-    [TouchPortalActionChoice(new [] { "Increase", "Decrease" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("INCREASE_AUTOBRAKE_CONTROL", "Increase")]
     [TouchPortalActionMapping("DECREASE_AUTOBRAKE_CONTROL", "Decrease")]
     public static readonly object AUTO_BRAKE;
@@ -242,14 +242,14 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     #region Mach
 
     [TouchPortalAction("AutoPilotMach", "Mach Hold Switch", "Mach Hold - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off"})]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_MACH_HOLD", "Toggle")]
     [TouchPortalActionMapping("AP_MACH_ON", "On")]
     [TouchPortalActionMapping("AP_MACH_OFF", "Off")]
     public static readonly object AP_MACH;
 
     [TouchPortalAction("AutoPilotMachVar", "Mach Hold Value Adjust", "Mach Hold Value - {0}")]
-    [TouchPortalActionChoice(new [] { "Select", "Increase", "Decrease" }, "Increase")]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_MACH_VAR_INC", "Increase")]
     [TouchPortalActionMapping("AP_MACH_VAR_DEC", "Decrease")]
     public static readonly object AP_MACH_VAR;
@@ -279,7 +279,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     #region Wing Leveler
 
     [TouchPortalAction("AutoPilotWingLeveler", "Wing Leveler Switch", "Wing Leveler - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_WING_LEVELER", "Toggle")]
     [TouchPortalActionMapping("AP_WING_LEVELER_ON", "On")]
     [TouchPortalActionMapping("AP_WING_LEVELER_OFF", "Off")]
@@ -291,7 +291,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
 
     // TODO: Localizer state?
     [TouchPortalAction("AutoPilotLocalizer", "Localizer Switch", "Localizer - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_LOC_HOLD", "Toggle")]
     [TouchPortalActionMapping("AP_LOC_HOLD_ON", "On")]
     [TouchPortalActionMapping("AP_LOC_HOLD_OFF", "Off")]
@@ -302,7 +302,7 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     #region Yaw Dampener
 
     [TouchPortalAction("AutoPilotYawDampener", "Yaw Dampener Switch", "Yaw Dampener - {0}")]
-    [TouchPortalActionChoice(new [] { "Toggle", "On", "Off" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("YAW_DAMPER_TOGGLE", "Toggle")]
     [TouchPortalActionMapping("YAW_DAMPER_ON", "On")]
     [TouchPortalActionMapping("YAW_DAMPER_OFF", "Off")]

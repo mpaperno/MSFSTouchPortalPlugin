@@ -27,9 +27,9 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
   [TouchPortalCategory(Groups.Communication)]
   internal static class CommunicationMapping {
 
-    [TouchPortalAction("Radios", "Radio Interaction", "MSFS", "Radio Interaction", "Radio {0} - {1}", true)]
-    [TouchPortalActionChoice(new [] { "COM1", "COM2", "NAV1", "NAV2" })]
-    [TouchPortalActionChoice(new [] { "Increase 25 KHz", "Increase 1 MHz", "Increase 25 KHz w/ Carry Digits", "Decrease 25 KHz", "Decrease 1Mhz", "Decrease 25 KHz w/ Carry Digits", "Standby Swap" })]
+    [TouchPortalAction("Radios", "Radio Interaction", "Radio {0} - {1}", true)]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("COM_STBY_RADIO_SWAP",        new[] { "COM1", "Standby Swap" })]
     [TouchPortalActionMapping("COM_RADIO_WHOLE_DEC",        new[] { "COM1", "Decrease 1Mhz" })]
     [TouchPortalActionMapping("COM_RADIO_WHOLE_INC",        new[] { "COM1", "Increase 1 MHz" })]

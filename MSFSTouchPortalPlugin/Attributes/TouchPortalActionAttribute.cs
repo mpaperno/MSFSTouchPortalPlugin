@@ -35,6 +35,7 @@ namespace MSFSTouchPortalPlugin.Attributes
     public string Format { get; set; }
     public string ConnectorFormat { get; set; } = null;
     public System.Reflection.MemberInfo ParentObject { get; set; } = null;
+    public bool Deprecated { get; set; } = false;  // exclude from generated entry.tp and docs if true, but preserve mappings for backwards compat.
     public TouchPortalActionDataAttribute[] Data { get; set; } = Array.Empty<TouchPortalActionDataAttribute>();
     public TouchPortalActionMappingAttribute[] Mappings { get; set; } = Array.Empty<TouchPortalActionMappingAttribute>();
 
@@ -86,13 +87,6 @@ namespace MSFSTouchPortalPlugin.Attributes
     public TouchPortalActionAttribute(string id, string name, string description, bool holdable, string format, string connectorFormat) :
       base(id, name, description, format, connectorFormat)
     {
-      HasHoldFunctionality = holdable;
-    }
-
-    public TouchPortalActionAttribute(string id, string name, string prefix, string description, string format, bool holdable = false) :
-      base(id, name, description, format)
-    {
-      Prefix = prefix;
       HasHoldFunctionality = holdable;
     }
 
@@ -235,6 +229,10 @@ namespace MSFSTouchPortalPlugin.Attributes
 
   public class TouchPortalActionChoiceAttribute : TouchPortalActionTextAttribute
   {
+    public TouchPortalActionChoiceAttribute() : base(DataType.Choice) {
+      ChoiceValues = Array.Empty<string>();
+    }
+
     public TouchPortalActionChoiceAttribute(string[] choiceValues, string defaultValue = default) : base(DataType.Choice, defaultValue) {
       ChoiceValues = choiceValues;
       if (defaultValue == default && choiceValues?.Length > 0)

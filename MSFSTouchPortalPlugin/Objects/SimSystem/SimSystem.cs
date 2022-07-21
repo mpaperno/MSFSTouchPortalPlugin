@@ -28,14 +28,14 @@ namespace MSFSTouchPortalPlugin.Objects.SimSystem
   [TouchPortalCategory(Groups.SimSystem)]
   internal static class SimSystemMapping
   {
-    [TouchPortalAction("SimulationRate", "Simulation Rate", "MSFS", "Simulation Rate", "Rate {0}", true)]
-    [TouchPortalActionChoice(new [] { "Increase", "Decrease" }, "Decrease")]
+    [TouchPortalAction("SimulationRate", "Simulation Rate", "{0} Simulation Rate", true)]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("SIM_RATE_INCR", "Increase")]
     [TouchPortalActionMapping("SIM_RATE_DECR", "Decrease")]
     public static readonly object SimulationRate;
 
-    [TouchPortalAction("SelectedParameter", "Change Selected Value (+/-)", "MSFS", "Selected Value", "Value {0}", true)]
-    [TouchPortalActionChoice(new[] { "Increase", "Decrease" }, "Decrease")]
+    [TouchPortalAction("SelectedParameter", "Change Selected Value (+/-)", "{0} Selected Value", true)]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("PLUS", "Increase")]
     [TouchPortalActionMapping("MINUS", "Decrease")]
     public static readonly object SELECTED_PARAMETER_CHANGE;

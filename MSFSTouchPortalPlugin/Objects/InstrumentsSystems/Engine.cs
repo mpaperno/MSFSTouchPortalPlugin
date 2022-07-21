@@ -34,7 +34,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     public static readonly object MASTER_IGNITION;
 
     [TouchPortalAction("EngineAuto", "Engine Auto Start/Shutdown", "Start/Shutdown Engine", "Engine - {0}")]
-    [TouchPortalActionChoice(new [] { "Start", "Shutdown" }, "Start")]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("ENGINE_AUTO_START", "Start")]
     [TouchPortalActionMapping("ENGINE_AUTO_SHUTDOWN", "Shutdown")]
     public static readonly object ENGINE_AUTO;
@@ -44,49 +44,49 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     #region Magneto
 
     [TouchPortalAction("AllMagenetos", "Magnetos Switch - All", "All Magnetos - {0}")]
-    [TouchPortalActionChoice(new [] { "Start", "Off", "Right", "Left", "Both", "Decrease", "Increase", "Select (for +/-)" })]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("MAGNETO_START", "Start")]
     [TouchPortalActionMapping("MAGNETO_OFF", "Off")]
     [TouchPortalActionMapping("MAGNETO_RIGHT", "Right")]
     [TouchPortalActionMapping("MAGNETO_LEFT", "Left")]
     [TouchPortalActionMapping("MAGNETO_BOTH", "Both")]
-    [TouchPortalActionMapping("MAGNETO_START", "Start")]
     [TouchPortalActionMapping("MAGNETO_DECR", "Decrease")]
     [TouchPortalActionMapping("MAGNETO_INCR", "Increase")]
     [TouchPortalActionMapping("MAGNETO", "Select (for +/-)")]
     public static readonly object ALL_MAGNETOS;
 
     [TouchPortalAction("MagnetoSpecific", "Magnetos Switch - Individual", "Magneto {0} - {1}")]
-    [TouchPortalActionChoice(new [] { "1", "2", "3", "4" }, "1")]
-    [TouchPortalActionChoice(new [] { "Start", "Off", "Right", "Left", "Both", "Decrease", "Increase" }, "Start")]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("MAGNETO1_START", new[] { "1", "Start" })]
     [TouchPortalActionMapping("MAGNETO1_OFF", new[] { "1", "Off" })]
     [TouchPortalActionMapping("MAGNETO1_RIGHT", new[] { "1", "Right" })]
     [TouchPortalActionMapping("MAGNETO1_LEFT", new[] { "1", "Left" })]
     [TouchPortalActionMapping("MAGNETO1_BOTH", new[] { "1", "Both" })]
-    [TouchPortalActionMapping("MAGNETO1_START", new[] { "1", "Start" })]
     [TouchPortalActionMapping("MAGNETO1_DECR", new[] { "1", "Decrease" })]
     [TouchPortalActionMapping("MAGNETO1_INCR", new[] { "1", "Increase" })]
 
+    [TouchPortalActionMapping("MAGNETO2_START", new[] { "2", "Start" })]
     [TouchPortalActionMapping("MAGNETO2_OFF", new[] { "2", "Off" })]
     [TouchPortalActionMapping("MAGNETO2_RIGHT", new[] { "2", "Right" })]
     [TouchPortalActionMapping("MAGNETO2_LEFT", new[] { "2", "Left" })]
     [TouchPortalActionMapping("MAGNETO2_BOTH", new[] { "2", "Both" })]
-    [TouchPortalActionMapping("MAGNETO2_START", new[] { "2", "Start" })]
     [TouchPortalActionMapping("MAGNETO2_DECR", new[] { "2", "Decrease" })]
     [TouchPortalActionMapping("MAGNETO2_INCR", new[] { "2", "Increase" })]
 
+    [TouchPortalActionMapping("MAGNETO3_START", new[] { "3", "Start" })]
     [TouchPortalActionMapping("MAGNETO3_OFF", new[] { "3", "Off" })]
     [TouchPortalActionMapping("MAGNETO3_RIGHT", new[] { "3", "Right" })]
     [TouchPortalActionMapping("MAGNETO3_LEFT", new[] { "3", "Left" })]
     [TouchPortalActionMapping("MAGNETO3_BOTH", new[] { "3", "Both" })]
-    [TouchPortalActionMapping("MAGNETO3_START", new[] { "3", "Start" })]
     [TouchPortalActionMapping("MAGNETO3_DECR", new[] { "3", "Decrease" })]
     [TouchPortalActionMapping("MAGNETO3_INCR", new[] { "3", "Increase" })]
 
+    [TouchPortalActionMapping("MAGNETO4_START", new[] { "4", "Start" })]
     [TouchPortalActionMapping("MAGNETO4_OFF", new[] { "4", "Off" })]
     [TouchPortalActionMapping("MAGNETO4_RIGHT", new[] { "4", "Right" })]
     [TouchPortalActionMapping("MAGNETO4_LEFT", new[] { "4", "Left" })]
     [TouchPortalActionMapping("MAGNETO4_BOTH", new[] { "4", "Both" })]
-    [TouchPortalActionMapping("MAGNETO4_START", new[] { "4", "Start" })]
     [TouchPortalActionMapping("MAGNETO4_DECR", new[] { "4", "Decrease" })]
     [TouchPortalActionMapping("MAGNETO4_INCR", new[] { "4", "Increase" })]
     public static readonly object MAGNETO_SPECIFIC;
@@ -95,7 +95,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
       "Set Magneto Switch {0} to position {1} (0-4)",
       "Set Magneto Switch{0}in Range:"
     )]
-    [TouchPortalActionChoice(new[] { "1", "2", "3", "4" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionNumeric(0, 0, 4)]
     //[TouchPortalActionMapping("MAGNETO_SET", "All")]  // only value "1" works, same as MAGNETO_START
     //[TouchPortalActionMapping("MAGNETO_SET_ACTUAL", "All")]  // Prepar3D
@@ -110,7 +110,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     #region Starters
 
     [TouchPortalAction("Starters", "Starters", "Toggle Starter - {0}")]
-    [TouchPortalActionChoice(new [] { "All", "1", "2", "3", "4" }, "All")]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("TOGGLE_ALL_STARTERS", "All")]
     [TouchPortalActionMapping("TOGGLE_STARTER1", "1")]
     [TouchPortalActionMapping("TOGGLE_STARTER2", "2")]
@@ -123,7 +123,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     #region Throttle
 
     [TouchPortalAction("Throttle", "Throttle Adjust - All", "All Throttles - {0}", true)]
-    [TouchPortalActionChoice(new [] { "Full", "Increase", "Increase Small", "Decrease", "Decrease Small", "Cut", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("THROTTLE_FULL", "Full")]
     [TouchPortalActionMapping("THROTTLE_INCR", "Increase")]
     [TouchPortalActionMapping("THROTTLE_INCR_SMALL", "Increase Small")]
@@ -142,8 +142,8 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     public static readonly object THROTTLE;
 
     [TouchPortalAction("ThrottleSpecific", "Throttle Adjust - Individual", "Throttle {0} - {1}", true)]
-    [TouchPortalActionChoice(new [] { "1", "2", "3", "4" }, "1")]
-    [TouchPortalActionChoice(new [] { "Full", "Increase", "Increase Small", "Decrease", "Decrease Small", "Cut"})]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("THROTTLE1_FULL",       new[] { "1", "Full" })]
     [TouchPortalActionMapping("THROTTLE1_INCR",       new[] { "1", "Increase" })]
     [TouchPortalActionMapping("THROTTLE1_INCR_SMALL", new[] { "1", "Increase Small" })]
@@ -174,7 +174,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
       "Set Throttle {0} to {1} (-16384 to +16384)",
       "Set Throttle{0}in Value\nRange:"
     )]
-    [TouchPortalActionChoice(new[] { "All", "1", "2", "3", "4" }, "All")]
+    [TouchPortalActionChoice()]
     [TouchPortalActionText("0", -16384, 16384)]
     [TouchPortalActionMapping("THROTTLE_SET",  new[] { "All" })]
     [TouchPortalActionMapping("THROTTLE1_SET", new[] { "1" })]
@@ -188,7 +188,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     #region Mixture
 
     [TouchPortalAction("Mixture", "Mixture Adjust - All", "All Mixtures - {0}", true)]
-    [TouchPortalActionChoice(new [] { "Rich", "Increase", "Increase Small", "Decrease", "Decrease Small", "Lean", "Best"})]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("MIXTURE_RICH", "Rich")]
     [TouchPortalActionMapping("MIXTURE_INCR", "Increase")]
     [TouchPortalActionMapping("MIXTURE_INCR_SMALL", "Increase Small")]
@@ -199,8 +199,8 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     public static readonly object MIXTURE;
 
     [TouchPortalAction("MixtureSpecific", "Mixture Adjust - Individual", "Mixture {0} - {1}", true)]
-    [TouchPortalActionChoice(new [] { "1", "2", "3", "4" }, "1")]
-    [TouchPortalActionChoice(new [] { "Rich", "Increase", "Increase Small", "Decrease", "Decrease Small", "Lean" })]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("MIXTURE1_RICH", new[] { "1", "Rich" })]
     [TouchPortalActionMapping("MIXTURE1_INCR", new[] { "1", "Increase" })]
     [TouchPortalActionMapping("MIXTURE1_INCR_SMALL", new[] { "1", "Increase Small" })]
@@ -234,7 +234,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
       "Set Mixture {0} to {1} (-16384 to +16384)",
       "Set Mixture{0}in Value\nRange:"
     )]
-    [TouchPortalActionChoice(new[] { "All", "1", "2", "3", "4" }, "All")]
+    [TouchPortalActionChoice()]
     [TouchPortalActionText("0", 0, 16384)]
     [TouchPortalActionMapping("MIXTURE_SET", new[] { "All" })]
     [TouchPortalActionMapping("MIXTURE1_SET", new[] { "1" })]
@@ -248,8 +248,8 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     #region Propeller
 
     [TouchPortalAction("PropellerPitch", "Propeller Pitch Adjust", "Pitch {0} - {1}", true)]
-    [TouchPortalActionChoice(new[] {"All", "1", "2", "3", "4" })]
-    [TouchPortalActionChoice(new[] { "Increment", "Increment Small", "Decrement", "Decrement Small", "Min (hi pitch)", "Max (lo pitch)", "Toggle Feather Switch" })]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("PROP_PITCH_INCR", new[] { "All", "Increment" })]
     [TouchPortalActionMapping("PROP_PITCH_INCR_SMALL", new[] { "All", "Increment Small" })]
     [TouchPortalActionMapping("PROP_PITCH_DECR", new[] { "All", "Decrement" })]
@@ -295,7 +295,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
       "Set Propeller {0} Pitch to {1} (0 to 16384)",
       "Set Propeller{0}Pitch in\nValue Range:"
     )]
-    [TouchPortalActionChoice(new[] { "All", "1", "2", "3", "4" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionText("0", 0, 16384)]
     [TouchPortalActionMapping("PROP_PITCH_SET", "All")]
     [TouchPortalActionMapping("PROP_PITCH1_SET", "1")]

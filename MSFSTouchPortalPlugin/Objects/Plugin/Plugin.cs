@@ -31,7 +31,7 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     [TouchPortalAction(PluginActions.Connection, "Connect & Update",
       "Plugin actions: Toggle/On/Off SimConnect Connection, Reload State Config Files, Update HubHop Presets",
       "Plugin Action: {0}")]
-    [TouchPortalActionChoice(new[] { "Toggle", "On", "Off", "Reload State Files", "Update Local Var. List", "Update HubHop Data" }, Id = "Action")]
+    [TouchPortalActionChoice(Id = "Action")]
     [TouchPortalActionMapping(PluginActions.ToggleConnection, "Toggle")]
     [TouchPortalActionMapping(PluginActions.Connect, "On")]
     [TouchPortalActionMapping(PluginActions.Disconnect, "Off")]
@@ -45,7 +45,7 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
       "Repeat Interval: {0} to/by: {1} ms",
       "Set Repeat Interval in Range (ms):",
       holdable: true)]
-    [TouchPortalActionChoice(new[] { "Set", "Increment", "Decrement" }, Id = "Action")]
+    [TouchPortalActionChoice(Id = "Action")]
     [TouchPortalActionText("450", 50, int.MaxValue, Id = "Value")]
     [TouchPortalActionMapping(PluginActions.ActionRepeatIntervalSet, "Set")]
     [TouchPortalActionMapping(PluginActions.ActionRepeatIntervalInc, "Increment")]
@@ -274,7 +274,7 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
     [TouchPortalAction(PluginActions.SaveSimVars, "Save SimVar Definitions To File",
       "Save the current simulator variable state definitions to a configuration file.",
       "Save {0} states to file {1} (name only for user config. folder, or full path with file name)")]
-    [TouchPortalActionChoice(new[] { "Custom", "All" }, Id = "VarsSet", Label = "Variables Set")]
+    [TouchPortalActionChoice(Id = "VarsSet", Label = "Variables Set")]
     [TouchPortalActionText("CustomStates.ini", Id = "VarsFile", Label = "Save to File")]
     //[TouchPortalActionFile("CustomStates.ini", Id = "VarsFile", Label = "Save to File")]  // doesn't allow freeform entry or selecting a non-existing file as of TP 3.0.10
     [TouchPortalActionMapping(PluginActions.SaveCustomSimVars, "Custom")]
