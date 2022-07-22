@@ -4,7 +4,7 @@ This plugin provides a two-way interface between Touch Portal and Flight Simulat
 
 For further documentation, please see https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki
 
-This documentation generated for plugin v1.1.0.0
+This documentation generated for plugin v1.1.0.2-beta2
 
 ---
 
@@ -88,6 +88,14 @@ See here for more info: https://docs.flightsimulator.com/html/Programming_Tools/
 The system path where custom user configuration files for sate definitions, SimConnect.cfg, etc, are stored. Keep it blank for default, which is `C:\Users\<UserName>\AppData\Roaming\MSFSTouchPortalPlugin`.
 
 Note that using this plugin's installation folder for custom data storage is not recommended, since anything in there will likely get overwritten during a plugin update/re-install.
+
+### Ignore Local Number Format Rules (0/1)
+
+| Read-only | Type | Default Value | Min. Value | Max. Value |
+| --- | --- | --- | --- | --- |
+| False | number | 1 | 0 | 1 |
+
+Touch Portal cannot perform math or numeric comparison operations on decimal numbers formatted with comma decimal separator, even in locations where this is the norm. Set this setting to 1/true toalways format numbers in "neutral" format with period decimal separators. **NOTE** that this affects **input** number formatting as well (the plugin will expect all numbers with period decimal separators regardless of your location).
 
 ### Update HubHop Data on Startup (0/1)
 
@@ -413,57 +421,43 @@ Feedback From Category:{0}Variable:{1}Value Range:{2}-{3}</td><td><ol start=0>
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
-<tr valign='top'><td>Airspeed Hold Switch</td><td></td><td>Airspeed Hold - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_AIRSPEED_HOLD</dd><dt>On</dt><dd>AP_AIRSPEED_ON</dd><dt>Off</dt><dd>AP_AIRSPEED_OFF</dd></dl></details></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Airspeed Hold Value Adjust</td><td></td><td>Airspeed Hold Value - {0}</td><td><ol start=0>
+<tr valign='top'><td>Airspeed Hold Value  Adj/Sel</td><td></td><td>Airspeed Hold Value - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Select</b>, Increase, Decrease</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Select</dt><dd>AIRSPEED_BUG_SELECT</dd><dt>Increase</dt><dd>AP_SPD_VAR_INC</dd><dt>Decrease</dt><dd>AP_SPD_VAR_DEC</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Airspeed Hold Value Set</td><td></td><td>Set Airspeed Hold Value to {0}</td><td><ol start=0>
-<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 5000&gt;</sub></li>
+<tr valign='top'><td>Airspeed Hold Value Set</td><td></td><td>Set Airspeed Hold Value to {0} kts</td><td><ol start=0>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 50000.00&gt;</sub></li>
 </ol></td>
 <td><dl><dd>AP_SPD_VAR_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Altitude Hold Switch</td><td></td><td>Altitude Hold - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_ALT_HOLD</dd><dt>On</dt><dd>AP_ALT_HOLD_ON</dd><dt>Off</dt><dd>AP_ALT_HOLD_OFF</dd></dl></details></td>
-<td align='center'></td></tr>
 <tr valign='top'><td>Altitude Hold Value Adj/Sel</td><td></td><td>Altitude Hold Value - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Select</b>, Increase, Decrease</li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Increase</dt><dd>AP_ALT_VAR_INC</dd><dt>Decrease</dt><dd>AP_ALT_VAR_DEC</dd><dt>Select</dt><dd>ALTITUDE_BUG_SELECT</dd></dl></details></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Select</dt><dd>ALTITUDE_BUG_SELECT</dd><dt>Increase</dt><dd>AP_ALT_VAR_INC</dd><dt>Decrease</dt><dd>AP_ALT_VAR_DEC</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Altitude Hold Value Set</td><td></td><td>Altitude Hold Value {0} to {1}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Set English</b>, Set Metric</li>
-<li>[text] &nbsp; <b>0</b></li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -1000.00&gt;</sub> <sub>&lt;max: 150000.00&gt;</sub></li>
 </ol></td>
 <td><dl><dt>Set English</dt><dd>AP_ALT_VAR_SET_ENGLISH</dd><dt>Set Metric</dt><dd>AP_ALT_VAR_SET_METRIC</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Approach Mode Switch</td><td></td><td>Approach Mode - {0}</td><td><ol start=0>
+<tr valign='top'><td>AP Switches</td><td></td><td>Auto Pilot {0} Switch {1}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Master</b>, Airspeed Hold, Altitude Hold, Approach Mode, Attitude Hold, Back Course Mode, Heading Hold, Localizer, Mach Hold, Nav1 Hold, Vertical Speed, Wing Leveler, Yaw Dampener</li>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_APR_HOLD</dd><dt>On</dt><dd>AP_APR_HOLD_ON</dd><dt>Off</dt><dd>AP_APR_HOLD_OFF</dd></dl></details></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Master+Toggle</dt><dd>AP_MASTER</dd><dt>Master+On</dt><dd>AUTOPILOT_ON</dd><dt>Master+Off</dt><dd>AUTOPILOT_OFF</dd><dt>Airspeed Hold+Toggle</dt><dd>AP_AIRSPEED_HOLD</dd><dt>Airspeed Hold+On</dt><dd>AP_AIRSPEED_ON</dd><dt>Airspeed Hold+Off</dt><dd>AP_AIRSPEED_OFF</dd><dt>Altitude Hold+Toggle</dt><dd>AP_ALT_HOLD</dd><dt>Altitude Hold+On</dt><dd>AP_ALT_HOLD_ON</dd><dt>Altitude Hold+Off</dt><dd>AP_ALT_HOLD_OFF</dd><dt>Approach Mode+Toggle</dt><dd>AP_APR_HOLD</dd><dt>Approach Mode+On</dt><dd>AP_APR_HOLD_ON</dd><dt>Approach Mode+Off</dt><dd>AP_APR_HOLD_OFF</dd><dt>Attitude Hold+Toggle</dt><dd>AP_ATT_HOLD</dd><dt>Attitude Hold+On</dt><dd>AP_ATT_HOLD_ON</dd><dt>Attitude Hold+Off</dt><dd>AP_ATT_HOLD_OFF</dd><dt>Back Course Mode+Toggle</dt><dd>AP_BC_HOLD</dd><dt>Back Course Mode+On</dt><dd>AP_BC_HOLD_ON</dd><dt>Back Course Mode+Off</dt><dd>AP_BC_HOLD_OFF</dd><dt>Heading Hold+Toggle</dt><dd>AP_HDG_HOLD</dd><dt>Heading Hold+On</dt><dd>AP_HDG_HOLD_ON</dd><dt>Heading Hold+Off</dt><dd>AP_HDG_HOLD_OFF</dd><dt>Localizer+Toggle</dt><dd>AP_LOC_HOLD</dd><dt>Localizer+On</dt><dd>AP_LOC_HOLD_ON</dd><dt>Localizer+Off</dt><dd>AP_LOC_HOLD_OFF</dd><dt>Mach Hold+Toggle</dt><dd>AP_MACH_HOLD</dd><dt>Mach Hold+On</dt><dd>AP_MACH_ON</dd><dt>Mach Hold+Off</dt><dd>AP_MACH_OFF</dd><dt>Nav1 Hold+Toggle</dt><dd>AP_NAV1_HOLD</dd><dt>Nav1 Hold+On</dt><dd>AP_NAV1_HOLD_ON</dd><dt>Nav1 Hold+Off</dt><dd>AP_NAV1_HOLD_OFF</dd><dt>Vertical Speed+Toggle</dt><dd>AP_VS_HOLD</dd><dt>Vertical Speed+On</dt><dd>AP_VS_ON</dd><dt>Vertical Speed+Off</dt><dd>AP_VS_OFF</dd><dt>Wing Leveler+Toggle</dt><dd>AP_WING_LEVELER</dd><dt>Wing Leveler+On</dt><dd>AP_WING_LEVELER_ON</dd><dt>Wing Leveler+Off</dt><dd>AP_WING_LEVELER_OFF</dd><dt>Yaw Dampener+Toggle</dt><dd>YAW_DAMPER_TOGGLE</dd><dt>Yaw Dampener+On</dt><dd>YAW_DAMPER_ON</dd><dt>Yaw Dampener+Off</dt><dd>YAW_DAMPER_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Attitude Hold Pitch Value Adjust</td><td></td><td>Attitude Hold Pitch Value {0}</td><td><ol start=0>
+<tr valign='top'><td>Attitude Hold Pitch Value Adj/Sel</td><td></td><td>Attitude Hold Pitch Value {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Select</b>, Increase, Decrease</li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Increase</dt><dd>AP_PITCH_REF_INC_UP</dd><dt>Decrease</dt><dd>AP_PITCH_REF_INC_DN</dd><dt>Select</dt><dd>AP_PITCH_REF_SELECT</dd></dl></details></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Select</dt><dd>AP_PITCH_REF_SELECT</dd><dt>Increase</dt><dd>AP_PITCH_REF_INC_UP</dd><dt>Decrease</dt><dd>AP_PITCH_REF_INC_DN</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Attitude Hold Pitch Value Set</td><td></td><td>Set Attitude Hold Pitch Value to {0} (-16384 to +16384)</td><td><ol start=0>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 </ol></td>
 <td><dl><dd>AP_PITCH_REF_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Attitude Hold Switch</td><td></td><td>Attitude Hold - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_ATT_HOLD</dd><dt>On</dt><dd>AP_ATT_HOLD_ON</dd><dt>Off</dt><dd>AP_ATT_HOLD_OFF</dd></dl></details></td>
-<td align='center'></td></tr>
 <tr valign='top'><td>Auto Brake Adjust</td><td></td><td>Auto Brake - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
@@ -474,56 +468,27 @@ Feedback From Category:{0}Variable:{1}Value Range:{2}-{3}</td><td><ol start=0>
 </ol></td>
 <td><dl><dt>Arm</dt><dd>AUTO_THROTTLE_ARM</dd><dt>GoAround</dt><dd>AUTO_THROTTLE_TO_GA</dd></dl></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>AutoPilot Switch</td><td></td><td>Auto Pilot Master - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
+<tr valign='top'><td>Flight Director Switches</td><td></td><td>Toggle Flight Director {0} Switch On/Off</td><td><ol start=0>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_MASTER</dd><dt>On</dt><dd>AUTOPILOT_ON</dd><dt>Off</dt><dd>AUTOPILOT_OFF</dd></dl></details></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Back Course Mode Switch</td><td></td><td>Back Course Mode - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_BC_HOLD</dd><dt>On</dt><dd>AP_BC_HOLD_ON</dd><dt>Off</dt><dd>AP_BC_HOLD_OFF</dd></dl></details></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Flight Director Pitch Sync Switch</td><td></td><td>Sync Flight Director Pitch</td><td><ol start=0>
-</ol></td>
-<td><dl><dd>SYNC_FLIGHT_DIRECTOR_PITCH</dd></dl></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Flight Director Switch</td><td></td><td>Toggle Flight Director On/Off</td><td><ol start=0>
-</ol></td>
-<td><dl><dd>TOGGLE_FLIGHT_DIRECTOR</dd></dl></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Heading Hold Switch</td><td></td><td>Heading Hold - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_HDG_HOLD</dd><dt>On</dt><dd>AP_HDG_HOLD_ON</dd><dt>Off</dt><dd>AP_HDG_HOLD_OFF</dd></dl></details></td>
+<td><dl><dt>Master</dt><dd>TOGGLE_FLIGHT_DIRECTOR</dd><dt>Pitch Sync</dt><dd>SYNC_FLIGHT_DIRECTOR_PITCH</dd></dl></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Heading Hold Value Adj/Sel</td><td></td><td>Heading Hold Value - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Select</b>, Increase, Decrease</li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Increase</dt><dd>HEADING_BUG_INC</dd><dt>Decrease</dt><dd>HEADING_BUG_DEC</dd><dt>Select</dt><dd>HEADING_BUG_SELECT</dd></dl></details></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Select</dt><dd>HEADING_BUG_SELECT</dd><dt>Increase</dt><dd>HEADING_BUG_INC</dd><dt>Decrease</dt><dd>HEADING_BUG_DEC</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Heading Hold Value Set</td><td></td><td>Set Heading Hold Value - {0}</td><td><ol start=0>
-<li>[text] &nbsp; <b>1</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 359&gt;</sub></li>
+<li>[text] &nbsp; <b>1</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 359.00&gt;</sub></li>
 </ol></td>
 <td><dl><dd>HEADING_BUG_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Localizer Switch</td><td></td><td>Localizer - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_LOC_HOLD</dd><dt>On</dt><dd>AP_LOC_HOLD_ON</dd><dt>Off</dt><dd>AP_LOC_HOLD_OFF</dd></dl></details></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Mach Hold Switch</td><td></td><td>Mach Hold - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_MACH_HOLD</dd><dt>On</dt><dd>AP_MACH_ON</dd><dt>Off</dt><dd>AP_MACH_OFF</dd></dl></details></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Mach Hold Value Adjust</td><td></td><td>Mach Hold Value - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; Select, <b>Increase</b>, Decrease</li>
+<tr valign='top'><td>Mach Hold Value  Adj</td><td></td><td>Mach Hold Value - {0}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
 <td><dl><dt>Increase</dt><dd>AP_MACH_VAR_INC</dd><dt>Decrease</dt><dd>AP_MACH_VAR_DEC</dd></dl></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Mach Hold Value Set</td><td></td><td>Set Mach Hold Value to {0}</td><td><ol start=0>
-<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 20&gt;</sub></li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 20.00&gt;</sub></li>
 </ol></td>
 <td><dl><dd>AP_MACH_VAR_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
@@ -532,42 +497,22 @@ Feedback From Category:{0}Variable:{1}Value Range:{2}-{3}</td><td><ol start=0>
 </ol></td>
 <td><dl><dt>Increase</dt><dd>AP_MAX_BANK_INC</dd><dt>Decrease</dt><dd>AP_MAX_BANK_DEC</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Nav Mode Set</td><td>Sets the nav to 1 or 2 for Nav mode</td><td>Nav Mode - {0} </td><td><ol start=0>
-<li>[number] &nbsp; <b>1</b> &nbsp; <sub>&lt;min: 1&gt;</sub> <sub>&lt;max: 2&gt;</sub></li>
+<tr valign='top'><td>Nav Mode Select</td><td></td><td>Select Nav Mode {0}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>1</b>, 2</li>
 </ol></td>
-<td><dl><dd>AP_NAV_SELECT_SET</dd></dl></td>
+<td><dl><dt>1</dt><dd>AP_NAV_SELECT_SET</dd><dt>2</dt><dd>AP_NAV_SELECT_SET</dd></dl></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Nav1 Mode Switch</td><td></td><td>Nav1 Mode - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_NAV1_HOLD</dd><dt>On</dt><dd>AP_NAV1_HOLD_ON</dd><dt>Off</dt><dd>AP_NAV1_HOLD_OFF</dd></dl></details></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Vertical Speed Switch</td><td></td><td>Vertical Speed - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_VS_HOLD</dd><dt>On</dt><dd>AP_VS_ON</dd><dt>Off</dt><dd>AP_VS_OFF</dd></dl></details></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Vertical Speed Value Adjust</td><td></td><td>Vertical Speed Value - {0}</td><td><ol start=0>
+<tr valign='top'><td>Vertical Speed Value Adj/Sel/Hold</td><td></td><td>Vertical Speed Value - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Select</b>, Increase, Decrease, Set Current</li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Select</dt><dd>VSI_BUG_SELECT</dd><dt>Increase</dt><dd>AP_VS_VAR_INC</dd><dt>Decrease</dt><dd>AP_VS_VAR_DEC</dd><dt>Set Current</dt><dd>AP_VS_VAR_SET_CURRENT</dd></dl></details></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Select</dt><dd>VSI_BUG_SELECT</dd><dt>Increase</dt><dd>AP_VS_VAR_INC</dd><dt>Decrease</dt><dd>AP_VS_VAR_DEC</dd><dt>Hold Current</dt><dd>AP_VS_VAR_SET_CURRENT</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Vertical Speed Value Set</td><td></td><td>Vertical Speed Hold {0} to Value {1}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Set English</b>, Set Metric</li>
-<li>[text] &nbsp; <b>1</b> &nbsp; <sub>&lt;min: -5000&gt;</sub> <sub>&lt;max: 5000&gt;</sub></li>
+<li>[text] &nbsp; <b>1</b> &nbsp; <sub>&lt;min: -5000.00&gt;</sub> <sub>&lt;max: 5000.00&gt;</sub></li>
 </ol></td>
 <td><dl><dt>Set English</dt><dd>AP_VS_VAR_SET_ENGLISH</dd><dt>Set Metric</dt><dd>AP_VS_VAR_SET_METRIC</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Wing Leveler Switch</td><td></td><td>Wing Leveler - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>AP_WING_LEVELER</dd><dt>On</dt><dd>AP_WING_LEVELER_ON</dd><dt>Off</dt><dd>AP_WING_LEVELER_OFF</dd></dl></details></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Yaw Dampener Switch</td><td></td><td>Yaw Dampener - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>YAW_DAMPER_TOGGLE</dd><dt>On</dt><dd>YAW_DAMPER_ON</dd><dt>Off</dt><dd>YAW_DAMPER_OFF</dd></dl></details></td>
-<td align='center'></td></tr>
 </table>
 
 
@@ -576,11 +521,11 @@ Feedback From Category:{0}Variable:{1}Value Range:{2}-{3}</td><td><ol start=0>
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th></tr>
 <tr valign='top'><td>Airspeed Hold Value Set</td><td></td><td>Set Airspeed Hold
-in Value Range:{0}-{1}| Feedback From
+in Value Range (kts):{0}-{1}| Feedback From
 | State (opt):{2}{3}
 Range:{4}-{5}</td><td><ol start=0>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 5000&gt;</sub></li>
-<li>[number] &nbsp; <b>5000</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 5000&gt;</sub></li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 50000.00&gt;</sub></li>
+<li>[number] &nbsp; <b>50000</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 50000.00&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -601,8 +546,8 @@ Range:{4}-{5}</td><td><ol start=0>
 in Value Range:{0}-{1}| Feedback From
 | State (opt):{2}{3}
 Range:{4}-{5}</td><td><ol start=0>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 359&gt;</sub></li>
-<li>[number] &nbsp; <b>359</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 359&gt;</sub></li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 359.00&gt;</sub></li>
+<li>[number] &nbsp; <b>359</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 359.00&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -612,8 +557,8 @@ Range:{4}-{5}</td><td><ol start=0>
 in Value Range:{0}-{1}| Feedback From
 | State (opt):{2}{3}
 Range:{4}-{5}</td><td><ol start=0>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 20&gt;</sub></li>
-<li>[number] &nbsp; <b>20</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 20&gt;</sub></li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 20.00&gt;</sub></li>
+<li>[number] &nbsp; <b>20</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 20.00&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -624,8 +569,8 @@ Range:{1}-{2}| Feedback From
 | State (opt):{3}{4}
 Range:{5}-{6}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Set English</b>, Set Metric</li>
-<li>[number] &nbsp; <b>-5000</b> &nbsp; <sub>&lt;min: -5000&gt;</sub> <sub>&lt;max: 5000&gt;</sub></li>
-<li>[number] &nbsp; <b>5000</b> &nbsp; <sub>&lt;min: -5000&gt;</sub> <sub>&lt;max: 5000&gt;</sub></li>
+<li>[number] &nbsp; <b>-5000</b> &nbsp; <sub>&lt;min: -5000.00&gt;</sub> <sub>&lt;max: 5000.00&gt;</sub></li>
+<li>[number] &nbsp; <b>5000</b> &nbsp; <sub>&lt;min: -5000.00&gt;</sub> <sub>&lt;max: 5000.00&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -680,9 +625,9 @@ Range:{5}-{6}</td><td><ol start=0>
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
-<tr valign='top'><td>Radio Interaction</td><td>Radio Interaction</td><td>Radio {0} - {1}</td><td><ol start=0>
+<tr valign='top'><td>Radio Interaction</td><td></td><td>Radio {0} - {1}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>COM1</b>, COM2, NAV1, NAV2</li>
-<li>[choice] &nbsp; <b>Increase 25 KHz</b>, Increase 1 MHz, Increase 25 KHz w/ Carry Digits, Decrease 25 KHz, Decrease 1Mhz, Decrease 25 KHz w/ Carry Digits, Standby Swap</li>
+<li>[choice] &nbsp; <b>Standby Swap</b>, Decrease 1Mhz, Increase 1 MHz, Decrease 25 KHz, Decrease 25 KHz w/ Carry Digits, Increase 25 KHz, Increase 25 KHz w/ Carry Digits</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>COM1+Standby Swap</dt><dd>COM_STBY_RADIO_SWAP</dd><dt>COM1+Decrease 1Mhz</dt><dd>COM_RADIO_WHOLE_DEC</dd><dt>COM1+Increase 1 MHz</dt><dd>COM_RADIO_WHOLE_INC</dd><dt>COM1+Decrease 25 KHz</dt><dd>COM_RADIO_FRACT_DEC</dd><dt>COM1+Decrease 25 KHz w/ Carry Digits</dt><dd>COM_RADIO_FRACT_DEC_CARRY</dd><dt>COM1+Increase 25 KHz</dt><dd>COM_RADIO_FRACT_INC</dd><dt>COM1+Increase 25 KHz w/ Carry Digits</dt><dd>COM_RADIO_FRACT_INC_CARRY</dd><dt>COM2+Standby Swap</dt><dd>COM2_RADIO_SWAP</dd><dt>COM2+Decrease 1Mhz</dt><dd>COM2_RADIO_WHOLE_DEC</dd><dt>COM2+Increase 1 MHz</dt><dd>COM2_RADIO_WHOLE_INC</dd><dt>COM2+Decrease 25 KHz</dt><dd>COM2_RADIO_FRACT_DEC</dd><dt>COM2+Decrease 25 KHz w/ Carry Digits</dt><dd>COM2_RADIO_FRACT_DEC_CARRY</dd><dt>COM2+Increase 25 KHz</dt><dd>COM2_RADIO_FRACT_INC</dd><dt>COM2+Increase 25 KHz w/ Carry Digits</dt><dd>COM2_RADIO_FRACT_INC_CARRY</dd><dt>NAV1+Standby Swap</dt><dd>NAV1_RADIO_SWAP</dd><dt>NAV1+Decrease 1Mhz</dt><dd>NAV1_RADIO_WHOLE_DEC</dd><dt>NAV1+Increase 1 MHz</dt><dd>NAV1_RADIO_WHOLE_INC</dd><dt>NAV1+Decrease 25 KHz</dt><dd>NAV1_RADIO_FRACT_DEC</dd><dt>NAV1+Decrease 25 KHz w/ Carry Digits</dt><dd>NAV1_RADIO_FRACT_DEC_CARRY</dd><dt>NAV1+Increase 25 KHz</dt><dd>NAV1_RADIO_FRACT_INC</dd><dt>NAV1+Increase 25 KHz w/ Carry Digits</dt><dd>NAV1_RADIO_FRACT_INC_CARRY</dd><dt>NAV2+Standby Swap</dt><dd>NAV2_RADIO_SWAP</dd><dt>NAV2+Decrease 1Mhz</dt><dd>NAV2_RADIO_WHOLE_DEC</dd><dt>NAV2+Increase 1 MHz</dt><dd>NAV2_RADIO_WHOLE_INC</dd><dt>NAV2+Decrease 25 KHz</dt><dd>NAV2_RADIO_FRACT_DEC</dd><dt>NAV2+Decrease 25 KHz w/ Carry Digits</dt><dd>NAV2_RADIO_FRACT_DEC_CARRY</dd><dt>NAV2+Increase 25 KHz</dt><dd>NAV2_RADIO_FRACT_INC</dd><dt>NAV2+Increase 25 KHz w/ Carry Digits</dt><dd>NAV2_RADIO_FRACT_INC_CARRY</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
@@ -716,47 +661,59 @@ Range:{5}-{6}</td><td><ol start=0>
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
-<tr valign='top'><td>Alternator - Specific</td><td>Toggle Specific Alternator</td><td>Toggle Alternator - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
+<tr valign='top'><td>Alternator Switches</td><td></td><td>Toggle Alternator - {0}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Master</b>, 1, 2, 3, 4</li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>1</dt><dd>TOGGLE_ALTERNATOR1</dd><dt>2</dt><dd>TOGGLE_ALTERNATOR2</dd><dt>3</dt><dd>TOGGLE_ALTERNATOR3</dd><dt>4</dt><dd>TOGGLE_ALTERNATOR4</dd></dl></details></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Master</dt><dd>TOGGLE_MASTER_ALTERNATOR</dd><dt>1</dt><dd>TOGGLE_ALTERNATOR1</dd><dt>2</dt><dd>TOGGLE_ALTERNATOR2</dd><dt>3</dt><dd>TOGGLE_ALTERNATOR3</dd><dt>4</dt><dd>TOGGLE_ALTERNATOR4</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Avionics Master</td><td>Toggle Avionics Master</td><td>Toggle Avionics Master</td><td><ol start=0>
+<tr valign='top'><td>Avionics Master Switch</td><td></td><td>Toggle Avionics Master</td><td><ol start=0>
 </ol></td>
 <td><dl><dd>TOGGLE_AVIONICS_MASTER</dd></dl></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Master Alternator</td><td>Toggle Master Alternator</td><td>Toggle Master Alternator</td><td><ol start=0>
+<tr valign='top'><td>Landing Lights Switch/Direction</td><td></td><td>Landing Lights - {0}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Toggle</b>, On, Off, Left, Right, Up, Down, Home</li>
 </ol></td>
-<td><dl><dd>TOGGLE_MASTER_ALTERNATOR</dd></dl></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>LANDING_LIGHTS_TOGGLE</dd><dt>On</dt><dd>LANDING_LIGHTS_ON</dd><dt>Off</dt><dd>LANDING_LIGHTS_OFF</dd><dt>Left</dt><dd>LANDING_LIGHT_LEFT</dd><dt>Right</dt><dd>LANDING_LIGHT_RIGHT</dd><dt>Up</dt><dd>LANDING_LIGHT_UP</dd><dt>Down</dt><dd>LANDING_LIGHT_DOWN</dd><dt>Home</dt><dd>LANDING_LIGHT_HOME</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Master Battery</td><td>Toggle Master Battery</td><td>Toggle Master Battery</td><td><ol start=0>
+<tr valign='top'><td>Light Dimming</td><td></td><td>Set Light Potentiometer {0} to {0} (0 to 100)</td><td><ol start=0>
+<li>[choice] &nbsp; <b>0</b>, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30</li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
+</ol></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>0</dt><dd>LIGHT_POTENTIOMETER_SET</dd><dt>1</dt><dd>LIGHT_POTENTIOMETER_1_SET</dd><dt>2</dt><dd>LIGHT_POTENTIOMETER_2_SET</dd><dt>3</dt><dd>LIGHT_POTENTIOMETER_3_SET</dd><dt>4</dt><dd>LIGHT_POTENTIOMETER_4_SET</dd><dt>5</dt><dd>LIGHT_POTENTIOMETER_5_SET</dd><dt>6</dt><dd>LIGHT_POTENTIOMETER_6_SET</dd><dt>7</dt><dd>LIGHT_POTENTIOMETER_7_SET</dd><dt>8</dt><dd>LIGHT_POTENTIOMETER_8_SET</dd><dt>9</dt><dd>LIGHT_POTENTIOMETER_9_SET</dd><dt>10</dt><dd>LIGHT_POTENTIOMETER_10_SET</dd><dt>11</dt><dd>LIGHT_POTENTIOMETER_11_SET</dd><dt>12</dt><dd>LIGHT_POTENTIOMETER_12_SET</dd><dt>13</dt><dd>LIGHT_POTENTIOMETER_13_SET</dd><dt>14</dt><dd>LIGHT_POTENTIOMETER_14_SET</dd><dt>15</dt><dd>LIGHT_POTENTIOMETER_15_SET</dd><dt>16</dt><dd>LIGHT_POTENTIOMETER_16_SET</dd><dt>17</dt><dd>LIGHT_POTENTIOMETER_17_SET</dd><dt>18</dt><dd>LIGHT_POTENTIOMETER_18_SET</dd><dt>19</dt><dd>LIGHT_POTENTIOMETER_19_SET</dd><dt>20</dt><dd>LIGHT_POTENTIOMETER_20_SET</dd><dt>21</dt><dd>LIGHT_POTENTIOMETER_21_SET</dd><dt>22</dt><dd>LIGHT_POTENTIOMETER_22_SET</dd><dt>23</dt><dd>LIGHT_POTENTIOMETER_23_SET</dd><dt>24</dt><dd>LIGHT_POTENTIOMETER_24_SET</dd><dt>25</dt><dd>LIGHT_POTENTIOMETER_25_SET</dd><dt>26</dt><dd>LIGHT_POTENTIOMETER_26_SET</dd><dt>27</dt><dd>LIGHT_POTENTIOMETER_27_SET</dd><dt>28</dt><dd>LIGHT_POTENTIOMETER_28_SET</dd><dt>29</dt><dd>LIGHT_POTENTIOMETER_29_SET</dd><dt>30</dt><dd>LIGHT_POTENTIOMETER_30_SET</dd></dl></details></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Light Switches</td><td>NOTE: The 'All' lights can only be Toggled.</td><td>Switch {0} Light {1}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>All</b>, Beacon, Cabin, Glareshield, Landing, Logo, Nav, Panel, Pedestal, Recognition, Strobe, Taxi, Wing</li>
+<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
+</ol></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>All+Toggle</dt><dd>ALL_LIGHTS_TOGGLE</dd><dt>Beacon+Toggle</dt><dd>TOGGLE_BEACON_LIGHTS</dd><dt>Cabin+Toggle</dt><dd>TOGGLE_CABIN_LIGHTS</dd><dt>Glareshield+Toggle</dt><dd>GLARESHIELD_LIGHTS_TOGGLE</dd><dt>Landing+Toggle</dt><dd>LANDING_LIGHTS_TOGGLE</dd><dt>Logo+Toggle</dt><dd>TOGGLE_LOGO_LIGHTS</dd><dt>Nav+Toggle</dt><dd>TOGGLE_NAV_LIGHTS</dd><dt>Panel+Toggle</dt><dd>PANEL_LIGHTS_TOGGLE</dd><dt>Pedestal+Toggle</dt><dd>PEDESTRAL_LIGHTS_TOGGLE</dd><dt>Recognition+Toggle</dt><dd>TOGGLE_RECOGNITION_LIGHTS</dd><dt>Strobe+Toggle</dt><dd>STROBES_TOGGLE</dd><dt>Taxi+Toggle</dt><dd>TOGGLE_TAXI_LIGHTS</dd><dt>Wing+Toggle</dt><dd>TOGGLE_WING_LIGHTS</dd><dt>Beacon+On</dt><dd>BEACON_LIGHTS_ON</dd><dt>Cabin+On</dt><dd>CABIN_LIGHTS_ON</dd><dt>Glareshield+On</dt><dd>GLARESHIELD_LIGHTS_ON</dd><dt>Landing+On</dt><dd>LANDING_LIGHTS_ON</dd><dt>Logo+On</dt><dd>LOGO_LIGHTS_SET</dd><dt>Nav+On</dt><dd>NAV_LIGHTS_ON</dd><dt>Panel+On</dt><dd>PANEL_LIGHTS_ON</dd><dt>Pedestal+On</dt><dd>PEDESTRAL_LIGHTS_ON</dd><dt>Recognition+On</dt><dd>RECOGNITION_LIGHTS_SET</dd><dt>Strobe+On</dt><dd>STROBES_ON</dd><dt>Taxi+On</dt><dd>TAXI_LIGHTS_ON</dd><dt>Wing+On</dt><dd>WING_LIGHTS_ON</dd><dt>Beacon+Off</dt><dd>BEACON_LIGHTS_OFF</dd><dt>Cabin+Off</dt><dd>CABIN_LIGHTS_OFF</dd><dt>Glareshield+Off</dt><dd>GLARESHIELD_LIGHTS_OFF</dd><dt>Landing+Off</dt><dd>LANDING_LIGHTS_OFF</dd><dt>Logo+Off</dt><dd>LOGO_LIGHTS_SET</dd><dt>Nav+Off</dt><dd>NAV_LIGHTS_OFF</dd><dt>Panel+Off</dt><dd>PANEL_LIGHTS_OFF</dd><dt>Pedestal+Off</dt><dd>PEDESTRAL_LIGHTS_OFF</dd><dt>Recognition+Off</dt><dd>RECOGNITION_LIGHTS_SET</dd><dt>Strobe+Off</dt><dd>STROBES_OFF</dd><dt>Taxi+Off</dt><dd>TAXI_LIGHTS_OFF</dd><dt>Wing+Off</dt><dd>WING_LIGHTS_OFF</dd></dl></details></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Master Battery</td><td></td><td>Toggle Master Battery</td><td><ol start=0>
 </ol></td>
 <td><dl><dd>TOGGLE_MASTER_BATTERY</dd></dl></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Master Battery & Alternator</td><td>Toggle Master Battery & Alternator</td><td>Toggle Master Battery & Alternator</td><td><ol start=0>
+<tr valign='top'><td>Master Battery & Alternator</td><td></td><td>Toggle Master Battery & Alternator</td><td><ol start=0>
 </ol></td>
 <td><dl><dd>TOGGLE_MASTER_BATTERY_ALTERNATOR</dd></dl></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Toggle All/Specific Lights</td><td>Toggle All/Specific Lights</td><td>Toggle Lights - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>All</b>, Beacon, Taxi, Logo, Recognition, Wing, Nav, Cabin</li>
+</table>
+
+
+#### Connectors
+
+<table>
+<tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th></tr>
+<tr valign='top'><td>Light Dimming</td><td></td><td>Set Light Potentiometer {0}in Value
+Range:{1}-{2}| Feedback From
+| State (opt):{3}{4}
+Range:{5}-{6}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>0</b>, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30</li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
+<li>[number] &nbsp; <b>100</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>All</dt><dd>ALL_LIGHTS_TOGGLE</dd><dt>Beacon</dt><dd>TOGGLE_BEACON_LIGHTS</dd><dt>Taxi</dt><dd>TOGGLE_TAXI_LIGHTS</dd><dt>Logo</dt><dd>TOGGLE_LOGO_LIGHTS</dd><dt>Recognition</dt><dd>TOGGLE_RECOGNITION_LIGHTS</dd><dt>Wing</dt><dd>TOGGLE_WING_LIGHTS</dd><dt>Nav</dt><dd>TOGGLE_NAV_LIGHTS</dd><dt>Cabin</dt><dd>TOGGLE_CABIN_LIGHTS</dd></dl></details></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Toggle/On/Off Landing Lights</td><td>Toggle/On/Off Landing Lights</td><td>Landing Lights - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>LANDING_LIGHTS_TOGGLE</dd><dt>On</dt><dd>LANDING_LIGHTS_ON</dd><dt>Off</dt><dd>LANDING_LIGHTS_OFF</dd></dl></details></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Toggle/On/Off Panel Lights</td><td>Toggle/On/Off Panel Lights</td><td>Panel Lights - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>PANEL_LIGHTS_TOGGLE</dd><dt>On</dt><dd>PANEL_LIGHTS_ON</dd><dt>Off</dt><dd>PANEL_LIGHTS_OFF</dd></dl></details></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Toggle/On/Off Strobe Lights</td><td>Toggle/On/Off Strobe Lights</td><td>Strobe Lights - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>STROBES_TOGGLE</dd><dt>On</dt><dd>STROBES_ON</dd><dt>Off</dt><dd>STROBES_OFF</dd></dl></details></td>
-<td align='center'></td></tr>
 </table>
 
 
@@ -802,13 +759,13 @@ Range:{5}-{6}</td><td><ol start=0>
 <tr valign='top'><td>Magnetos Switch - All</td><td></td><td>All Magnetos - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Start</b>, Off, Right, Left, Both, Decrease, Increase, Select (for +/-)</li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Off</dt><dd>MAGNETO_OFF</dd><dt>Right</dt><dd>MAGNETO_RIGHT</dd><dt>Left</dt><dd>MAGNETO_LEFT</dd><dt>Both</dt><dd>MAGNETO_BOTH</dd><dt>Start</dt><dd>MAGNETO_START</dd><dt>Decrease</dt><dd>MAGNETO_DECR</dd><dt>Increase</dt><dd>MAGNETO_INCR</dd><dt>Select (for +/-)</dt><dd>MAGNETO</dd></dl></details></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Start</dt><dd>MAGNETO_START</dd><dt>Off</dt><dd>MAGNETO_OFF</dd><dt>Right</dt><dd>MAGNETO_RIGHT</dd><dt>Left</dt><dd>MAGNETO_LEFT</dd><dt>Both</dt><dd>MAGNETO_BOTH</dd><dt>Decrease</dt><dd>MAGNETO_DECR</dd><dt>Increase</dt><dd>MAGNETO_INCR</dd><dt>Select (for +/-)</dt><dd>MAGNETO</dd></dl></details></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Magnetos Switch - Individual</td><td></td><td>Magneto {0} - {1}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
 <li>[choice] &nbsp; <b>Start</b>, Off, Right, Left, Both, Decrease, Increase</li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>1+Off</dt><dd>MAGNETO1_OFF</dd><dt>1+Right</dt><dd>MAGNETO1_RIGHT</dd><dt>1+Left</dt><dd>MAGNETO1_LEFT</dd><dt>1+Both</dt><dd>MAGNETO1_BOTH</dd><dt>1+Start</dt><dd>MAGNETO1_START</dd><dt>1+Decrease</dt><dd>MAGNETO1_DECR</dd><dt>1+Increase</dt><dd>MAGNETO1_INCR</dd><dt>2+Off</dt><dd>MAGNETO2_OFF</dd><dt>2+Right</dt><dd>MAGNETO2_RIGHT</dd><dt>2+Left</dt><dd>MAGNETO2_LEFT</dd><dt>2+Both</dt><dd>MAGNETO2_BOTH</dd><dt>2+Start</dt><dd>MAGNETO2_START</dd><dt>2+Decrease</dt><dd>MAGNETO2_DECR</dd><dt>2+Increase</dt><dd>MAGNETO2_INCR</dd><dt>3+Off</dt><dd>MAGNETO3_OFF</dd><dt>3+Right</dt><dd>MAGNETO3_RIGHT</dd><dt>3+Left</dt><dd>MAGNETO3_LEFT</dd><dt>3+Both</dt><dd>MAGNETO3_BOTH</dd><dt>3+Start</dt><dd>MAGNETO3_START</dd><dt>3+Decrease</dt><dd>MAGNETO3_DECR</dd><dt>3+Increase</dt><dd>MAGNETO3_INCR</dd><dt>4+Off</dt><dd>MAGNETO4_OFF</dd><dt>4+Right</dt><dd>MAGNETO4_RIGHT</dd><dt>4+Left</dt><dd>MAGNETO4_LEFT</dd><dt>4+Both</dt><dd>MAGNETO4_BOTH</dd><dt>4+Start</dt><dd>MAGNETO4_START</dd><dt>4+Decrease</dt><dd>MAGNETO4_DECR</dd><dt>4+Increase</dt><dd>MAGNETO4_INCR</dd></dl></details></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>1+Start</dt><dd>MAGNETO1_START</dd><dt>1+Off</dt><dd>MAGNETO1_OFF</dd><dt>1+Right</dt><dd>MAGNETO1_RIGHT</dd><dt>1+Left</dt><dd>MAGNETO1_LEFT</dd><dt>1+Both</dt><dd>MAGNETO1_BOTH</dd><dt>1+Decrease</dt><dd>MAGNETO1_DECR</dd><dt>1+Increase</dt><dd>MAGNETO1_INCR</dd><dt>2+Start</dt><dd>MAGNETO2_START</dd><dt>2+Off</dt><dd>MAGNETO2_OFF</dd><dt>2+Right</dt><dd>MAGNETO2_RIGHT</dd><dt>2+Left</dt><dd>MAGNETO2_LEFT</dd><dt>2+Both</dt><dd>MAGNETO2_BOTH</dd><dt>2+Decrease</dt><dd>MAGNETO2_DECR</dd><dt>2+Increase</dt><dd>MAGNETO2_INCR</dd><dt>3+Start</dt><dd>MAGNETO3_START</dd><dt>3+Off</dt><dd>MAGNETO3_OFF</dd><dt>3+Right</dt><dd>MAGNETO3_RIGHT</dd><dt>3+Left</dt><dd>MAGNETO3_LEFT</dd><dt>3+Both</dt><dd>MAGNETO3_BOTH</dd><dt>3+Decrease</dt><dd>MAGNETO3_DECR</dd><dt>3+Increase</dt><dd>MAGNETO3_INCR</dd><dt>4+Start</dt><dd>MAGNETO4_START</dd><dt>4+Off</dt><dd>MAGNETO4_OFF</dd><dt>4+Right</dt><dd>MAGNETO4_RIGHT</dd><dt>4+Left</dt><dd>MAGNETO4_LEFT</dd><dt>4+Both</dt><dd>MAGNETO4_BOTH</dd><dt>4+Decrease</dt><dd>MAGNETO4_DECR</dd><dt>4+Increase</dt><dd>MAGNETO4_INCR</dd></dl></details></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Magnetos Switch Set</td><td></td><td>Set Magneto Switch {0} to position {1} (0-4)</td><td><ol start=0>
 <li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
@@ -976,32 +933,32 @@ Range:{5}-{6}</td><td><ol start=0>
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
-<tr valign='top'><td>Anti-Ice</td><td>Toggle/On/Off Anti Ice</td><td>Anti Ice - {0}</td><td><ol start=0>
+<tr valign='top'><td>Anti-Ice</td><td></td><td>Anti Ice - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>ANTI_ICE_TOGGLE</dd><dt>On</dt><dd>ANTI_ICE_ON</dd><dt>Off</dt><dd>ANTI_ICE_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Anti-Ice Engine</td><td>Toggle Anti Ice Engine</td><td>Anti Ice Engine {0} Toggle</td><td><ol start=0>
+<tr valign='top'><td>Anti-Ice Engine</td><td></td><td>Anti Ice Engine {0} Toggle</td><td><ol start=0>
 <li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>1</dt><dd>ANTI_ICE_TOGGLE_ENG1</dd><dt>2</dt><dd>ANTI_ICE_TOGGLE_ENG2</dd><dt>3</dt><dd>ANTI_ICE_TOGGLE_ENG3</dd><dt>4</dt><dd>ANTI_ICE_TOGGLE_ENG4</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Anti-Ice Engine Set</td><td>Set On/Off Anti Ice Engine</td><td>Anti Ice Engine {0} - {1}</td><td><ol start=0>
+<tr valign='top'><td>Anti-Ice Engine Set</td><td></td><td>Anti Ice Engine {0} - {1}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
 <li>[switch] &nbsp; <b>False</b></li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>1</dt><dd>ANTI_ICE_SET_ENG1</dd><dt>2</dt><dd>ANTI_ICE_SET_ENG2</dd><dt>3</dt><dd>ANTI_ICE_SET_ENG3</dd><dt>4</dt><dd>ANTI_ICE_SET_ENG4</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Pitot Heat</td><td>Toggle/On/Off Pitot Heat</td><td>Pitot Heat - {0}</td><td><ol start=0>
+<tr valign='top'><td>Pitot Heat</td><td></td><td>Pitot Heat - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>PITOT_HEAT_TOGGLE</dd><dt>On</dt><dd>PITOT_HEAT_ON</dd><dt>Off</dt><dd>PITOT_HEAT_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Propeller De-ice</td><td>Toggle Propeller DeIce</td><td>Toggle Propeller DeIce</td><td><ol start=0>
+<tr valign='top'><td>Propeller De-ice</td><td></td><td>Toggle Propeller DeIce</td><td><ol start=0>
 </ol></td>
 <td><dl><dd>TOGGLE_PROPELLER_DEICE</dd></dl></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Structural De-ice</td><td>Toggle Structural DeIce</td><td>Toggle Structural DeIce</td><td><ol start=0>
+<tr valign='top'><td>Structural De-ice</td><td></td><td>Toggle Structural DeIce</td><td><ol start=0>
 </ol></td>
 <td><dl><dd>TOGGLE_STRUCTURAL_DEICE</dd></dl></td>
 <td align='center'></td></tr>
@@ -1043,10 +1000,10 @@ Range:{5}-{6}</td><td><ol start=0>
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
-<tr valign='top'><td>Failures</td><td>Toggle Failures</td><td>Toggle Failures - {0}</td><td><ol start=0>
+<tr valign='top'><td>Failures</td><td></td><td>Toggle Failure - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Electrical</b>, Vacuum, Pitot, Static Port, Hydraulic, Total Brake, Left Brake, Right Brake, Engine 1, Engine 2, Engine 3, Engine 4</li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Vacuum</dt><dd>TOGGLE_VACUUM_FAILURE</dd><dt>Electrical</dt><dd>TOGGLE_ELECTRICAL_FAILURE</dd><dt>Pitot</dt><dd>TOGGLE_PITOT_BLOCKAGE</dd><dt>Static Port</dt><dd>TOGGLE_STATIC_PORT_BLOCKAGE</dd><dt>Hydraulic</dt><dd>TOGGLE_HYDRAULIC_FAILURE</dd><dt>Total Brake</dt><dd>TOGGLE_TOTAL_BRAKE_FAILURE</dd><dt>Left Brake</dt><dd>TOGGLE_LEFT_BRAKE_FAILURE</dd><dt>Right Brake</dt><dd>TOGGLE_RIGHT_BRAKE_FAILURE</dd><dt>Engine 1</dt><dd>TOGGLE_ENGINE1_FAILURE</dd><dt>Engine 2</dt><dd>TOGGLE_ENGINE2_FAILURE</dd><dt>Engine 3</dt><dd>TOGGLE_ENGINE3_FAILURE</dd><dt>Engine 4</dt><dd>TOGGLE_ENGINE4_FAILURE</dd></dl></details></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Electrical</dt><dd>TOGGLE_ELECTRICAL_FAILURE</dd><dt>Vacuum</dt><dd>TOGGLE_VACUUM_FAILURE</dd><dt>Pitot</dt><dd>TOGGLE_PITOT_BLOCKAGE</dd><dt>Static Port</dt><dd>TOGGLE_STATIC_PORT_BLOCKAGE</dd><dt>Hydraulic</dt><dd>TOGGLE_HYDRAULIC_FAILURE</dd><dt>Total Brake</dt><dd>TOGGLE_TOTAL_BRAKE_FAILURE</dd><dt>Left Brake</dt><dd>TOGGLE_LEFT_BRAKE_FAILURE</dd><dt>Right Brake</dt><dd>TOGGLE_RIGHT_BRAKE_FAILURE</dd><dt>Engine 1</dt><dd>TOGGLE_ENGINE1_FAILURE</dd><dt>Engine 2</dt><dd>TOGGLE_ENGINE2_FAILURE</dd><dt>Engine 3</dt><dd>TOGGLE_ENGINE3_FAILURE</dd><dt>Engine 4</dt><dd>TOGGLE_ENGINE4_FAILURE</dd></dl></details></td>
 <td align='center'></td></tr>
 </table>
 
@@ -1123,30 +1080,11 @@ Range:{5}-{6}</td><td><ol start=0>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>All</dt><dd>BRAKES</dd><dt>Left</dt><dd>BRAKES_LEFT</dd><dt>Right</dt><dd>BRAKES_RIGHT</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flap Levers - Adjust All</td><td></td><td>{0} All Cowl Flaps Levers</td><td><ol start=0>
+<tr valign='top'><td>Cowl Flap Levers Adjust</td><td></td><td>Cowl Flaps Lever {0} {1}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
 <li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
-<td><dl><dt>Increase</dt><dd>INC_COWL_FLAPS</dd><dt>Decrease</dt><dd>DEC_COWL_FLAPS</dd></dl></td>
-<td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flaps 1 Lever Adjust</td><td></td><td>{0} Cowl Flaps 1 Lever</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
-</ol></td>
-<td><dl><dt>Increase</dt><dd>INC_COWL_FLAPS1</dd><dt>Decrease</dt><dd>DEC_COWL_FLAPS1</dd></dl></td>
-<td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flaps 2 Lever Adjust</td><td></td><td>{0} Cowl Flaps 2 Lever</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
-</ol></td>
-<td><dl><dt>Increase</dt><dd>INC_COWL_FLAPS2</dd><dt>Decrease</dt><dd>DEC_COWL_FLAPS2</dd></dl></td>
-<td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flaps 3 Lever Adjust</td><td></td><td>{0} Cowl Flaps 3 Lever</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
-</ol></td>
-<td><dl><dt>Increase</dt><dd>INC_COWL_FLAPS3</dd><dt>Decrease</dt><dd>DEC_COWL_FLAPS3</dd></dl></td>
-<td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Cowl Flaps 4 Lever Adjust</td><td></td><td>{0} Cowl Flaps 4 Lever</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
-</ol></td>
-<td><dl><dt>Increase</dt><dd>INC_COWL_FLAPS4</dd><dt>Decrease</dt><dd>DEC_COWL_FLAPS4</dd></dl></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>All+Increase</dt><dd>INC_COWL_FLAPS</dd><dt>All+Decrease</dt><dd>DEC_COWL_FLAPS</dd><dt>1+Increase</dt><dd>INC_COWL_FLAPS1</dd><dt>1+Decrease</dt><dd>DEC_COWL_FLAPS1</dd><dt>2+Increase</dt><dd>INC_COWL_FLAPS2</dd><dt>2+Decrease</dt><dd>DEC_COWL_FLAPS2</dd><dt>3+Increase</dt><dd>INC_COWL_FLAPS3</dd><dt>3+Decrease</dt><dd>DEC_COWL_FLAPS3</dd><dt>4+Increase</dt><dd>INC_COWL_FLAPS4</dd><dt>4+Decrease</dt><dd>DEC_COWL_FLAPS4</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Cowl Flaps Lever Set</td><td></td><td>Set Cowl {0} Flaps Lever to {0} (0 to 16384)</td><td><ol start=0>
 <li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
@@ -1167,7 +1105,7 @@ Range:{5}-{6}</td><td><ol start=0>
 <tr valign='top'><td>Elevator Trim Adjust</td><td></td><td>Adjust Elevator Trim {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Up</b>, Down</li>
 </ol></td>
-<td><dl><dt>Down</dt><dd>ELEV_TRIM_DN</dd><dt>Up</dt><dd>ELEV_TRIM_UP</dd></dl></td>
+<td><dl><dt>Up</dt><dd>ELEV_TRIM_UP</dd><dt>Down</dt><dd>ELEV_TRIM_DN</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Elevator Trim Set</td><td></td><td>Set Elevator Trim to {0} (-16384 to +16384)</td><td><ol start=0>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
@@ -1393,7 +1331,7 @@ Range:{4}-{5}</td><td><ol start=0>
 <td><dl><dd>ADD_FUEL_QUANTITY</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Cross Feed Switch</td><td></td><td>Cross Feed - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; Toggle, <b>Open</b>, Off</li>
+<li>[choice] &nbsp; <b>Toggle</b>, Open, Off</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>CROSS_FEED_TOGGLE</dd><dt>Open</dt><dd>CROSS_FEED_OPEN</dd><dt>Off</dt><dd>CROSS_FEED_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
@@ -1414,7 +1352,7 @@ Range:{4}-{5}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
 <li>[choice] &nbsp; <b>All</b>, Off, Left, Right, Left - Main, Right - Main, Left - Aux, Right - Aux, Center</li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>1+Off</dt><dd>FUEL_SELECTOR_OFF</dd><dt>1+All</dt><dd>FUEL_SELECTOR_ALL</dd><dt>1+Left</dt><dd>FUEL_SELECTOR_LEFT</dd><dt>1+Right</dt><dd>FUEL_SELECTOR_RIGHT</dd><dt>1+Left - Main</dt><dd>FUEL_SELECTOR_LEFT_MAIN</dd><dt>1+Right - Main</dt><dd>FUEL_SELECTOR_RIGHT_MAIN</dd><dt>1+Left - Aux</dt><dd>FUEL_SELECTOR_LEFT_AUX</dd><dt>1+Right - Aux</dt><dd>FUEL_SELECTOR_RIGHT_AUX</dd><dt>1+Center</dt><dd>FUEL_SELECTOR_CENTER</dd><dt>2+Off</dt><dd>FUEL_SELECTOR_2_OFF</dd><dt>2+All</dt><dd>FUEL_SELECTOR_2_ALL</dd><dt>2+Left</dt><dd>FUEL_SELECTOR_2_LEFT</dd><dt>2+Right</dt><dd>FUEL_SELECTOR_2_RIGHT</dd><dt>2+Left - Main</dt><dd>FUEL_SELECTOR_2_LEFT_MAIN</dd><dt>2+Right - Main</dt><dd>FUEL_SELECTOR_2_RIGHT_MAIN</dd><dt>2+Left - Aux</dt><dd>FUEL_SELECTOR_2_LEFT_AUX</dd><dt>2+Right - Aux</dt><dd>FUEL_SELECTOR_2_RIGHT_AUX</dd><dt>2+Center</dt><dd>FUEL_SELECTOR_2_CENTER</dd><dt>3+Off</dt><dd>FUEL_SELECTOR_3_OFF</dd><dt>3+All</dt><dd>FUEL_SELECTOR_3_ALL</dd><dt>3+Left</dt><dd>FUEL_SELECTOR_3_LEFT</dd><dt>3+Right</dt><dd>FUEL_SELECTOR_3_RIGHT</dd><dt>3+Left - Main</dt><dd>FUEL_SELECTOR_3_LEFT_MAIN</dd><dt>3+Right - Main</dt><dd>FUEL_SELECTOR_3_RIGHT_MAIN</dd><dt>3+Left - Aux</dt><dd>FUEL_SELECTOR_3_LEFT_AUX</dd><dt>3+Right - Aux</dt><dd>FUEL_SELECTOR_3_RIGHT_AUX</dd><dt>3+Center</dt><dd>FUEL_SELECTOR_3_CENTER</dd><dt>4+Off</dt><dd>FUEL_SELECTOR_4_OFF</dd><dt>4+All</dt><dd>FUEL_SELECTOR_4_ALL</dd><dt>4+Left</dt><dd>FUEL_SELECTOR_4_LEFT</dd><dt>4+Right</dt><dd>FUEL_SELECTOR_4_RIGHT</dd><dt>4+Right - Main</dt><dd>FUEL_SELECTOR_4_RIGHT_MAIN</dd><dt>4+Left - Main</dt><dd>FUEL_SELECTOR_4_LEFT_MAIN</dd><dt>4+Left - Aux</dt><dd>FUEL_SELECTOR_4_LEFT_AUX</dd><dt>4+Right - Aux</dt><dd>FUEL_SELECTOR_4_RIGHT_AUX</dd><dt>4+Center</dt><dd>FUEL_SELECTOR_4_CENTER</dd></dl></details></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>1+All</dt><dd>FUEL_SELECTOR_ALL</dd><dt>1+Off</dt><dd>FUEL_SELECTOR_OFF</dd><dt>1+Left</dt><dd>FUEL_SELECTOR_LEFT</dd><dt>1+Right</dt><dd>FUEL_SELECTOR_RIGHT</dd><dt>1+Left - Main</dt><dd>FUEL_SELECTOR_LEFT_MAIN</dd><dt>1+Right - Main</dt><dd>FUEL_SELECTOR_RIGHT_MAIN</dd><dt>1+Left - Aux</dt><dd>FUEL_SELECTOR_LEFT_AUX</dd><dt>1+Right - Aux</dt><dd>FUEL_SELECTOR_RIGHT_AUX</dd><dt>1+Center</dt><dd>FUEL_SELECTOR_CENTER</dd><dt>2+All</dt><dd>FUEL_SELECTOR_2_ALL</dd><dt>2+Off</dt><dd>FUEL_SELECTOR_2_OFF</dd><dt>2+Left</dt><dd>FUEL_SELECTOR_2_LEFT</dd><dt>2+Right</dt><dd>FUEL_SELECTOR_2_RIGHT</dd><dt>2+Left - Main</dt><dd>FUEL_SELECTOR_2_LEFT_MAIN</dd><dt>2+Right - Main</dt><dd>FUEL_SELECTOR_2_RIGHT_MAIN</dd><dt>2+Left - Aux</dt><dd>FUEL_SELECTOR_2_LEFT_AUX</dd><dt>2+Right - Aux</dt><dd>FUEL_SELECTOR_2_RIGHT_AUX</dd><dt>2+Center</dt><dd>FUEL_SELECTOR_2_CENTER</dd><dt>3+All</dt><dd>FUEL_SELECTOR_3_ALL</dd><dt>3+Off</dt><dd>FUEL_SELECTOR_3_OFF</dd><dt>3+Left</dt><dd>FUEL_SELECTOR_3_LEFT</dd><dt>3+Right</dt><dd>FUEL_SELECTOR_3_RIGHT</dd><dt>3+Left - Main</dt><dd>FUEL_SELECTOR_3_LEFT_MAIN</dd><dt>3+Right - Main</dt><dd>FUEL_SELECTOR_3_RIGHT_MAIN</dd><dt>3+Left - Aux</dt><dd>FUEL_SELECTOR_3_LEFT_AUX</dd><dt>3+Right - Aux</dt><dd>FUEL_SELECTOR_3_RIGHT_AUX</dd><dt>3+Center</dt><dd>FUEL_SELECTOR_3_CENTER</dd><dt>4+All</dt><dd>FUEL_SELECTOR_4_ALL</dd><dt>4+Off</dt><dd>FUEL_SELECTOR_4_OFF</dd><dt>4+Left</dt><dd>FUEL_SELECTOR_4_LEFT</dd><dt>4+Right</dt><dd>FUEL_SELECTOR_4_RIGHT</dd><dt>4+Right - Main</dt><dd>FUEL_SELECTOR_4_RIGHT_MAIN</dd><dt>4+Left - Main</dt><dd>FUEL_SELECTOR_4_LEFT_MAIN</dd><dt>4+Left - Aux</dt><dd>FUEL_SELECTOR_4_LEFT_AUX</dd><dt>4+Right - Aux</dt><dd>FUEL_SELECTOR_4_RIGHT_AUX</dd><dt>4+Center</dt><dd>FUEL_SELECTOR_4_CENTER</dd></dl></details></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Fuel Valve</td><td></td><td>Toggle Fuel Valve: {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
@@ -1458,13 +1396,13 @@ Range:{4}-{5}</td><td><ol start=0>
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
-<tr valign='top'><td>Change Selected Value (+/-)</td><td>Selected Value</td><td>Value {0}</td><td><ol start=0>
-<li>[choice] &nbsp; Increase, <b>Decrease</b></li>
+<tr valign='top'><td>Change Selected Value (+/-)</td><td></td><td>{0} Selected Value</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
 <td><dl><dt>Increase</dt><dd>PLUS</dd><dt>Decrease</dt><dd>MINUS</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Simulation Rate</td><td>Simulation Rate</td><td>Rate {0}</td><td><ol start=0>
-<li>[choice] &nbsp; Increase, <b>Decrease</b></li>
+<tr valign='top'><td>Simulation Rate</td><td></td><td>{0} Simulation Rate</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
 <td><dl><dt>Increase</dt><dd>SIM_RATE_INCR</dd><dt>Decrease</dt><dd>SIM_RATE_DECR</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
