@@ -32,6 +32,7 @@ using MSFSTouchPortalPlugin.Types;
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -78,6 +79,8 @@ namespace MSFSTouchPortalPlugin.Services
 
     private static readonly System.Data.DataTable _expressionEvaluator = new();  // used to evaluate basic math in action data
 
+    private CultureInfo _cultureInfo = CultureInfo.CurrentCulture;
+    private readonly string _defaultCultureId = CultureInfo.CurrentCulture.Name;
 
     public PluginService(IHostApplicationLifetime hostApplicationLifetime, ILogger<PluginService> logger,
       ITouchPortalClientFactory clientFactory, ISimConnectService simConnectService, IReflectionService reflectionService,
@@ -466,6 +469,12 @@ namespace MSFSTouchPortalPlugin.Services
 
     #region Data Updaters    /////////////////////////////////////
 
+    void SendAllSimVarStates()
+    {
+      foreach (SimVarItem simVar in _statesDictionary)
+        _client.StateUpdate(simVar.TouchPortalStateId, simVar.FormattedValue);
+    }
+
     // Action data list updaters
 
     // common handler for other action list updaters
@@ -819,7 +828,7 @@ namespace MSFSTouchPortalPlugin.Services
       if (data.TryGetValue("RelAi", out var relAi) && new BooleanString(relAi) && !_simConnectService.ReleaseAIControl(simVar.Def))
         return false;
 
-      //_logger.LogTrace("Sending value {simVar} value {value}", simVar.Id, (double)simVar);
+      _logger.LogDebug("Sending value {simVar} value {value}", simVar.Id, (double)simVar);
       return _simConnectService.SetDataOnSimObject(simVar);
     }
 
@@ -880,7 +889,7 @@ namespace MSFSTouchPortalPlugin.Services
         return false;
       }
 
-      _logger.LogTrace("Setting variable {0} to value {1}", varName, dVal);
+      _logger.LogDebug("Setting variable {0} to value {1}", varName, dVal);
       return _simConnectService.SetVariable(varType[0], varName, dVal, data.GetValueOrDefault("Unit", string.Empty), createLvar);
     }
 
@@ -1033,7 +1042,7 @@ namespace MSFSTouchPortalPlugin.Services
               _logger.LogError("Data conversion for string '{sValue}' failed for {actId} on with Error: {errMsg}.", sValue, actId, errMsg);
               return false;
             }
-            eventName = eventName.Replace("@", dVal.ToString("0.#######", System.Globalization.CultureInfo.InvariantCulture));
+            eventName = eventName.Replace("@", dVal.ToString("0.#######", CultureInfo.InvariantCulture));
           }
           _logger.LogDebug("Sending: " + eventName);
           return _simConnectService.ExecuteCalculatorCode(eventName);
@@ -1096,7 +1105,8 @@ namespace MSFSTouchPortalPlugin.Services
       }
       string sActId = idParts[^3] + '.' + idParts[^1];
       if (!actionsDictionary.TryGetValue(sActId, out ActionEventType action)) {
-        _logger.LogWarning("Unknown action ID '{0}'", sActId);
+        if (sActId != "Plugin.SetConnectorValue")  // exception for no-op event (hacky)
+          _logger.LogWarning("Unknown action ID '{0}'", sActId);
         return false;
       }
 
@@ -1224,7 +1234,7 @@ namespace MSFSTouchPortalPlugin.Services
           uValue = (uint)Math.Round(dataReal);
         }
       }
-      _logger.LogTrace(
+      _logger.LogDebug(
         "Firing Sim Event - action: {actionId}; category: {catId}; name: {name}; data {uValue}",
         action.ActionId, action.CategoryId, _reflectionService.GetSimEventNameById(eventId), uValue);
       return _simConnectService.TransmitClientEvent(action.CategoryId, eventId, uValue);
@@ -1244,7 +1254,17 @@ namespace MSFSTouchPortalPlugin.Services
         if (!string.IsNullOrWhiteSpace(setting.TouchPortalStateId))
           _client.StateUpdate(setting.TouchPortalStateId, setting.StringValue);
       }
-      // change tracking
+
+      // Check if number formatting rules have changed
+      if (Settings.UseInvariantCulture.BoolValue != (_cultureInfo == CultureInfo.InvariantCulture)) {
+        _cultureInfo = Settings.UseInvariantCulture.BoolValue ? CultureInfo.InvariantCulture : new CultureInfo(_defaultCultureId);
+        _logger.LogInformation("Switching default formatting culture to {name} - {engName}", _cultureInfo.Name, _cultureInfo.EnglishName);
+        CultureInfo.DefaultThreadCurrentCulture = _cultureInfo;
+        Thread.CurrentThread.CurrentCulture = _cultureInfo;
+        SendAllSimVarStates();
+      }
+
+      // change tracking for config files
       string[] p = new[] { PluginConfig.UserConfigFolder, PluginConfig.UserStateFiles };
       PluginConfig.UserConfigFolder = Settings.UserConfigFilesPath.StringValue;  // will (re-)set to default if needed.
       PluginConfig.UserStateFiles = Settings.UserStateFiles.StringValue;         // will (re-)set to default if needed.
@@ -1476,6 +1496,8 @@ namespace MSFSTouchPortalPlugin.Services
       errMsg = null;
       try {
         strValue = _hexNumberRegex.Replace(strValue, m => (Convert.ToUInt32(m.Groups[1].ToString(), 16).ToString()));
+        if (_cultureInfo != CultureInfo.InvariantCulture && _cultureInfo.NumberFormat.NumberDecimalSeparator == ",")
+          strValue = strValue.Replace(".", string.Empty).Replace(',', '.');  // hack for non-invariant cultures
         value = Convert.ToDouble(_expressionEvaluator.Compute(strValue, null));
       }
       catch (Exception e) {

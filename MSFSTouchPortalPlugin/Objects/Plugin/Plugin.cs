@@ -341,6 +341,13 @@ namespace MSFSTouchPortalPlugin.Objects.Plugin
       MaxLength = 255
     };
 
+    public static readonly PluginSetting UseInvariantCulture = new PluginSetting("UseInvariantCulture", DataType.Switch) {
+      Name = "Ignore Local Number Format Rules (0/1)",
+      Description = "Touch Portal cannot perform math or numeric comparison operations on decimal numbers formatted with comma decimal separator, even in locations where this is the norm. Set this setting to 1/true to" +
+        "always format numbers in \"neutral\" format with period decimal separators. **NOTE** that this affects **input** number formatting as well (the plugin will expect all numbers with period decimal separators regardless of your location).",
+      Default = "1",
+    };
+
     public static readonly PluginSetting UpdateHubHopOnStartup = new PluginSetting("UpdateHubHopOnStartup", DataType.Switch) {
       Name = "Update HubHop Data on Startup (0/1)",
       Description = "Set to 1 to automatically load latest HubHop data when plugin starts. Set to 0 to disable. Updates can always be triggered manually via the Action *MSFS - Plugin -> Connect & Update*. " +
