@@ -110,7 +110,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalActionMapping("FLAPS_SET")]
     public static readonly object FlapsSet;
 
-    [TouchPortalAction("CowlFlapsAll", "Cowl Flap Levers Adjust", "Cowl Flaps Lever {0} {1}", true)]
+    [TouchPortalAction("CowlFlapsAdjust", "Cowl Flap Levers Adjust", "Cowl Flaps Lever {0} {1}", true)]
     [TouchPortalActionChoice()]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("INC_COWL_FLAPS",  "All", "Increase")]
@@ -125,7 +125,7 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalActionMapping("DEC_COWL_FLAPS4", "4", "Decrease")]
     public static readonly object CowlFlapsAdjust;
 
-    [TouchPortalAction("CowlFlaps1Set", "Cowl Flaps Lever Set", true,
+    [TouchPortalAction("CowlFlapsSet", "Cowl Flaps Lever Set", true,
       "Set Cowl {0} Flaps Lever to {0} (0 to 16384)",
       "Set Cowl{0}Flaps Lever\nin Value Range:"
     )]

@@ -141,12 +141,13 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
 
     #endregion
 
-    #region Nav1
+    #region Nav
 
-    [TouchPortalAction("AutoPilotNavSelect", "Nav Mode Set", "Sets the nav to 1 or 2 for Nav mode", "Nav Mode - {0} ")]
-    [TouchPortalActionNumeric(1, 1, 2)]
-    [TouchPortalActionMapping("AP_NAV_SELECT_SET")]
-    public static readonly object AP_NAV_SELECT_SET;
+    [TouchPortalAction("AutoPilotNavModeSelect", "Nav Mode Select", "Select Nav Mode {0}")]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("AP_NAV_SELECT_SET", "1", 1)]
+    [TouchPortalActionMapping("AP_NAV_SELECT_SET", "2", 2)]
+    public static readonly object AP_NAV_SELECT_SELECT;
 
     #endregion
 
@@ -183,8 +184,8 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
     public static readonly object AP_AIRSPEED_VAR;
 
     [TouchPortalAction("AutoPilotAirSpeedSet", "Airspeed Hold Value Set", true,
-      "Set Airspeed Hold Value to {0}",
-      "Set Airspeed Hold\nin Value Range:"
+      "Set Airspeed Hold Value to {0} kts",
+      "Set Airspeed Hold\nin Value Range (kts):"
     )]
     [TouchPortalActionText("0", 0, 50000, AllowDecimals = true)]
     [TouchPortalActionMapping("AP_SPD_VAR_SET")]
@@ -242,6 +243,10 @@ namespace MSFSTouchPortalPlugin.Objects.AutoPilot
 
     #region DEPRECATED
 
+    [TouchPortalAction("AutoPilotNavSelect", "Nav Mode Set", "Sets the nav to 1 or 2 for Nav mode", "Nav Mode - {0} ", Deprecated = true)]
+    [TouchPortalActionNumeric(1, 1, 2)]
+    [TouchPortalActionMapping("AP_NAV_SELECT_SET")]
+    public static readonly object AP_NAV_SELECT_SET;
     [TouchPortalAction("AutoPilotFlightDirector", "Flight Director Switch", "Toggle Flight Director On/Off", Deprecated = true)]
     [TouchPortalActionMapping("TOGGLE_FLIGHT_DIRECTOR")]
     public static readonly object AP_FLIGHT_DIRECTOR;
