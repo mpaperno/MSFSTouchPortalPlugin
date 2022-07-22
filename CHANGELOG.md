@@ -1,11 +1,11 @@
 # MSFS Touch Portal Plugin
 
 ## 1.1.0.2-beta2 (July-22-2022)
-* Added new Setting for always using "neutral" numeric formatting with period decimal separators, ignoring any region-specific formatting conventions. 
-  Works around Touch Portal issue with not being able to do math comparison operations on numeric values with comma decimal serparators.<br />
-  !! This setting is now _enabled_ by default. !!  (With appologies to everyeone who expects proper number formatting for their locale.)
+* Added new Setting for always using "neutral" numeric formatting with period decimal separators, ignoring any region-specific formatting conventions.
+  Works around Touch Portal issue with not being able to do math comparison operations on numeric values with comma decimal separators.<br />
+  !! This setting is now _enabled_ by default. !!  (With apologies to everyone who expects proper number formatting for their locale.)
 * Fixed that some actions without data values were broken in Beta 1 version (some light switches, perhaps others).
-* Consolidated serveral groups of separate actions of the same type into single actions with target selector (light switches, AP switches, cowl flaps). 
+* Consolidated several groups of separate actions of the same type into single actions with target selector (light switches, AP switches, cowl flaps).
   Maintains backwards compatibility with existing actions/buttons.
 * Added Light Dimming (potentiometer) actions, some more light switch types, and Landing lights directional control actions.
 
