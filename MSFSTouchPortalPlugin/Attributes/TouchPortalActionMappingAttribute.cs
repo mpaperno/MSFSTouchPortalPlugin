@@ -30,17 +30,19 @@ namespace MSFSTouchPortalPlugin.Attributes
     public Enum EnumId { get; set; } = default;
     public string ActionId { get; set; }
     public string[] Values { get; set; } = Array.Empty<string>();
+    public uint EventValue { get; set; } = 0;
 
-    public TouchPortalActionMappingAttribute(string actionId, string value) :
-      this(actionId, new [] { value }) { }
-    public TouchPortalActionMappingAttribute(string actionId, string value1, string value2) :
-      this(actionId, new[] { value1, value2 }) { }
-    public TouchPortalActionMappingAttribute(string actionId, string value1, string value2, string value3) :
-      this(actionId, new[] { value1, value2, value3 }) { }
+    public TouchPortalActionMappingAttribute(string actionId, string value, uint eventValue = 0) :
+      this(actionId, new [] { value }, eventValue) { }
+    public TouchPortalActionMappingAttribute(string actionId, string value1, string value2, uint eventValue = 0) :
+      this(actionId, new[] { value1, value2 }, eventValue) { }
+    public TouchPortalActionMappingAttribute(string actionId, string value1, string value2, string value3, uint eventValue = 0) :
+      this(actionId, new[] { value1, value2, value3 }, eventValue) { }
 
-    public TouchPortalActionMappingAttribute(string actionId, string[] values = null) {
+    public TouchPortalActionMappingAttribute(string actionId, string[] values = null, uint eventValue = 0) {
       ActionId = actionId;
       Values = values ?? Array.Empty<string>();
+      EventValue = eventValue;
     }
 
     public TouchPortalActionMappingAttribute(PluginActions actionId, string value) : this(actionId, new[] { value }) { }

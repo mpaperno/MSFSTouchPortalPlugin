@@ -253,7 +253,7 @@ namespace MSFSTouchPortalPlugin.Services
           // Now get all the action mappings to produce the final list of all possible action events
           foreach (var ma in actAttr.Mappings) {
             // Put into collections
-            if (act.TryAddSimEventMapping($"{string.Join(",", ma.Values)}", out Enum mapTarget))
+            if (act.TryAddSimEventMapping($"{string.Join(",", ma.Values)}", ma.EventValue, out Enum mapTarget))
               // keep track of generated event IDs for Sim actions (for registering to SimConnect, and debug)
               clientEventIdToNameMap[mapTarget] = new SimEventRecord(catAttr.Id, ma.ActionId);
             else

@@ -1108,37 +1108,38 @@ namespace MSFSTouchPortalPlugin.Services
 
       if (!_simConnectService.IsConnected)
         return false;
-
-      var dataArry = actionEvent.Data.Values.ToArray();
-      if (!action.TryGetEventMapping(in dataArry, out Enum eventId))
+      if (!action.TryGetEventMapping(actionEvent.Data.Values, out EventMappingRecord eventRecord))
         return false;
 
-      string valStr = null;
+      Enum eventId = eventRecord.EventId;
+      string sValue = null;
+      uint uValue = 0;
       if (connValue < 0) {
-        if (action.ValueIndex > -1 && action.ValueIndex < dataArry.Length)
-          valStr = dataArry[action.ValueIndex];
-        connValue = 0;  // don't send -1 to SimConnect
+        if (action.ValueIndex > -1 && action.ValueIndex < actionEvent.Data.Values.Count)
+          sValue = actionEvent.Data.Values.ElementAt(action.ValueIndex);
+        else if (eventRecord.Values?.Length > 0)
+          uValue = eventRecord.Values[0];  // using only one value for now
       }
       else if (ConvertSliderValueRange(connValue, actionEvent.Data, out var dVal)) {
-        connValue = (int)Math.Round(dVal, 0);
+        uValue = (uint)Math.Round(dVal, 0);
       }
       else {
         return false;
       }
-      return ProcessSimEvent(action, eventId, valStr, (uint)connValue);
+      return ProcessSimEvent(action, eventId, sValue, uValue);
     }
 
     bool ProcessInternalEvent(ActionEventType action, ActionData data, int connValue = -1)
     {
       PluginActions pluginEventId = (PluginActions)action.Id;
-      _logger.LogTrace("Firing Internal Event - action: {actId}; enum: {pluginEventId}; connVal {connVal}; data: {data}", action.ActionId, pluginEventId, connValue, ActionDataToKVPairString(data));
+      _logger.LogDebug("Firing Internal Event - action: {actId}; enum: {pluginEventId}; connVal {connVal}; data: {data}", action.ActionId, pluginEventId, connValue, ActionDataToKVPairString(data));
       switch (pluginEventId) {
         case PluginActions.Connection:
         case PluginActions.ActionRepeatInterval: {
           // preserve backwards compatibility with old actions which used indexed data IDs
-          if ((data.TryGetValue("Action", out var actId) || data.TryGetValue("0", out actId)) && action.TryGetEventMapping(actId, out Enum eventId))
-            return ProcessPluginCommandAction((PluginActions)eventId, data, connValue);
-          _logger.LogError($"Could not parse required action parameters for {actId} from data: {data}", action.ActionId, ActionDataToKVPairString(data));
+          if ((data.TryGetValue("Action", out var actId) || data.TryGetValue("0", out actId)) && action.TryGetEventMapping(actId, out var evRecord))
+            return ProcessPluginCommandAction((PluginActions)evRecord.EventId, data, connValue);
+          _logger.LogError("Could not parse required action parameters for {actId} from data: {data}", action.ActionId, ActionDataToKVPairString(data));
           return false;
         }
 
@@ -1181,7 +1182,7 @@ namespace MSFSTouchPortalPlugin.Services
 
         case PluginActions.SaveSimVars: {
           if (data.TryGetValue("VarsFile", out var filepath) && !string.IsNullOrWhiteSpace(filepath)) {
-            bool customOnly = !action.TryGetEventMapping(data.GetValueOrDefault("VarsSet", "Custom"), out Enum eventId) || (PluginActions)eventId == PluginActions.SaveCustomSimVars;
+            bool customOnly = !action.TryGetEventMapping(data.GetValueOrDefault("VarsSet", "Custom"), out var evRecord) || (PluginActions)evRecord.EventId == PluginActions.SaveCustomSimVars;
             SaveSimVarsToFile(filepath.Trim(), customOnly);
             return true;
           }

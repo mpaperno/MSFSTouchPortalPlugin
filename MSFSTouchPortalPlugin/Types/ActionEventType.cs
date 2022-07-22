@@ -25,6 +25,18 @@ using System.Linq;
 
 namespace MSFSTouchPortalPlugin.Types
 {
+  internal struct EventMappingRecord
+  {
+    public Enum EventId;
+    public uint[] Values;
+    public EventMappingRecord(Enum eventId, uint[] values = null)
+    {
+      EventId = eventId;
+      Values = values ?? Array.Empty<uint>();
+    }
+    public EventMappingRecord(Enum eventId, uint value) : this(eventId, new uint[] { value }) { }
+  }
+
   internal class ActionEventType
   {
     public Enum Id;
@@ -41,7 +53,7 @@ namespace MSFSTouchPortalPlugin.Types
     // Mapping of TP actions to SimConnect or "Native" events. For SimConnect, the Enum is a generated number
     // of type SimEventClientId (but doesn't actually exist), and for internal plugin events its an actual
     // member of the MSFSTouchPortalPlugin.Objects.Plugin.PluginActions enum.
-    readonly Dictionary<string, Enum> TpActionToEventMap = new();
+    readonly Dictionary<string, EventMappingRecord> TpActionToEventMap = new();
 
     // this is how we generate unique SimConnect client Event IDs.
     private static EventIds _nextEventId = EventIds.DynamicEventInit;
@@ -58,21 +70,21 @@ namespace MSFSTouchPortalPlugin.Types
       ValueType = DataType.Number;
     }
 
-    public bool TryAddSimEventMapping(string actionId, out Enum eventId) {
+    public bool TryAddSimEventMapping(string actionId, uint eventValue, out Enum eventId) {
       eventId = NextId();
-      return TpActionToEventMap.TryAdd(actionId, eventId);
+      return TpActionToEventMap.TryAdd(actionId, new EventMappingRecord(eventId, eventValue));
     }
 
     public bool TryAddPluginEventMapping(string actionName, PluginActions eventId) {
-      return TpActionToEventMap.TryAdd(actionName, eventId);
+      return TpActionToEventMap.TryAdd(actionName, new EventMappingRecord(eventId));
     }
 
     // Get a unique event ID for this action, possibly based on data values
     // in the \c data array. Certain combination of values, eg. from choices,
     // may have their own unique events. Returns `false` if the lookup fails.
-    public bool TryGetEventMapping(in string[] values, out Enum eventId) {
+    public bool TryGetEventMapping(IEnumerable<string> values, out EventMappingRecord eventId) {
       if (!TpActionToEventMap.Any()) {
-        eventId = Id;
+        eventId = new EventMappingRecord(Id);
         return true;
       }
       if (TpActionToEventMap.Count == 1) {
@@ -82,15 +94,15 @@ namespace MSFSTouchPortalPlugin.Types
       return TpActionToEventMap.TryGetValue(FormatLookupKey(values), out eventId);
     }
 
-    public bool TryGetEventMapping(string value, out Enum eventId) =>
+    public bool TryGetEventMapping(string value, out EventMappingRecord eventId) =>
       TryGetEventMapping(new string[] { value }, out eventId);
 
     // Helper to format an array of action data values into a unique key
     // used for indexing the TpActionToEventMap dictionary.
-    public string FormatLookupKey(in string[] values) {
+    public string FormatLookupKey(IEnumerable<string> values) {
       if (string.IsNullOrWhiteSpace(KeyFormatStr))
         return string.Empty;
-      try { return string.Format(KeyFormatStr, values); }
+      try { return string.Format(KeyFormatStr, values.ToArray()); }
       catch { return string.Empty; }
     }
 
