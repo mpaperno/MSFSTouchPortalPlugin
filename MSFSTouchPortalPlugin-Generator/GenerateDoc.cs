@@ -101,8 +101,8 @@ namespace MSFSTouchPortalPlugin_Generator
       // always include the internal plugin states
       IEnumerable<SimVarItem> simVars = _pluginConfig.LoadPluginStates();
       if (_options.StateFiles.Any()) {
-        PluginConfig.UserConfigFolder = _options.StateFilesPath;
-        PluginConfig.UserStateFiles = string.Join(',', _options.StateFiles);
+        _pluginConfig.UserConfigFolder = _options.StateFilesPath;
+        _pluginConfig.UserStateFiles = string.Join(',', _options.StateFiles);
       }
       simVars = simVars.Concat(_pluginConfig.LoadSimVarStateConfigs());
 
@@ -218,7 +218,7 @@ namespace MSFSTouchPortalPlugin_Generator
         var setting = new DocSetting {
           Name = s.Name,
           Description = s.Description,
-          Type = s.TouchPortalType,
+          Type = s.ValueType == DataType.Switch ? "boolean (on/off)" : s.TouchPortalType,
           DefaultValue = s.Default,
           MaxLength = s.MaxLength,
           MinValue = s.MinValue,
@@ -279,16 +279,19 @@ namespace MSFSTouchPortalPlugin_Generator
       model.Settings.ForEach(setting => {
         bool[] f = new[] { setting.MaxLength > 0, !double.IsNaN(setting.MinValue), !double.IsNaN(setting.MaxValue) };
         s.Append($"### {setting.Name}\n\n");
-        s.Append("| Read-only | Type | Default Value");
+        //s.Append("| Read-only ");
+        s.Append("| Type | Default Value");
         if (f[0]) s.Append(" | Max. Length");
         if (f[1]) s.Append(" | Min. Value");
         if (f[2]) s.Append(" | Max. Value");
         s.Append(" |\n");
-        s.Append("| --- | --- | ---");
+        //s.Append("| --- ");  // Read-only
+        s.Append("| --- | ---");
         for (var i = 0; i < 3; ++i)
           if (f[i]) s.Append(" | ---");
         s.Append(" |\n");
-        s.Append($"| {setting.ReadOnly} | {setting.Type} | {setting.DefaultValue}");
+        //s.Append($"| {setting.ReadOnly} ");
+        s.Append($"| {setting.Type} | {setting.DefaultValue}");
         if (f[0]) s.Append(" | ").Append(setting.MaxLength);
         if (f[1]) s.Append(" | ").Append(setting.MinValue);
         if (f[2]) s.Append(" | ").Append(setting.MaxValue);

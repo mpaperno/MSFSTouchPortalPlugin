@@ -277,7 +277,8 @@ namespace MSFSTouchPortalPlugin.Services
           if (field.FieldType == typeof(PluginSetting) && ((PluginSetting)field.GetValue(null) is var setting && setting != null)) {
             if (!string.IsNullOrWhiteSpace(setting.TouchPortalStateId))
               setting.TouchPortalStateId = $"{TouchPortalBaseId}.Plugin.State.{setting.TouchPortalStateId}";
-            returnDict.TryAdd(setting.Name, setting);
+            if (!string.IsNullOrEmpty(setting.Name))
+              returnDict.TryAdd(setting.Name, setting);
           }
         }
       }

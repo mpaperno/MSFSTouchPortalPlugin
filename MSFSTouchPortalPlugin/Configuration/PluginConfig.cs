@@ -30,19 +30,12 @@ using System.Text.RegularExpressions;
 
 namespace MSFSTouchPortalPlugin.Configuration
 {
-
   internal class PluginConfig
   {
-    // these constants are for entry.tp version number en/decoding
-    public const uint ENTRY_FILE_VER_MASK_NOSTATES = 0x80000000;  // leading bit indicates an entry file with no static SimVar states at all (create all states dynamically)
-    public const uint ENTRY_FILE_VER_MASK_CUSTOM   = 0x7F000000;  // any of the other 7 bits indicates an entry file generated from custom config files (do not create any dynamic states)
-    public const ushort ENTRY_FILE_CONF_VER_SHIFT  = 24;          // bit position of custom config version number, used as the last 7 bits of file version
-
-    /// <summary>
-    /// RootName is used as the basis for the user folder name and TP State ID generation.
-    /// </summary>
+    /// <summary> RootName is used as the basis for the user folder name and TP State ID generation. </summary>
     public static string RootName { get; set; } = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
 
+    public static string SettingsConfigFile { get; set; } = "plugin_settings.ini";
     public static string StatesConfigFile { get; set; }       = "States.ini";
     public static string PluginStatesConfigFile { get; set; } = "PluginStates.ini";
     public static string SimVarsImportsFile { get; set; }     = "SimVariables.ini";
@@ -51,17 +44,22 @@ namespace MSFSTouchPortalPlugin.Configuration
     public static string AppRootFolder    { get; set; } = Path.GetDirectoryName(AppContext.BaseDirectory);
     public static string AppConfigFolder  { get; set; } = Path.Combine(AppRootFolder, "Configuration");
 
-    public static string UserConfigFolder {
+    public string UserConfigFolder {
       get => _currentUserCfgFolder;
       set {
+        string newFolder;
         if (string.IsNullOrWhiteSpace(value) || (value.Trim() is var val && val.ToLower() == STR_DEFAULT))
-          _currentUserCfgFolder = _defaultUserCfgFolder;
+          newFolder = _defaultUserCfgFolder;
         else
-          _currentUserCfgFolder = val;
+          newFolder = val;
+        if (newFolder != _currentUserCfgFolder) {
+          CopySettingsConfigFile(_currentUserCfgFolder, newFolder);
+          _currentUserCfgFolder = newFolder;
+        }
       }
     }
 
-    public static string UserStateFiles
+    public string UserStateFiles
     {
       get => string.Join(',', _userStateFiles);
       set {
@@ -77,18 +75,16 @@ namespace MSFSTouchPortalPlugin.Configuration
       }
     }
 
-    public static bool HaveUserStateFiles => _userStateFiles.Any();
-    public static IReadOnlyCollection<string> UserStateFilesArray => _userStateFiles;
-
-    public IEnumerable<string> DefaultStateIds { get; private set; }
+    public bool HaveUserStateFiles => _userStateFiles.Any();
+    public IReadOnlyCollection<string> UserStateFilesArray => _userStateFiles;
     public IEnumerable<string> ImportedSimVarCategoryNames => _importedSimVars.Keys;
     public IEnumerable<string> ImportedSimEvenCategoryNames => _importedSimEvents.Keys;
 
     const string STR_DEFAULT = "default";
     static readonly string _defaultUserCfgFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), RootName);
     static readonly Regex _reSimVarIdFromName = new Regex(@"(?:\b|\W|_)(\w)");  // for creating a PascalCase ID from a SimVar name
-    static string _currentUserCfgFolder = _defaultUserCfgFolder;
-    static string[] _userStateFiles = Array.Empty<string>();
+    string _currentUserCfgFolder = _defaultUserCfgFolder;
+    string[] _userStateFiles = Array.Empty<string>();
     IReadOnlyDictionary<string, IReadOnlyDictionary<string, SimVariable>> _importedSimVars;
     IReadOnlyDictionary<string, IReadOnlyDictionary<string, SimEvent>> _importedSimEvents;
     readonly ILogger<PluginConfig> _logger;
@@ -103,7 +99,7 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     // Loads all imports
     public void Init() {
-      DefaultStateIds = LoadSimVarItems(false).Select(s => s.Id);
+      ReadOrCreateSettingsFile();
       _importedSimVars = ImportSimVars();
       _importedSimEvents = ImportSimEvents();
       // Check for custom SimConnect.cfg and try copy it to application dir (may require elevated privileges)
@@ -240,6 +236,54 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     // Config File loaders
 
+    void ReadOrCreateSettingsFile()
+    {
+      string cfgFile = Path.Combine(UserConfigFolder, SettingsConfigFile);
+      SharpConfig.Section plugin = null;
+      if (LoadFromFile(cfgFile, out SharpConfig.Configuration cfg)) {
+        if (cfg.Contains("Plugin")) {
+          plugin = cfg["Plugin"];
+          if (plugin.TryGetSetting(Settings.WasimClientIdHighByte.SettingID, out var hiByte))
+            Settings.WasimClientIdHighByte.Value = hiByte.ByteValue;
+          if (plugin.TryGetSetting(Settings.ActionRepeatInterval.SettingID, out var interval))
+            Settings.ActionRepeatInterval.Value = interval.IntValue;
+        }
+        _logger.LogDebug("Loaded settings from {cfgFile}", cfgFile);
+      }
+      bool needUpdate = cfg == null || plugin == null;
+      if (Settings.WasimClientIdHighByte.UIntValue == 0) {
+        var rand = new Random();
+        Settings.WasimClientIdHighByte.Value = (byte)rand.Next(1, 0xFF);
+        needUpdate = true;
+        _logger.LogDebug("Generated new WASimClient ID high byte {clientId:X}", Settings.WasimClientIdHighByte.ByteValue);
+      }
+      if (needUpdate)
+        SaveSettings();
+    }
+
+    void CopySettingsConfigFile(string oldPath, string newPath)
+    {
+      oldPath = Path.Combine(oldPath, SettingsConfigFile);
+      if (File.Exists(oldPath)) {
+        try {
+          Directory.CreateDirectory(newPath);
+          File.Copy(oldPath, Path.Combine(newPath, SettingsConfigFile), true);
+        }
+        catch (Exception e) {
+          _logger.LogError(e, "Error trying copy settings file from '{oldPath}' to '{newPath}': {message}", oldPath, newPath, e.Message);
+        }
+      }
+    }
+
+    public bool SaveSettings()
+    {
+      SharpConfig.Configuration cfg = new();
+      SharpConfig.Section plugin = cfg["Plugin"];
+      plugin[Settings.WasimClientIdHighByte.SettingID].ByteValue = Settings.WasimClientIdHighByte.ByteValue;
+      plugin[Settings.ActionRepeatInterval.SettingID].IntValue = Settings.ActionRepeatInterval.IntValue;
+      return SaveToFile(cfg, Path.Combine(UserConfigFolder, SettingsConfigFile));
+    }
+
     // Check if user config folder contains a SimConnect.cfg file and tries to copy it into the current running folder.
     public bool CopySimConnectConfig() {
       string filename = "SimConnect.cfg";
@@ -251,10 +295,10 @@ namespace MSFSTouchPortalPlugin.Configuration
       if (File.Exists(srcFile)) {
         try {
           File.Copy(srcFile, Path.Combine(Directory.GetCurrentDirectory(), filename), true);
-          _logger.LogInformation($"Copied SimConnect.cfg file from '{srcFile}'.");
+          _logger.LogInformation("Copied SimConnect.cfg file from {srcFile} folder.", ret ? "user settings" : "plugin installation");
         }
         catch (Exception e) {
-          _logger.LogError($"Error trying to copy SimConnect.cfg file from '{srcFile}': {e.Message}");
+          _logger.LogError("Error trying to copy SimConnect.cfg file from '{srcFile}': {message}", srcFile, e.Message);
           ret = false;
         }
       }
@@ -266,7 +310,7 @@ namespace MSFSTouchPortalPlugin.Configuration
       List<SimVarItem> ret = new();
       filename = GetFullFilePath(filename, isUserConfig);
 
-      _logger.LogDebug($"Loading SimVars from file '{filename}'...");
+      _logger.LogDebug("Loading SimVars from file '{filename}'...", filename);
       if (!LoadFromFile(filename, out var cfg))
         return ret;
 
@@ -278,11 +322,11 @@ namespace MSFSTouchPortalPlugin.Configuration
           simVar = item.ToObject<SimVarItem>();
         }
         catch (Exception e) {
-          _logger.LogError(e, $"Deserialize exception for section '{item}': {e.Message}:");
+          _logger.LogError(e, "Deserialize exception for section '{item}': {message}:", item, e.Message);
           continue;
         }
         if (simVar == null) {
-          _logger.LogError($"Produced SimVar is null from section '{item}':");
+          _logger.LogError("Produced SimVar is null from section '{item}':", item);
           continue;
         }
         simVar.Id = item.Name;
@@ -290,7 +334,7 @@ namespace MSFSTouchPortalPlugin.Configuration
         SetSimVarItemTpMetaData(simVar);
         // check unique
         if (ret.FindIndex(s => s.Id == simVar.Id) is int idx && idx > -1) {
-          _logger.LogWarning($"Duplicate SimVar ID found for '{simVar.Id}', overwriting.");
+          _logger.LogWarning("Duplicate SimVar ID found for '{simVarId}', overwriting.", simVar.Id);
           ret[idx] = simVar;
         }
         else {
@@ -298,7 +342,7 @@ namespace MSFSTouchPortalPlugin.Configuration
         }
       }
 
-      _logger.LogDebug($"Loaded {ret.Count} SimVars from '{filename}'");
+      _logger.LogDebug("Loaded {count} SimVars from '{filename}'", ret.Count, filename);
       return ret;
     }
 
@@ -360,13 +404,13 @@ namespace MSFSTouchPortalPlugin.Configuration
           ++count;
         }
         catch (Exception e) {
-          _logger.LogError(e, $"Serialize exception for {item.ToDebugString()}: {e.Message}:");
+          _logger.LogError(e, "Serialize exception for {item}: {message}:", item.ToDebugString(), e.Message);
         }
       }
 
       filename = GetFullFilePath(filename, isUserConfig);
       if (SaveToFile(cfg, filename))
-        _logger.LogDebug($"Saved {count} SimVars to '{filename}'");
+        _logger.LogDebug("Saved {count} SimVars to '{filename}'", count, filename);
       else
         count = 0;
       return count;
@@ -410,18 +454,18 @@ namespace MSFSTouchPortalPlugin.Configuration
           simVar = section.ToObject<SimVariable>();
         }
         catch (Exception e) {
-          _logger.LogError(e, $"Deserialize exception for section '{section}': {e.Message}:");
+          _logger.LogError(e, "Deserialize exception for section '{section}': {message}:", section, e.Message);
           continue;
         }
         if (simVar == null) {
-          _logger.LogError($"Produced SimVar is null from section '{section}':");
+          _logger.LogError("Produced SimVar is null from section '{section}':", section);
           continue;
         }
         string normUnit = Units.NormalizedUnit(simVar.Unit);
         if (normUnit != null)
           simVar.Unit = normUnit;
         else
-          _logger.LogWarning($"Could not find Unit '{simVar.Unit}' for '{simVar.Id}'");
+          _logger.LogWarning("Could not find Unit '{simVarUnit}' for '{simVarId}'", simVar.Unit, simVar.Id);
 
         // set a default name. Some of the Descriptions would be suitable names but it's tricky to filter that.
         if (string.IsNullOrWhiteSpace(simVar.Name))
@@ -434,21 +478,21 @@ namespace MSFSTouchPortalPlugin.Configuration
         // check unique
         if (!catDict.TryAdd(simVar.SimVarName, simVar)) {
           catDict[simVar.SimVarName] = simVar;
-          _logger.LogWarning($"Duplicate SimVar ID found for '{simVar.Id}' ('{simVar.SimVarName}'), overwriting.");
+          _logger.LogWarning("Duplicate SimVar ID found for '{simVarId}' ('{simVarName}'), overwriting.", simVar.Id, simVar.SimVarName);
         }
         else {
           ++count;
         }
       }
       ret = ret.OrderBy(s => s.Key).ToDictionary(s => s.Key, s => s.Value);
-      _logger.LogDebug($"Imported {count} SimVars in {ret.Count} categories from '{filename}'");
+      _logger.LogDebug("Imported {count} SimVars in {catCount} categories from '{filename}'", count, ret.Count, filename);
       return ret;
     }
 
     IReadOnlyDictionary<string, IReadOnlyDictionary<string, SimEvent>> ImportSimEvents() {
       Dictionary<string, IReadOnlyDictionary<string, SimEvent>> ret = new();
       var filename = Path.Combine(AppConfigFolder, SimEventsImportsFile);
-      _logger.LogDebug($"Importing SimEvents from file '{filename}'...");
+      _logger.LogDebug("Importing SimEvents from file '{filename}'...", filename);
 
       if (!LoadFromFile(filename, out var cfg))
         return ret;
@@ -480,11 +524,11 @@ namespace MSFSTouchPortalPlugin.Configuration
           simEvt = section.ToObject<SimEvent>();
         }
         catch (Exception e) {
-          _logger.LogError(e, $"Deserialize exception for section '{section}': {e.Message}:");
+          _logger.LogError(e, "Deserialize exception for section '{section}': {message}:", section, e.Message);
           continue;
         }
         if (simEvt == null) {
-          _logger.LogError($"Produced SimEvent is null from section '{section}':");
+          _logger.LogError("Produced SimEvent is null from section '{section}':", section);
           continue;
         }
         // INI section name is the ID
@@ -495,21 +539,21 @@ namespace MSFSTouchPortalPlugin.Configuration
         // check unique
         if (!catDict.TryAdd(simEvt.TouchPortalSelectorName, simEvt)) {
           catDict[simEvt.TouchPortalSelectorName] = simEvt;
-          _logger.LogWarning($"Duplicate SimEvent ID found for '{simEvt.Id}', overwriting.");
+          _logger.LogWarning("Duplicate SimEvent ID found for '{simEvtId}', overwriting.", simEvt.Id);
         }
         else {
           ++count;
         }
       }
       ret = ret.OrderBy(s => s.Key).ToDictionary(s => s.Key, s => s.Value);
-      _logger.LogDebug($"Imported {count} SimEvents in {ret.Count} categories from '{filename}'");
+      _logger.LogDebug("Imported {count} SimEvents in {catCount} categories from '{filename}'", count, ret.Count, filename);
       return ret;
     }
 
 
     // Private common utility methods
 
-    static string GetFullFilePath(string filename, bool isUserConfig) {
+    string GetFullFilePath(string filename, bool isUserConfig) {
       if (filename == default)
         filename = StatesConfigFile;
       else if (string.IsNullOrWhiteSpace(Path.GetExtension(filename)))
@@ -522,14 +566,14 @@ namespace MSFSTouchPortalPlugin.Configuration
     bool LoadFromFile(string filename, out SharpConfig.Configuration cfg) {
       cfg = null;
       if (!File.Exists(filename)) {
-        _logger.LogError($"Cannot import SimVars, file not found at '{filename}'");
+        _logger.LogError("Config file '{filename}' was not found.", filename);
         return false;
       }
       try {
         cfg = SharpConfig.Configuration.LoadFromFile(filename, Encoding.UTF8);
       }
       catch (Exception e) {
-        _logger.LogError(e, $"Configuration error in '{filename}': {e.Message}");
+        _logger.LogError(e, "Configuration error in '{filename}': {message}", filename, e.Message);
         return false;
       }
       return true;
@@ -542,7 +586,7 @@ namespace MSFSTouchPortalPlugin.Configuration
         return true;
       }
       catch (Exception e) {
-        _logger.LogError(e, $"Error trying to write config file '{filename}': {e.Message}");
+        _logger.LogError(e, "Error trying to write config file '{filename}': {message}", filename, e.Message);
       }
       return false;
     }

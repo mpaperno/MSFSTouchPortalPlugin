@@ -142,6 +142,8 @@ namespace MSFSTouchPortalPlugin.Services
       _quitting = true;
       _logger.LogDebug("Shutting down...");
       DisconnectSimConnect();
+      if (_pluginConfig.SaveSettings())
+        _logger.LogInformation("Saved Settings to file {file}", PluginConfig.SettingsConfigFile);
       if (_client?.IsConnected ?? false) {
         try { _client.Close(); }
         catch (Exception) { /* ignore */ }
@@ -387,11 +389,11 @@ namespace MSFSTouchPortalPlugin.Services
       IReadOnlyCollection<SimVarItem> simVars = _pluginConfig.LoadSimVarStateConfigs();
 
       string logMsg;
-      if (PluginConfig.HaveUserStateFiles)
-        logMsg = $"custom state file(s) '{PluginConfig.UserStateFiles}' in '{PluginConfig.UserConfigFolder}'";
+      if (_pluginConfig.HaveUserStateFiles)
+        logMsg = $"custom state file(s) '{_pluginConfig.UserStateFiles}'";
       else
-        logMsg = $"default file '{PluginConfig.AppConfigFolder}/{PluginConfig.StatesConfigFile}'";
-      _logger.LogInformation((int)EventIds.PluginInfo, "Loaded {count} SimVar States from {message}.", simVars.Count, logMsg);
+        logMsg = $"default file '{PluginConfig.StatesConfigFile}'";
+      _logger.LogInformation((int)EventIds.PluginInfo, "Loaded {count} Variable Request States from {message}.", simVars.Count, logMsg);
 
       // Now create the SimVars and track them. We're probably not connected to SimConnect at this point so the registration may happen later.
       foreach (var simVar in simVars)
@@ -753,9 +755,9 @@ namespace MSFSTouchPortalPlugin.Services
         case PluginActions.ActionRepeatIntervalSet: {
           double value;
           if (connValue < 0) {
-              string errMsg = null;
-              // preserve backwards compatibility with old actions which used indexed data IDs
-              if (data == null || !(data.TryGetValue("Value", out var sVal) || data.TryGetValue("1", out sVal)) || !TryEvaluateValue(sVal, out value, out errMsg)) {
+            string errMsg = null;
+            // preserve backwards compatibility with old actions which used indexed data IDs
+            if (data == null || !(data.TryGetValue("Value", out var sVal) || data.TryGetValue("1", out sVal)) || !TryEvaluateValue(sVal, out value, out errMsg)) {
               if (string.IsNullOrEmpty(errMsg))
                   errMsg = "Required parameter 'Value' missing or invalid.";
               _logger.LogError($"Error getting value for repeat rate: '{errMsg}'; From data: {ActionDataToKVPairString(data)}");
@@ -772,7 +774,8 @@ namespace MSFSTouchPortalPlugin.Services
             value = Settings.ActionRepeatInterval.RealValue - value;
           value = Math.Clamp(value, Settings.ActionRepeatInterval.MinValue, Settings.ActionRepeatInterval.MaxValue);
           if (value != Settings.ActionRepeatInterval.RealValue) {
-            _client.SettingUpdate(Settings.ActionRepeatInterval.Name, $"{value:F0}");  // this will trigger the actual value update
+            Settings.ActionRepeatInterval.Value = (uint)value;
+            _client.StateUpdate(Settings.ActionRepeatInterval.TouchPortalStateId, Settings.ActionRepeatInterval.StringValue);
             UpdateRelatedConnectors(Groups.Plugin, "ActionRepeatInterval", value);
           }
           break;
@@ -1265,12 +1268,12 @@ namespace MSFSTouchPortalPlugin.Services
       }
 
       // change tracking for config files
-      string[] p = new[] { PluginConfig.UserConfigFolder, PluginConfig.UserStateFiles };
-      PluginConfig.UserConfigFolder = Settings.UserConfigFilesPath.StringValue;  // will (re-)set to default if needed.
-      PluginConfig.UserStateFiles = Settings.UserStateFiles.StringValue;         // will (re-)set to default if needed.
+      string[] p = new[] { _pluginConfig.UserConfigFolder, _pluginConfig.UserStateFiles };
+      _pluginConfig.UserConfigFolder = Settings.UserConfigFilesPath.StringValue;  // will (re-)set to default if needed.
+      _pluginConfig.UserStateFiles = Settings.UserStateFiles.StringValue;         // will (re-)set to default if needed.
       // compare with actual current config values (not Settings) because they may not have changed even if settings string did
       // states dict will be empty on initial startup
-      if (_statesDictionary.IsEmpty || p[0] != PluginConfig.UserConfigFolder || p[1] != PluginConfig.UserStateFiles)
+      if (_statesDictionary.IsEmpty || p[0] != _pluginConfig.UserConfigFolder || p[1] != _pluginConfig.UserStateFiles)
         SetupSimVars();
     }
 

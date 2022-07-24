@@ -111,6 +111,7 @@ namespace MSFSTouchPortalPlugin.Types
 
     public int IntValue => Value == null || ValueType == DataType.Text ? 0 : (int)Value;
     public uint UIntValue => (uint)IntValue;
+    public byte ByteValue => (byte)(UIntValue & 0xFF);
     public bool BoolValue => Value == null ? false : ValueType == DataType.Text ? new BooleanString(StringValue) : ValueType == DataType.Number ? IntValue != 0 : (bool)Value;
     public double RealValue => Value == null ? double.NaN : (double)Value;
     public string StringValue => Value == null ? string.Empty : Value.ToString();
