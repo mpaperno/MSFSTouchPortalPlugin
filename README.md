@@ -23,7 +23,7 @@ This project is a continuation of the original [MSFSTouchPortalPlugin by Tim Lew
 * Connects to local or remote simulators with SimConnect.
 * Allows getting data variables from simulator at regular intervals, such as flight instruments, control surfaces, or switch states.
 * Allows triggering any interactive aircraft event via a Touch Portal Action, such as setting switches, adjusting control surfaces, radio frequencies, and so on.
-* NEW: Use Touch Portal "Sliders" to control a value within any range, and/or provide visual feedback to simulator variable changes 
+* NEW: Use Touch Portal "Sliders" to control a value within any range, and/or provide visual feedback to simulator variable changes
   (eg. a throttle slider can both control the sim throttle and show the actual position when the throttle is moved with mouse/joystick/keyboard).
 * Completely configurable to request any variable or trigger any event supported by the connected simulator, including with custom extensions like MobiFlight.
 * Supports simulator system events (such as "flight loaded" or "sim started") as Touch Portal Events.
@@ -51,7 +51,7 @@ just do that and skip to step 5. There is also a [short guide](https://www.touch
 4. Restart _Touch Portal_
     * When prompted by _Touch Portal_ to trust the plugin startup script, select "Yes" (the source code is public!).
 5. **By default the plugin will not attempt to connect to a flight simulator on startup.** You have two options:
-   1. Create a new [Touch Portal button](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) 
+   1. Create a new [Touch Portal button](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics)
      which triggers the "MSFS - Plugin - Toggle/On/Off SimConnect Connection" action. (Also a good place to show the current connection status.)
    2. Go to the plugin's settings, via the Touch Portal "gear" icon then navigate to _Settings -> Plugins -> "MSFS Touch Portal Plugin"_ and set the
     "Connect To Flight Sim on Startup" setting to a value of `1` (one). Then save the settings. To restart the plugin, go back to the same plugin settings page and
@@ -62,7 +62,11 @@ just do that and skip to step 5. There is also a [short guide](https://www.touch
 Check out the [Pages, Buttons, & Graphics](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) for examples to get started with, and see below for
 a full list of known pages.
 
-A comprehensive installation and usage guide was published on the _Simvol_ Web site: [How to use Touch Portal [with MSFS]](https://www.simvol.org/en/articles/tutorials/use-touch-portal).
+### Installation Guides
+
+A recent video tutorial about the whole setup process was published by _OverKill Simulations_ on YouTube: [Microsoft Flight Simulator | MSFS Touch Portal | YOU NEED THIS!](https://www.youtube.com/watch?v=S4Pms-7oHf0)
+
+An older installation and usage guide was published on the _Simvol_ Web site: [How to use Touch Portal [with MSFS]](https://www.simvol.org/en/articles/tutorials/use-touch-portal).
 
 
 ## Pages and Examples
@@ -84,7 +88,7 @@ Please let me know if you publish a page (or buttons/assets) which I could add t
 
 ## Troubleshooting
 
-The plugin logs errors and warnings to a plain-text file. 7 days worth of logs are kept by default (a new file is started for each day). 
+The plugin logs errors and warnings to a plain-text file. 7 days worth of logs are kept by default (a new file is started for each day).
 The log files are located within the plugin's installation folder, which is in Touch Portal's configuration directory:<br />
 `C:\Users<User Name>\AppData\Roaming\TouchPortal\plugins\MSFSTouchPortalPlugin\logs` folder, where `<User Name>` is your Windows user name.
 
@@ -97,7 +101,7 @@ Another way to quickly see latest log entries is by using the provided TP States
 - _MSFS - System -> Data from most recent Simulator System Event_ (`MSFSTouchPortalPlugin.SimSystem.State.SimSystemEventData`) - Shows one line of text from the last
   significant "simulator event." In case an error or warning is logged, the log entry with the error should show here.
 
-You could also monitor the _MSFS - System -> Simulator System Event_ for the `Plugin Error` and/or `SimConnect Error` events. 
+You could also monitor the _MSFS - System -> Simulator System Event_ for the `Plugin Error` and/or `SimConnect Error` events.
 For example you could have a button light up red when this event happens, so you can know to go check the log.
 
 
