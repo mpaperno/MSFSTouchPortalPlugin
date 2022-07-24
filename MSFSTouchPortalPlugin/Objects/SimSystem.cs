@@ -23,7 +23,7 @@ using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Types;
 
-namespace MSFSTouchPortalPlugin.Objects.SimSystem
+namespace MSFSTouchPortalPlugin.Objects
 {
   [TouchPortalCategory(Groups.SimSystem)]
   internal static class SimSystemMapping

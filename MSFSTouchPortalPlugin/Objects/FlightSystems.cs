@@ -22,10 +22,11 @@ and is also available at <http://www.gnu.org/licenses/>.
 using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Enums;
 
-namespace MSFSTouchPortalPlugin.Objects.FlightSystems
+namespace MSFSTouchPortalPlugin.Objects
 {
   [TouchPortalCategory(Groups.FlightSystems)]
-  internal static class FlightSystemsMapping {
+  internal static class FlightSystemsMapping
+  {
     #region Ailerons
 
     [TouchPortalAction("Ailerons", "Ailerons Adjust", "Adjust Ailerons {0}", true)]
@@ -113,8 +114,8 @@ namespace MSFSTouchPortalPlugin.Objects.FlightSystems
     [TouchPortalAction("CowlFlapsAdjust", "Cowl Flap Levers Adjust", "Cowl Flaps Lever {0} {1}", true)]
     [TouchPortalActionChoice()]
     [TouchPortalActionChoice()]
-    [TouchPortalActionMapping("INC_COWL_FLAPS",  "All", "Increase")]
-    [TouchPortalActionMapping("DEC_COWL_FLAPS",  "All", "Decrease")]
+    [TouchPortalActionMapping("INC_COWL_FLAPS", "All", "Increase")]
+    [TouchPortalActionMapping("DEC_COWL_FLAPS", "All", "Decrease")]
     [TouchPortalActionMapping("INC_COWL_FLAPS1", "1", "Increase")]
     [TouchPortalActionMapping("DEC_COWL_FLAPS1", "1", "Decrease")]
     [TouchPortalActionMapping("INC_COWL_FLAPS2", "2", "Increase")]

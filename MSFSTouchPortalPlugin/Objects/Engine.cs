@@ -22,10 +22,11 @@ and is also available at <http://www.gnu.org/licenses/>.
 using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Enums;
 
-namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
+namespace MSFSTouchPortalPlugin.Objects
 {
   [TouchPortalCategory(Groups.Engine)]
-  internal static class EngineMapping {
+  internal static class EngineMapping
+  {
 
     #region Ignition
 
@@ -144,30 +145,30 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     [TouchPortalAction("ThrottleSpecific", "Throttle Adjust - Individual", "Throttle {0} - {1}", true)]
     [TouchPortalActionChoice()]
     [TouchPortalActionChoice()]
-    [TouchPortalActionMapping("THROTTLE1_FULL",       new[] { "1", "Full" })]
-    [TouchPortalActionMapping("THROTTLE1_INCR",       new[] { "1", "Increase" })]
+    [TouchPortalActionMapping("THROTTLE1_FULL", new[] { "1", "Full" })]
+    [TouchPortalActionMapping("THROTTLE1_INCR", new[] { "1", "Increase" })]
     [TouchPortalActionMapping("THROTTLE1_INCR_SMALL", new[] { "1", "Increase Small" })]
-    [TouchPortalActionMapping("THROTTLE1_DECR",       new[] { "1", "Decrease" })]
+    [TouchPortalActionMapping("THROTTLE1_DECR", new[] { "1", "Decrease" })]
     [TouchPortalActionMapping("THROTTLE1_DECR_SMALL", new[] { "1", "Decrease Small" })]
-    [TouchPortalActionMapping("THROTTLE1_CUT",        new[] { "1", "Cut" })]
-    [TouchPortalActionMapping("THROTTLE2_FULL",       new[] { "2", "Full" })]
-    [TouchPortalActionMapping("THROTTLE2_INCR",       new[] { "2", "Increase" })]
+    [TouchPortalActionMapping("THROTTLE1_CUT", new[] { "1", "Cut" })]
+    [TouchPortalActionMapping("THROTTLE2_FULL", new[] { "2", "Full" })]
+    [TouchPortalActionMapping("THROTTLE2_INCR", new[] { "2", "Increase" })]
     [TouchPortalActionMapping("THROTTLE2_INCR_SMALL", new[] { "2", "Increase Small" })]
-    [TouchPortalActionMapping("THROTTLE2_DECR",       new[] { "2", "Decrease" })]
+    [TouchPortalActionMapping("THROTTLE2_DECR", new[] { "2", "Decrease" })]
     [TouchPortalActionMapping("THROTTLE2_DECR_SMALL", new[] { "2", "Decrease Small" })]
-    [TouchPortalActionMapping("THROTTLE2_CUT",        new[] { "2", "Cut" })]
-    [TouchPortalActionMapping("THROTTLE3_FULL",       new[] { "3", "Full" })]
-    [TouchPortalActionMapping("THROTTLE3_INCR",       new[] { "3", "Increase" })]
+    [TouchPortalActionMapping("THROTTLE2_CUT", new[] { "2", "Cut" })]
+    [TouchPortalActionMapping("THROTTLE3_FULL", new[] { "3", "Full" })]
+    [TouchPortalActionMapping("THROTTLE3_INCR", new[] { "3", "Increase" })]
     [TouchPortalActionMapping("THROTTLE3_INCR_SMALL", new[] { "3", "Increase Small" })]
-    [TouchPortalActionMapping("THROTTLE3_DECR",       new[] { "3", "Decrease" })]
+    [TouchPortalActionMapping("THROTTLE3_DECR", new[] { "3", "Decrease" })]
     [TouchPortalActionMapping("THROTTLE3_DECR_SMALL", new[] { "3", "Decrease Small" })]
-    [TouchPortalActionMapping("THROTTLE3_CUT",        new[] { "3", "Cut" })]
-    [TouchPortalActionMapping("THROTTLE4_FULL",       new[] { "4", "Full" })]
-    [TouchPortalActionMapping("THROTTLE4_INCR",       new[] { "4", "Increase" })]
+    [TouchPortalActionMapping("THROTTLE3_CUT", new[] { "3", "Cut" })]
+    [TouchPortalActionMapping("THROTTLE4_FULL", new[] { "4", "Full" })]
+    [TouchPortalActionMapping("THROTTLE4_INCR", new[] { "4", "Increase" })]
     [TouchPortalActionMapping("THROTTLE4_INCR_SMALL", new[] { "4", "Increase Small" })]
-    [TouchPortalActionMapping("THROTTLE4_DECR",       new[] { "4", "Decrease" })]
+    [TouchPortalActionMapping("THROTTLE4_DECR", new[] { "4", "Decrease" })]
     [TouchPortalActionMapping("THROTTLE4_DECR_SMALL", new[] { "4", "Decrease Small" })]
-    [TouchPortalActionMapping("THROTTLE4_CUT",        new[] { "4", "Cut" })]
+    [TouchPortalActionMapping("THROTTLE4_CUT", new[] { "4", "Cut" })]
     public static readonly object THROTTLE_SPECIFIC;
 
     [TouchPortalAction("ThrottleSet", "Throttle Set", true,
@@ -176,7 +177,7 @@ namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
     )]
     [TouchPortalActionChoice()]
     [TouchPortalActionText("0", -16384, 16384)]
-    [TouchPortalActionMapping("THROTTLE_SET",  new[] { "All" })]
+    [TouchPortalActionMapping("THROTTLE_SET", new[] { "All" })]
     [TouchPortalActionMapping("THROTTLE1_SET", new[] { "1" })]
     [TouchPortalActionMapping("THROTTLE2_SET", new[] { "2" })]
     [TouchPortalActionMapping("THROTTLE3_SET", new[] { "3" })]

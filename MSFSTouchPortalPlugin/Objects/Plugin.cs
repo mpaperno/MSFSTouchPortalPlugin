@@ -22,7 +22,7 @@ and is also available at <http://www.gnu.org/licenses/>.
 using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Enums;
 
-namespace MSFSTouchPortalPlugin.Objects.Plugin
+namespace MSFSTouchPortalPlugin.Objects
 {
   [TouchPortalCategory(Groups.Plugin)]
   internal static class PluginMapping

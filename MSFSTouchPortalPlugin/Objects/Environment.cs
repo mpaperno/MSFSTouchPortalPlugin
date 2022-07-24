@@ -22,10 +22,11 @@ and is also available at <http://www.gnu.org/licenses/>.
 using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Enums;
 
-namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
+namespace MSFSTouchPortalPlugin.Objects
 {
   [TouchPortalCategory(Groups.Environment)]
-  internal static class EnvironmentMapping {
+  internal static class EnvironmentMapping
+  {
     #region Anti-Ice
 
     [TouchPortalAction("AntiIce", "Anti-Ice", "Anti Ice - {0}")]

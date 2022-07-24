@@ -22,10 +22,11 @@ and is also available at <http://www.gnu.org/licenses/>.
 using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Enums;
 
-namespace MSFSTouchPortalPlugin.Objects.InstrumentsSystems
+namespace MSFSTouchPortalPlugin.Objects
 {
   [TouchPortalCategory(Groups.FlightInstruments)]
-  internal static class FlightInstrumentsMapping {
+  internal static class FlightInstrumentsMapping
+  {
 
   }
 }

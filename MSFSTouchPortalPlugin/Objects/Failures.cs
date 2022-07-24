@@ -22,10 +22,11 @@ and is also available at <http://www.gnu.org/licenses/>.
 using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Enums;
 
-namespace MSFSTouchPortalPlugin.Objects.Failures
+namespace MSFSTouchPortalPlugin.Objects
 {
   [TouchPortalCategory(Groups.Failures)]
-  internal static class FailuresMapping {
+  internal static class FailuresMapping
+  {
 
     [TouchPortalAction("Failures", "Failures", "Toggle Failure - {0}")]
     [TouchPortalActionChoice()]
