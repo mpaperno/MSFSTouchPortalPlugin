@@ -168,6 +168,8 @@ namespace MSFSTouchPortalPlugin.Services
         return false;
       }
 
+      // Set ID of WASIM integration client.
+      _simConnectService.UpdateWasmClientId(Settings.WasimClientIdHighByte.ByteValue);
       // Setup SimConnect Events
       _simConnectService.OnDataUpdateEvent += SimConnectEvent_OnDataUpdateEvent;
       _simConnectService.OnConnect += SimConnectEvent_OnConnect;

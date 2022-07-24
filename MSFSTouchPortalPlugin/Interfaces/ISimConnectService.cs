@@ -64,6 +64,7 @@ namespace MSFSTouchPortalPlugin.Interfaces
     bool ReleaseAIControl(Definition def, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER);
     bool ClearDataDefinition(Definition def);
     bool SubscribeToSystemEvent(Enum eventId, string eventName);
+    void UpdateWasmClientId(byte highByte);
     bool ExecuteCalculatorCode(string code);
     bool SetVariable(char varType, string varName, double value, string unit = "", bool createLocal = false);
     bool RequestLookupList(Enum listType);

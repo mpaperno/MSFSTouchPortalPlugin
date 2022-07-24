@@ -515,6 +515,12 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     // WASM
+    public void UpdateWasmClientId(byte highByte)
+    {
+      _wasmClientId = (_wasmClientId & 0x00FFFFFFU) | ((uint)highByte << 24);
+      _logger.LogDebug("Updated WASimClient ID to {id:X08}", _wasmClientId);
+    }
+
     public bool ExecuteCalculatorCode(string code) {
       if (!WasmConnected || string.IsNullOrWhiteSpace(code))
         return false;
