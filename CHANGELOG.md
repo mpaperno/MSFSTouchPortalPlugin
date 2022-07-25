@@ -1,5 +1,10 @@
 # MSFS Touch Portal Plugin
 
+## 1.1.0.3 (next)
+* Enable WASimModule integration from multiple simultaneous plugin instances (when using multiple Touch Portal servers/devices).
+* The read-only setting "Held action repeat interval" has been removed from the TP Settings interface.
+* A plugin settings configuration file is now always created in user's config file path (default AppData/Roaming) if one doesn't already exist (and is moved if the config folder is changed later).
+
 ## 1.1.0.2-beta2 (July-22-2022)
 * Added new Setting for always using "neutral" numeric formatting with period decimal separators, ignoring any region-specific formatting conventions.
   Works around Touch Portal issue with not being able to do math comparison operations on numeric values with comma decimal separators.<br />
