@@ -18,7 +18,7 @@
     <PackageLicenseExpression>GPLv3</PackageLicenseExpression>
     <Description>A plugin which provides a two-way interface between Touch Portal clients and Flight Simulators which use SimConnect.</Description>
     <Authors>Tim Lewis, Maxim Paperno, and project contributors</Authors>
-    <ApplicationIcon>..\app-icon.ico</ApplicationIcon>
+    <ApplicationIcon>app-icon.ico</ApplicationIcon>
     <ErrorReport>none</ErrorReport>
     <Company>MSFS Touch Portal Plugin Project</Company>
   </PropertyGroup>
@@ -35,10 +35,11 @@
       <!-- Prevent .pdb, .xml, etc from being copied to output folder -->
       .dll
     </AllowedReferenceRelatedFileExtensions>
-    <DebugType>none</DebugType>
+    <DebugType>embedded</DebugType>
     <DebugSymbols>false</DebugSymbols>
     <DefineConstants />
     <Optimize>True</Optimize>
+    <PathMap>$(MSBuildProjectDirectory)=$(MSBuildProjectName)</PathMap>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
@@ -48,10 +49,6 @@
     <TrimMode>copyused</TrimMode>
     <PublishSingleFile>False</PublishSingleFile>
     <PublishReadyToRun>False</PublishReadyToRun>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <!-- required for trimming otherwise we get missing dependencies at runtime -->

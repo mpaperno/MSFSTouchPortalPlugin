@@ -11,20 +11,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		airplane_takeoff24.png = airplane_takeoff24.png
-		app-icon.ico = app-icon.ico
-		build.ps1 = build.ps1
 		CHANGELOG.md = CHANGELOG.md
-		CODE-OF-CONDUCT.md = CODE-OF-CONDUCT.md
 		DOCUMENTATION.md = DOCUMENTATION.md
-		entry.tp = entry.tp
 		LICENSE = LICENSE
 		publish.ps1 = publish.ps1
 		README.md = README.md
-		sonarcube.ps1 = sonarcube.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{BB11FB83-1407-4C82-AA08-67D7BB5A106B}"
+	ProjectSection(SolutionItems) = preProject
+		.github\CODE-OF-CONDUCT.md = .github\CODE-OF-CONDUCT.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{7FEA40CD-379E-48F1-9581-2692B532A839}"
 	ProjectSection(SolutionItems) = preProject
