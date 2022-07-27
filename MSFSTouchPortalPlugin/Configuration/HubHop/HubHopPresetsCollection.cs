@@ -79,7 +79,7 @@ namespace MSFSTouchPortalPlugin.Configuration
       }
       catch (Exception e) {
         OnDataErrorEvent?.Invoke(LogLevel.Critical, $"Unable to open database {(dbfile == default ? Common.PresetsDb : dbfile)}: {e.Message}");
-        Common.Logger?.LogCritical(e, $"HubHopPresetsCollection::OpenDataFile() - Cannot open database with Exception:");
+        Common.Logger?.LogCritical(e, "HubHopPresetsCollection::OpenDataFile() - Cannot open database with Exception:");
       }
       return false;
     }
@@ -265,7 +265,7 @@ namespace MSFSTouchPortalPlugin.Configuration
         qry.OrderyBy = fieldName;
       if (cond.Count > 0)
         where = "WHERE " + string.Join(" AND ", cond);
-      Common.Logger?.LogTrace($"\"{string.Format(_selectTemplate, fieldName, where, qry.OrderyBy)}\"  ?= {{{string.Join(", ", args)}}}");
+      //Common.Logger?.LogTrace("\"{qry}\" ?= {{{args}}}", string.Format(_selectTemplate, fieldName, where, qry.OrderyBy), string.Join(", ", args));
       return new Tuple<string, object[]>(string.Format(_selectTemplate, fieldName, where, qry.OrderyBy), args.ToArray());
     }
 
@@ -296,10 +296,10 @@ namespace MSFSTouchPortalPlugin.Configuration
           if (hhp != null && !string.IsNullOrWhiteSpace(hhp.Id) && hhp.Version > 0)
             InsertOrUpdate(hhp, db);
           else
-            Common.Logger?.LogWarning($"Error in JSON element {p}: Was null or had no ID or invalid Version.");
+            Common.Logger?.LogWarning("Error in JSON element {p}: Was null or had no ID or invalid Version.", p.ToString());
         }
         catch (Exception e) {
-          Common.Logger?.LogError(e, $"Error deserializing element {p}: {e.Message}");
+          Common.Logger?.LogError("Error deserializing element {p}: {message}", p.ToString(), e.Message);
         }
       }
     }
@@ -323,7 +323,7 @@ namespace MSFSTouchPortalPlugin.Configuration
         }
       }
       catch (Exception e) {
-        Common.Logger?.LogError(e, $"Database error with {p}: {e.Message}");
+        Common.Logger?.LogError(e, "Database error with {p}: {message}", p.ToString(), e.Message);
       }
     }
 

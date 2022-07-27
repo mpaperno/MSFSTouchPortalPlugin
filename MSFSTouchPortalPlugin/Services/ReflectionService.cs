@@ -191,7 +191,7 @@ namespace MSFSTouchPortalPlugin.Services
         };
         // Put into returned collection
         if (!returnDict.TryAdd($"{Groups.Plugin}.{act.ActionId}", act)) {
-          _logger.LogWarning($"Duplicate action ID found for Plugin action '{act.ActionId}', skipping.'");
+          _logger.LogWarning("Duplicate action ID found for Plugin action '{actId}', skipping.'", act.ActionId);
           continue;
         }
         // for Choice types, we combine them to create a unique lookup key which maps to a particular event.
@@ -202,11 +202,11 @@ namespace MSFSTouchPortalPlugin.Services
           act.KeyFormatStr = string.Join(",", fmtStrList);
           foreach (var ma in actAttr.Mappings) {
             if (!act.TryAddPluginEventMapping($"{string.Join(",", ma.Values)}", (PluginActions)ma.EnumId))
-              _logger.LogWarning($"Duplicate action-to-event mapping found for Plugin action {act.ActionId} with choices '{string.Join(",", ma.Values)} for event '{ma.ActionId}'.");
+              _logger.LogWarning("Duplicate action-to-event mapping found for Plugin action {actId} with choices '{choices} for event '{mapId}'.", act.ActionId, string.Join(",", ma.Values), ma.ActionId);
           }
         }
       }
-      _logger.LogDebug($"Loaded {returnDict.Count} Internal Actions");
+      _logger.LogDebug("Loaded {count} Internal Actions", returnDict.Count);
       return returnDict;
     }
 
@@ -222,7 +222,7 @@ namespace MSFSTouchPortalPlugin.Services
         foreach (var actAttr in catAttr.Actions) {
           // check that there are any mappings at all
           if (!actAttr.Mappings.Any()) {
-            _logger.LogWarning($"No event mappings found for action ID '{actAttr.Id}' in category '{catAttr.Name}'.");
+            _logger.LogWarning("No event mappings found for action ID '{actId}' in category '{catName}'.", actAttr.Id, catAttr.Name);
             continue;
           }
           // Create the action data object to store in the return dict, using the meta data we've collected so far.
@@ -232,7 +232,7 @@ namespace MSFSTouchPortalPlugin.Services
           };
           // Put into returned collection
           if (!returnDict.TryAdd($"{catAttr.Id}.{act.ActionId}", act)) {
-            _logger.LogWarning($"Duplicate action ID found for action '{act.ActionId}' in category '{catAttr.Id}', skipping.'");
+            _logger.LogWarning("Duplicate action ID found for action '{actId}' in category '{catName}', skipping.", act.ActionId, catAttr.Name);
             continue;
           }
           // Loop over all the data attributes to find the "choice" types for mapping and also the index of any free-form data value field
@@ -259,13 +259,13 @@ namespace MSFSTouchPortalPlugin.Services
               // keep track of generated event IDs for Sim actions (for registering to SimConnect, and debug)
               clientEventIdToNameMap[mapTarget] = new SimEventRecord(catAttr.Id, ma.ActionId);
             else
-              _logger.LogWarning($"Duplicate action-to-event mapping found for action {act.ActionId} with choices '{string.Join(",", ma.Values)} for event '{ma.ActionId}'.");
+              _logger.LogWarning("Duplicate action-to-event mapping found for action {actId} with choices '{choices} for event '{mapId}'.", act.ActionId, string.Join(",", ma.Values), ma.ActionId);
           }
 
         }  // actions loop
       }  // categories loop
 
-      _logger.LogDebug($"Loaded {returnDict.Count - intActsCnt} SimConnect Actions");
+      _logger.LogDebug("Loaded {count} SimConnect Actions", returnDict.Count - intActsCnt);
       return returnDict;
     }
 

@@ -111,7 +111,7 @@ namespace MSFSTouchPortalPlugin.Services
     public Task StartAsync(CancellationToken cancellationToken) {
       _cancellationToken = cancellationToken;
 
-      _logger.LogInformation($"======= " + PLUGIN_ID + " Starting =======");
+      _logger.LogInformation("======= " + PLUGIN_ID + " Starting =======");
 
       if (!Initialize()) {
         _hostApplicationLifetime.StopApplication();
@@ -283,7 +283,7 @@ namespace MSFSTouchPortalPlugin.Services
       if (updated)
         UpdateSimEventAircraft();
       string logMsg = updated ? "HubHop Data Updated" : "No HubHop Updates Detected";
-      _logger.LogInformation((int)EventIds.PluginInfo, "{0}; Latest entry date: {1:u}", logMsg, _presets.LatestUpdateTime);
+      _logger.LogInformation((int)EventIds.PluginInfo, "{logMsg}; Latest entry date: {time:u}", logMsg, _presets.LatestUpdateTime);
     }
 
     private void HubHop_OnDataError(LogLevel severity, string message)
@@ -775,7 +775,7 @@ namespace MSFSTouchPortalPlugin.Services
             if (data == null || !(data.TryGetValue("Value", out var sVal) || data.TryGetValue("1", out sVal)) || !TryEvaluateValue(sVal, out value, out errMsg)) {
               if (string.IsNullOrEmpty(errMsg))
                   errMsg = "Required parameter 'Value' missing or invalid.";
-              _logger.LogError($"Error getting value for repeat rate: '{errMsg}'; From data: {ActionDataToKVPairString(data)}");
+              _logger.LogError("Error getting value for repeat rate: '{errMsg}'; From data: {data}", errMsg, ActionDataToKVPairString(data));
               break;
             }
           }
@@ -907,7 +907,7 @@ namespace MSFSTouchPortalPlugin.Services
         return false;
       }
 
-      _logger.LogDebug("Setting variable {0} to value {1}", varName, dVal);
+      _logger.LogDebug("Setting variable {varName} to value {val}", varName, dVal);
       return _simConnectService.SetVariable(varType[0], varName, dVal, data.GetValueOrDefault("Unit", string.Empty), createLvar);
     }
 
@@ -921,7 +921,7 @@ namespace MSFSTouchPortalPlugin.Services
           !data.TryGetValue("CatId", out var sCatId)    || !Categories.TryGetCategoryId(sCatId, out Groups catId) ||
           (!data.TryGetValue("Unit", out var sUnit) && actId != PluginActions.AddCalculatedValue)
       ) {
-        _logger.LogError($"Could not parse required action parameters for {actId} from data: {ActionDataToKVPairString(data)}");
+        _logger.LogError("Could not parse required action parameters for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
         return false;
       }
 
@@ -935,18 +935,18 @@ namespace MSFSTouchPortalPlugin.Services
       }
       else if (actId == PluginActions.AddNamedVariable) {
         if (!data.TryGetValue("VarType", out var sVarType)) {
-          _logger.LogError($"Could not get variable type parameter for {actId} from data: {ActionDataToKVPairString(data)}");
+          _logger.LogError("Could not get variable type parameter for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
           return false;
         }
         varType = sVarType[0];
       }
       else if (actId == PluginActions.AddCalculatedValue) {
         if (!data.TryGetValue("CalcCode", out sCalcCode) || string.IsNullOrWhiteSpace(sCalcCode)) {
-          _logger.LogError($"Could not get valid CalcCode parameter for {actId} from data: {ActionDataToKVPairString(data)}");
+          _logger.LogError("Could not get valid CalcCode parameter for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
           return false;
         }
         if (!data.TryGetValue("ResType", out var sResType) || !Enum.TryParse(sResType, out resType)) {
-          _logger.LogError($"Could not parse ResultType parameter for {actId} from data: {ActionDataToKVPairString(data)}");
+          _logger.LogError("Could not parse ResultType parameter for {actId} from {data}", actId, ActionDataToKVPairString(data));
           return false;
         }
         varType = 'Q';
@@ -987,27 +987,27 @@ namespace MSFSTouchPortalPlugin.Services
     bool RemoveSimVarByActionDataName(ActionData data)
     {
       if (!data.TryGetValue("VarName", out var varName) || !TryGetSimVarIdFromActionData(varName, out string varId)) {
-        _logger.LogError($"Could not find valid SimVar ID in action data: {ActionDataToKVPairString(data)}'");
+        _logger.LogError("Could not find valid SimVar ID in action data: {data}", ActionDataToKVPairString(data));
         return false;
       }
       SimVarItem simVar = _statesDictionary[varId];
       if ((simVar != null && RemoveSimVar(simVar)) is bool ret && ret)
-        _logger.LogInformation((int)EventIds.PluginInfo, $"Removed SimVar '{simVar.SimVarName}'");
+        _logger.LogInformation((int)EventIds.PluginInfo, "Removed SimVar '{simVar}'", simVar.SimVarName);
       else
-        _logger.LogError($"Could not find definition for settable SimVar Id: '{varId}' from Name: '{varName}'");
+        _logger.LogError("Could not find definition for settable SimVar Id: '{varId}' from Name: '{varName}'", varId, varName);
       return ret;
     }
 
     bool RequestValueUpdateFromActionData(ActionData data)
     {
       if (!data.TryGetValue("VarName", out var varName) || !TryGetSimVarIdFromActionData(varName, out string varId)) {
-        _logger.LogError($"Could not find valid Variable ID in action data: {ActionDataToKVPairString(data)}'");
+        _logger.LogError("Could not find valid Variable ID in action data: {data}", ActionDataToKVPairString(data));
         return false;
       }
       if (_statesDictionary.TryGet(varId, out var simVar) is bool ret && ret)
         _simConnectService.RequestVariableValueUpdate(simVar);
       else
-        _logger.LogWarning($"Variable with ID '{varId}' not found.");
+        _logger.LogWarning("Variable with ID '{varId}' not found.", varId);
       return ret;
     }
 
@@ -1046,7 +1046,7 @@ namespace MSFSTouchPortalPlugin.Services
         }
         HubHopPreset p = _presets.PresetByName(eventName, HubHopType.AllInputs, sVa, sSystem);
         if (p == null) {
-          _logger.LogError($"Could not find Preset for action data: {ActionDataToKVPairString(data)}");
+          _logger.LogError("Could not find Preset for action data: {data}", ActionDataToKVPairString(data));
           return false;
         }
 
@@ -1062,7 +1062,7 @@ namespace MSFSTouchPortalPlugin.Services
             }
             eventName = eventName.Replace("@", dVal.ToString("0.#######", CultureInfo.InvariantCulture));
           }
-          _logger.LogDebug("Sending: " + eventName);
+          _logger.LogDebug("Sending: {evName}", eventName);
           return _simConnectService.ExecuteCalculatorCode(eventName);
         }
 
@@ -1229,7 +1229,7 @@ namespace MSFSTouchPortalPlugin.Services
           // ignore, has no action.
           return false;
         default:
-          _logger.LogWarning("Unknown action ID '{0}'", pluginEventId.ToString());
+          _logger.LogWarning("Unknown action ID '{eventId}'", pluginEventId.ToString());
           return false;
       }
     }
@@ -1335,7 +1335,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     public void OnClosedEvent(string message)
     {
-      _logger?.LogInformation($"TouchPortal Disconnected with message: {message}");
+      _logger?.LogInformation("TouchPortal Disconnected with message: {message}", message);
       if (!_quitting)
         _hostApplicationLifetime.StopApplication();
     }
@@ -1507,7 +1507,7 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     public void OnUnhandledEvent(string jsonMessage) {
-      _logger?.LogDebug($"Unhandled message: {jsonMessage}");
+      _logger?.LogDebug("Unhandled message: {jsonMessage}", jsonMessage);
     }
 
     #endregion TouchPortalSDK Events
@@ -1528,7 +1528,7 @@ namespace MSFSTouchPortalPlugin.Services
       }
       catch (Exception e) {
         errMsg = e.Message;
-        _logger.LogDebug(e, $"Eval exception with '{strValue}'");
+        _logger.LogDebug(e, "Eval exception with '{strValue}'", strValue);
         return false;
       }
       return true;

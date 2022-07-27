@@ -17,13 +17,11 @@ A copy of the GNU GPL is included with this project
 and is also available at <http://www.gnu.org/licenses/>.
 */
 
-using SQLite;
-
 namespace MSFSTouchPortalPlugin.Configuration
 {
   internal class HubHopPreset
   {
-    [PrimaryKey]
+    [SQLite.PrimaryKey]
     public string Id { get; set; }
     public HubHopType PresetType { get; set; }
     public string Vendor { get; set; }

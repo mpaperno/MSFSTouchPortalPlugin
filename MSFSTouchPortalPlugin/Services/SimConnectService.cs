@@ -273,16 +273,16 @@ namespace MSFSTouchPortalPlugin.Services
       if (method == null || !_connected)
         return false;
       try {
-        _logger.LogTrace($"Invoking: {method.Method.Name}({string.Join(", ", args)})");
+        _logger.LogTrace("Invoking: {methodName}({args})", method.Method.Name, string.Join(", ", args));
         method.DynamicInvoke(args);
         AddRequestRecord(method.Method, args);
         return true;
       }
       catch (COMException e) {
-        _logger.LogWarning($"SimConnect returned an error: [{e.HResult:X}] {e.Message} <site: '{e.TargetSite}'; source: '{e.Source}'");
+        _logger.LogWarning("SimConnect returned an error: [{hResult:X}] {message} <site: '{targetSite}'; source: '{source}'", e.HResult, e.Message, e.TargetSite, e.Source);
       }
       catch (Exception e) {
-        _logger.LogError(e, $"Method invocation failed with system exception: [{e.HResult:X}] {e.Message}");
+        _logger.LogError(e, "Method invocation failed with system exception: [{hResult:X}] {message}", e.HResult, e.Message);
       }
       return false;
     }
@@ -322,7 +322,7 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     void WASMLib_OnValueChanged(DataRequestRecord dr) {
-      _logger.LogTrace($"Got WASM data for Request: {dr}");
+      _logger.LogTrace("Got WASM data for Request: {dr}", dr.ToString());
       if (dr.requestId == 0)
         RequestLookupList(LookupItemType.LocalVariable);  // request local vars list when the "ATC MODEL" changes.
       else
@@ -330,7 +330,7 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     void WASMLib_OnLogEntryReceived(LogRecord log, LogSource src) {
-      _logger.Log(WasmLogLevelToLoggerLevel(log.level), $"[WASM] {src} - {log}");
+      _logger.Log(WasmLogLevelToLoggerLevel(log.level), "[WASM] {src} - {log}", src, log);
     }
 
     // convert WASimCommander LogLevel to ILogger LogLevel
@@ -377,7 +377,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     bool RegisterToWasm(SimVarItem simVar) {
       if (!WasmInitialized) {
-        _logger.LogError($"Cannot request '{simVar.VariableType}' type variable w/out WASM module.");
+        _logger.LogError("Cannot request '{varType}' type variable w/out WASM module.", simVar.VariableType);
         return false;
       }
       uint interval = simVar.UpdateInterval;
@@ -396,7 +396,7 @@ namespace MSFSTouchPortalPlugin.Services
       };
       HR hr;
       if ((hr = _wlib.saveDataRequest(dr)) != HR.OK) {
-        _logger.LogError($"Could not complete request due to WASimClient error '{hr}', check log messages.");
+        _logger.LogError("Could not complete request due to WASimClient error '{hr}', check log messages.", hr.ToString());
         return false;
       }
       _addedDefinitions.Add(simVar.Def, DataProvider.WASimClient);
@@ -457,7 +457,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     public bool RegisterToSimConnect(SimVarItem simVar) {
       if (_addedDefinitions.ContainsKey(simVar.Def)) {
-        _logger.LogDebug($"SimVar already registered. {simVar.ToDebugString()}");
+        _logger.LogDebug($"SimVar already registered. {simVar}", simVar.ToDebugString());
         return true;
       }
 
@@ -465,7 +465,7 @@ namespace MSFSTouchPortalPlugin.Services
         return RegisterToWasm(simVar);
 
       if (!_registerDataDelegates.TryGetValue(simVar.StorageDataType, out var registerDataDelegate)) {
-        _logger.LogError($"Unable to register storage type for '{simVar.StorageDataType}'");
+        _logger.LogError("Unable to register storage type for '{type}'", simVar.StorageDataType.ToString());
         return false;
       }
 
@@ -524,14 +524,14 @@ namespace MSFSTouchPortalPlugin.Services
     public bool ExecuteCalculatorCode(string code) {
       if (!WasmConnected || string.IsNullOrWhiteSpace(code))
         return false;
-      _logger.LogDebug("Sending calculator string: '" + code + "'");
+      _logger.LogDebug("Sending calculator string: '{code}'", code);
       return _wlib.executeCalculatorCode(code) == HR.OK;
     }
 
     public bool SetVariable(char varType, string varName, double value, string unit = "", bool createLocal = false) {
       if (!WasmConnected || string.IsNullOrWhiteSpace(varName))
         return false;
-      _logger.LogDebug($"Settings variable {varType} {varName} to {value}");
+      _logger.LogDebug("Settings variable {varType} {varName} to {value}", varType, varName, value.ToString());
       if (createLocal && varType == 'L')
         return _wlib.setOrCreateLocalVariable(varName, value) == HR.OK;
       return _wlib.setVariable(new VariableRequest(varType, varName, unit), value) == HR.OK;
@@ -579,7 +579,7 @@ namespace MSFSTouchPortalPlugin.Services
       RequestTrackingData record = GetRequestRecord(data.dwSendID);
       record.eException = (SIMCONNECT_EXCEPTION)data.dwException;
       record.dwExceptionIndex = data.dwIndex;
-      _logger.LogDebug($"SimConnect Error: {record.eException}; SendID: {data.dwSendID}; Index: {data.dwIndex};");
+      _logger.LogDebug("SimConnect Error: {e}; SendID: {sendID}; Index: {index};", record.eException, data.dwSendID, data.dwIndex);
       OnException?.Invoke(record);
     }
 
@@ -590,14 +590,14 @@ namespace MSFSTouchPortalPlugin.Services
       if (DEBUG_NOTIFICATIONS && !Enum.IsDefined(evId) && Enum.IsDefined(gId)) {
         evName = _reflectionService.GetSimEventNameById(data.uEventID);
       }
-      _logger.LogDebug($"Simconnect_OnRecvEvent Received: Group: {gId}; Event: {evName}; Data: {data.dwData}");
+      _logger.LogDebug("Simconnect_OnRecvEvent Received: Group: {gId}; Event: {evName}; Data: {dwData}", gId, evName, data.dwData);
       OnEventReceived?.Invoke(evId, gId, data.dwData);
     }
 
     private void Simconnect_OnRecvFilename(SimConnect sender, SIMCONNECT_RECV_EVENT_FILENAME data) {
       EventIds evId = (EventIds)data.uEventID;
       Groups gId = (Groups)data.uGroupID;
-      _logger.LogDebug($"Simconnect_OnRecvFilename Received: Group: {gId}; Event: {evId}; Data: {data.szFileName}");
+      _logger.LogDebug("Simconnect_OnRecvFilename Received: Group: {gId}; Event: {evId}; Data: {fileName}", gId, evId, data.szFileName);
       OnEventReceived?.Invoke(evId, gId, data.szFileName);
     }
 
@@ -613,7 +613,7 @@ namespace MSFSTouchPortalPlugin.Services
       }
       catch (Exception e) {
         _hSimConnect = IntPtr.Zero;
-        _logger.LogError(e, $"Exception trying to get handle to SimConnect: {e.Message}");
+        _logger.LogError(e, "Exception trying to get handle to SimConnect:");
       }
     }
 

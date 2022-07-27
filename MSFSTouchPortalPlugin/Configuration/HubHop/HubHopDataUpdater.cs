@@ -41,13 +41,13 @@ namespace MSFSTouchPortalPlugin.Configuration
           client.Timeout = new TimeSpan(0, 0, timeoutSec);
           HttpResponseMessage resp = await client.GetAsync(ApiBaseURL + ApiMostRecentCmd).ConfigureAwait(false);
           if (!resp.IsSuccessStatusCode) {
-            Common.Logger?.LogError($"HTTP response error in CheckForUpdates(): {resp.StatusCode} - {resp.ReasonPhrase}; for request: {resp.RequestMessage}");
+            Common.Logger?.LogError("HTTP response error in CheckForUpdates(): {StatusCode} - {ReasonPhrase}; for request: {RequestMessage}", resp.StatusCode, resp.ReasonPhrase, resp.RequestMessage);
             return false;  // assume any update request would also fail
           }
           latest = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
 
           if (string.IsNullOrWhiteSpace(latest)) {
-            Common.Logger?.LogWarning($"CheckForUpdates({lastUpdate}) downloaded data from {ApiBaseURL}{ApiMostRecentCmd} was empty.");
+            Common.Logger?.LogWarning("CheckForUpdates({lastUpdate}) downloaded data from {ApiBaseURL}{ApiMostRecentCmd} was empty.", lastUpdate, ApiBaseURL, ApiMostRecentCmd);
             return true;  // assume we need an update, I guess
           }
         }
@@ -55,7 +55,7 @@ namespace MSFSTouchPortalPlugin.Configuration
         var presets = JsonConvert.DeserializeObject<List<HubHopPreset>>(latest, Common.SerializerSettings);
 
         if (presets.Count == 0) {
-          Common.Logger?.LogWarning($"CheckForUpdates({lastUpdate}) found no deserialized presets in data: [{latest}]");
+          Common.Logger?.LogWarning("CheckForUpdates({lastUpdate}) found no deserialized presets in data: [{latest}]", lastUpdate, latest);
           return true;  // assume we need an update, I guess
         }
 
@@ -63,10 +63,10 @@ namespace MSFSTouchPortalPlugin.Configuration
         //  JsonConvert.SerializeObject(presets, Common.SerializerSettings));
 
         if (DateTime.TryParse(presets[^1].CreatedDate, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out var lastDt)) {
-          Common.Logger?.LogDebug($"CheckForUpdates({lastUpdate}) found version with {lastDt.ToUniversalTime()}, updated: {lastDt > lastUpdate}");
+          Common.Logger?.LogDebug("CheckForUpdates({lastUpdate}) found version with {lastDt}, updated: {hasUpdate}", lastUpdate, lastDt.ToUniversalTime(), (lastDt > lastUpdate));
           return lastDt > lastUpdate;
         }
-        Common.Logger?.LogDebug($"CheckForUpdates({lastUpdate}) could not parse date in {presets[^1].CreatedDate}");
+        Common.Logger?.LogDebug("CheckForUpdates({lastUpdate}) could not parse date in {lastCreatedDate}", lastUpdate, presets[^1].CreatedDate);
       }
       catch (HttpRequestException e) {
         Common.Logger?.LogError(e, "HTTP exception in CheckForUpdates(): " + e.Message);
@@ -83,7 +83,7 @@ namespace MSFSTouchPortalPlugin.Configuration
         destination = Common.PresetsFile;
       try {
         await DownloadSingleFile(new Uri(ApiBaseURL + ApiPresetsCmd), destination, timeoutSec).ConfigureAwait(false);
-        Common.Logger?.LogDebug($"DownloadPresets({destination}) was successful.");
+        Common.Logger?.LogDebug("DownloadPresets({destination}) was successful.", destination);
         return true;
       }
       catch (Exception e) {
