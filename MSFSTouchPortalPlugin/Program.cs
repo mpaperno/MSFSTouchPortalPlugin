@@ -39,19 +39,16 @@ using TouchPortalSDK.Configuration;
 
 namespace MSFSTouchPortalPlugin {
   public static class Program {
-    private static async Task Main(string[] args) {
-      // Logger
-#if DEBUG
-      // always debug logging in debug build
-      Environment.SetEnvironmentVariable("Serilog__MinimumLevel__Override__MSFSTouchPortalPlugin", "Debug");
-#endif
-      var logFactory = new LoggerFactory();
-      var logger = logFactory.CreateLogger("Program");
-
+    private static async Task Main(string[] args)
+    {
       //Build configuration:
       var configurationRoot = new ConfigurationBuilder()
           .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
           .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+#if DEBUG
+          // optional settings override for debug builds (eg. for logging levels)
+          .AddJsonFile("appsettings.debug.json", optional: true, reloadOnChange: true)
+#endif
           .AddEnvironmentVariables()  // inject env. vars
           .Build();
 
@@ -60,7 +57,7 @@ namespace MSFSTouchPortalPlugin {
       _ = new Mutex(true, mutextName, out var createdNew);
 
       if (!createdNew) {
-        logger.LogError($"{mutextName} is already running. Exiting application.");
+        Console.WriteLine("{0} is already running. Exiting application.", mutextName);
         return;
       }
 
@@ -87,7 +84,7 @@ namespace MSFSTouchPortalPlugin {
           })
           .RunConsoleAsync();
       } catch (COMException ex) {
-        logger.LogError($"COMException: {ex.Message}");
+        Console.WriteLine("COMException: {0}", ex.Message);
       }
     }
   }
