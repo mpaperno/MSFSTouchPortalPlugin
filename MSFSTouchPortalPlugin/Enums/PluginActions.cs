@@ -52,6 +52,7 @@ namespace MSFSTouchPortalPlugin.Enums
     Connect,
     Disconnect,
     ReloadStates,
+    ResendStates,
     UpdateHubHopPresets,
     UpdateLocalVarsList,
 

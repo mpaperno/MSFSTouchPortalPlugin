@@ -29,15 +29,20 @@ namespace MSFSTouchPortalPlugin.Objects
   internal static class PluginMapping
   {
     [TouchPortalAction(PluginActions.Connection, "Connect & Update",
-      "Plugin actions: Toggle/On/Off SimConnect Connection, Reload State Config Files, Update HubHop Presets",
+      "Control connection to the Simulator, or perform various data update tasks.",
       "Plugin Action: {0}")]
     [TouchPortalActionChoice(Id = "Action")]
-    [TouchPortalActionMapping(PluginActions.ToggleConnection, "Toggle")]
-    [TouchPortalActionMapping(PluginActions.Connect, "On")]
-    [TouchPortalActionMapping(PluginActions.Disconnect, "Off")]
+    [TouchPortalActionMapping(PluginActions.ToggleConnection, "Toggle Simulator Connection")]
+    [TouchPortalActionMapping(PluginActions.Connect, "Connect to Simulator")]
+    [TouchPortalActionMapping(PluginActions.Disconnect, "Disconnect from Simulator")]
     [TouchPortalActionMapping(PluginActions.ReloadStates, "Reload State Files")]
+    [TouchPortalActionMapping(PluginActions.ResendStates, "Re-Send All State Values")]
     [TouchPortalActionMapping(PluginActions.UpdateLocalVarsList, "Update Local Var. List")]
     [TouchPortalActionMapping(PluginActions.UpdateHubHopPresets, "Update HubHop Data")]
+    // deprecated mappings
+    [TouchPortalActionMapping(PluginActions.ToggleConnection, "Toggle", Deprecated = true)]
+    [TouchPortalActionMapping(PluginActions.Connect, "On", Deprecated = true)]
+    [TouchPortalActionMapping(PluginActions.Disconnect, "Off", Deprecated = true)]
     public static readonly object Connection;
 
     [TouchPortalAction(PluginActions.ActionRepeatInterval, "Action Repeat Interval",
