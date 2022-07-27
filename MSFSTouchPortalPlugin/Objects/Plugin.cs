@@ -302,8 +302,8 @@ namespace MSFSTouchPortalPlugin.Objects
     )]
     [TouchPortalActionChoice("[connect plugin]", "", Id = "FbCatId", Label = "Feedback Category")]
     [TouchPortalActionChoice("[select a category]", "", Id = "FbVarName", Label = "Feedback Variable")]
-    [TouchPortalActionNumeric(-16384, float.MinValue, float.MaxValue, true, Id = "FbRangeMin", Label = "Feedback Range Minimum")]
-    [TouchPortalActionNumeric(16384, float.MinValue, float.MaxValue, true, Id = "FbRangeMax", Label = "Feedback Range Maximum")]
+    [TouchPortalActionText("-16384", float.MinValue, float.MaxValue, true, Id = "FbRangeMin", Label = "Feedback Range Minimum")]
+    [TouchPortalActionText("16384", float.MinValue, float.MaxValue, true, Id = "FbRangeMax", Label = "Feedback Range Maximum")]
     public static readonly object SetConnectorValue;
 
   }

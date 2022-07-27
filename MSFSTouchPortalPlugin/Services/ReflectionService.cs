@@ -99,8 +99,8 @@ namespace MSFSTouchPortalPlugin.Services
         if (metaAttrib != null) {
           int fmtN = metaAttrib.RangeStartIndex < 0 ? connData.Count : metaAttrib.RangeStartIndex;
           format += $"{{{fmtN++}}}-{{{fmtN++}}}";
-          connData.Add(new TouchPortalActionNumericAttribute(metaAttrib.DefaultMin, metaAttrib.MinValue, metaAttrib.MaxValue, metaAttrib.AllowDecimals) { Id = "RangeMin", Label = "Value Range Minimum" });
-          connData.Add(new TouchPortalActionNumericAttribute(metaAttrib.DefaultMax, metaAttrib.MinValue, metaAttrib.MaxValue, metaAttrib.AllowDecimals) { Id = "RangeMax", Label = "Value Range Maximum" });
+          connData.Add(new TouchPortalActionTextAttribute(metaAttrib.DefaultMin.ToString(), metaAttrib.MinValue, metaAttrib.MaxValue, metaAttrib.AllowDecimals) { Id = "RangeMin", Label = "Value Range Minimum" });
+          connData.Add(new TouchPortalActionTextAttribute(metaAttrib.DefaultMax.ToString(), metaAttrib.MinValue, metaAttrib.MaxValue, metaAttrib.AllowDecimals) { Id = "RangeMax", Label = "Value Range Maximum" });
           if (metaAttrib.UseFeedback) {
             format += $"| Feedback From\n| State (opt):{{{fmtN++}}}{{{fmtN++}}}\nRange:{{{fmtN++}}}-{{{fmtN}}}";
             connData.Add(new TouchPortalActionChoiceAttribute("[connect plugin]", "") { Id = "FbCatId", Label = "Feedback Category" });

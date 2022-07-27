@@ -206,11 +206,11 @@ namespace MSFSTouchPortalPlugin.Attributes
       DefaultValue = defaultValue;
     }
 
-    public TouchPortalActionTextAttribute(string defaultValue, double minValue, double maxValue) : base(DataType.Text) {
+    public TouchPortalActionTextAttribute(string defaultValue, double minValue, double maxValue, bool allowDecimals = false) : base(DataType.Text) {
       DefaultValue = defaultValue;
       MinValue = minValue;
       MaxValue = maxValue;
-      AllowDecimals = false;
+      AllowDecimals = allowDecimals;
     }
 
     protected TouchPortalActionTextAttribute(DataType type, string defaultValue = "") : this(defaultValue) {
