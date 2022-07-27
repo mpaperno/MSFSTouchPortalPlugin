@@ -90,6 +90,12 @@ namespace MSFSTouchPortalPlugin.Attributes
       HasHoldFunctionality = holdable;
     }
 
+    public TouchPortalActionAttribute(PluginActions id, string name, string format, bool holdable = false) :
+      base(id, name, string.Empty, format)
+    {
+      HasHoldFunctionality = holdable;
+    }
+
     public TouchPortalActionAttribute(PluginActions id, string name, string description, string format, bool holdable = false) :
       base(id, name, description, format)
     {

@@ -136,9 +136,11 @@ namespace MSFSTouchPortalPlugin.Services
             actionAttrib.ParentObject = m;
             var emptyChoices = actionAttrib.Data.Where(m => m is TouchPortalActionChoiceAttribute && m.ChoiceValues.Length == 0).ToArray();
             if (emptyChoices.Any() && actionAttrib.Mappings.Any()) {
-              var choiceCount = emptyChoices.Count();
+              var choiceCount = emptyChoices.Length;
               //List<string>[] choices = new List<string>[choiceCount];
               foreach (var map in actionAttrib.Mappings) {
+                if (map.Deprecated)
+                  continue;
                 for (int i = 0; i < choiceCount; ++i) {
                   var choiceEl = emptyChoices[i] as TouchPortalActionChoiceAttribute;
                   if (map.Values.Length > i && map.Values[i] is var choice && !choiceEl.ChoiceValues.Contains(choice)) {

@@ -31,6 +31,7 @@ namespace MSFSTouchPortalPlugin.Attributes
     public string ActionId { get; set; }
     public string[] Values { get; set; } = Array.Empty<string>();
     public uint EventValue { get; set; } = 0;
+    public bool Deprecated { get; set; } = false;  // exclude from generated entry.tp and docs if true, but preserve mapping for backwards compat.
 
     public TouchPortalActionMappingAttribute(string actionId, string value, uint eventValue = 0) :
       this(actionId, new [] { value }, eventValue) { }
