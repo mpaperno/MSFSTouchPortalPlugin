@@ -43,6 +43,7 @@ namespace MSFSTouchPortalPlugin.Enums
     AddCalculatedValue,
     UpdateVarValue,
     RemoveSimVar,
+    ClearSimVars,
     SaveSimVars,
     LoadSimVars,
 
@@ -60,5 +61,7 @@ namespace MSFSTouchPortalPlugin.Enums
 
     SaveCustomSimVars,
     SaveAllSimVars,
+    ClearCustomSimVars,
+    ClearAllSimVars,
   }
 }

@@ -259,21 +259,30 @@ namespace MSFSTouchPortalPlugin.Objects
     public static readonly object UpdateVarValue;
 
     [TouchPortalAction(PluginActions.RemoveSimVar, "Remove a Simulator Variable",
-      "Remove an existing Simulator Variable. Note that static TP States cannot be removed.",
+      "Remove an existing Simulator Variable.",
       "From Category {0} Remove Variable {1}")]
     [TouchPortalActionChoice("[connect plugin]", "", Id = "CatId", Label = "Category")]
     [TouchPortalActionChoice("[select a category]", "", Id = "VarName", Label = "Simulator Variable")]
     public static readonly object RemoveSimVar;
 
-    [TouchPortalAction(PluginActions.LoadSimVars, "Load SimVar Definitions From File",
-      "Load a set of simulator variable state definitions from a configuration file.",
-      "Load from file {0} (name only for user config. folder, or full path with file name)")]
-    [TouchPortalActionFile("CustomStates.ini", Id = "VarsFile", Label = "Load From File")]
+    [TouchPortalAction(PluginActions.ClearSimVars, "Clear Variable Definitions",
+      "Removes either all or only custom-added variable state definitions.",
+      "Clear {0} states")]
+    [TouchPortalActionChoice(Id = "VarsSet", Label = "Variables Set")]
+    [TouchPortalActionMapping(PluginActions.ClearCustomSimVars, "Custom")]
+    [TouchPortalActionMapping(PluginActions.ClearAllSimVars, "All")]
+    public static readonly object ClearSimVars;
+
+    [TouchPortalAction(PluginActions.LoadSimVars, "Load Variable Definitions From File",
+      "Load a set of variable state definitions from a configuration file.",
+      "Load definitions from file {0} (file name only for user config. folder, or full path with file name)")]
+    [TouchPortalActionText("CustomStates.ini", Id = "VarsFile", Label = "Load From File")]
+    //[TouchPortalActionFile("CustomStates.ini", Id = "VarsFile", Label = "Load From File")]  // doesn't allow freeform entry and is misleading as of TP 3.1
     public static readonly object LoadSimVars;
 
-    [TouchPortalAction(PluginActions.SaveSimVars, "Save SimVar Definitions To File",
+    [TouchPortalAction(PluginActions.SaveSimVars, "Save Variable Definitions To File",
       "Save the current simulator variable state definitions to a configuration file.",
-      "Save {0} states to file {1} (name only for user config. folder, or full path with file name)")]
+      "Save {0} states to file {1} (file name only for user config. folder, or full path with file name)")]
     [TouchPortalActionChoice(Id = "VarsSet", Label = "Variables Set")]
     [TouchPortalActionText("CustomStates.ini", Id = "VarsFile", Label = "Save to File")]
     //[TouchPortalActionFile("CustomStates.ini", Id = "VarsFile", Label = "Save to File")]  // doesn't allow freeform entry or selecting a non-existing file as of TP 3.0.10

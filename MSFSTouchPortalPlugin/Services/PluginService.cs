@@ -428,11 +428,10 @@ namespace MSFSTouchPortalPlugin.Services
 
       if (!postponeUpdate)
         UpdateSimVarLists();
-      _logger.LogTrace("Added SimVar: {simVar}", simVar.ToDebugString());
+      _logger.LogTrace("Added Request: {simVar}", simVar.ToDebugString());
       return true;
     }
 
-    // note that the stored list of custom added SimVars is not affected here so that we can reload those during a SimConnect restart
     private bool RemoveSimVar(SimVarItem simVar, bool postponeUpdate = false) {
       if (simVar == null || !_statesDictionary.Remove(simVar.Id))
         return false;
@@ -440,7 +439,18 @@ namespace MSFSTouchPortalPlugin.Services
       _client.RemoveState(simVar.TouchPortalStateId);
       if (!postponeUpdate)
         UpdateSimVarLists();
+      _logger.LogTrace("Removed Request: {simVar}", simVar.ToDebugString());
       return true;
+    }
+
+    // Removes all, or just custom-added, variable definitions
+    private void RemoveSimVars(bool customOnly)
+    {
+      var list = customOnly ? _statesDictionary.CustomVariables : _statesDictionary.Values.ToArray();
+      foreach (SimVarItem simVar in list)
+        RemoveSimVar(simVar, true);
+      UpdateSimVarLists();
+      _logger.LogInformation((int)EventIds.PluginInfo, "Removed {count}{type} variable requests.", list.Count(), (customOnly ? " Custom" : ""));
     }
 
     private void LoadCustomSimVarsFromFile(string filepath) {
@@ -449,23 +459,23 @@ namespace MSFSTouchPortalPlugin.Services
         foreach (var simVar in simVars)
           AddSimVar(simVar, postponeUpdate: true);
         UpdateSimVarLists();
-        _logger.LogInformation((int)EventIds.PluginInfo, $"Loaded {simVars.Count} SimVar States from file '{filepath}'");
+        _logger.LogInformation((int)EventIds.PluginInfo, "Loaded {count} variable requests from file '{file}'", simVars.Count, filepath);
       }
       else {
-        _logger.LogWarning($"Did not load any SimVar States from file '{filepath}'");
+        _logger.LogWarning("Did not load any SimVar States from file '{file}'", filepath);
       }
     }
 
     private void SaveSimVarsToFile(string filepath, bool customOnly = true) {
       int count = 0;
       if (customOnly)
-        count = _pluginConfig.SaveSimVarItems((from SimVarItem s in _statesDictionary where s.DataSource != DataSourceType.DefaultFile select s), true, filepath);
+        count = _pluginConfig.SaveSimVarItems(_statesDictionary.CustomVariables, true, filepath);
       else
         count = _pluginConfig.SaveSimVarItems(_statesDictionary, true, filepath);
       if (count > 0)
-        _logger.LogInformation((int)EventIds.PluginInfo, $"Saved {(customOnly ? $"{count} Custom" : $"All {count}")} SimVar States to file '{filepath}'");
+        _logger.LogInformation((int)EventIds.PluginInfo, "Saved {count}{type} variable requests to file '{filepath}'", count, (customOnly ? " Custom" : ""), filepath);
       else
-        _logger.LogError($"Error saving SimVar States to file '{filepath}'; Please check log messages.");
+        _logger.LogError("Error saving SimVar States to file '{filepath}'; Please check log messages.", filepath);
     }
 
     #endregion SimVar Setup Handlers
@@ -1185,6 +1195,14 @@ namespace MSFSTouchPortalPlugin.Services
 
         case PluginActions.RemoveSimVar:
           return RemoveSimVarByActionDataName(data);
+
+        case PluginActions.ClearSimVars: {
+          if (data.TryGetValue("VarsSet", out var varSet) && action.TryGetEventMapping(varSet, out var evRecord)) {
+            RemoveSimVars((PluginActions)evRecord.EventId == PluginActions.ClearCustomSimVars);
+            return true;
+          }
+          return false;
+        }
 
         case PluginActions.LoadSimVars: {
           if (data.TryGetValue("VarsFile", out var filepath) && !string.IsNullOrWhiteSpace(filepath)) {

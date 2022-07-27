@@ -61,6 +61,9 @@ namespace MSFSTouchPortalPlugin.Types
       }
     }
 
+    // List of vars which were not read from default config file.
+    public IEnumerable<SimVarItem> CustomVariables => (from SimVarItem s in _idxByDef.Values where s.DataSource != DataSourceType.DefaultFile select s);
+
     const int MAX_CONCURRENCY = 6;
     const int INITIAL_CAPACITY = 500;
 
