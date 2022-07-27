@@ -39,7 +39,7 @@ namespace MSFSTouchPortalPlugin.Types
   /// </summary>
   public class SimVarItem : System.IComparable<SimVarItem>, System.IComparable
   {
-    public const float DELTA_EPSILON_DEFAULT = 0.009f;
+    public const double DELTA_EPSILON_DEFAULT = 0.009;
 
     /// <summary> Unique ID string, used to generate TouchPortal state ID (and possibly other uses). </summary>
     public string Id { get; set; }
@@ -65,7 +65,7 @@ namespace MSFSTouchPortalPlugin.Types
     public uint UpdateInterval { get; set; } = 0;
     /// <summary> Only report change if it is greater than the value of this parameter (not greater than or equal to).
     /// Default is 0.009f limits changes to 2 decimal places which is suitable for most unit types (except perhaps MHz and "percent over 100"). </summary>
-    public float DeltaEpsilon { get; set; } = DELTA_EPSILON_DEFAULT;
+    public float DeltaEpsilon { get; set; } = (float)DELTA_EPSILON_DEFAULT;
     /// <summary> Could also be "choice" but we don't use that (yet?) </summary>
     public string TouchPortalValueType { get; set; } = "text";
     /// <summary> This could/should be populated by whatever is creating the SimVarItem instance </summary>

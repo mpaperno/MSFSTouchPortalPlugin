@@ -402,7 +402,7 @@ namespace MSFSTouchPortalPlugin.Configuration
             sect.Add("UpdatePeriod", item.UpdatePeriod);
           if (item.UpdateInterval != 0)
             sect.Add("UpdateInterval", item.UpdateInterval);
-          if (item.DeltaEpsilon != SimVarItem.DELTA_EPSILON_DEFAULT)
+          if (item.DeltaEpsilon != (float)SimVarItem.DELTA_EPSILON_DEFAULT)
             sect.Add("DeltaEpsilon", item.DeltaEpsilon);
 
           ++count;
