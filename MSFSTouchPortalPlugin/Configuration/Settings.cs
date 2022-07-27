@@ -102,6 +102,8 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     // Internally tracked settings, not used via Touch Portal UI.
 
+    // Version of the plugin with which the settings were last saved. Used for change tracking/notifications/etc.
+    public static readonly PluginSetting PluginSettingsVersion = new("PluginSettingsVersion", 0, 0xFFFFFFFF, "0");
     // Random part of WASimClient ID, set once per plugin installation and saved in settings config file.
     public static readonly PluginSetting WasimClientIdHighByte = new("WasimClientIdHighByte", 0, 0xFF, "0");
     // Held action repeat interval; settable by user.

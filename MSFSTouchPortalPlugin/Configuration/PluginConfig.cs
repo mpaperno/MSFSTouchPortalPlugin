@@ -17,15 +17,16 @@ A copy of the GNU GPL is included with this project
 and is also available at <http://www.gnu.org/licenses/>.
 */
 
+using Microsoft.Extensions.Logging;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
+using MSFSTouchPortalPlugin.Helpers;
 using MSFSTouchPortalPlugin.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
-using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
 
 namespace MSFSTouchPortalPlugin.Configuration
@@ -243,12 +244,14 @@ namespace MSFSTouchPortalPlugin.Configuration
       if (LoadFromFile(cfgFile, out SharpConfig.Configuration cfg)) {
         if (cfg.Contains("Plugin")) {
           plugin = cfg["Plugin"];
+          if (plugin.TryGetSetting(Settings.PluginSettingsVersion.SettingID, out var lastVersion))
+            Settings.PluginSettingsVersion.Value = lastVersion.UIntValue;
           if (plugin.TryGetSetting(Settings.WasimClientIdHighByte.SettingID, out var hiByte))
             Settings.WasimClientIdHighByte.Value = hiByte.ByteValue;
           if (plugin.TryGetSetting(Settings.ActionRepeatInterval.SettingID, out var interval))
-            Settings.ActionRepeatInterval.Value = interval.IntValue;
+            Settings.ActionRepeatInterval.Value = interval.UIntValue;
         }
-        _logger.LogDebug("Loaded settings from {cfgFile}", cfgFile);
+        _logger.LogDebug("Loaded settings from {cfgFile} with version {cfgVersion:X08}", cfgFile, Settings.PluginSettingsVersion.UIntValue);
       }
       bool needUpdate = cfg == null || plugin == null;
       if (Settings.WasimClientIdHighByte.UIntValue == 0) {
@@ -259,6 +262,16 @@ namespace MSFSTouchPortalPlugin.Configuration
       }
       if (needUpdate)
         SaveSettings();
+    }
+
+    public bool SaveSettings()
+    {
+      SharpConfig.Configuration cfg = new();
+      SharpConfig.Section plugin = cfg["Plugin"];
+      plugin[Settings.PluginSettingsVersion.SettingID].SetValue($"0x{VersionInfo.GetProductVersionNumber():X08}");
+      plugin[Settings.WasimClientIdHighByte.SettingID].ByteValue = Settings.WasimClientIdHighByte.ByteValue;
+      plugin[Settings.ActionRepeatInterval.SettingID].UIntValue = Settings.ActionRepeatInterval.UIntValue;
+      return SaveToFile(cfg, Path.Combine(UserConfigFolder, SettingsConfigFile));
     }
 
     void CopySettingsConfigFile(string oldPath, string newPath)
@@ -273,15 +286,6 @@ namespace MSFSTouchPortalPlugin.Configuration
           _logger.LogError(e, "Error trying copy settings file from '{oldPath}' to '{newPath}': {message}", oldPath, newPath, e.Message);
         }
       }
-    }
-
-    public bool SaveSettings()
-    {
-      SharpConfig.Configuration cfg = new();
-      SharpConfig.Section plugin = cfg["Plugin"];
-      plugin[Settings.WasimClientIdHighByte.SettingID].ByteValue = Settings.WasimClientIdHighByte.ByteValue;
-      plugin[Settings.ActionRepeatInterval.SettingID].IntValue = Settings.ActionRepeatInterval.IntValue;
-      return SaveToFile(cfg, Path.Combine(UserConfigFolder, SettingsConfigFile));
     }
 
     // Check if user config folder contains a SimConnect.cfg file and tries to copy it into the current running folder.
