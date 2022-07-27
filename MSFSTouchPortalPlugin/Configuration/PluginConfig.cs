@@ -395,10 +395,10 @@ namespace MSFSTouchPortalPlugin.Configuration
           if (item.CanSet)
             sect.Add("CanSet", item.CanSet);
           if (item.UpdatePeriod != UpdatePeriod.Default)
-            sect.Add("UpdateFreqency", item.UpdatePeriod);
+            sect.Add("UpdatePeriod", item.UpdatePeriod);
           if (item.UpdateInterval != 0)
             sect.Add("UpdateInterval", item.UpdateInterval);
-          if (item.DeltaEpsilon != 0.0f)
+          if (item.DeltaEpsilon != SimVarItem.DELTA_EPSILON_DEFAULT)
             sect.Add("DeltaEpsilon", item.DeltaEpsilon);
 
           ++count;
@@ -422,7 +422,7 @@ namespace MSFSTouchPortalPlugin.Configuration
     IReadOnlyDictionary<string, IReadOnlyDictionary<string, SimVariable>> ImportSimVars() {
       Dictionary<string, IReadOnlyDictionary<string, SimVariable>> ret = new();
       var filename = Path.Combine(AppConfigFolder, SimVarsImportsFile);
-      _logger.LogDebug($"Importing SimVars from file '{filename}'...");
+      _logger.LogDebug("Importing SimVars from file '{filename}'...", filename);
 
       if (!LoadFromFile(filename, out var cfg))
         return ret;

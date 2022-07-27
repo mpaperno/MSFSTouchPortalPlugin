@@ -21,6 +21,7 @@ and is also available at <http://www.gnu.org/licenses/>.
 
 using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Enums;
+using SimVarItem = MSFSTouchPortalPlugin.Types.SimVarItem;
 
 namespace MSFSTouchPortalPlugin.Objects
 {
@@ -180,7 +181,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionSwitch(false, Id = "CanSet", Label = "Settable")]
     [TouchPortalActionChoice(new[] { /*"Never",*/ "Once", /*"VisualFrame",*/ "SimFrame", "Second", "Millisecond", }, "SimFrame", Id = "UpdPer", Label = "Update Period")]
     [TouchPortalActionNumeric(0, 0, int.MaxValue, false, Id = "UpdInt", Label = "Interval")]
-    [TouchPortalActionNumeric(0.009, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
+    [TouchPortalActionNumeric(SimVarItem.DELTA_EPSILON_DEFAULT, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
     public static readonly object AddCustomSimVar;
 
     // The spacing and titles here are very carefully chosen to help align labels on the top row with entry fields on the bottom row, including the default lists/values.
@@ -204,7 +205,7 @@ namespace MSFSTouchPortalPlugin.Objects
     //[TouchPortalActionSwitch(false, Id = "CanSet", Label = "Settable")]  // we should know if it's settable from the imported data
     [TouchPortalActionChoice(new[] { /*"Never",*/ "Once", /*"VisualFrame",*/ "SimFrame", "Second", "Millisecond", }, "SimFrame", Id = "UpdPer", Label = "Update Period")]
     [TouchPortalActionNumeric(0, 0, int.MaxValue, false, Id = "UpdInt", Label = "Interval")]
-    [TouchPortalActionNumeric(0.009, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
+    [TouchPortalActionNumeric(SimVarItem.DELTA_EPSILON_DEFAULT, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
     public static readonly object AddKnownSimVar;
 
     // The spacing and titles here are very carefully chosen to help align labels on the top row with entry fields on the bottom row, including the default lists/values.
@@ -226,7 +227,7 @@ namespace MSFSTouchPortalPlugin.Objects
     //[TouchPortalActionSwitch(false, Id = "CanSet", Label = "Settable")]
     [TouchPortalActionChoice(new[] { /*"Never",*/ "Once", "SimFrame", "Second", "Millisecond", }, "SimFrame", Id = "UpdPer", Label = "Update Period")]
     [TouchPortalActionNumeric(0, 0, int.MaxValue, false, Id = "UpdInt", Label = "Interval")]
-    [TouchPortalActionNumeric(0.009, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
+    [TouchPortalActionNumeric(SimVarItem.DELTA_EPSILON_DEFAULT, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
     public static readonly object AddNamedVariable;
 
     // The spacing and titles here are very carefully chosen to help align labels on the top row with entry fields on the bottom row, including the default lists/values.
@@ -247,7 +248,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionText("0", Id = "DfltVal", Label = "Default Value")]
     [TouchPortalActionChoice(new[] { /*"Never",*/ "Once", "SimFrame", "Second", "Millisecond", }, "SimFrame", Id = "UpdPer", Label = "Update Period")]
     [TouchPortalActionNumeric(0, 0, int.MaxValue, false, Id = "UpdInt", Label = "Interval")]
-    [TouchPortalActionNumeric(0.009, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
+    [TouchPortalActionNumeric(SimVarItem.DELTA_EPSILON_DEFAULT, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
     public static readonly object AddCalculatedValue;
 
     [TouchPortalAction(PluginActions.UpdateVarValue, "Update a Variable Value",
