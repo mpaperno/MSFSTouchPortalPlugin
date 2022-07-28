@@ -450,8 +450,8 @@ namespace MSFSTouchPortalPlugin.Services
       if (_addedDefinitions.TryGetValue(def, out var dataProvider)) {
         _addedDefinitions.Remove(def);
         if (dataProvider == DataProvider.SimConnect)
-          return InvokeSimMethod(ClearDataDefinitionDelegate, def);
-        return WasmInitialized && _wlib.removeDataRequest((uint)def) == HR.OK;
+          return !_connected || InvokeSimMethod(ClearDataDefinitionDelegate, def);
+        return _wlib?.removeDataRequest((uint)def) == HR.OK;
       }
       return false;
     }
