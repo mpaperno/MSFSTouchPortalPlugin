@@ -337,6 +337,9 @@ namespace MSFSTouchPortalPlugin.Services
         if (!simVar.IsStringType)
           UpdateRelatedConnectors(simVar.CategoryId, simVar.Id, (double)simVar);
       }
+      else {
+        simVar.SetPending(false);
+      }
     }
 
     private void SimConnectEvent_OnDisconnect() {

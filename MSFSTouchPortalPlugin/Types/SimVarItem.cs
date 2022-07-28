@@ -230,7 +230,7 @@ namespace MSFSTouchPortalPlugin.Types
     /// <summary> The SimConnect data type for registering this var. </summary>
     public SIMCONNECT_DATATYPE SimConnectDataType { get; private set; }
     /// <summary> Indicates that this state needs a scheduled update request (UpdatePeriod == Millisecond). </summary>
-    public bool NeedsScheduledRequest => UpdatePeriod == UpdatePeriod.Millisecond;
+    public bool NeedsScheduledRequest => UpdatePeriod == UpdatePeriod.Millisecond && VariableType == 'A';
     /// <summary> For serializing the "raw" formatting string w/out "{0}" parts </summary>
     public string FormattingString => _formatString;
 
@@ -238,7 +238,7 @@ namespace MSFSTouchPortalPlugin.Types
     /// Indicates that the value has "expired" based on the UpdatePeriod and UpdateInterval since the last time the value was set.
     /// This always returns false if UpdatePeriod != UpdatePeriod.Millisecond. Also returns false if a request for this value is pending and hasn't yet timed out.
     /// </summary>
-    public bool UpdateRequired => _valueExpires > 0 && !CheckPending() && Stopwatch.GetTimestamp() > _valueExpires;
+    public bool UpdateRequired => NeedsScheduledRequest && !CheckPending() && Stopwatch.GetTimestamp() > _valueExpires;
 
 
     private object _value;         // the actual Value storage
