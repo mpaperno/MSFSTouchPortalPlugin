@@ -171,43 +171,52 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     // This is a helper for creating SimVars dynamically at runtime. It is here to centralize how some of the
     // information is populated/formatted to keep things consistent with SimVars read from config files.
-    public SimVarItem CreateDynamicSimVarItem(char varType, string varName, Groups catId, string unit, uint index = 0) {
-      SimVarItem simVar;
+    public SimVarItem CreateDynamicSimVarItem(char varType, string varName, Groups catId, string unit, uint index, SimVarCollection current)
+    {
       string name = varName;
+      string varId;
+      bool canSet = false;
       uint parsedIndex = 0;
       if (varType == 'A' && TryGetImportedSimVarBySelector(varName, out SimVariable impSimVar, out name, out parsedIndex)) {
-        simVar = new SimVarItem() {
-          Id = impSimVar.Id,
-          VariableType = varType,
-          Name = impSimVar.Name,
-          SimVarName = impSimVar.SimVarName,
-          CanSet = impSimVar.CanSet
-        };
+        varId = impSimVar.Id;
+        name = impSimVar.Name;
+        varName = impSimVar.SimVarName;
+        canSet = impSimVar.CanSet;
       }
       else {
         if (varType != 'A')
           name = name.Trim();
-        simVar = new SimVarItem() {
-          // Create a reasonable string for a TP state ID
-          Id = _reSimVarIdFromName.Replace(name.ToLower(), m => (m.Groups[1].ToString().ToUpper())),
-          VariableType = varType,
-          Name = name,  // for lack of anything better
-          SimVarName = name,
-        };
+        varName = name;
+        // Create a reasonable string for a TP state ID
+        varId = _reSimVarIdFromName.Replace(name.ToLower(), m => (m.Groups[1].ToString().ToUpper()));
       }
       if (parsedIndex > 0 && index == 0)
         index = parsedIndex;
       if (index > 0) {
         string sIdx = Math.Clamp(index, 1, 99).ToString();
-        simVar.Id += sIdx;
-        simVar.SimVarName += ':' + sIdx;
-        simVar.Name += ' ' + sIdx;
+        varId += sIdx;
+        varName += ':' + sIdx;
+        name += ' ' + sIdx;
       }
-      simVar.CategoryId = catId;
-      simVar.Unit = unit ?? "number";
-      simVar.DataSource = DataSourceType.Dynamic;
-      SetSimVarItemTpMetaData(simVar);
 
+      // check if this variable already exists, avoid duplicates and keep any default naming
+      if (current.TryGetBySimName(varName, out SimVarItem existingVar)) {
+        varId = existingVar.Id;
+        if (varType != 'Q')
+          name = existingVar.Name;
+      }
+
+      SimVarItem simVar = new SimVarItem() {
+        Id = varId,
+        VariableType = varType,
+        CategoryId = catId,
+        Name = name,
+        SimVarName = varName,
+        Unit = unit ?? "number",
+        CanSet = canSet,
+        DataSource = DataSourceType.Dynamic
+      };
+      SetSimVarItemTpMetaData(simVar);
       return simVar;
     }
 

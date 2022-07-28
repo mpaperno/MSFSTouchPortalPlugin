@@ -412,17 +412,22 @@ namespace MSFSTouchPortalPlugin.Services
           _simConnectService.RegisterToSimConnect(simVar);
     }
 
-    private bool AddSimVar(SimVarItem simVar, bool postponeUpdate = false) {
+    // Returns: 0 = failed; 1 = added; 2 = replaced
+    private byte AddSimVar(SimVarItem simVar, bool postponeUpdate = false)
+    {
       if (simVar == null)
-        return false;
+        return 0;
 
-      if (_statesDictionary.TryGet(simVar.Id, out var old))
+      byte ret = 1;
+      if (_statesDictionary.TryGet(simVar.Id, out var old)) {
         RemoveSimVar(old, true);
+        ret = 2;
+      }
 
       // Register it. If the SimVar gets regular updates (not custom polling) then this also starts the data requests for this value.
       // If we're not connected now then the var will be registered in RegisterAllSimVars() when we do connect.
       if (_simConnectService.IsConnected && !_simConnectService.RegisterToSimConnect(simVar))
-        return false;
+        return 0;
 
       _statesDictionary.Add(simVar.Def, simVar);
 
@@ -431,8 +436,8 @@ namespace MSFSTouchPortalPlugin.Services
 
       if (!postponeUpdate)
         UpdateSimVarLists();
-      _logger.LogTrace("Added Request: {simVar}", simVar.ToDebugString());
-      return true;
+      _logger.LogTrace("{action} Request: {simVar}", (ret == 1 ? "Added" : "Replaced"), simVar.ToDebugString());
+      return ret;
     }
 
     private bool RemoveSimVar(SimVarItem simVar, bool postponeUpdate = false) {
@@ -955,11 +960,11 @@ namespace MSFSTouchPortalPlugin.Services
         varType = 'Q';
       }
 
-      if (data.TryGetValue("VarIndex", out var sIndex) && !uint.TryParse(sIndex, out index))
+      if (varType == 'A' && data.TryGetValue("VarIndex", out var sIndex) && !uint.TryParse(sIndex, out index))
         index = 0;
 
       // create the SimVarItem from collected data
-      SimVarItem simVar = _pluginConfig.CreateDynamicSimVarItem(varType, varName, catId, sUnit, index);
+      SimVarItem simVar = _pluginConfig.CreateDynamicSimVarItem(varType, varName, catId, sUnit, index, _statesDictionary);
       // check for optional properties
       if (data.TryGetValue("Format", out var sFormat))
         simVar.StringFormat = sFormat.Trim();
@@ -980,11 +985,11 @@ namespace MSFSTouchPortalPlugin.Services
         simVar.CalcResultType = resType;   // this also sets the Unit type and hence the data type (number/integer/string)
       }
 
-      if (AddSimVar(simVar, postponeUpdate: false) is bool ret && ret)
-        _logger.LogInformation((int)EventIds.PluginInfo, "Added new Value Request from action data: {simVar}", simVar.ToDebugString());
+      if (AddSimVar(simVar, postponeUpdate: false) is byte ret && ret > 0)
+        _logger.LogInformation((int)EventIds.PluginInfo, "{action} Variable Request: {simVar}", (ret == 1 ? "Added" : "Replaced"), simVar.ToDebugString());
       else
         _logger.LogError("Failed to add Value Request from action data, check previous log messages. Data: {data}", ActionDataToKVPairString(data));
-      return ret;
+      return ret > 0;
     }
 
     bool RemoveSimVarByActionDataName(ActionData data)
