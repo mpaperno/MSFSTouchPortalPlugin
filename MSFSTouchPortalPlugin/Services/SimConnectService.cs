@@ -83,7 +83,6 @@ namespace MSFSTouchPortalPlugin.Services
     public SimConnectService(ILogger<SimConnectService> logger, IReflectionService reflectionService) {
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
       _reflectionService = reflectionService ?? throw new ArgumentNullException(nameof(reflectionService));
-      SetupWasm();
     }
 
     #endregion Public
@@ -290,6 +289,8 @@ namespace MSFSTouchPortalPlugin.Services
     //  WASM
 
     void SetupWasm() {
+      if (_wlib != null)
+        _wlib.Dispose();
       _wlib = new WASMLib(_wasmClientId);
       _wlib.OnClientEvent += WASMLib_OnClientEvent;
       _wlib.OnLogRecordReceived += WASMLib_OnLogEntryReceived;
@@ -309,7 +310,7 @@ namespace MSFSTouchPortalPlugin.Services
         return;
       }
       WasmStatus = WasmModuleStatus.Connected;
-      _logger.LogInformation((int)EventIds.PluginInfo, "Connected to WASimConnect Server v" + _wlib.serverVersion().ToString("X8"));
+      _logger.LogInformation((int)EventIds.PluginInfo, "Connected to WASimConnect Server v{serverVer:X08}", _wlib.serverVersion());
     }
 
     void WASMLib_OnClientEvent(ClientEvent ev) {
@@ -518,7 +519,8 @@ namespace MSFSTouchPortalPlugin.Services
     public void UpdateWasmClientId(byte highByte)
     {
       _wasmClientId = (_wasmClientId & 0x00FFFFFFU) | ((uint)highByte << 24);
-      _logger.LogDebug("Updated WASimClient ID to {id:X08}", _wasmClientId);
+      _logger.LogDebug("Updated WASimClient ID to {id:X08}, creating WASimClient now.", _wasmClientId);
+      SetupWasm();
     }
 
     public bool ExecuteCalculatorCode(string code) {
