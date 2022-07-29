@@ -114,13 +114,13 @@ namespace MSFSTouchPortalPlugin.Helpers
     }
 
     /// <summary> Creates or updates a connector record from a ShortConnectorIdNotification event and pre-parsed category ID, state ID, and feedback range values. </summary>
-    public void SaveConnectorInstance(ShortIdEvent ev, Enums.Groups catId, string varId, float rangeMin, float rangeMax)
+    public void SaveConnectorInstance(ShortIdEvent ev, string varId, float rangeMin, float rangeMax)
     {
       if (GetOrCreateTrackingData(ev.ActualConnectorId, ev.Data) is var data && data != null) {
         data.shortId = ev.ShortId;
         data.fbRangeMin = rangeMin;
         data.fbRangeMax = rangeMax;
-        SaveConnectorInstance(catId.ToString() + '.' + varId, data);
+        SaveConnectorInstance(varId, data);
       }
     }
 
@@ -131,11 +131,6 @@ namespace MSFSTouchPortalPlugin.Helpers
     }
 
 #nullable enable
-    public IReadOnlyCollection<ConnectorTrackingData>? GetInstancesForStateId(Enums.Groups catId, string varId)
-    {
-      return GetInstancesForStateId(catId.ToString() + '.' + varId);
-    }
-
     public IReadOnlyCollection<ConnectorTrackingData>? GetInstancesForStateId(string stateId)
     {
       if (_stateIdIndex.TryGetValue(stateId, out var ret))

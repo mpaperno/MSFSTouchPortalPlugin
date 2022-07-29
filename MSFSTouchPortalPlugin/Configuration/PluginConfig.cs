@@ -205,6 +205,9 @@ namespace MSFSTouchPortalPlugin.Configuration
         if (varType != 'Q')
           name = existingVar.Name;
       }
+      else {
+        varId = catId.ToString() + '.' + varId;
+      }
 
       SimVarItem simVar = new SimVarItem() {
         Id = varId,
@@ -221,8 +224,9 @@ namespace MSFSTouchPortalPlugin.Configuration
     }
 
     static void SetSimVarItemTpMetaData(SimVarItem simVar) {
-      simVar.TouchPortalStateId = $"{RootName}.{simVar.CategoryId}.State.{simVar.Id}";
-      simVar.TouchPortalSelector = $"{simVar.Name} ({simVar.Unit}) [{simVar.Id}]";
+      string id = simVar.Id.Split('.').Last();
+      simVar.TouchPortalStateId = $"{RootName}.{simVar.CategoryId}.State.{id}";
+      simVar.TouchPortalSelector = $"{simVar.Name} ({simVar.Unit}) [{id}]";
     }
 
 
@@ -342,7 +346,7 @@ namespace MSFSTouchPortalPlugin.Configuration
           _logger.LogError("Produced SimVar is null from section '{item}':", item);
           continue;
         }
-        simVar.Id = item.Name;
+        simVar.Id = simVar.CategoryId.ToString() + '.' + item.Name;
         simVar.DataSource = isUserConfig ? DataSourceType.UserFile : DataSourceType.DefaultFile;
         SetSimVarItemTpMetaData(simVar);
         // check unique
@@ -377,17 +381,19 @@ namespace MSFSTouchPortalPlugin.Configuration
       => LoadSimVarItems(false, PluginStatesConfigFile);
 
     // Save collection to file
-    public int SaveSimVarItems(IEnumerable<SimVarItem> items, bool isUserConfig = true, string filename = default) {
+    public int SaveSimVarItems(IEnumerable<SimVarItem> items, bool isUserConfig = true, string filename = default)
+    {
       if (!items.Any())
         return 0;
       var cfg = new SharpConfig.Configuration();
       Groups lastCatId = default;
       int count = 0;
+      items = items.OrderBy(s => s.CategoryId);
       foreach (SimVarItem item in items) {
         if (item == null)
           continue;
         try {
-          var sect = cfg.Add(item.Id);
+          var sect = cfg.Add(item.Id.Split('.').Last());
           if (item.CategoryId != lastCatId) {
             sect.PreComment = " Category: " + item.CategoryId.ToString() + "     " + new string('#', 30) + '\n';
             lastCatId = item.CategoryId;

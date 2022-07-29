@@ -335,7 +335,7 @@ namespace MSFSTouchPortalPlugin.Services
         _client.StateUpdate(simVar.TouchPortalStateId, simVar.FormattedValue);
         // Check for any Connectors (sliders) which use this state as feedback mechanism.
         if (!simVar.IsStringType)
-          UpdateRelatedConnectors(simVar.CategoryId, simVar.Id, (double)simVar);
+          UpdateRelatedConnectors(simVar.Id, (double)simVar);
       }
       else {
         simVar.SetPending(false);
@@ -697,9 +697,9 @@ namespace MSFSTouchPortalPlugin.Services
       }
     }
 
-    void UpdateRelatedConnectors(Groups catId, string varName, double value)
+    void UpdateRelatedConnectors(string varName, double value)
     {
-      if (_connectorTracker.GetInstancesForStateId(catId, varName) is var list && list != null) {
+      if (_connectorTracker.GetInstancesForStateId(varName) is var list && list != null) {
         foreach (var instance in list) {
           //_logger.LogDebug("{connId} - {shortId} - {isDn}", instance.connectorId, instance.shortId, instance.IsStillDown);
           if (string.IsNullOrEmpty(instance.shortId) || instance.fbRangeMin == instance.fbRangeMax || instance.IsStillDown)
@@ -799,7 +799,7 @@ namespace MSFSTouchPortalPlugin.Services
           if (value != Settings.ActionRepeatInterval.RealValue) {
             Settings.ActionRepeatInterval.Value = (uint)value;
             _client.StateUpdate(Settings.ActionRepeatInterval.TouchPortalStateId, Settings.ActionRepeatInterval.StringValue);
-            UpdateRelatedConnectors(Groups.Plugin, "ActionRepeatInterval", value);
+            UpdateRelatedConnectors("Plugin.ActionRepeatInterval", value);
           }
           break;
         }
@@ -810,8 +810,8 @@ namespace MSFSTouchPortalPlugin.Services
     // Parse and process PluginActions.SetSimVar action or connector
     bool SetSimVarValueFromActionData(ActionData data, int connValue = -1)
     {
-      if (!data.TryGetValue("VarName", out var varName) || !TryGetSimVarIdFromActionData(varName, out string varId) /*|| !data.TryGetValue("CatId", out var catName)*/ ) {
-        _logger.LogError("Could not parse Variable Name parameter for Set SimVar from data: {data}", ActionDataToKVPairString(data));
+      if (!data.TryGetValue("VarName", out var varName) || !data.TryGetValue("CatId", out var catName) || !TryGetSimVarIdFromActionData(varName, catName, out string varId)) {
+        _logger.LogError("Could not parse Variable Name or Category parameters for Set SimVar from data: {data}", ActionDataToKVPairString(data));
         return false;
       }
 
@@ -994,12 +994,11 @@ namespace MSFSTouchPortalPlugin.Services
 
     bool RemoveSimVarByActionDataName(ActionData data)
     {
-      if (!data.TryGetValue("VarName", out var varName) || !TryGetSimVarIdFromActionData(varName, out string varId)) {
-        _logger.LogError("Could not find valid SimVar ID in action data: {data}", ActionDataToKVPairString(data));
+      if (!data.TryGetValue("VarName", out var varName) || !data.TryGetValue("CatId", out var catName) || !TryGetSimVarIdFromActionData(varName, catName, out string varId)) {
+        _logger.LogError("Could not find valid Variable or Category ID in action data: {data}", ActionDataToKVPairString(data));
         return false;
       }
-      SimVarItem simVar = _statesDictionary[varId];
-      if ((simVar != null && RemoveSimVar(simVar)) is bool ret && ret)
+      if ((_statesDictionary.TryGet(varId, out var simVar) && RemoveSimVar(simVar)) is bool ret && ret)
         _logger.LogInformation((int)EventIds.PluginInfo, "Removed SimVar '{simVar}'", simVar.SimVarName);
       else
         _logger.LogError("Could not find definition for settable SimVar Id: '{varId}' from Name: '{varName}'", varId, varName);
@@ -1008,8 +1007,8 @@ namespace MSFSTouchPortalPlugin.Services
 
     bool RequestValueUpdateFromActionData(ActionData data)
     {
-      if (!data.TryGetValue("VarName", out var varName) || !TryGetSimVarIdFromActionData(varName, out string varId)) {
-        _logger.LogError("Could not find valid Variable ID in action data: {data}", ActionDataToKVPairString(data));
+      if (!data.TryGetValue("VarName", out var varName) || !data.TryGetValue("CatId", out var catName) || !TryGetSimVarIdFromActionData(varName, catName, out string varId)) {
+        _logger.LogError("Could not find valid Variable or Category ID in action data: {data}", ActionDataToKVPairString(data));
         return false;
       }
       if (_statesDictionary.TryGet(varId, out var simVar) is bool ret && ret)
@@ -1415,16 +1414,12 @@ namespace MSFSTouchPortalPlugin.Services
           return;
         }
       }
-      else if (!data.TryGetValue("FbCatId", out fbCatId) || !data.TryGetValue("FbVarName", out fbVarName)) {
+      else if (!data.TryGetValue("FbCatId", out fbCatId) || !data.TryGetValue("FbVarName", out fbVarName) || string.IsNullOrWhiteSpace(fbVarName) || fbVarName == "null") {
         _logger.LogDebug("Not tracking connector w/out feedback category or variable in connector ID '{cId}'", message.ConnectorId);
         return;
       }
 
-      if (!Categories.TryGetCategoryId(fbCatId, out Groups catId) || string.IsNullOrWhiteSpace(fbVarName) || fbVarName == "null") {
-        _logger.LogDebug("Could not parse feedback category or variable in connector ID '{cId}'", message.ConnectorId);
-        return;
-      }
-      if (!TryGetSimVarIdFromActionData(fbVarName, out var varName)) {
+      if (!TryGetSimVarIdFromActionData(fbVarName, fbCatId, out var varName)) {
         _logger.LogWarning("Could not parse feedback variable name for connector ID '{cId}'", message.ConnectorId);
         return;
       }
@@ -1441,8 +1436,8 @@ namespace MSFSTouchPortalPlugin.Services
           return;
         }
       }
-      _logger.LogDebug("Got ShortId {shortId} for ActualId {longId}: State ID {stateId} range {rngMin}-{rngMax} for connector ID '{cId}'", message.ShortId, message.ActualConnectorId, catId.ToString()+'.'+varName, rangeMin, rangeMax, message.ConnectorId);
-      _connectorTracker.SaveConnectorInstance(message, catId, varName, rangeMin, rangeMax);
+      _logger.LogDebug("Got ShortId {shortId} for ActualId {longId}: State ID {stateId} range {rngMin}-{rngMax} for connector ID '{cId}'", message.ShortId, message.ActualConnectorId, varName, rangeMin, rangeMax, message.ConnectorId);
+      _connectorTracker.SaveConnectorInstance(message, varName, rangeMin, rangeMax);
       //var trk = _connectorTracker.GetDataForEvent(message);
       //_logger.LogDebug("Connector: {trkConId} - {shortId} - {isDn} - {next} - {mapId}", trk.connectorId, trk.shortId, trk.isDown, trk.nextTimeout, trk.mappingId);
     }
@@ -1542,9 +1537,9 @@ namespace MSFSTouchPortalPlugin.Services
       return true;
     }
 
-    private static bool TryGetSimVarIdFromActionData(string varName, out string varId) {
-      if (varName[^1] == ']' && (varName.IndexOf('[') is var brIdx && ++brIdx > 0)) {
-        varId = varName[brIdx..^1];
+    private static bool TryGetSimVarIdFromActionData(string varName, string category, out string varId) {
+      if (varName[^1] == ']' && (varName.IndexOf('[') is var brIdx && brIdx > -1) && Categories.TryGetCategoryId(category, out Groups catId)) {
+        varId = catId.ToString() + '.' + varName[++brIdx..^1];
         return true;
       }
       varId = string.Empty;
