@@ -298,6 +298,7 @@ namespace MSFSTouchPortalPlugin.Services
       _wlib.OnListResults += WASMLib_OnListResults;
       _wlib.setLogLevel(GetWasimLogLevel(), LogFacility.Remote, LogSource.Client);
       _wlib.setLogLevel(WasimLogLevel.None, LogFacility.Console, LogSource.Client);
+      _wlib.setLogLevel(WasimLogLevel.Warning, LogFacility.Remote, LogSource.Server);
 
       // subscribe to ATC MODEL changes to get notified of possible changes to available L vars.
       _wlib.saveDataRequest(new DataRequest(0, CalcResultType.String, "(A:ATC MODEL,String)", 36, WasmUptPeriod.Millisecond, 30000, 0.0f));
