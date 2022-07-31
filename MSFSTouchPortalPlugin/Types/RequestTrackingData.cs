@@ -57,7 +57,7 @@ namespace MSFSTouchPortalPlugin.Types
       }
       var sb = new System.Text.StringBuilder(150);
       if (eException != SIMCONNECT_EXCEPTION.NONE)
-        sb.Append(eException.ToString()).Append(" for request: ");
+        sb.Append(eException.ToString()).AppendFormat(" for request {0}: ", dwSendId);
       sb.Append(sMethod).Append('(');
       for (int i = 0, e = aParamInfo.Length; i < e; ++i) {
         if (i > 0)
