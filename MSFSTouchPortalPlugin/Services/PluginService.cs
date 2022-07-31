@@ -777,6 +777,10 @@ namespace MSFSTouchPortalPlugin.Services
         case PluginActions.UpdateLocalVarsList:
           return _simConnectService.RequestLookupList(WASimCommander.CLI.Enums.LookupItemType.LocalVariable);
 
+        case PluginActions.ReRegisterLocalVars:
+          _simConnectService.RetryRegisterLocalVars();
+          break;
+
         case PluginActions.ActionRepeatIntervalInc:
         case PluginActions.ActionRepeatIntervalDec:
         case PluginActions.ActionRepeatIntervalSet: {

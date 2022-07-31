@@ -55,6 +55,7 @@ namespace MSFSTouchPortalPlugin.Enums
     ResendStates,
     UpdateHubHopPresets,
     UpdateLocalVarsList,
+    ReRegisterLocalVars,
 
     ActionRepeatIntervalInc,
     ActionRepeatIntervalDec,
