@@ -73,7 +73,7 @@ namespace MSFSTouchPortalPlugin.Types
     /// <summary> A string used to identify this var in TP selection lists. This could/should be populated by whatever is creating the SimVarItem instance </summary>
     public string TouchPortalSelector { get; set; }
     /// <summary> Tracks the origin of this item for later reference. </summary>
-    public DataSourceType DataSource { get; set; }
+    public SimVarDefinitionSource DefinitionSource { get; set; }
 
     /// <summary>
     /// SimConnect unit name. Changing this property will clear any current value!

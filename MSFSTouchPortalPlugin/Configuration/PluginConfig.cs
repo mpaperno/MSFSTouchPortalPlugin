@@ -217,7 +217,7 @@ namespace MSFSTouchPortalPlugin.Configuration
         SimVarName = varName,
         Unit = unit ?? "number",
         CanSet = canSet,
-        DataSource = DataSourceType.Dynamic
+        DefinitionSource = SimVarDefinitionSource.Dynamic
       };
       SetSimVarItemTpMetaData(simVar);
       return simVar;
@@ -347,7 +347,7 @@ namespace MSFSTouchPortalPlugin.Configuration
           continue;
         }
         simVar.Id = simVar.CategoryId.ToString() + '.' + item.Name;
-        simVar.DataSource = isUserConfig ? DataSourceType.UserFile : DataSourceType.DefaultFile;
+        simVar.DefinitionSource = isUserConfig ? SimVarDefinitionSource.UserFile : SimVarDefinitionSource.DefaultFile;
         SetSimVarItemTpMetaData(simVar);
         // check unique
         if (ret.FindIndex(s => s.Id == simVar.Id) is int idx && idx > -1) {

@@ -20,7 +20,7 @@ and is also available at <http://www.gnu.org/licenses/>.
 
 namespace MSFSTouchPortalPlugin.Enums
 {
-  public enum DataSourceType : short
+  public enum SimVarDefinitionSource : short
   {
     None = 0,
     DefaultFile,  // loaded from default file(s) from plugin distro
