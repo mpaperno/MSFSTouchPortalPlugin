@@ -29,6 +29,10 @@ using MSFSTouchPortalPlugin.Enums;
 
 namespace MSFSTouchPortalPlugin.Types
 {
+
+  internal delegate void SimVarAddedHandler(SimVarItem simVar);
+  internal delegate void SimVarRemovedHandler(SimVarItem simVar);
+
   /// <summary>
   /// Manages the main collection of SimVarItems for TP States and provides indexed lookup by several properties (Definition, Id, SimVarName)
   /// as well as maintaining some reference lists of settable and polled-update SimVars.
@@ -37,6 +41,9 @@ namespace MSFSTouchPortalPlugin.Types
   [DebuggerDisplay("Count = {Count}")]
   internal sealed class SimVarCollection : ICollection<SimVarItem>, ICollection, IDictionary<Definition, SimVarItem>, IReadOnlyDictionary<Definition, SimVarItem>
   {
+    internal event SimVarAddedHandler OnSimVarAdded;
+    internal event SimVarRemovedHandler OnSimVarRemoved;
+
     public bool IsEmpty => _idxByDef.IsEmpty;
     public int Count => _idxByDef.Count;
     public IEnumerable<Definition> Keys => ((IReadOnlyDictionary <Definition, SimVarItem>)_idxByDef).Keys;
@@ -147,20 +154,21 @@ namespace MSFSTouchPortalPlugin.Types
     public bool Contains(KeyValuePair<Definition, SimVarItem> pair) => ContainsKey(pair.Key);
 
     public void Add(SimVarItem item) {
-      if (item != null) {
-        _idxByDef[item.Def] = item;
-        _idxById[item.Id] = item;
-        _idxBySimName[item.SimVarName] = item;
-        if (!_idxByCategory.ContainsKey(item.CategoryId))
-          _idxByCategory.Add(item.CategoryId, new());
-        _idxByCategory[item.CategoryId].Add(item.Def);
-        if (item.CanSet)
-          _settableVars.Add(item);
-        if (item.NeedsScheduledRequest) {
-          lock (_polledUpdateVars)
-            _polledUpdateVars.Add(item);
-        }
+      if (item == null)
+        return;
+      _idxByDef[item.Def] = item;
+      _idxById[item.Id] = item;
+      _idxBySimName[item.SimVarName] = item;
+      if (!_idxByCategory.ContainsKey(item.CategoryId))
+        _idxByCategory.Add(item.CategoryId, new());
+      _idxByCategory[item.CategoryId].Add(item.Def);
+      if (item.CanSet)
+        _settableVars.Add(item);
+      if (item.NeedsScheduledRequest) {
+        lock (_polledUpdateVars)
+          _polledUpdateVars.Add(item);
       }
+      OnSimVarAdded?.Invoke(item);
     }
 
     // IDictionary
@@ -176,20 +184,20 @@ namespace MSFSTouchPortalPlugin.Types
     }
 
     public bool Remove(SimVarItem item) {
-      bool ret = false;
-      if (item != null) {
-        ret = _idxByDef.Remove(item.Def, out _);
-        _idxById.Remove(item.Id, out _);
-        _idxBySimName.Remove(item.SimVarName, out _);
-        if (_idxByCategory.ContainsKey(item.CategoryId))
-          _idxByCategory[item.CategoryId].Remove(item.Def);
-        if (item.CanSet)
-          _settableVars.Remove(item);
-        if (item.NeedsScheduledRequest) {
-          lock (_polledUpdateVars)
-            _polledUpdateVars.Remove(item);
-        }
+      if (item == null)
+        return false;
+      bool ret = _idxByDef.Remove(item.Def, out _);
+      _idxById.Remove(item.Id, out _);
+      _idxBySimName.Remove(item.SimVarName, out _);
+      if (_idxByCategory.ContainsKey(item.CategoryId))
+        _idxByCategory[item.CategoryId].Remove(item.Def);
+      if (item.CanSet)
+        _settableVars.Remove(item);
+      if (item.NeedsScheduledRequest) {
+        lock (_polledUpdateVars)
+          _polledUpdateVars.Remove(item);
       }
+      OnSimVarRemoved?.Invoke(item);
       return ret;
     }
 
@@ -244,6 +252,45 @@ namespace MSFSTouchPortalPlugin.Types
     public void CopyTo(KeyValuePair<Definition, SimVarItem>[] array, int arrayIndex) => ((ICollection)_idxByDef).CopyTo(array, arrayIndex);
     public void CopyTo(SimVarItem[] array, int arrayIndex) => _idxByDef.Values.CopyTo(array, arrayIndex);
     public void CopyTo(Array array, int index) => ((ICollection)_idxByDef.Values).CopyTo(array, index);
+
+
+#if false
+    // Updating variable requests is currently more hassle than it seems to be worth, and is easy to get SimConnect to crash the whole sim.
+    // Maybe revisit this some day.
+    public bool AddOrUpdate(SimVarItem item)
+    {
+      if (item == null)
+        return false;
+      if (TryGet(item.Id, out var oldVar)) {
+        Update(item, oldVar);
+        return true;
+      }
+      Add(item);
+      return false;
+    }
+
+    public void Update(SimVarItem newItem, SimVarItem oldItem)
+    {
+      if (newItem == null || oldItem == null)
+        return;
+      newItem.Def = oldItem.Def;  // keep the old definition ID
+      newItem.DataProvider = oldItem.DataProvider;  // this lets SimConnectService know that the request is an update to an existing one
+      newItem.RegistrationStatus = oldItem.RegistrationStatus;  // also keep the previous registration status to know if old version needs removal from provider.
+      // check if category has changed
+      if (newItem.CategoryId != oldItem.CategoryId && _idxByCategory.ContainsKey(oldItem.CategoryId))
+        _idxByCategory[oldItem.CategoryId].Remove(oldItem.Def);
+      // check if settable flag has changed
+      if (oldItem.CanSet && !newItem.CanSet)
+        _settableVars.Remove(oldItem);
+      // removed from polled vars list if no longer required
+      if (oldItem.NeedsScheduledRequest && !newItem.NeedsScheduledRequest) {
+        lock (_polledUpdateVars)
+          _polledUpdateVars.Remove(oldItem);
+      }
+      Add(newItem);
+    }
+#endif
+
   }
 
 }

@@ -34,6 +34,16 @@ namespace MSFSTouchPortalPlugin.Types
     None = 0
   }
 
+  public enum SimVarDataProvider : byte
+  {
+    None, SimConnect, WASimClient
+  };
+
+  public enum SimVarRegistrationStatus : byte
+  {
+    Unregistered, Registered, Error
+  };
+
   /// <summary>
   /// The SimVarItem which defines all data variables for SimConnect
   /// </summary>
@@ -74,6 +84,10 @@ namespace MSFSTouchPortalPlugin.Types
     public string TouchPortalSelector { get; set; }
     /// <summary> Tracks the origin of this item for later reference. </summary>
     public SimVarDefinitionSource DefinitionSource { get; set; }
+    /// <summary> Tracks the source of the value data for this variable request. </summary>
+    public SimVarDataProvider DataProvider { get; set; } = SimVarDataProvider.None;
+    /// <summary> Status of this request registration with the data provider. </summary>
+    public SimVarRegistrationStatus RegistrationStatus { get; set; } = SimVarRegistrationStatus.Unregistered;
 
     /// <summary>
     /// SimConnect unit name. Changing this property will clear any current value!
@@ -230,7 +244,7 @@ namespace MSFSTouchPortalPlugin.Types
     /// <summary> The SimConnect data type for registering this var. </summary>
     public SIMCONNECT_DATATYPE SimConnectDataType { get; private set; }
     /// <summary> Indicates that this state needs a scheduled update request (UpdatePeriod == Millisecond). </summary>
-    public bool NeedsScheduledRequest => UpdatePeriod == UpdatePeriod.Millisecond && VariableType == 'A';
+    public bool NeedsScheduledRequest => DataProvider != SimVarDataProvider.WASimClient && UpdatePeriod == UpdatePeriod.Millisecond && VariableType == 'A';
     /// <summary> For serializing the "raw" formatting string w/out "{0}" parts </summary>
     public string FormattingString => _formatString;
 

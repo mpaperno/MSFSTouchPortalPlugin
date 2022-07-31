@@ -56,18 +56,16 @@ namespace MSFSTouchPortalPlugin.Interfaces
     bool MapClientEventToSimEvent(Enum eventId, string eventName, Groups group);
     bool TransmitClientEvent(Groups group, Enum eventId, uint data);
     void SetNotificationGroupPriorities();
-    void ClearAllDataDefinitions();
-    bool RegisterToSimConnect(SimVarItem simVar);
     bool RequestDataOnSimObject(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER);
     bool RequestDataOnSimObjectType(SimVarItem simVar, SIMCONNECT_SIMOBJECT_TYPE objectType = SIMCONNECT_SIMOBJECT_TYPE.USER);
     bool SetDataOnSimObject(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER);
     bool ReleaseAIControl(Definition def, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER);
-    bool ClearDataDefinition(Definition def);
     bool SubscribeToSystemEvent(Enum eventId, string eventName);
     void UpdateWasmClientId(byte highByte);
     bool ExecuteCalculatorCode(string code);
     bool SetVariable(char varType, string varName, double value, string unit = "", bool createLocal = false);
     bool RequestLookupList(Enum listType);
     bool RequestVariableValueUpdate(SimVarItem simVar);
+    void RetryRegisterLocalVars();
   }
 }

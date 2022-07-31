@@ -58,6 +58,7 @@ namespace MSFSTouchPortalPlugin.Services
     private readonly ISimConnectService _simConnectService;
     private readonly IReflectionService _reflectionService;
     private readonly PluginConfig _pluginConfig;
+    private readonly SimVarCollection _simVarCollection;
     private readonly HubHopPresetsCollection _presets = new();
     private readonly ConnectorTracker _connectorTracker = new();
 
@@ -72,7 +73,6 @@ namespace MSFSTouchPortalPlugin.Services
     private Dictionary<string, ActionEventType> actionsDictionary = new();
     private Dictionary<string, PluginSetting> pluginSettingsDictionary = new();
     private IReadOnlyDictionary<int, string> _localVariablesList = null;
-    private readonly SimVarCollection _statesDictionary = new();
     private readonly ConcurrentDictionary<string, Timer> _repeatingActionTimers = new();  // storage for temporary repeating (held) action timers, index by action ID
     private readonly ConcurrentQueue<string> _logMessages = new();  // stores the last MAX_LOG_MSGS_FOR_STATE log messages for the LogMessages state value, used in PluginLogger callback
 
@@ -83,7 +83,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     public PluginService(IHostApplicationLifetime hostApplicationLifetime, ILogger<PluginService> logger,
       ITouchPortalClientFactory clientFactory, ISimConnectService simConnectService, IReflectionService reflectionService,
-      PluginConfig pluginConfig)
+      PluginConfig pluginConfig, SimVarCollection simVarCollection)
     {
       _hostApplicationLifetime = hostApplicationLifetime ?? throw new ArgumentNullException(nameof(hostApplicationLifetime));
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -92,6 +92,7 @@ namespace MSFSTouchPortalPlugin.Services
 
       _client = clientFactory?.Create(this) ?? throw new ArgumentNullException(nameof(clientFactory));
       _pluginConfig = pluginConfig ?? throw new ArgumentNullException(nameof(pluginConfig));
+      _simVarCollection = simVarCollection ?? throw new ArgumentNullException(nameof(simVarCollection));
 
       Configuration.HubHop.Common.Logger = _logger;
       _presets.OnDataUpdateEvent += HubHop_OnDataUpdate;
@@ -237,7 +238,8 @@ namespace MSFSTouchPortalPlugin.Services
           IReadOnlyCollection<Timer> timers = _repeatingActionTimers.Values.ToArray();
           foreach (Timer tim in timers)
             tim.Tick();
-          CheckPendingRequests();
+          if (_simConnectService.WasmStatus < WasmModuleStatus.Found)
+            CheckPendingRequests();
           await Task.Delay(25, _simTasksCancelToken);
         }
       }
@@ -251,10 +253,10 @@ namespace MSFSTouchPortalPlugin.Services
 
     // runs in PluginEventsTask
     private void CheckPendingRequests() {
-      var vars = _statesDictionary.PolledUpdateVars;
+      var vars = _simVarCollection.PolledUpdateVars;
       foreach (var simVar in vars) {
         // Check if a value update is required based on the SimVar's internal tracking mechanism.
-        if (simVar.UpdateRequired) {
+        if (simVar.DataProvider == SimVarDataProvider.SimConnect && simVar.UpdateRequired) {
           simVar.SetPending(true);
           _simConnectService.RequestDataOnSimObjectType(simVar);
         }
@@ -264,11 +266,13 @@ namespace MSFSTouchPortalPlugin.Services
     // PluginLogger callback
     private void OnPluginLoggerMessage(string message, LogLevel logLevel = LogLevel.Information, EventId eventId = default) {
       //_logger.LogDebug($"Got message from our logger! {logLevel}: {message}");
+      var evId = (EventIds)eventId.Id;
+      if (evId == EventIds.Ignore)
+        return;
       while (_logMessages.Count >= MAX_LOG_MSGS_FOR_STATE)
         _logMessages.TryDequeue(out _);
       _logMessages.Enqueue(message);
       if (_client.IsConnected) {
-        var evId = (EventIds)eventId.Id;
         if (evId == EventIds.None && logLevel > LogLevel.Information)
           evId = EventIds.PluginError;
         if (evId != EventIds.None)
@@ -309,9 +313,6 @@ namespace MSFSTouchPortalPlugin.Services
       // must be called after adding notifications
       _simConnectService.SetNotificationGroupPriorities();
 
-      // Register SimVars for States
-      RegisterAllSimVars();
-
       // Request system events
       for (EventIds eventId = EventIds.SimEventNone + 1; eventId < EventIds.SimEventLast; ++eventId)
         _simConnectService.SubscribeToSystemEvent(eventId, eventId.ToString());
@@ -323,22 +324,25 @@ namespace MSFSTouchPortalPlugin.Services
       UpdateSimConnectState();
     }
 
-    private void SimConnectEvent_OnDataUpdateEvent(Definition def, Definition _ /*dwRequestID*/, object data) {
+    private void SimConnectEvent_OnDataUpdateEvent(Definition def, Definition _ /*dwRequestID*/, object data)
+    {
       // Lookup State Mapping.
-      if (!_statesDictionary.TryGet(def, out SimVarItem simVar))
+      if (!_simVarCollection.TryGet(def, out SimVarItem simVar))
         return;
 
       // Update SimVarItem value and TP state on changes.
       // Sim vars sent on a standard SimConnect request period will only be sent when changed by > simVar.DeltaEpsilon anyway, so skip the equality check.
-      // SimVarItem.SetValue() takes care of setting the correct value type, any unit conversions needed, and resets any expiry timers. Returns false if value is of the wrong type.
-      if ((!simVar.NeedsScheduledRequest || !simVar.ValueEquals(data)) && simVar.SetValue(data)) {
+      if (simVar.NeedsScheduledRequest) {
+        simVar.SetPending(false);
+        if (simVar.ValueEquals(data))
+          return;
+      }
+      // SimVarItem.SetValue() takes care of setting the correct value type and resets any expiry timers. Returns false if value is of the wrong type.
+      if (simVar.SetValue(data)) {
         _client.StateUpdate(simVar.TouchPortalStateId, simVar.FormattedValue);
         // Check for any Connectors (sliders) which use this state as feedback mechanism.
         if (!simVar.IsStringType)
           UpdateRelatedConnectors(simVar.Id, (double)simVar);
-      }
-      else {
-        simVar.SetPending(false);
       }
     }
 
@@ -387,7 +391,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     // This is done once after TP connects or upon the "Reload States" action.
     // It is safe to be called multiple times if config files need to be reloaded. SimConnect does not have to be connected.
-    private void SetupSimVars()
+    void SetupSimVars()
     {
       // Load the vars.  PluginConfig tracks which files should be loaded, defaults or custom.
       IReadOnlyCollection<SimVarItem> simVars = _pluginConfig.LoadSimVarStateConfigs();
@@ -406,44 +410,37 @@ namespace MSFSTouchPortalPlugin.Services
       UpdateSimVarLists();
     }
 
-    private void RegisterAllSimVars() {
-      if (_simConnectService.IsConnected)
-        foreach (SimVarItem simVar in _statesDictionary)
-          _simConnectService.RegisterToSimConnect(simVar);
-    }
-
     // Returns: 0 = failed; 1 = added; 2 = replaced
-    private byte AddSimVar(SimVarItem simVar, bool postponeUpdate = false)
+    byte AddSimVar(SimVarItem simVar, bool postponeUpdate = false)
     {
       if (simVar == null)
         return 0;
 
       byte ret = 1;
-      if (_statesDictionary.TryGet(simVar.Id, out var old)) {
+      if (_simVarCollection.TryGet(simVar.Id, out var old)) {
         RemoveSimVar(old, true);
         ret = 2;
       }
 
-      // Register it. If the SimVar gets regular updates (not custom polling) then this also starts the data requests for this value.
-      // If we're not connected now then the var will be registered in RegisterAllSimVars() when we do connect.
-      if (_simConnectService.IsConnected && !_simConnectService.RegisterToSimConnect(simVar))
-        return 0;
-
-      _statesDictionary.Add(simVar.Def, simVar);
-
-      // Create a dynamic state
+      // Create a dynamic state first in case any data updates arrive right away.
       _client.CreateState(simVar.TouchPortalStateId, Categories.PrependFullCategoryName(simVar.CategoryId, simVar.Name), simVar.DefaultValue, Categories.FullCategoryName(simVar.CategoryId));
+      // This will trigger registration with SimConnectService, either immediate or when we next connect to the sim.
+      _simVarCollection.Add(simVar);
 
-      if (!postponeUpdate)
+      if (simVar.RegistrationStatus == SimVarRegistrationStatus.Error)
+        ret = 0;
+      else if (!postponeUpdate)
         UpdateSimVarLists();
+
       _logger.LogTrace("{action} Request: {simVar}", (ret == 1 ? "Added" : "Replaced"), simVar.ToDebugString());
       return ret;
     }
 
-    private bool RemoveSimVar(SimVarItem simVar, bool postponeUpdate = false) {
-      if (simVar == null || !_statesDictionary.Remove(simVar.Id))
+    bool RemoveSimVar(SimVarItem simVar, bool postponeUpdate = false)
+    {
+      if (simVar == null || !_simVarCollection.Remove(simVar.Id))
         return false;
-      _simConnectService.ClearDataDefinition(simVar.Def);
+
       _client.RemoveState(simVar.TouchPortalStateId);
       if (!postponeUpdate)
         UpdateSimVarLists();
@@ -452,34 +449,41 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     // Removes all, or just custom-added, variable definitions
-    private void RemoveSimVars(bool customOnly)
+    void RemoveSimVars(bool customOnly)
     {
-      var list = customOnly ? _statesDictionary.CustomVariables : _statesDictionary.Values.ToArray();
+      var list = customOnly ? _simVarCollection.CustomVariables : _simVarCollection.Values.ToArray();
       foreach (SimVarItem simVar in list)
         RemoveSimVar(simVar, true);
       UpdateSimVarLists();
       _logger.LogInformation((int)EventIds.PluginInfo, "Removed {count}{type} variable requests.", list.Count(), (customOnly ? " Custom" : ""));
     }
 
-    private void LoadCustomSimVarsFromFile(string filepath) {
+    void LoadCustomSimVarsFromFile(string filepath)
+    {
       var simVars = _pluginConfig.LoadSimVarItems(true, filepath);
+      int count = 0;
       if (simVars.Any()) {
-        foreach (var simVar in simVars)
-          AddSimVar(simVar, postponeUpdate: true);
+        foreach (var simVar in simVars) {
+          byte res = AddSimVar(simVar, postponeUpdate: true);
+          count += res == 2 ? 1 : res;
+        }
         UpdateSimVarLists();
-        _logger.LogInformation((int)EventIds.PluginInfo, "Loaded {count} variable requests from file '{file}'", simVars.Count, filepath);
       }
-      else {
-        _logger.LogWarning("Did not load any SimVar States from file '{file}'", filepath);
-      }
+      if (count == 0)
+        _logger.LogError("Did not load any variable requests from file '{file}'", filepath);
+      else if (count != simVars.Count)
+        _logger.LogWarning((int)EventIds.PluginError, "Loaded only {count} out of {fileCount} variable requests from file '{file}'", count, simVars.Count, filepath);
+      else
+        _logger.LogInformation((int)EventIds.PluginInfo, "Loaded all {count} variable requests from file '{file}'", count, filepath);
     }
 
-    private void SaveSimVarsToFile(string filepath, bool customOnly = true) {
-      int count = 0;
+    void SaveSimVarsToFile(string filepath, bool customOnly = true)
+    {
+      int count;
       if (customOnly)
-        count = _pluginConfig.SaveSimVarItems(_statesDictionary.CustomVariables, true, filepath);
+        count = _pluginConfig.SaveSimVarItems(_simVarCollection.CustomVariables, true, filepath);
       else
-        count = _pluginConfig.SaveSimVarItems(_statesDictionary, true, filepath);
+        count = _pluginConfig.SaveSimVarItems(_simVarCollection, true, filepath);
       if (count > 0)
         _logger.LogInformation((int)EventIds.PluginInfo, "Saved {count}{type} variable requests to file '{filepath}'", count, (customOnly ? " Custom" : ""), filepath);
       else
@@ -492,7 +496,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     void SendAllSimVarStates()
     {
-      foreach (SimVarItem simVar in _statesDictionary)
+      foreach (SimVarItem simVar in _simVarCollection)
         _client.StateUpdate(simVar.TouchPortalStateId, simVar.FormattedValue);
     }
 
@@ -556,7 +560,7 @@ namespace MSFSTouchPortalPlugin.Services
     // List of all current variables per category
     private void UpdateVariablesListPerCategory(Groups categoryId, string actId, string category, string instanceId, bool isConnector) {
       if (Categories.TryGetCategoryId(category, out Groups catId))
-        UpdateActionDataList(categoryId, actId, isConnector ? "FbVarName" : "VarName", _statesDictionary.GetSimVarSelectorList(catId), instanceId, isConnector);
+        UpdateActionDataList(categoryId, actId, isConnector ? "FbVarName" : "VarName", _simVarCollection.GetSimVarSelectorList(catId), instanceId, isConnector);
     }
 
     // List of Local vars per action instance
@@ -574,7 +578,7 @@ namespace MSFSTouchPortalPlugin.Services
     {
       if (!Categories.TryGetCategoryId(categoryName, out Groups catId))
         return;
-      IEnumerable<string> list = _statesDictionary.GetSimVarSelectorList(catId, settable: true);
+      IEnumerable<string> list = _simVarCollection.GetSimVarSelectorList(catId, settable: true);
       if (!list.Any())
         list = new [] {"[no settable variables in this category]"};
       UpdateActionDataList(PluginActions.SetSimVar, "VarName", list, instanceId, isConnector);
@@ -590,10 +594,10 @@ namespace MSFSTouchPortalPlugin.Services
       }
       // select variable names in category and mark if already used
       if (_pluginConfig.TryGetImportedSimVarsForCateogy(categoryName, out var vars)) {
-        //var list = vars.Select(v => (_statesDictionary.GetBySimName(v.SimVarName) == null ? "" : "* ") + v.TouchPortalSelectorName);
+        //var list = vars.Select(v => (_simVarCollection.GetBySimName(v.SimVarName) == null ? "" : "* ") + v.TouchPortalSelectorName);
         List<string> list = new(vars.Count());
         foreach (var v in vars) {
-          string pfx = _statesDictionary.GetBySimName(v.SimVarName) == null ? string.Empty : "* ";
+          string pfx = _simVarCollection.GetBySimName(v.SimVarName) == null ? string.Empty : "* ";
           list.Add(pfx + v.TouchPortalSelectorName);
         }
         UpdateActionDataList(PluginActions.AddKnownSimVar, "VarName", list, instanceId);
@@ -779,7 +783,7 @@ namespace MSFSTouchPortalPlugin.Services
           double value;
           if (connValue < 0) {
             string errMsg = null;
-            // preserve backwards compatibility with old actions which used indexed data IDs
+            // preserve backwards compatibility with oldVar actions which used indexed data IDs
             if (data == null || !(data.TryGetValue("Value", out var sVal) || data.TryGetValue("1", out sVal)) || !TryEvaluateValue(sVal, out value, out errMsg)) {
               if (string.IsNullOrEmpty(errMsg))
                   errMsg = "Required parameter 'Value' missing or invalid.";
@@ -830,7 +834,7 @@ namespace MSFSTouchPortalPlugin.Services
         return false;
       }
 
-      if (!_statesDictionary.TryGet(varId, out SimVarItem simVar)) {
+      if (!_simVarCollection.TryGet(varId, out SimVarItem simVar)) {
         _logger.LogError("Could not find definition for settable SimVar Id: '{varId}' Name: '{varName}'", varId, varName);
         return false;
       }
@@ -936,7 +940,7 @@ namespace MSFSTouchPortalPlugin.Services
       uint index = 0;
       char varType = 'A';
       string sCalcCode = null;
-      WASimCommander.CLI.Enums.CalcResultType resType = WASimCommander.CLI.Enums.CalcResultType.None;
+      var resType = WASimCommander.CLI.Enums.CalcResultType.None;
       if (actId == PluginActions.AddKnownSimVar) {
         if (data.TryGetValue("SimCatName", out var simCatName) && simCatName.Length > 1 && simCatName[0..2] == "L:")
           varType = 'L';
@@ -964,7 +968,7 @@ namespace MSFSTouchPortalPlugin.Services
         index = 0;
 
       // create the SimVarItem from collected data
-      SimVarItem simVar = _pluginConfig.CreateDynamicSimVarItem(varType, varName, catId, sUnit, index, _statesDictionary);
+      SimVarItem simVar = _pluginConfig.CreateDynamicSimVarItem(varType, varName, catId, sUnit, index, _simVarCollection);
       // check for optional properties
       if (data.TryGetValue("Format", out var sFormat))
         simVar.StringFormat = sFormat.Trim();
@@ -988,7 +992,7 @@ namespace MSFSTouchPortalPlugin.Services
       if (AddSimVar(simVar, postponeUpdate: false) is byte ret && ret > 0)
         _logger.LogInformation((int)EventIds.PluginInfo, "{action} Variable Request: {simVar}", (ret == 1 ? "Added" : "Replaced"), simVar.ToDebugString());
       else
-        _logger.LogError("Failed to add Value Request from action data, check previous log messages. Data: {data}", ActionDataToKVPairString(data));
+        _logger.LogError("Failed to add Variable Request, check previous log messages.\n\tAction data: {data};\n\tVariable Request: {simVar}", ActionDataToKVPairString(data), simVar.ToDebugString());
       return ret > 0;
     }
 
@@ -998,7 +1002,7 @@ namespace MSFSTouchPortalPlugin.Services
         _logger.LogError("Could not find valid Variable or Category ID in action data: {data}", ActionDataToKVPairString(data));
         return false;
       }
-      if ((_statesDictionary.TryGet(varId, out var simVar) && RemoveSimVar(simVar)) is bool ret && ret)
+      if ((_simVarCollection.TryGet(varId, out var simVar) && RemoveSimVar(simVar)) is bool ret && ret)
         _logger.LogInformation((int)EventIds.PluginInfo, "Removed SimVar '{simVar}'", simVar.SimVarName);
       else
         _logger.LogError("Could not find definition for settable SimVar Id: '{varId}' from Name: '{varName}'", varId, varName);
@@ -1011,7 +1015,7 @@ namespace MSFSTouchPortalPlugin.Services
         _logger.LogError("Could not find valid Variable or Category ID in action data: {data}", ActionDataToKVPairString(data));
         return false;
       }
-      if (_statesDictionary.TryGet(varId, out var simVar) is bool ret && ret)
+      if (_simVarCollection.TryGet(varId, out var simVar) is bool ret && ret)
         _simConnectService.RequestVariableValueUpdate(simVar);
       else
         _logger.LogWarning("Variable with ID '{varId}' not found.", varId);
@@ -1303,7 +1307,7 @@ namespace MSFSTouchPortalPlugin.Services
       _pluginConfig.UserStateFiles = Settings.UserStateFiles.StringValue;         // will (re-)set to default if needed.
       // compare with actual current config values (not Settings) because they may not have changed even if settings string did
       // states dict will be empty on initial startup
-      if (_statesDictionary.IsEmpty || p[0] != _pluginConfig.UserConfigFolder || p[1] != _pluginConfig.UserStateFiles)
+      if (_simVarCollection.IsEmpty || p[0] != _pluginConfig.UserConfigFolder || p[1] != _pluginConfig.UserStateFiles)
         SetupSimVars();
     }
 

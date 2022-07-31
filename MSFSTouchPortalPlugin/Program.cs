@@ -26,6 +26,7 @@ using Microsoft.Extensions.Logging;
 using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Services;
+using MSFSTouchPortalPlugin.Types;
 using Serilog;
 using System;
 using System.IO;
@@ -71,7 +72,8 @@ namespace MSFSTouchPortalPlugin {
               .AddProvider(PluginLoggerProvider.Instance)
               // Do not change these filters w/out a good reason!
               .AddFilter<PluginLoggerProvider>("", LogLevel.None)
-              .AddFilter<PluginLoggerProvider>("MSFSTouchPortalPlugin.Services.PluginService", LogLevel.Information);
+              .AddFilter<PluginLoggerProvider>("MSFSTouchPortalPlugin.Services.PluginService", LogLevel.Information)
+              .AddFilter<PluginLoggerProvider>("MSFSTouchPortalPlugin.Services.SimConnectService", LogLevel.Warning);
           })
           .ConfigureServices((context, services) => {
             services
@@ -80,6 +82,7 @@ namespace MSFSTouchPortalPlugin {
               .AddSingleton<ISimConnectService, SimConnectService>()
               .AddSingleton<IReflectionService, ReflectionService>()
               .AddSingleton(typeof(PluginConfig))
+              .AddSingleton(typeof(SimVarCollection))
               .AddTouchPortalSdk(configurationRoot);
           })
           .RunConsoleAsync();
