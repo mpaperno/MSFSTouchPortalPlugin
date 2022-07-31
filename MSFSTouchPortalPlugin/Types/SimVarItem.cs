@@ -49,7 +49,7 @@ namespace MSFSTouchPortalPlugin.Types
   /// </summary>
   public class SimVarItem : System.IComparable<SimVarItem>, System.IComparable
   {
-    public const double DELTA_EPSILON_DEFAULT = 0.009;
+    public const double DELTA_EPSILON_DEFAULT = 0.0;
 
     /// <summary> Unique ID string, used to generate TouchPortal state ID (and possibly other uses). </summary>
     public string Id { get; set; }
