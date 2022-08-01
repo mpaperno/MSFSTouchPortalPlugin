@@ -205,9 +205,6 @@ namespace MSFSTouchPortalPlugin.Configuration
         if (varType != 'Q')
           name = existingVar.Name;
       }
-      else {
-        varId = catId.ToString() + '.' + varId;
-      }
 
       SimVarItem simVar = new SimVarItem() {
         Id = varId,
@@ -223,10 +220,10 @@ namespace MSFSTouchPortalPlugin.Configuration
       return simVar;
     }
 
-    static void SetSimVarItemTpMetaData(SimVarItem simVar) {
-      string id = simVar.Id.Split('.').Last();
-      simVar.TouchPortalStateId = $"{RootName}.{simVar.CategoryId}.State.{id}";
-      simVar.TouchPortalSelector = $"{simVar.Name} ({simVar.Unit}) [{id}]";
+    static void SetSimVarItemTpMetaData(SimVarItem simVar)
+    {
+      simVar.TouchPortalStateId = $"{RootName}.{simVar.CategoryId}.State.{simVar.Id}";
+      simVar.TouchPortalSelector = $"{simVar.Name} ({simVar.Unit}) [{simVar.Id}]";
     }
 
 
@@ -346,7 +343,7 @@ namespace MSFSTouchPortalPlugin.Configuration
           _logger.LogError("Produced SimVar is null from section '{item}':", item);
           continue;
         }
-        simVar.Id = simVar.CategoryId.ToString() + '.' + item.Name;
+        simVar.Id = item.Name;
         simVar.DefinitionSource = isUserConfig ? SimVarDefinitionSource.UserFile : SimVarDefinitionSource.DefaultFile;
         SetSimVarItemTpMetaData(simVar);
         // check unique
@@ -393,7 +390,7 @@ namespace MSFSTouchPortalPlugin.Configuration
         if (item == null)
           continue;
         try {
-          var sect = cfg.Add(item.Id.Split('.').Last());
+          var sect = cfg.Add(item.Id);
           if (item.CategoryId != lastCatId) {
             sect.PreComment = " Category: " + item.CategoryId.ToString() + "     " + new string('#', 30) + '\n';
             lastCatId = item.CategoryId;

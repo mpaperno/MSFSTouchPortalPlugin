@@ -807,7 +807,7 @@ namespace MSFSTouchPortalPlugin.Services
           if (value != Settings.ActionRepeatInterval.RealValue) {
             Settings.ActionRepeatInterval.Value = (uint)value;
             _client.StateUpdate(Settings.ActionRepeatInterval.TouchPortalStateId, Settings.ActionRepeatInterval.StringValue);
-            UpdateRelatedConnectors("Plugin.ActionRepeatInterval", value);
+            UpdateRelatedConnectors("ActionRepeatInterval", value);
           }
           break;
         }
@@ -818,8 +818,8 @@ namespace MSFSTouchPortalPlugin.Services
     // Parse and process PluginActions.SetSimVar action or connector
     bool SetSimVarValueFromActionData(ActionData data, int connValue = -1)
     {
-      if (!data.TryGetValue("VarName", out var varName) || !data.TryGetValue("CatId", out var catName) || !TryGetSimVarIdFromActionData(varName, catName, out string varId)) {
-        _logger.LogError("Could not parse Variable Name or Category parameters for Set SimVar from data: {data}", ActionDataToKVPairString(data));
+      if (!data.TryGetValue("VarName", out var varName) || !TryGetSimVarIdFromActionData(varName, out string varId)) {
+        _logger.LogError("Could not parse Variable Name parameter for Set SimVar from data: {data}", ActionDataToKVPairString(data));
         return false;
       }
 
@@ -1002,8 +1002,8 @@ namespace MSFSTouchPortalPlugin.Services
 
     bool RemoveSimVarByActionDataName(ActionData data)
     {
-      if (!data.TryGetValue("VarName", out var varName) || !data.TryGetValue("CatId", out var catName) || !TryGetSimVarIdFromActionData(varName, catName, out string varId)) {
-        _logger.LogError("Could not find valid Variable or Category ID in action data: {data}", ActionDataToKVPairString(data));
+      if (!data.TryGetValue("VarName", out var varName) || !TryGetSimVarIdFromActionData(varName, out string varId)) {
+        _logger.LogError("Could not find valid Variable ID in action data: {data}", ActionDataToKVPairString(data));
         return false;
       }
       if ((_simVarCollection.TryGet(varId, out var simVar) && RemoveSimVar(simVar)) is bool ret && ret)
@@ -1015,8 +1015,8 @@ namespace MSFSTouchPortalPlugin.Services
 
     bool RequestValueUpdateFromActionData(ActionData data)
     {
-      if (!data.TryGetValue("VarName", out var varName) || !data.TryGetValue("CatId", out var catName) || !TryGetSimVarIdFromActionData(varName, catName, out string varId)) {
-        _logger.LogError("Could not find valid Variable or Category ID in action data: {data}", ActionDataToKVPairString(data));
+      if (!data.TryGetValue("VarName", out var varName) || !TryGetSimVarIdFromActionData(varName, out string varId)) {
+        _logger.LogError("Could not find valid Variable ID in action data: {data}", ActionDataToKVPairString(data));
         return false;
       }
       if (_simVarCollection.TryGet(varId, out var simVar) is bool ret && ret)
@@ -1413,21 +1413,20 @@ namespace MSFSTouchPortalPlugin.Services
         actionId = PluginActions.None;
 
       var data = message.Data;
-      string fbCatId;
       string fbVarName;
       // The SetSimVar connector is special because we can get the feedback variable name from the one being set.
       if (actionId == PluginActions.SetSimVar) {
-        if (!data.TryGetValue("CatId", out fbCatId) || !data.TryGetValue("VarName", out fbVarName)) {
-          _logger.LogWarning("Could not find Category ID or Variable Name for Set Sim Var in connector ID '{cId}'", message.ConnectorId);
+        if (!data.TryGetValue("VarName", out fbVarName)) {
+          _logger.LogWarning("Could not find Variable Name for Set Sim Var in connector ID '{cId}'", message.ConnectorId);
           return;
         }
       }
-      else if (!data.TryGetValue("FbCatId", out fbCatId) || !data.TryGetValue("FbVarName", out fbVarName) || string.IsNullOrWhiteSpace(fbVarName) || fbVarName == "null") {
-        _logger.LogDebug("Not tracking connector w/out feedback category or variable in connector ID '{cId}'", message.ConnectorId);
+      else if (!data.TryGetValue("FbVarName", out fbVarName) || string.IsNullOrWhiteSpace(fbVarName) || fbVarName == "null") {
+        _logger.LogDebug("Not tracking connector w/out feedback variable in connector ID '{cId}'", message.ConnectorId);
         return;
       }
 
-      if (!TryGetSimVarIdFromActionData(fbVarName, fbCatId, out var varName)) {
+      if (!TryGetSimVarIdFromActionData(fbVarName, out var varName)) {
         _logger.LogWarning("Could not parse feedback variable name for connector ID '{cId}'", message.ConnectorId);
         return;
       }
@@ -1545,9 +1544,9 @@ namespace MSFSTouchPortalPlugin.Services
       return true;
     }
 
-    private static bool TryGetSimVarIdFromActionData(string varName, string category, out string varId) {
-      if (varName[^1] == ']' && (varName.IndexOf('[') is var brIdx && brIdx > -1) && Categories.TryGetCategoryId(category, out Groups catId)) {
-        varId = catId.ToString() + '.' + varName[++brIdx..^1];
+    private static bool TryGetSimVarIdFromActionData(string varName, out string varId) {
+      if (varName[^1] == ']' && (varName.IndexOf('[') is var brIdx && brIdx > -1)) {
+        varId = varName[++brIdx..^1];
         return true;
       }
       varId = string.Empty;
