@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>MSFSTouchPortalPlugin</RootNamespace>
-    <Version>1.1.0.3-rc1</Version>
+    <Version>1.1.0.3-beta3</Version>
     <FileVersion>1.1.0.3</FileVersion>
     <Platforms>x64</Platforms>
     <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath>
@@ -102,7 +102,7 @@
       <Private>true</Private>
       <EmbedInteropTypes>false</EmbedInteropTypes>
     </Reference>
-    <!--<PackageReference Include="TouchPortal-CS-API" Version="1.44.2" />-->
+    <!--<PackageReference Include="TouchPortal-CS-API" Version="1.45.1" />-->
   </ItemGroup>
 
   <!-- Custom SharpConfig lib -->
