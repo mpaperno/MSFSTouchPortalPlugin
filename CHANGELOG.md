@@ -1,10 +1,27 @@
-# MSFS Touch Portal Plugin
+# MSFS Touch Portal Plugin Change Log
 
-## 1.1.0.3 (next)
-* Enable WASimModule integration from multiple simultaneous plugin instances (when using multiple Touch Portal servers/devices).
+## 1.1.0.3 (Aug-2-2022)
+* Enabled WASimModule integration from multiple simultaneous plugin instances (when using multiple Touch Portal servers/devices).
+* Improved several aspects of custom variable requests for stability and usability, such as utilizing WASM integration when available, and more informative logging.
+* Improved aspects of triggering Simulator Events, including utilizing WASM module integration when available, for greater efficiency.
+* Added automatic retry of failed Local ('L') variable requests when airplane model changes or a new flight is loaded.
+* Added new action to re-submit requests for Local variables which could not be registered the first time (because they didn't exist yet).
+* Added new action to clear all/custom variable data requests.
+* Added new action to re-send all current State values.
+* Added more COM/NAV options to current "Radio Interaction" action (COM3/NAV3-4/Volume/etc) and added new "Radio Values Set" action/connector.
+* Fixed possible Simulator crash due to SimConnect exception when removing variable requests (or updating existing ones which first removed the old versions).
+* Fixed: SimVar ('A') requests with Update Period type of Millisecond were not updating. (Thanks to @ _schroewo_ on TP's Discord for reports.)
+* Fixed: Writing State/variable configuration files didn't properly save the Update Period and Delta Epsilon properties (if the latter was zero).
+* Fixed sorting of variables by category in saved state configuration files.
+* Changed default variable request Delta Epsilon property value to `0.0`.
+* Changed the data field in "Load Variable Definitions From File" action to plain text entry instead of a file selector control.
+* Changed the slider/connector min/max range data entry fields from numeric to more permissive text types.
+* Improved detection of duplicate/replacement variable requests (new requests for existing variables).
+* Renamed the simulator connection (toggle/on/off) actions for clarity (preserves backwards compatibility with existing buttons).
 * The read-only setting "Held action repeat interval" has been removed from the TP Settings interface.
-* A plugin settings configuration file is now always created in user's config file path (default AppData/Roaming) if one doesn't already exist (and is moved if the config folder is changed later).
+* A plugin settings configuration file is now always created in user's config file path (default AppData/Roaming) if one doesn't already exist.
 
+---
 ## 1.1.0.2-beta2 (July-22-2022)
 * Added new Setting for always using "neutral" numeric formatting with period decimal separators, ignoring any region-specific formatting conventions.
   Works around Touch Portal issue with not being able to do math comparison operations on numeric values with comma decimal separators.<br />
@@ -14,6 +31,7 @@
   Maintains backwards compatibility with existing actions/buttons.
 * Added Light Dimming (potentiometer) actions, some more light switch types, and Landing lights directional control actions.
 
+---
 ## 1.1.0.0-beta1 (July-19-2022)
 * Added Connector (Slider) functionality with feedback capabilities (eg. move slider in response to simulator event).
 * Added 29 new connectors to set variables, trigger events with value ranges, or use as visual value indicators.
@@ -97,12 +115,14 @@
 * Fixes possible plugin crash when trying to re-connect to MSFS after it has crashed.
 * Improved detection of an actual valid SimConnect link when trying to connect. SimConnect seems sometimes "confused" after the sim has exited unexpectedly (crashed).
 
+---
 ## 0.7.0.1-mp (April-18-2022)
 
 * This release fixes missing .Net 5.0 dependency issue with v0.7.0. This would only affect users who did not have .Net 5 libraries already installed on their PC.
 * There is also a minor bug fix for SimConnect.cfg file not being copied to the correct folder.
 * Lastly, the distribution size has been reduced by almost half.
 
+---
 ## 0.7.0.0-mp (April-17-2022)
 
 ### Major Features
@@ -226,8 +246,7 @@ The changes below lead to considerable performance improvements and much quicker
 * View 3D Cockpit
 * View External
 
---------------------------------------------------
-
+---
 ## 0.6.0-mp (Feb-15-2022)
 * Added support for sending numeric data values to the simulator with the various "Set" actions.
   * Most/all "Set" actions have been broken out into their own separate action types. Since they now have a data field, it doesn't make sense to pair them with actions which don't use them, such as "Increment."
@@ -271,6 +290,7 @@ This evaluation could be expanded upon later if there is a need (to include high
 
 For some hints on using the new Set commands, check out the wiki page [Tips And Tricks For Setting Simulator Values](https://github.com/tlewis17/MSFSTouchPortalPlugin/wiki/Tips-And-Tricks-For-Setting-Simulator-Values).
 
+---
 ## 0.5.4-mp (Feb-08-2022)
 * Added support for "On Hold" type Touch Portal actions with a configurable repeat time.
   All current actions which may make sense to repeat (such as for control surfaces or AP adjustments) should now be available in the "On Hold" TP button configuration page.
@@ -298,6 +318,7 @@ For some hints on using the new Set commands, check out the wiki page [Tips And 
   - Deice and Pitot Heat switch states for Panel, Structural, Windshield, and Pitot 1-4
   - Current Held Action Repeat Rate (in ms)
 
+---
 ## 0.5.3 (10-14-2020)
 * Added new states:
   * AtcType - Type of aircraft used by ATC
@@ -307,6 +328,7 @@ For some hints on using the new Set commands, check out the wiki page [Tips And 
   * AtcFlightNumber - Flight Number used by ATC
   * AircraftTitle - Aircraft Title
 
+---
 ## 0.5.2 (10-13-2020)
 * Modified states to not have units. These can be added through Touch Portal if user chooses.
 * De-Ice engine actions have been combined. Will require re-configuring on Page.
@@ -358,6 +380,7 @@ For some hints on using the new Set commands, check out the wiki page [Tips And 
 * StallWarning
 * VerticalSpeed
 
+---
 ## 0.5.1 (10-9-2020)
 Entry.tp file is now properly alphabetized.
 
@@ -378,11 +401,13 @@ Entry.tp file is now properly alphabetized.
 
 * Fixed Auto Throttle Go Around, it was previously sharing a state value with the Auto Throttle Arm.
 
+---
 ## 0.5.0 (9-27-2020)
 * Added Vertical Speed Hold Toggle
 * Fixed plugin connected status states
 * Improved startup and resiliency
 
+---
 ## 0.4.0 (9-15-2020)
 * Now only allows for a single instance of the executable to run.
 * Exe will keep running. Will properly disconnect from MSFS when you quit MSFS and then you can start up the simulator again and it will reconnect without having to restart the plugin.
@@ -390,17 +415,21 @@ Entry.tp file is now properly alphabetized.
 * More Autopilot related button states
 * Landing gear state - 1 means extended.
 
+---
 ## 0.3.0 (9-11-2020)
 More controls, many button states, and flight instrument variables.
 
 Polling of state data is done at 250ms intervals. Should update quick enough.
 
+---
 ## 0.2.2 (9-8-2020)
 Fixed path for the plugin start command.
 
+---
 ## 0.2.1 (9-7-2020)
 Added Yaw Dampener controls.
 
+---
 ## 0.2.0 (9-7-2020)
 Expanded with lots of controls for Flight Control Systems and Electrical.
 
@@ -412,6 +441,7 @@ Expanded with lots of controls for Flight Control Systems and Electrical.
 * Additional Auto Pilot options and settings
 * More!
 
+---
 ## 0.1.0 (9-7-2020)
 This release is primarily as a test run. It Supports a handful of Autopilot functions and a Fuel Selector.
 AddFuel doesn't work at the moment.

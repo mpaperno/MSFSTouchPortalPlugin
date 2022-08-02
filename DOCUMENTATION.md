@@ -4,7 +4,7 @@ This plugin provides a two-way interface between Touch Portal and Flight Simulat
 
 For further documentation, please see https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki
 
-This documentation generated for plugin v1.1.0.2-beta2
+This documentation generated for plugin v1.1.0.3-beta3
 
 ---
 
@@ -43,17 +43,17 @@ This documentation generated for plugin v1.1.0.2-beta2
 
 ### Connect To Flight Sim on Startup (0/1)
 
-| Read-only | Type | Default Value | Min. Value | Max. Value |
-| --- | --- | --- | --- | --- |
-| False | number | 0 | 0 | 1 |
+| Type | Default Value | Min. Value | Max. Value |
+| --- | --- | --- | --- |
+| boolean (on/off) | 0 | 0 | 1 |
 
 Set to 1 to automatically attempt connection to flight simulator upon Touch Portal startup. Set to 0 to only connect manually via the Action *MSFS - Plugin -> Connect & Update*.
 
 ### Sim Variable State Config File(s) (blank = Default)
 
-| Read-only | Type | Default Value | Max. Length |
-| --- | --- | --- | --- |
-| False | text | Default | 255 |
+| Type | Default Value | Max. Length |
+| --- | --- | --- |
+| text | Default | 255 |
 
 Here you can specify one or more custom configuration files which define SimConnect variables to request as Touch Portal States. This plugin comes with an extensive default set of states, however since the possibilities between which variables are requested, which units they are displayed in,and how they are formatted are almost endless. This option provides a way to customize the output as desired.
 
@@ -65,9 +65,9 @@ The custom file(s) are expected to be in the folder specified in the "User Confi
 
 ### SimConnect.cfg Index (0 for MSFS, 1 for FSX, or custom)
 
-| Read-only | Type | Default Value | Min. Value | Max. Value |
-| --- | --- | --- | --- | --- |
-| False | number | 0 | 0 | 20 |
+| Type | Default Value | Min. Value | Max. Value |
+| --- | --- | --- | --- |
+| number | 0 | 0 | 20 |
 
 A __SimConnect.cfg__ file can contain a number of connection configurations, identified in sections with the `[SimConnect.N]` title. A default __SimConnect.cfg__ is included with this plugin (in the installation folder). You may also use a custom configuration file stored in the "User Config Files Path" folder (see below). 
 
@@ -75,59 +75,54 @@ The index number can be specified in this setting. This is useful for
   1. compatibility with FSX, and/or 
   2. custom configurations over network connections (running Touch Portal on a different computer than the sim). 
 
-The default configuration index is zero, which (in the included default SimConnect.cfg) is suitable for MSFS (2020). Use the index 1 for compatibility with FSX (or perhaps other sims). 
+The default configuration index is zero, which (in the included default SimConnect.cfg) is suitable for MSFS (2020). Use the index 1 for compatibility with FSX (or perhaps other sims).
 
-See here for more info: https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_CFG_Definition.htm
+See here for more info about the file format: https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_CFG_Definition.htm  
+
+For more information on using Touch Portal remotely see [Multiple Touch Portal Device Setup](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Multiple-Touch-Portal-Device-Setup)
 
 ### User Config Files Path (blank for default)
 
-| Read-only | Type | Default Value | Max. Length |
-| --- | --- | --- | --- |
-| False | text |  | 255 |
+| Type | Default Value | Max. Length |
+| --- | --- | --- |
+| text |  | 255 |
 
-The system path where custom user configuration files for sate definitions, SimConnect.cfg, etc, are stored. Keep it blank for default, which is `C:\Users\<UserName>\AppData\Roaming\MSFSTouchPortalPlugin`.
+The system path where plugin settings are stored, including custom user State configuration files for sate definitions & _SimConnect.cfg_ .
+ Keep it blank for default, which is `C:\Users\<UserName>\AppData\Roaming\MSFSTouchPortalPlugin`.
 
 Note that using this plugin's installation folder for custom data storage is not recommended, since anything in there will likely get overwritten during a plugin update/re-install.
 
 ### Ignore Local Number Format Rules (0/1)
 
-| Read-only | Type | Default Value | Min. Value | Max. Value |
-| --- | --- | --- | --- | --- |
-| False | number | 1 | 0 | 1 |
+| Type | Default Value | Min. Value | Max. Value |
+| --- | --- | --- | --- |
+| boolean (on/off) | 1 | 0 | 1 |
 
 Touch Portal cannot perform math or numeric comparison operations on decimal numbers formatted with comma decimal separator, even in locations where this is the norm. Set this setting to 1/true toalways format numbers in "neutral" format with period decimal separators. **NOTE** that this affects **input** number formatting as well (the plugin will expect all numbers with period decimal separators regardless of your location).
 
 ### Update HubHop Data on Startup (0/1)
 
-| Read-only | Type | Default Value | Min. Value | Max. Value |
-| --- | --- | --- | --- | --- |
-| False | number | 0 | 0 | 1 |
+| Type | Default Value | Min. Value | Max. Value |
+| --- | --- | --- | --- |
+| boolean (on/off) | 0 | 0 | 1 |
 
 Set to 1 to automatically load latest HubHop data when plugin starts. Set to 0 to disable. Updates can always be triggered manually via the Action *MSFS - Plugin -> Connect & Update*. **Updates require a working Internet connection!**
 
 ### HubHop Data Update Timeout (seconds)
 
-| Read-only | Type | Default Value | Min. Value | Max. Value |
-| --- | --- | --- | --- | --- |
-| False | number | 60 | 0 | 600 |
+| Type | Default Value | Min. Value | Max. Value |
+| --- | --- | --- | --- |
+| number | 60 | 0 | 600 |
 
 Maximum number of seconds to wait for a HubHop data update check or download via the Internet.
 
 ### Sort Local Variables Alphabetically (0/1)
 
-| Read-only | Type | Default Value | Min. Value | Max. Value |
-| --- | --- | --- | --- | --- |
-| False | number | 1 | 0 | 1 |
+| Type | Default Value | Min. Value | Max. Value |
+| --- | --- | --- | --- |
+| boolean (on/off) | 1 | 0 | 1 |
 
 Set to `1` to have all Local ('L') simulator variables sorted in alphabetical order within selection lists. Setting to `0` will keep them in the original order they're loaded in on the simulator (by ascending ID).
-
-### Held Action Repeat Rate (ms)
-
-| Read-only | Type | Default Value | Min. Value | Max. Value |
-| --- | --- | --- | --- | --- |
-| True | number | 450 | 50 | 2147483647 |
-
-Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Action Repeat Interval' action. This setting cannot be changed from the TP Plugin Settings page (even though it appears to be editable on there).
 
 </details>
 
@@ -142,8 +137,8 @@ Stores the held action repeat rate, which can be set via the 'MSFS - Plugin - Ac
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>On<br/>Hold</sub></div></th></tr>
-<tr valign='top'><td>Connect & Update</td><td>Plugin actions: Toggle/On/Off SimConnect Connection, Reload State Config Files, Update HubHop Presets</td><td>Plugin Action: {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off, Reload State Files, Update Local Var. List, Update HubHop Data</li>
+<tr valign='top'><td>Connect & Update</td><td>Control connection to the Simulator, or perform various data update tasks.</td><td>Plugin Action: {0}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Toggle Simulator Connection</b>, Connect to Simulator, Disconnect from Simulator, Reload State Files, Re-Send All State Values, Update Local Var. List, Re-Submit Local Var. Requests, Update HubHop Data</li>
 </ol></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Action Repeat Interval</td><td>Held Action Repeat Rate (ms)</td><td>Repeat Interval: {0} to/by: {1} ms</td><td><ol start=0>
@@ -214,7 +209,7 @@ Runs any entered string of RPN code through the 'execute_calculator_code' Gauge 
 <li>[switch] &nbsp; <b>False</b></li>
 <li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
 <li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
-<li>[number] &nbsp; <b>0.009</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 </ol></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Request a Variable From List</td><td>Request a Variable from Simulator					** Local Variables support requires WASimModule **
@@ -228,7 +223,7 @@ Category or Local Aircraft          Request Variable                            
 <li>[text] &nbsp; <b>0</b></li>
 <li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
 <li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
-<li>[number] &nbsp; <b>0.009</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 </ol></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Request a Named Variable</td><td>Request a Named Variable                       For indexed SimVars, include it in the name after a : (colon).					** Requires WASimModule **
@@ -241,7 +236,7 @@ Variable Type:                Name:                                             
 <li>[text] &nbsp; <b>0</b></li>
 <li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
 <li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
-<li>[number] &nbsp; <b>0.009</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 </ol></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Request a Calculated Value</td><td>Request a Calculated Value					** Requires WASimModule **
@@ -254,7 +249,7 @@ Calculator Code:                                                                
 <li>[text] &nbsp; <b>0</b></li>
 <li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
 <li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
-<li>[number] &nbsp; <b>0.009</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 </ol></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Update a Variable Value</td><td>Request a value update for an added variable. This is especially useful for variables with a "Once" type Update Period.</td><td>From Category {0} Update Variable {1}</td><td><ol start=0>
@@ -262,16 +257,20 @@ Calculator Code:                                                                
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 </ol></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Remove a Simulator Variable</td><td>Remove an existing Simulator Variable. Note that static TP States cannot be removed.</td><td>From Category {0} Remove Variable {1}</td><td><ol start=0>
+<tr valign='top'><td>Remove a Simulator Variable</td><td>Remove an existing Simulator Variable.</td><td>From Category {0} Remove Variable {1}</td><td><ol start=0>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 </ol></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Load SimVar Definitions From File</td><td>Load a set of simulator variable state definitions from a configuration file.</td><td>Load from file {0} (name only for user config. folder, or full path with file name)</td><td><ol start=0>
-<li>[file] &nbsp; <b>CustomStates.ini</b></li>
+<tr valign='top'><td>Clear Variable Definitions</td><td>Removes either all or only custom-added variable state definitions.</td><td>Clear {0} states</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Custom</b>, All</li>
 </ol></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Save SimVar Definitions To File</td><td>Save the current simulator variable state definitions to a configuration file.</td><td>Save {0} states to file {1} (name only for user config. folder, or full path with file name)</td><td><ol start=0>
+<tr valign='top'><td>Load Variable Definitions From File</td><td>Load a set of variable state definitions from a configuration file.</td><td>Load definitions from file {0} (file name only for user config. folder, or full path with file name)</td><td><ol start=0>
+<li>[text] &nbsp; <b>CustomStates.ini</b></li>
+</ol></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Save Variable Definitions To File</td><td>Save the current simulator variable state definitions to a configuration file.</td><td>Save {0} states to file {1} (file name only for user config. folder, or full path with file name)</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Custom</b>, All</li>
 <li>[text] &nbsp; <b>CustomStates.ini</b></li>
 </ol></td>
@@ -287,8 +286,8 @@ Calculator Code:                                                                
 <li>[choice] &nbsp; <b>Set</b>, Increment, Decrement</li>
 <li>[text] &nbsp; <b>Plugin</b></li>
 <li>[text] &nbsp; <b>[ActionRepeatInterval]</b></li>
-<li>[number] &nbsp; <b>1000</b> &nbsp; <sub>&lt;min: 50&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
-<li>[number] &nbsp; <b>50</b> &nbsp; <sub>&lt;min: 50&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
+<li>[text] &nbsp; <b>1000</b> &nbsp; <sub>&lt;min: 50&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
+<li>[text] &nbsp; <b>50</b> &nbsp; <sub>&lt;min: 50&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
 </ol></td>
 <tr valign='top'><td>Activate a Named Simulator Event</td><td>Trigger or set value of a Simulator Event by name.
 The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.</td><td>Set Event:{0}Value
@@ -296,8 +295,8 @@ Range:{1}-{2}| Feedback From
 | State (opt):{3}{4}
 Range:{5}-{6}</td><td><ol start=0>
 <li>[text] &nbsp; <b>SIMULATOR_EVENT_NAME</b></li>
-<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -312,8 +311,8 @@ Range:{2}-{3}| Feedback From
 Range:{6}-{7}</td><td><ol start=0>
 <li>[choice] &nbsp; <b></b>[plugin not connected]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
-<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -329,8 +328,8 @@ Range:{7}-{8}</td><td><ol start=0>
 <li>[choice] &nbsp; <b></b>[plugin not connected]</li>
 <li>[choice] &nbsp; <b></b>[select an aircraft]</li>
 <li>[choice] &nbsp; <b></b>[select a system]</li>
-<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -341,8 +340,8 @@ Range:{3}-{4}</td><td><ol start=0>
 <li>[choice] &nbsp; <b></b>[connect to plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category or type]</li>
 <li>[switch] &nbsp; <b>False</b></li>
-<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 </ol></td>
 <tr valign='top'><td>Set Airplane Local Variable</td><td>Sets a value on a Local variable from currently loaded aircraft.					** Requires WASimModule **</td><td>Set Variable:{0}Units:
 (opt){1}Value
@@ -351,8 +350,8 @@ Range{2}-{3}| Feedback From
 Range:{6}-{7}</td><td><ol start=0>
 <li>[choice] &nbsp; <b></b>[connect to plugin]</li>
 <li>[choice] &nbsp; <b></b>[connect to plugin]</li>
-<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -367,8 +366,8 @@ Range:{7}-{8}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>A: SimVar</b>, C: GPS, H: HTML Event, K: Key Event, L: Local, Z: Custom SimVar</li>
 <li>[text] &nbsp; &lt;empty&gt;</li>
 <li>[choice] &nbsp; <b></b>[connect to plugin]</li>
-<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -380,8 +379,8 @@ Range:{1}-{2}| Feedback From
 | State (opt):{3}{4}
 Range:{5}-{6}</td><td><ol start=0>
 <li>[text] &nbsp; <b>@ 1 (>K:2:PANEL_LIGHTS_POWER_SETTING_SET)</b></li>
-<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -391,8 +390,8 @@ Range:{5}-{6}</td><td><ol start=0>
 Feedback From Category:{0}Variable:{1}Value Range:{2}-{3}</td><td><ol start=0>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
-<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 </ol></td>
 </table>
 
@@ -421,10 +420,10 @@ Feedback From Category:{0}Variable:{1}Value Range:{2}-{3}</td><td><ol start=0>
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
-<tr valign='top'><td>Airspeed Hold Value  Adj/Sel</td><td></td><td>Airspeed Hold Value - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Select</b>, Increase, Decrease</li>
+<tr valign='top'><td>Airspeed Hold Value  Adj/Sel/Hold</td><td></td><td>Airspeed Hold Value - {0}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Select</b>, Increase, Decrease, Hold Current</li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Select</dt><dd>AIRSPEED_BUG_SELECT</dd><dt>Increase</dt><dd>AP_SPD_VAR_INC</dd><dt>Decrease</dt><dd>AP_SPD_VAR_DEC</dd></dl></details></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Select</dt><dd>AIRSPEED_BUG_SELECT</dd><dt>Increase</dt><dd>AP_SPD_VAR_INC</dd><dt>Decrease</dt><dd>AP_SPD_VAR_DEC</dd><dt>Hold Current</dt><dd>AUTOPILOT_AIRSPEED_HOLD_CURRENT</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Airspeed Hold Value Set</td><td></td><td>Set Airspeed Hold Value to {0} kts</td><td><ol start=0>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 50000.00&gt;</sub></li>
@@ -482,10 +481,10 @@ Feedback From Category:{0}Variable:{1}Value Range:{2}-{3}</td><td><ol start=0>
 </ol></td>
 <td><dl><dd>HEADING_BUG_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Mach Hold Value  Adj</td><td></td><td>Mach Hold Value - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
+<tr valign='top'><td>Mach Hold Value  Adj/Hold</td><td></td><td>Mach Hold Value - {0}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Increase</b>, Decrease, Hold Current</li>
 </ol></td>
-<td><dl><dt>Increase</dt><dd>AP_MACH_VAR_INC</dd><dt>Decrease</dt><dd>AP_MACH_VAR_DEC</dd></dl></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Increase</dt><dd>AP_MACH_VAR_INC</dd><dt>Decrease</dt><dd>AP_MACH_VAR_DEC</dd><dt>Hold Current</dt><dd>AUTOPILOT_MACH_HOLD_CURRENT</dd></dl></details></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Mach Hold Value Set</td><td></td><td>Set Mach Hold Value to {0}</td><td><ol start=0>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 20.00&gt;</sub></li>
@@ -524,8 +523,8 @@ Feedback From Category:{0}Variable:{1}Value Range:{2}-{3}</td><td><ol start=0>
 in Value Range (kts):{0}-{1}| Feedback From
 | State (opt):{2}{3}
 Range:{4}-{5}</td><td><ol start=0>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 50000.00&gt;</sub></li>
-<li>[number] &nbsp; <b>50000</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 50000.00&gt;</sub></li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 50000.00&gt;</sub></li>
+<li>[text] &nbsp; <b>50000</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 50000.00&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -535,8 +534,8 @@ Range:{4}-{5}</td><td><ol start=0>
 in Value Range:{0}-{1}| Feedback From
 | State (opt):{2}{3}
 Range:{4}-{5}</td><td><ol start=0>
-<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -546,8 +545,8 @@ Range:{4}-{5}</td><td><ol start=0>
 in Value Range:{0}-{1}| Feedback From
 | State (opt):{2}{3}
 Range:{4}-{5}</td><td><ol start=0>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 359.00&gt;</sub></li>
-<li>[number] &nbsp; <b>359</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 359.00&gt;</sub></li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 359.00&gt;</sub></li>
+<li>[text] &nbsp; <b>359</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 359.00&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -557,8 +556,8 @@ Range:{4}-{5}</td><td><ol start=0>
 in Value Range:{0}-{1}| Feedback From
 | State (opt):{2}{3}
 Range:{4}-{5}</td><td><ol start=0>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 20.00&gt;</sub></li>
-<li>[number] &nbsp; <b>20</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 20.00&gt;</sub></li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 20.00&gt;</sub></li>
+<li>[text] &nbsp; <b>20</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 20.00&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -569,8 +568,8 @@ Range:{1}-{2}| Feedback From
 | State (opt):{3}{4}
 Range:{5}-{6}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Set English</b>, Set Metric</li>
-<li>[number] &nbsp; <b>-5000</b> &nbsp; <sub>&lt;min: -5000.00&gt;</sub> <sub>&lt;max: 5000.00&gt;</sub></li>
-<li>[number] &nbsp; <b>5000</b> &nbsp; <sub>&lt;min: -5000.00&gt;</sub> <sub>&lt;max: 5000.00&gt;</sub></li>
+<li>[text] &nbsp; <b>-5000</b> &nbsp; <sub>&lt;min: -5000.00&gt;</sub> <sub>&lt;max: 5000.00&gt;</sub></li>
+<li>[text] &nbsp; <b>5000</b> &nbsp; <sub>&lt;min: -5000.00&gt;</sub> <sub>&lt;max: 5000.00&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -626,11 +625,38 @@ Range:{5}-{6}</td><td><ol start=0>
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
 <tr valign='top'><td>Radio Interaction</td><td></td><td>Radio {0} - {1}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>COM1</b>, COM2, NAV1, NAV2</li>
-<li>[choice] &nbsp; <b>Standby Swap</b>, Decrease 1Mhz, Increase 1 MHz, Decrease 25 KHz, Decrease 25 KHz w/ Carry Digits, Increase 25 KHz, Increase 25 KHz w/ Carry Digits</li>
+<li>[choice] &nbsp; <b>COM1</b>, COM2, COM3, NAV1, NAV2, NAV3, NAV4</li>
+<li>[choice] &nbsp; <b>Standby Swap</b>, Decrease 1Mhz, Increase 1 MHz, Decrease 25 KHz, Decrease 25 KHz w/ Carry Digits, Increase 25 KHz, Increase 25 KHz w/ Carry Digits, Volume Increase, Volume Decrease, Transmit Select, Receive Select, Toggle Spacing Mode (COM only), Autoswitch Toggle</li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>COM1+Standby Swap</dt><dd>COM_STBY_RADIO_SWAP</dd><dt>COM1+Decrease 1Mhz</dt><dd>COM_RADIO_WHOLE_DEC</dd><dt>COM1+Increase 1 MHz</dt><dd>COM_RADIO_WHOLE_INC</dd><dt>COM1+Decrease 25 KHz</dt><dd>COM_RADIO_FRACT_DEC</dd><dt>COM1+Decrease 25 KHz w/ Carry Digits</dt><dd>COM_RADIO_FRACT_DEC_CARRY</dd><dt>COM1+Increase 25 KHz</dt><dd>COM_RADIO_FRACT_INC</dd><dt>COM1+Increase 25 KHz w/ Carry Digits</dt><dd>COM_RADIO_FRACT_INC_CARRY</dd><dt>COM2+Standby Swap</dt><dd>COM2_RADIO_SWAP</dd><dt>COM2+Decrease 1Mhz</dt><dd>COM2_RADIO_WHOLE_DEC</dd><dt>COM2+Increase 1 MHz</dt><dd>COM2_RADIO_WHOLE_INC</dd><dt>COM2+Decrease 25 KHz</dt><dd>COM2_RADIO_FRACT_DEC</dd><dt>COM2+Decrease 25 KHz w/ Carry Digits</dt><dd>COM2_RADIO_FRACT_DEC_CARRY</dd><dt>COM2+Increase 25 KHz</dt><dd>COM2_RADIO_FRACT_INC</dd><dt>COM2+Increase 25 KHz w/ Carry Digits</dt><dd>COM2_RADIO_FRACT_INC_CARRY</dd><dt>NAV1+Standby Swap</dt><dd>NAV1_RADIO_SWAP</dd><dt>NAV1+Decrease 1Mhz</dt><dd>NAV1_RADIO_WHOLE_DEC</dd><dt>NAV1+Increase 1 MHz</dt><dd>NAV1_RADIO_WHOLE_INC</dd><dt>NAV1+Decrease 25 KHz</dt><dd>NAV1_RADIO_FRACT_DEC</dd><dt>NAV1+Decrease 25 KHz w/ Carry Digits</dt><dd>NAV1_RADIO_FRACT_DEC_CARRY</dd><dt>NAV1+Increase 25 KHz</dt><dd>NAV1_RADIO_FRACT_INC</dd><dt>NAV1+Increase 25 KHz w/ Carry Digits</dt><dd>NAV1_RADIO_FRACT_INC_CARRY</dd><dt>NAV2+Standby Swap</dt><dd>NAV2_RADIO_SWAP</dd><dt>NAV2+Decrease 1Mhz</dt><dd>NAV2_RADIO_WHOLE_DEC</dd><dt>NAV2+Increase 1 MHz</dt><dd>NAV2_RADIO_WHOLE_INC</dd><dt>NAV2+Decrease 25 KHz</dt><dd>NAV2_RADIO_FRACT_DEC</dd><dt>NAV2+Decrease 25 KHz w/ Carry Digits</dt><dd>NAV2_RADIO_FRACT_DEC_CARRY</dd><dt>NAV2+Increase 25 KHz</dt><dd>NAV2_RADIO_FRACT_INC</dd><dt>NAV2+Increase 25 KHz w/ Carry Digits</dt><dd>NAV2_RADIO_FRACT_INC_CARRY</dd></dl></details></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>COM1+Standby Swap</dt><dd>COM1_RADIO_SWAP</dd><dt>COM1+Decrease 1Mhz</dt><dd>COM_RADIO_WHOLE_DEC</dd><dt>COM1+Increase 1 MHz</dt><dd>COM_RADIO_WHOLE_INC</dd><dt>COM1+Decrease 25 KHz</dt><dd>COM_RADIO_FRACT_DEC</dd><dt>COM1+Decrease 25 KHz w/ Carry Digits</dt><dd>COM_RADIO_FRACT_DEC_CARRY</dd><dt>COM1+Increase 25 KHz</dt><dd>COM_RADIO_FRACT_INC</dd><dt>COM1+Increase 25 KHz w/ Carry Digits</dt><dd>COM_RADIO_FRACT_INC_CARRY</dd><dt>COM1+Volume Increase</dt><dd>COM1_VOLUME_INC</dd><dt>COM1+Volume Decrease</dt><dd>COM1_VOLUME_DEC</dd><dt>COM1+Transmit Select</dt><dd>COM1_TRANSMIT_SELECT</dd><dt>COM1+Receive Select</dt><dd>COM1_RECEIVE_SELECT</dd><dt>COM1+Toggle Spacing Mode (COM only)</dt><dd>COM_1_SPACING_MODE_SWITCH</dd><dt>COM1+Autoswitch Toggle</dt><dd>RADIO_COMM1_AUTOSWITCH_TOGGLE</dd><dt>COM2+Standby Swap</dt><dd>COM2_RADIO_SWAP</dd><dt>COM2+Decrease 1Mhz</dt><dd>COM2_RADIO_WHOLE_DEC</dd><dt>COM2+Increase 1 MHz</dt><dd>COM2_RADIO_WHOLE_INC</dd><dt>COM2+Decrease 25 KHz</dt><dd>COM2_RADIO_FRACT_DEC</dd><dt>COM2+Decrease 25 KHz w/ Carry Digits</dt><dd>COM2_RADIO_FRACT_DEC_CARRY</dd><dt>COM2+Increase 25 KHz</dt><dd>COM2_RADIO_FRACT_INC</dd><dt>COM2+Increase 25 KHz w/ Carry Digits</dt><dd>COM2_RADIO_FRACT_INC_CARRY</dd><dt>COM2+Volume Increase</dt><dd>COM2_VOLUME_INC</dd><dt>COM2+Volume Decrease</dt><dd>COM2_VOLUME_DEC</dd><dt>COM2+Transmit Select</dt><dd>COM2_TRANSMIT_SELECT</dd><dt>COM2+Receive Select</dt><dd>COM2_RECEIVE_SELECT</dd><dt>COM2+Toggle Spacing Mode (COM only)</dt><dd>COM_2_SPACING_MODE_SWITCH</dd><dt>COM2+Autoswitch Toggle</dt><dd>RADIO_COMM2_AUTOSWITCH_TOGGLE</dd><dt>COM3+Standby Swap</dt><dd>COM3_RADIO_SWAP</dd><dt>COM3+Decrease 1Mhz</dt><dd>COM3_RADIO_WHOLE_DEC</dd><dt>COM3+Increase 1 MHz</dt><dd>COM3_RADIO_WHOLE_INC</dd><dt>COM3+Decrease 25 KHz</dt><dd>COM3_RADIO_FRACT_DEC</dd><dt>COM3+Decrease 25 KHz w/ Carry Digits</dt><dd>COM3RADIO_FRACT_DEC_CARRY</dd><dt>COM3+Increase 25 KHz</dt><dd>COM3_RADIO_FRACT_INC</dd><dt>COM3+Increase 25 KHz w/ Carry Digits</dt><dd>COM3_RADIO_FRACT_INC_CARRY</dd><dt>COM3+Volume Increase</dt><dd>COM3_VOLUME_INC</dd><dt>COM3+Volume Decrease</dt><dd>COM3_VOLUME_DEC</dd><dt>COM3+Transmit Select</dt><dd>COM3_TRANSMIT_SELECT</dd><dt>COM3+Receive Select</dt><dd>COM3_RECEIVE_SELECT</dd><dt>COM3+Toggle Spacing Mode (COM only)</dt><dd>COM_3_SPACING_MODE_SWITCH</dd><dt>NAV1+Standby Swap</dt><dd>NAV1_RADIO_SWAP</dd><dt>NAV1+Decrease 1Mhz</dt><dd>NAV1_RADIO_WHOLE_DEC</dd><dt>NAV1+Increase 1 MHz</dt><dd>NAV1_RADIO_WHOLE_INC</dd><dt>NAV1+Decrease 25 KHz</dt><dd>NAV1_RADIO_FRACT_DEC</dd><dt>NAV1+Decrease 25 KHz w/ Carry Digits</dt><dd>NAV1_RADIO_FRACT_DEC_CARRY</dd><dt>NAV1+Increase 25 KHz</dt><dd>NAV1_RADIO_FRACT_INC</dd><dt>NAV1+Increase 25 KHz w/ Carry Digits</dt><dd>NAV1_RADIO_FRACT_INC_CARRY</dd><dt>NAV1+Volume Increase</dt><dd>NAV1_VOLUME_INC</dd><dt>NAV1+Volume Decrease</dt><dd>NAV1_VOLUME_DEC</dd><dt>NAV1+Autoswitch Toggle</dt><dd>RADIO_NAV1_AUTOSWITCH_TOGGLE</dd><dt>NAV2+Standby Swap</dt><dd>NAV2_RADIO_SWAP</dd><dt>NAV2+Decrease 1Mhz</dt><dd>NAV2_RADIO_WHOLE_DEC</dd><dt>NAV2+Increase 1 MHz</dt><dd>NAV2_RADIO_WHOLE_INC</dd><dt>NAV2+Decrease 25 KHz</dt><dd>NAV2_RADIO_FRACT_DEC</dd><dt>NAV2+Decrease 25 KHz w/ Carry Digits</dt><dd>NAV2_RADIO_FRACT_DEC_CARRY</dd><dt>NAV2+Increase 25 KHz</dt><dd>NAV2_RADIO_FRACT_INC</dd><dt>NAV2+Increase 25 KHz w/ Carry Digits</dt><dd>NAV2_RADIO_FRACT_INC_CARRY</dd><dt>NAV2+Volume Increase</dt><dd>NAV2_VOLUME_INC</dd><dt>NAV2+Volume Decrease</dt><dd>NAV2_VOLUME_DEC</dd><dt>NAV2+Autoswitch Toggle</dt><dd>RADIO_NAV2_AUTOSWITCH_TOGGLE</dd><dt>NAV3+Standby Swap</dt><dd>NAV3_RADIO_SWAP</dd><dt>NAV3+Decrease 1Mhz</dt><dd>NAV3_RADIO_WHOLE_DEC</dd><dt>NAV3+Increase 1 MHz</dt><dd>NAV3_RADIO_WHOLE_INC</dd><dt>NAV3+Decrease 25 KHz</dt><dd>NAV3_RADIO_FRACT_DEC</dd><dt>NAV3+Decrease 25 KHz w/ Carry Digits</dt><dd>NAV3_RADIO_FRACT_DEC_CARRY</dd><dt>NAV3+Increase 25 KHz</dt><dd>NAV3_RADIO_FRACT_INC</dd><dt>NAV3+Increase 25 KHz w/ Carry Digits</dt><dd>NAV3_RADIO_FRACT_INC_CARRY</dd><dt>NAV3+Volume Increase</dt><dd>NAV3_VOLUME_INC</dd><dt>NAV3+Volume Decrease</dt><dd>NAV3_VOLUME_DEC</dd><dt>NAV4+Standby Swap</dt><dd>NAV4_RADIO_SWAP</dd><dt>NAV4+Decrease 1Mhz</dt><dd>NAV4_RADIO_WHOLE_DEC</dd><dt>NAV4+Increase 1 MHz</dt><dd>NAV4_RADIO_WHOLE_INC</dd><dt>NAV4+Decrease 25 KHz</dt><dd>NAV4_RADIO_FRACT_DEC</dd><dt>NAV4+Decrease 25 KHz w/ Carry Digits</dt><dd>NAV4_RADIO_FRACT_DEC_CARRY</dd><dt>NAV4+Increase 25 KHz</dt><dd>NAV4_RADIO_FRACT_INC</dd><dt>NAV4+Increase 25 KHz w/ Carry Digits</dt><dd>NAV4_RADIO_FRACT_INC_CARRY</dd><dt>NAV4+Volume Increase</dt><dd>NAV4_VOLUME_INC</dd><dt>NAV4+Volume Decrease</dt><dd>NAV4_VOLUME_DEC</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Radio Values Set</td><td></td><td>Set Radio {0} {1} to Value {2}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>COM1</b>, COM2, COM3, NAV1, NAV2, NAV3, NAV4</li>
+<li>[choice] &nbsp; <b>Frequency (Hz)</b>, Frequency (BCD16), Standby Frequency (Hz), Standby Frequency (BCD16), Stored Frequency (Hz) (COM only), Stored Frequency (BCD16) (COM only), Volume (0.0-1.0)</li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+</ol></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>COM1+Frequency (Hz)</dt><dd>COM_RADIO_SET_HZ</dd><dt>COM1+Frequency (BCD16)</dt><dd>COM_RADIO_SET</dd><dt>COM1+Standby Frequency (Hz)</dt><dd>COM_STBY_RADIO_SET_HZ</dd><dt>COM1+Standby Frequency (BCD16)</dt><dd>COM_STBY_RADIO_SET</dd><dt>COM1+Stored Frequency (Hz) (COM only)</dt><dd>COM1_STORED_FREQUENCY_SET_HZ</dd><dt>COM1+Stored Frequency (BCD16) (COM only)</dt><dd>COM1_STORED_FREQUENCY_SET</dd><dt>COM1+Volume (0.0-1.0)</dt><dd>COM1_VOLUME_SET</dd><dt>COM2+Frequency (Hz)</dt><dd>COM2_RADIO_SET_HZ</dd><dt>COM2+Frequency (BCD16)</dt><dd>COM2_RADIO_SET</dd><dt>COM2+Standby Frequency (Hz)</dt><dd>COM2_STBY_RADIO_SET_HZ</dd><dt>COM2+Standby Frequency (BCD16)</dt><dd>COM2_STBY_RADIO_SET</dd><dt>COM2+Stored Frequency (Hz) (COM only)</dt><dd>COM2_STORED_FREQUENCY_SET_HZ</dd><dt>COM2+Stored Frequency (BCD16) (COM only)</dt><dd>COM2_STORED_FREQUENCY_SET</dd><dt>COM2+Volume (0.0-1.0)</dt><dd>COM2_VOLUME_SET</dd><dt>COM3+Frequency (Hz)</dt><dd>COM3_RADIO_SET_HZ</dd><dt>COM3+Frequency (BCD16)</dt><dd>COM3_RADIO_SET</dd><dt>COM3+Standby Frequency (Hz)</dt><dd>COM3_STBY_RADIO_SET_HZ</dd><dt>COM3+Standby Frequency (BCD16)</dt><dd>COM3_STBY_RADIO_SET</dd><dt>COM3+Stored Frequency (Hz) (COM only)</dt><dd>COM3_STORED_FREQUENCY_SET_HZ</dd><dt>COM3+Stored Frequency (BCD16) (COM only)</dt><dd>COM3_STORED_FREQUENCY_SET</dd><dt>COM3+Volume (0.0-1.0)</dt><dd>COM3_VOLUME_SET</dd><dt>NAV1+Frequency (Hz)</dt><dd>NAV1_RADIO_SET_HZ</dd><dt>NAV1+Frequency (BCD16)</dt><dd>NAV1_RADIO_SET</dd><dt>NAV1+Standby Frequency (Hz)</dt><dd>NAV1_STBY_SET_HZ</dd><dt>NAV1+Standby Frequency (BCD16)</dt><dd>NAV1_STBY_SET</dd><dt>NAV1+Volume (0.0-1.0)</dt><dd>NAV1_VOLUME_SET</dd><dt>NAV2+Frequency (Hz)</dt><dd>NAV2_RADIO_SET_HZ</dd><dt>NAV2+Frequency (BCD16)</dt><dd>NAV2_RADIO_SET</dd><dt>NAV2+Standby Frequency (Hz)</dt><dd>NAV2_STBY_SET_HZ</dd><dt>NAV2+Standby Frequency (BCD16)</dt><dd>NAV2_STBY_SET</dd><dt>NAV2+Volume (0.0-1.0)</dt><dd>NAV2_VOLUME_SET</dd><dt>NAV3+Frequency (Hz)</dt><dd>NAV3_RADIO_SET_HZ</dd><dt>NAV3+Frequency (BCD16)</dt><dd>NAV3_RADIO_SET</dd><dt>NAV3+Standby Frequency (Hz)</dt><dd>NAV3_STBY_SET_HZ</dd><dt>NAV3+Standby Frequency (BCD16)</dt><dd>NAV3_STBY_SET</dd><dt>NAV3+Volume (0.0-1.0)</dt><dd>NAV3_VOLUME_SET</dd><dt>NAV4+Frequency (Hz)</dt><dd>NAV4_RADIO_SET_HZ</dd><dt>NAV4+Frequency (BCD16)</dt><dd>NAV4_RADIO_SET</dd><dt>NAV4+Standby Frequency (Hz)</dt><dd>NAV4_STBY_SET_HZ</dd><dt>NAV4+Standby Frequency (BCD16)</dt><dd>NAV4_STBY_SET</dd><dt>NAV4+Volume (0.0-1.0)</dt><dd>NAV4_VOLUME_SET</dd></dl></details></td>
+<td align='center'>&#9745;</td></tr>
+</table>
+
+
+#### Connectors
+
+<table>
+<tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th></tr>
+<tr valign='top'><td>Radio Values Set</td><td></td><td>Set Radio {0} {1}in Value
+Range:{2}-{3}| Feedback From
+| State (opt):{4}{5}
+Range:{6}-{7}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>COM1</b>, COM2, COM3, NAV1, NAV2, NAV3, NAV4</li>
+<li>[choice] &nbsp; <b>Frequency (Hz)</b>, Frequency (BCD16), Standby Frequency (Hz), Standby Frequency (BCD16), Stored Frequency (Hz) (COM only), Stored Frequency (BCD16) (COM only), Volume (0.0-1.0)</li>
+<li>[text] &nbsp; <b>-3.4028234663852886E+38</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>3.4028234663852886E+38</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
 </table>
 
 
@@ -707,8 +733,8 @@ Range:{1}-{2}| Feedback From
 | State (opt):{3}{4}
 Range:{5}-{6}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>0</b>, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30</li>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
-<li>[number] &nbsp; <b>100</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
+<li>[text] &nbsp; <b>100</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -839,8 +865,8 @@ Range:{5}-{6}</td><td><ol start=0>
 | State (opt):{3}{4}
 Range:{5}-{6}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 4&gt;</sub></li>
-<li>[number] &nbsp; <b>4</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 4&gt;</sub></li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 4&gt;</sub></li>
+<li>[text] &nbsp; <b>4</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 4&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -851,8 +877,8 @@ Range:{1}-{2}| Feedback From
 | State (opt):{3}{4}
 Range:{5}-{6}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -863,8 +889,8 @@ Value Range:{1}-{2}| Feedback From
 | State (opt):{3}{4}
 Range:{5}-{6}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -875,8 +901,8 @@ Range:{1}-{2}| Feedback From
 | State (opt):{3}{4}
 Range:{5}-{6}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4</li>
-<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -1021,21 +1047,22 @@ Range:{5}-{6}</td><td><ol start=0>
 
 | Id | SimVar Name | Description | Unit | Format | DefaultValue | Settable |
 | --- | --- | --- | --- | --- | --- | --- |
-| AirSpeedIndicated | AIRSPEED INDICATED | Air speed indicated in Knots | knots | 0.0# | | &#9745; |
-| AirSpeedMach | AIRSPEED MACH | Air speed indicated in Mach | mach | 0.0# | |  |
-| AirSpeedTrue | AIRSPEED TRUE | Air speed true in Knots | knots | 0.0# | | &#9745; |
-| FlapSpeedExceeeded | FLAP SPEED EXCEEDED | Flap Speed Exceeded Warning true/false | Bool |  | |  |
-| GroundAltitude | GROUND ALTITUDE | Ground level in Feet | feet | 0.# | |  |
-| GroundVelocity | GROUND VELOCITY | Ground Speed in Knots | knots | 0.0# | |  |
-| OverspeedWarning | OVERSPEED WARNING | Overspeed Warning true/false | Bool |  | |  |
-| PlaneAltitudeAGL | PLANE ALT ABOVE GROUND | Plane Altitude AGL in Feet | feet | 0.# | | &#9745; |
-| PlaneAltitude | PLANE ALTITUDE | Plane Altitude in Feet | feet | 0.# | | &#9745; |
-| PlaneBankAngle | PLANE BANK DEGREES | Plane Bank Angle in Degrees | degrees | 0 | | &#9745; |
-| PlaneHeadingMagnetic | PLANE HEADING DEGREES MAGNETIC | Plane Heading (Magnetic North) in Degrees | degrees | 0 | | &#9745; |
-| PlaneHeadingTrue | PLANE HEADING DEGREES TRUE | Plane Heading (True North) in Degrees | degrees | 0 | | &#9745; |
-| PlanePitchAngle | PLANE PITCH DEGREES | Plane Pitch Angle in Degrees | degrees | 0 | | &#9745; |
-| StallWarning | STALL WARNING | Stall Warning true/false | Bool |  | |  |
-| VerticalSpeed | VERTICAL SPEED | Vertical Speed in feet per minute | feet/minute | 0.0# | | &#9745; |
+| AirSpeedIndicated | AIRSPEED INDICATED | Air Speed indicated (knots) | knots | 0.0# | | &#9745; |
+| AirSpeedMach | AIRSPEED MACH | Air Speed indicated (Mach) | mach | 0.0# | |  |
+| AirSpeedTrue | AIRSPEED TRUE | Air Speed true (knots) | knots | 0.0# | | &#9745; |
+| PlaneAltitudeAGL | PLANE ALT ABOVE GROUND | Altitude Above Ground (feet) | feet | 0.# | | &#9745; |
+| PlaneAltitudeIndicated | INDICATED ALTITUDE | Altitude Indicated (feet) | feet | F1 | | &#9745; |
+| PlaneAltitude | PLANE ALTITUDE | Altitude True (feet) | feet | 0.# | | &#9745; |
+| PlaneBankAngle | PLANE BANK DEGREES | Bank Angle (degrees) | degrees | 0 | | &#9745; |
+| FlapSpeedExceeeded | FLAP SPEED EXCEEDED | Flap Speed Exceeded Warning (0/1) | Bool |  | |  |
+| GroundAltitude | GROUND ALTITUDE | Ground level (feet) | feet | 0.# | |  |
+| GroundVelocity | GROUND VELOCITY | Ground Speed (knots) | knots | 0.0# | |  |
+| PlaneHeadingMagnetic | PLANE HEADING DEGREES MAGNETIC | Heading (Magnetic North) (degrees) | degrees | 0 | | &#9745; |
+| PlaneHeadingTrue | PLANE HEADING DEGREES TRUE | Heading (True North) (degrees) | degrees | 0 | | &#9745; |
+| OverspeedWarning | OVERSPEED WARNING | Overspeed Warning (0/1) | Bool |  | |  |
+| PlanePitchAngle | PLANE PITCH DEGREES | Pitch Angle (degrees) | degrees | 0 | | &#9745; |
+| StallWarning | STALL WARNING | Stall Warning (0/1) | Bool |  | |  |
+| VerticalSpeed | VERTICAL SPEED | Vertical Speed (f/m) | feet/minute | 0.0# | | &#9745; |
 
 
 </details>
@@ -1177,8 +1204,8 @@ Range:{5}-{6}</td><td><ol start=0>
 in Value Range (%):{0}-{1}| Feedback From
 | State (opt):{2}{3}
 Range:{4}-{5}</td><td><ol start=0>
-<li>[number] &nbsp; <b>-100</b> &nbsp; <sub>&lt;min: -100&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
-<li>[number] &nbsp; <b>100</b> &nbsp; <sub>&lt;min: -100&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
+<li>[text] &nbsp; <b>-100</b> &nbsp; <sub>&lt;min: -100&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
+<li>[text] &nbsp; <b>100</b> &nbsp; <sub>&lt;min: -100&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -1188,8 +1215,8 @@ Range:{4}-{5}</td><td><ol start=0>
 in Value Range:{0}-{1}| Feedback From
 | State (opt):{2}{3}
 Range:{4}-{5}</td><td><ol start=0>
-<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -1200,8 +1227,8 @@ Range:{4}-{5}</td><td><ol start=0>
 | State (opt):{3}{4}
 Range:{5}-{6}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Left</b>, Right</li>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -1212,8 +1239,8 @@ in Value Range:{1}-{2}| Feedback From
 | State (opt):{3}{4}
 Range:{5}-{6}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -1223,8 +1250,8 @@ Range:{5}-{6}</td><td><ol start=0>
 in Value Range:{0}-{1}| Feedback From
 | State (opt):{2}{3}
 Range:{4}-{5}</td><td><ol start=0>
-<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -1234,8 +1261,8 @@ Range:{4}-{5}</td><td><ol start=0>
 in Value Range:{0}-{1}| Feedback From
 | State (opt):{2}{3}
 Range:{4}-{5}</td><td><ol start=0>
-<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -1245,8 +1272,8 @@ Range:{4}-{5}</td><td><ol start=0>
 in Value Range:{0}-{1}| Feedback From
 | State (opt):{2}{3}
 Range:{4}-{5}</td><td><ol start=0>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -1256,8 +1283,8 @@ Range:{4}-{5}</td><td><ol start=0>
 in Value Range:{0}-{1}| Feedback From
 | State (opt):{2}{3}
 Range:{4}-{5}</td><td><ol start=0>
-<li>[number] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -16384&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -1267,8 +1294,8 @@ Range:{4}-{5}</td><td><ol start=0>
 in Value Range (%):{0}-{1}| Feedback From
 | State (opt):{2}{3}
 Range:{4}-{5}</td><td><ol start=0>
-<li>[number] &nbsp; <b>-100</b> &nbsp; <sub>&lt;min: -100&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
-<li>[number] &nbsp; <b>100</b> &nbsp; <sub>&lt;min: -100&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
+<li>[text] &nbsp; <b>-100</b> &nbsp; <sub>&lt;min: -100&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
+<li>[text] &nbsp; <b>100</b> &nbsp; <sub>&lt;min: -100&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -1278,8 +1305,8 @@ Range:{4}-{5}</td><td><ol start=0>
 Position in Value Range:{0}-{1}| Feedback From
 | State (opt):{2}{3}
 Range:{4}-{5}</td><td><ol start=0>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
-<li>[number] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -1303,7 +1330,7 @@ Range:{4}-{5}</td><td><ol start=0>
 | ElevatorTrim | ELEVATOR TRIM POSITION | Elevator Trim Angle | degrees | F2 | | &#9745; |
 | ElevatorTrimPct | ELEVATOR TRIM PCT | Elevator Trim Percent | percent | F1 | 0|  |
 | FlapsHandlePercent | FLAPS HANDLE PERCENT | Flaps Handle Percentage | percent | 0.0# | |  |
-| ParkingBrakeIndicator | BRAKE PARKING POSITION | Parking Brake Indicator true/false | Bool |  | |  |
+| ParkingBrakeIndicator | BRAKE PARKING POSITION | Parking Brake Indicator (0/1) | Bool |  | |  |
 | RudderTrim | RUDDER TRIM | Rudder Trim Angle | degrees | F2 | |  |
 | RudderTrimPct | RUDDER TRIM PCT | Rudder Trim Percent | percent | F1 | 0| &#9745; |
 | SpoilersArmed | SPOILERS ARMED | Spoilers Armed (0/1) | Bool |  | 0|  |
@@ -1375,8 +1402,8 @@ Range:{4}-{5}</td><td><ol start=0>
 in Value Range:{0}-{1}| Feedback From
 | State (opt):{2}{3}
 Range:{4}-{5}</td><td><ol start=0>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 65535&gt;</sub></li>
-<li>[number] &nbsp; <b>65535</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 65535&gt;</sub></li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 65535&gt;</sub></li>
+<li>[text] &nbsp; <b>65535</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 65535&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
