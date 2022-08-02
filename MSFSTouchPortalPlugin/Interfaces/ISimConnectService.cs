@@ -50,12 +50,10 @@ namespace MSFSTouchPortalPlugin.Interfaces
     bool IsConnected { get; }
     WasmModuleStatus WasmStatus { get; }
 
-    bool AddNotification(Groups group, Enum eventId);
     uint Connect(uint configIndex = 0);
     void Disconnect();
-    bool MapClientEventToSimEvent(Enum eventId, string eventName, Groups group);
-    bool TransmitClientEvent(Groups group, Enum eventId, uint data);
-    void SetNotificationGroupPriorities();
+    bool TransmitClientEvent(Enum eventId, uint data);
+    bool TransmitClientEvent(EventMappingRecord eventRecord, uint data);
     bool RequestDataOnSimObject(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER);
     bool RequestDataOnSimObjectType(SimVarItem simVar, SIMCONNECT_SIMOBJECT_TYPE objectType = SIMCONNECT_SIMOBJECT_TYPE.USER);
     bool SetDataOnSimObject(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER);

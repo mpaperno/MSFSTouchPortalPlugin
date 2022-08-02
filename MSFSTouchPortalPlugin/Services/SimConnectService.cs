@@ -67,11 +67,10 @@ namespace MSFSTouchPortalPlugin.Services
     public event LocalVarsListUpdatedHandler OnLVarsListUpdated;
 
     // hResult
-    public const uint S_OK = 0;
-    public const uint E_FAIL = 0x80004005;         // general SimConnect failure
-    public const uint E_INVALIDARG = 0x80070057;   // returned by SimConnect if the config index is invalid
-    public const uint E_TIMEOUT = 0x000005B4;      // we return this if SimConnect() was created OK but no OnOpen was received
-    public const uint E_DISCONNECT = 0xC000013C;   // STATUS_REMOTE_DISCONNECT returned by SimConnect if network connection is lost
+    public const uint S_OK = (uint)HR.OK;
+    public const uint E_FAIL = unchecked((uint)HR.FAIL);               // general SimConnect failure
+    public const uint E_INVALIDARG = unchecked((uint)HR.INVALIDARG);   // returned by SimConnect if the config index is invalid
+    public const uint E_TIMEOUT = unchecked((uint)HR.TIMEOUT);         // we return this if SimConnect() was created OK but no OnOpen was received
     // SIMCONNECT_RECV_EVENT.dwData value for "View" event, from SimConnect.h
     public const uint VIEW_EVENT_DATA_COCKPIT_2D = 0x00000001;      // 2D Panels in cockpit view
     public const uint VIEW_EVENT_DATA_COCKPIT_3D = 0x00000002;      // Virtual (3D) panels in cockpit view
@@ -95,14 +94,7 @@ namespace MSFSTouchPortalPlugin.Services
     const int MSG_RCV_WAIT_TIME_MS    = 5000;   // SimConnect.ReceiveMessage() wait time
     // maximum stored requests for error tracking (adding is fast but search is 0(n)), should be large enough to handle flood of requests at initial connection
     const int MAX_STORED_REQUEST_RECORDS = 500;
-
-    const uint NOTIFICATION_PRIORITY = 10000000;  // notification group priority for SimConnect.SetNotificationGroupPriority()
-    const int WM_USER_SIMCONNECT = 0x0402;        // user event ID for SimConnect
-
-    // enable AddNotification(), SetNotificationGroupPriorities(), and Simconnect_OnRecvEvent() for events we initiate; currently this serves no purpose except possible debug info.
-    static readonly bool DEBUG_NOTIFICATIONS = false;
-
-    enum DataProvider : byte { SimConnect, WASimClient };
+    const int WM_USER_SIMCONNECT = 0x0402;      // user event ID for SimConnect
 
     readonly ILogger<SimConnectService> _logger;
     readonly IReflectionService _reflectionService;
@@ -125,10 +117,8 @@ namespace MSFSTouchPortalPlugin.Services
 
     // SimConnect method delegates, for centralized interaction in InvokeSimMethod()
     Action<Enum>             ClearDataDefinitionDelegate;
-    Action<Enum, uint>       SetNotificationGroupPriorityDelegate;
     Action<uint, Enum>       AIReleaseControlDelegate;
     Action<Enum, string>     MapClientEventToSimEventDelegate;
-    Action<Enum, Enum, bool> AddClientEventToNotificationGroupDelegate;
     Action<Enum, string>     SubscribeToSystemEventDelegate;
     Action<Enum, Enum, uint, SIMCONNECT_SIMOBJECT_TYPE>   RequestDataOnSimObjectTypeDelegate;
     Action<uint, Enum, uint, Enum, SIMCONNECT_EVENT_FLAG> TransmitClientEventDelegate;
@@ -195,8 +185,6 @@ namespace MSFSTouchPortalPlugin.Services
       // Method delegates
       MapClientEventToSimEventDelegate          = _simConnect.MapClientEventToSimEvent;
       TransmitClientEventDelegate               = _simConnect.TransmitClientEvent;
-      AddClientEventToNotificationGroupDelegate = _simConnect.AddClientEventToNotificationGroup;
-      SetNotificationGroupPriorityDelegate      = _simConnect.SetNotificationGroupPriority;
       ClearDataDefinitionDelegate               = _simConnect.ClearDataDefinition;
       AddToDataDefinitionDelegate               = _simConnect.AddToDataDefinition;
       RequestDataOnSimObjectDelegate            = _simConnect.RequestDataOnSimObject;
@@ -372,6 +360,11 @@ namespace MSFSTouchPortalPlugin.Services
       return SimVarRegistrationStatus.Error;
     }
 
+    bool MapClientEventToSimEvent(Enum eventId, string eventName)
+    {
+      return InvokeSimMethod(MapClientEventToSimEventDelegate, eventId, eventName);
+    }
+
     //  WASM
 
     void SetupWasm()
@@ -489,27 +482,38 @@ namespace MSFSTouchPortalPlugin.Services
       OnDisconnect?.Invoke();
     }
 
-    public bool MapClientEventToSimEvent(Enum eventId, string eventName, Groups group) {
-      if (InvokeSimMethod(MapClientEventToSimEventDelegate, eventId, eventName))
-        return !DEBUG_NOTIFICATIONS || AddNotification(group, eventId);
-      return false;
+    public bool TransmitClientEvent(Enum eventId, uint data)
+    {
+      EventIds evId = (EventIds)eventId;
+      if (evId <= EventIds.InternalEventsLast)
+        return false;
+      if (!WasmConnected || evId >= EventIds.DynamicEventInit)
+        return InvokeSimMethod(TransmitClientEventDelegate, SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, data, (Groups)SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+      return _wlib.sendCommand(new Command(CommandId.SendKey, (uint)evId, null, data, 0)) == HR.OK;
     }
 
-    public bool TransmitClientEvent(Groups group, Enum eventId, uint data) {
-      return InvokeSimMethod(TransmitClientEventDelegate, SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, data, group, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
-    }
+    public bool TransmitClientEvent(EventMappingRecord eventRecord, uint data)
+    {
+      if (eventRecord == null)
+        return false;
 
-    public bool AddNotification(Groups group, Enum eventId) {
-      return DEBUG_NOTIFICATIONS && InvokeSimMethod(AddClientEventToNotificationGroupDelegate, group, eventId, false);
-    }
-
-    public void SetNotificationGroupPriorities() {
-      if (DEBUG_NOTIFICATIONS && _connected) {
-        foreach (var g in Enum.GetValues<Groups>()) {
-          if (g != Groups.None)
-            InvokeSimMethod(SetNotificationGroupPriorityDelegate, g, NOTIFICATION_PRIORITY);
+      if ((EventIds)eventRecord.EventId == EventIds.None) {
+        if (string.IsNullOrEmpty(eventRecord.EventName))
+          return false;
+        if (WasmConnected && !eventRecord.EventName.StartsWith('#') && !eventRecord.EventName.Contains('.')) {
+          if (_wlib.lookup(LookupItemType.KeyEventId, eventRecord.EventName, out int keyEvtId) == HR.OK)
+            eventRecord.EventId = (EventIds)keyEvtId;
+          else
+            _logger.LogWarning((int)EventIds.SimError, "Could not find Key Event ID for event name {evName}, will try with SimConnect.", eventRecord.EventName);
+          // fall back to SimConnect if lookup fails
+        }
+        if ((EventIds)eventRecord.EventId == EventIds.None) {
+          eventRecord.EventId = ActionEventType.NextId();
+          if (!MapClientEventToSimEvent(eventRecord.EventId, eventRecord.EventName))
+            return false;
         }
       }
+      return TransmitClientEvent(eventRecord.EventId, data);
     }
 
     public bool RequestDataOnSimObjectType(SimVarItem simVar, SIMCONNECT_SIMOBJECT_TYPE objectType = SIMCONNECT_SIMOBJECT_TYPE.USER) {
@@ -623,10 +627,7 @@ namespace MSFSTouchPortalPlugin.Services
     private void Simconnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data) {
       EventIds evId = (EventIds)data.uEventID;
       Groups gId = (Groups)data.uGroupID;
-      if (DEBUG_NOTIFICATIONS && !Enum.IsDefined(evId) && Enum.IsDefined(gId))
-        _logger.LogDebug("Simconnect_OnRecvEvent Received: Group: {gId}; Event: {evName}; Data: {dwData}", gId, _reflectionService.GetSimEventNameById(data.uEventID), data.dwData);
-      else
-        _logger.LogDebug("Simconnect_OnRecvEvent Received: Group: {gId}; Event: {evName}; Data: {dwData}", gId, evId, data.dwData);
+      _logger.LogDebug("Simconnect_OnRecvEvent Received: Group: {gId}; Event: {evName}; Data: {dwData}", gId, evId, data.dwData);
       OnEventReceived?.Invoke(evId, gId, data.dwData);
     }
 

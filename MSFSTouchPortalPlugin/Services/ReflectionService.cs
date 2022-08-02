@@ -40,21 +40,11 @@ namespace MSFSTouchPortalPlugin.Services
 
     private readonly Type[] _assemblyTypes = ExecutingAssembly.GetTypes();
     private readonly ILogger<ReflectionService> _logger;
-    // Mapping of the generated SimConnect client event ID Enum to the SimConnect event name and group id.
-    // Primarily used to register events with SimConnect, but can also be useful for debug/logging.
-    // Structure is: <Event ID> -> new { string EventName, Enums.Groups GroupId }
-    private static readonly Dictionary<Enum, SimEventRecord> clientEventIdToNameMap = new();
 
     public ReflectionService(ILogger<ReflectionService> logger)
     {
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
-
-    public ref readonly Dictionary<Enum, SimEventRecord> GetClientEventIdToNameMap() => ref clientEventIdToNameMap;
-    public string GetSimEventNameById(Enum id) => clientEventIdToNameMap.TryGetValue(id, out var entry) ? entry.EventName : "[unknown event]";
-    public string GetSimEventNameById(uint id) => GetSimEventNameById((EventIds)id);
-    public string GetSimEventNameById(int id) => GetSimEventNameById((EventIds)id);
-    public void AddSimEventNameMapping(Enum id, SimEventRecord record) => clientEventIdToNameMap[id] = record;
 
     public IEnumerable<TouchPortalCategoryAttribute> GetCategoryAttributes() {
       List<TouchPortalCategoryAttribute> ret = new();
@@ -177,16 +167,14 @@ namespace MSFSTouchPortalPlugin.Services
       return ret;
     }
 
-    private Dictionary<string, ActionEventType> GetInternalActionEvents() {
+    private Dictionary<string, ActionEventType> GetInternalActionEvents()
+    {
       var returnDict = new Dictionary<string, ActionEventType>();
       var catAttribs = GetActionAttributes(Groups.Plugin);
       // Loop over all actions which have an action mapping, which is some unique combination of value(s) mapped to a SimConnect event name or internal event enum
       foreach (var actAttr in catAttribs) {
         // Create the action data object to store in the return dict, using the meta data we've collected so far.
-        ActionEventType act = new ActionEventType {
-          Id = actAttr.EnumId,
-          ActionId = actAttr.Id,
-          CategoryId = Groups.Plugin,
+        ActionEventType act = new ActionEventType((PluginActions)actAttr.EnumId, actionId: actAttr.Id) {
           DataAttributes = actAttr.Data.ToDictionary(d => d.Id, d => d)
         };
         // Put into returned collection
@@ -201,7 +189,7 @@ namespace MSFSTouchPortalPlugin.Services
             fmtStrList.Add($"{{{i}}}");
           act.KeyFormatStr = string.Join(",", fmtStrList);
           foreach (var ma in actAttr.Mappings) {
-            if (!act.TryAddPluginEventMapping($"{string.Join(",", ma.Values)}", (PluginActions)ma.EnumId))
+            if (!act.TryAddPluginEventMapping($"{string.Join(",", ma.Values)}", (PluginActions)ma.EnumId, ma.ActionId))
               _logger.LogWarning("Duplicate action-to-event mapping found for Plugin action {actId} with choices '{choices} for event '{mapId}'.", act.ActionId, string.Join(",", ma.Values), ma.ActionId);
           }
         }
@@ -210,7 +198,8 @@ namespace MSFSTouchPortalPlugin.Services
       return returnDict;
     }
 
-    public Dictionary<string, ActionEventType> GetActionEvents() {
+    public Dictionary<string, ActionEventType> GetActionEvents()
+    {
       var returnDict = GetInternalActionEvents();
       var catAttribs = GetCategoryAttributes();
       var intActsCnt = returnDict.Count;
@@ -226,10 +215,7 @@ namespace MSFSTouchPortalPlugin.Services
             continue;
           }
           // Create the action data object to store in the return dict, using the meta data we've collected so far.
-          ActionEventType act = new ActionEventType {
-            CategoryId = catAttr.Id,
-            ActionId = actAttr.Id
-          };
+          ActionEventType act = new ActionEventType(actAttr.Id, catAttr.Id);
           // Put into returned collection
           if (!returnDict.TryAdd($"{catAttr.Id}.{act.ActionId}", act)) {
             _logger.LogWarning("Duplicate action ID found for action '{actId}' in category '{catName}', skipping.", act.ActionId, catAttr.Name);
@@ -255,10 +241,7 @@ namespace MSFSTouchPortalPlugin.Services
           // Now get all the action mappings to produce the final list of all possible action events
           foreach (var ma in actAttr.Mappings) {
             // Put into collections
-            if (act.TryAddSimEventMapping($"{string.Join(",", ma.Values)}", ma.EventValue, out Enum mapTarget))
-              // keep track of generated event IDs for Sim actions (for registering to SimConnect, and debug)
-              clientEventIdToNameMap[mapTarget] = new SimEventRecord(catAttr.Id, ma.ActionId);
-            else
+            if (!act.TryAddSimEventMapping($"{string.Join(",", ma.Values)}", ma.EventValue, ma.ActionId))
               _logger.LogWarning("Duplicate action-to-event mapping found for action {actId} with choices '{choices} for event '{mapId}'.", act.ActionId, string.Join(",", ma.Values), ma.ActionId);
           }
 

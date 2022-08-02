@@ -23,7 +23,7 @@ namespace MSFSTouchPortalPlugin.Enums
 {
   // Note that the Display.Name properties are used in TP in the event type selector and cannot be changed w/out breaking any events a plugin user may have already set up.
   // The Display.Description properties are used for documentation generation.
-  public enum EventIds : short
+  public enum EventIds : int
   {
     None = 0,
     Ignore,            // a way to flag > Info log entries which shouldn't trigger a PluginError/SimError events
@@ -117,10 +117,18 @@ namespace MSFSTouchPortalPlugin.Enums
     [Display(Name = "View External", Description = "When the view changes to an external view.")]
     ViewExternal,      // View event if dwData == 0
 
+    InternalEventsLast,  // marker
+
+    // Refernces to SimConnect constants, defined in gauges.h
+    SimConnectKeyEventMin = 0x00010000,
+    SimConnectKeyEventMax = 0x00010FFF,
+    SimConnectThirdPPartyEventIdMin = 0x00011000,
+    SimConnectThirdPPartyEventIdMax = 0x0001FFFF,
+
     // Start marker for dynamically generated events (TP actions)
     // Dynamically generated SimConnect client event IDs are "parented" to this enum type,
     // meaning they become of this Type when they need to be cast to en Enum type (eg. for SimConnect C# API).
     // This is done by ActionEventType as needed to generate unique event IDs for SimConnect.
-    DynamicEventInit = 1000,
+    DynamicEventInit = SimConnectThirdPPartyEventIdMax + 1,
   }
 }

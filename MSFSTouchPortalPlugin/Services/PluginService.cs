@@ -306,13 +306,6 @@ namespace MSFSTouchPortalPlugin.Services
       _simTasksCTS = new CancellationTokenSource();
       _simTasksCancelToken = _simTasksCTS.Token;
 
-      // Register Action events
-      var eventMap = _reflectionService.GetClientEventIdToNameMap();
-      foreach (var m in eventMap)
-        _simConnectService.MapClientEventToSimEvent(m.Key, m.Value.EventName, m.Value.GroupId);
-      // must be called after adding notifications
-      _simConnectService.SetNotificationGroupPriorities();
-
       // Request system events
       for (EventIds eventId = EventIds.SimEventNone + 1; eventId < EventIds.SimEventLast; ++eventId)
         _simConnectService.SubscribeToSystemEvent(eventId, eventId.ToString());
@@ -1090,16 +1083,15 @@ namespace MSFSTouchPortalPlugin.Services
       }
 
       string actionKey = $"{Groups.Plugin}.{eventName}";
-      // dynamically added event actions have no mappings, the ActionEventType.Id is the SimEventClientId
+      // dynamically add an action if it doesn't already exist
       if (!actionsDictionary.TryGetValue(actionKey, out ActionEventType ev)) {
-        ev = new ActionEventType(eventName, Groups.Plugin, !string.IsNullOrWhiteSpace(sValue), out _);
+        // Dynamically added events only have one action mapping, which will be returned with ActionEventType.GetEventMapping().
+        ev = new ActionEventType(eventName, Groups.Plugin, !string.IsNullOrWhiteSpace(sValue));
         actionsDictionary[actionKey] = ev;
-        _reflectionService.AddSimEventNameMapping(ev.Id, new SimEventRecord(ev.CategoryId, eventName));
-        _simConnectService.MapClientEventToSimEvent(ev.Id, eventName, ev.CategoryId);  // no-op if not connected, will get mapped in the OnConnected handler
       }
 
       if (_simConnectService.IsConnected)
-        return ProcessSimEvent(ev, ev.Id, sValue, (uint)Math.Round(dVal, 0));
+        return ProcessSimEvent(ev, ev.GetEventMapping(), sValue, (uint)Math.Round(dVal, 0));
       return false;
     }
 
@@ -1144,17 +1136,14 @@ namespace MSFSTouchPortalPlugin.Services
       }
 
       int connValue = (actionEvent.GetType() == typeof(ConnectorChangeEvent)) ? ((ConnectorChangeEvent)actionEvent).Value : -1;
-      if (action.CategoryId == Groups.Plugin) {
-        ProcessInternalEvent(action, actionEvent.Data, connValue);
-        return true;
-      }
+      if (action.CategoryId == Groups.Plugin)
+        return ProcessInternalEvent(action, actionEvent.Data, connValue);
 
       if (!_simConnectService.IsConnected)
         return false;
       if (!action.TryGetEventMapping(actionEvent.Data.Values, out EventMappingRecord eventRecord))
         return false;
 
-      Enum eventId = eventRecord.EventId;
       string sValue = null;
       uint uValue = 0;
       if (connValue < 0) {
@@ -1169,7 +1158,7 @@ namespace MSFSTouchPortalPlugin.Services
       else {
         return false;
       }
-      return ProcessSimEvent(action, eventId, sValue, uValue);
+      return ProcessSimEvent(action, eventRecord, sValue, uValue);
     }
 
     bool ProcessInternalEvent(ActionEventType action, ActionData data, int connValue = -1)
@@ -1249,8 +1238,10 @@ namespace MSFSTouchPortalPlugin.Services
       }
     }
 
-    bool ProcessSimEvent(ActionEventType action, Enum eventId, string value = null, uint uValue = 0)
+    bool ProcessSimEvent(ActionEventType action, EventMappingRecord eventRecord, string value = null, uint uValue = 0)
     {
+      if (eventRecord == null)
+        return false;
       if (!string.IsNullOrWhiteSpace(value)) {
         double dataReal = double.NaN;
         switch (action.ValueType) {
@@ -1259,7 +1250,7 @@ namespace MSFSTouchPortalPlugin.Services
             if (!TryEvaluateValue(value, out dataReal, out var errMsg)) {
               _logger.LogError(
                 "Data conversion for string '{value}' failed for action '{actId}' on sim event '{evName}' with Error: {errMsg}.",
-                value, action.ActionId, _reflectionService.GetSimEventNameById(eventId), errMsg);
+                value, action.ActionId, eventRecord.EventName, errMsg);
               return false;
             }
             break;
@@ -1277,8 +1268,8 @@ namespace MSFSTouchPortalPlugin.Services
       }
       _logger.LogDebug(
         "Firing Sim Event - action: {actionId}; category: {catId}; name: {name}; data {uValue}",
-        action.ActionId, action.CategoryId, _reflectionService.GetSimEventNameById(eventId), uValue);
-      return _simConnectService.TransmitClientEvent(action.CategoryId, eventId, uValue);
+        action.ActionId, action.CategoryId, eventRecord.EventName, uValue);
+      return _simConnectService.TransmitClientEvent(eventRecord, uValue);
     }
 
     // Handles an array of `Setting` types sent from TP/API. This could come from either the
