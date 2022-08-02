@@ -175,12 +175,12 @@ namespace MSFSTouchPortalPlugin.Objects
 
     #region Airspeed
 
-    [TouchPortalAction("AutoPilotAirSpeedVar", "Airspeed Hold Value  Adj/Sel", "Airspeed Hold Value - {0}", true)]  /* /Hold */
+    [TouchPortalAction("AutoPilotAirSpeedVar", "Airspeed Hold Value  Adj/Sel/Hold", "Airspeed Hold Value - {0}", true)]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AIRSPEED_BUG_SELECT", "Select")]
     [TouchPortalActionMapping("AP_SPD_VAR_INC", "Increase")]
     [TouchPortalActionMapping("AP_SPD_VAR_DEC", "Decrease")]
-    //[TouchPortalActionMapping("AUTOPILOT_AIRSPEED_HOLD_CURRENT", "Hold Current")]  // SimConnect reports event name error even though this is a valid KEY ID
+    [TouchPortalActionMapping("AUTOPILOT_AIRSPEED_HOLD_CURRENT", "Hold Current")]  // WASM only, SimConnect reports event name error even though this is a valid KEY ID
     public static readonly object AP_AIRSPEED_VAR;
 
     [TouchPortalAction("AutoPilotAirSpeedSet", "Airspeed Hold Value Set", true,
@@ -215,11 +215,11 @@ namespace MSFSTouchPortalPlugin.Objects
 
     #region Mach
 
-    [TouchPortalAction("AutoPilotMachVar", "Mach Hold Value  Adj", "Mach Hold Value - {0}")]  /* /Hold */
+    [TouchPortalAction("AutoPilotMachVar", "Mach Hold Value  Adj/Hold", "Mach Hold Value - {0}")]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_MACH_VAR_INC", "Increase")]
     [TouchPortalActionMapping("AP_MACH_VAR_DEC", "Decrease")]
-    //[TouchPortalActionMapping("AUTOPILOT_MACH_HOLD_CURRENT", "Hold Current")]  // SimConnect reports event name error even though this is a valid KEY ID
+    [TouchPortalActionMapping("AUTOPILOT_MACH_HOLD_CURRENT", "Hold Current")]  // WASM only, SimConnect reports event name error even though this is a valid KEY ID
     public static readonly object AP_MACH_VAR;
 
     [TouchPortalAction("AutoPilotMachSet", "Mach Hold Value Set", true,
