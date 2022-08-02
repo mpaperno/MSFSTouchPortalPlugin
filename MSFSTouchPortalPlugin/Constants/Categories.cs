@@ -47,7 +47,7 @@ namespace MSFSTouchPortalPlugin.Constants
       /* SimSystem, */          "System",
     };
 
-    private static readonly List<string> usableCategoryNames = categoryNames.GetRange(1, categoryNames.Count - 2);
+    private static readonly List<string> usableCategoryNames = categoryNames.GetRange(2, categoryNames.Count - 2);
 
     public static IReadOnlyCollection<string> ListAll => categoryNames;
     public static IReadOnlyCollection<string> ListUsable => usableCategoryNames;  // w/out None and Plugin
