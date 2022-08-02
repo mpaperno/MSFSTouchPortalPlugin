@@ -35,7 +35,7 @@ This project is a continuation of the original [MSFSTouchPortalPlugin by Tim Lew
 
 See the [Wiki](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/) for some guides and tips.
 
-Auto-generated documentation on all actions, states, and settings can be found in [DOCUMENTATION.MD](DOCUMENTATION.MD).
+Auto-generated documentation on all actions, states, and settings can be found in [DOCUMENTATION.md](DOCUMENTATION.md).
 
 **NEW IN THE WIKI:** Assets - [Pages, Buttons, & Graphics](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) to get started with.
 
@@ -74,8 +74,9 @@ An older installation and usage guide was published on the _Simvol_ Web site: [H
 Here is a list of known pages which use this plugin. In no particular order, no endorsement, nor have I necessarily tried/tested all these. YMMV.
 
 * [Pages, Buttons, & Graphics](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) in the Wiki
+* [Touch Portal page for TBM 930](https://flightsim.to/file/37413/touch-portal-page-for-tbm-930) by GoodSeb @ flightsim.to
 * [FltSim-msfs2020-Control](https://github.com/HiDTH/FltSim-msfs2020-Control) by HiDTH @ GitHub<br />
-  (**Page background graphic may cause issues, replacement at link above. This is a cool page, but is complex and somewhat outdated, and some parts may not work properly!** The author seems to have stopped updates/support for it.)
+  (**Page background graphic will cause issues, especially on iOS. Replacement at Wiki link above.** This is a cool page, but is complex and somewhat outdated, and some parts may not work properly! The author seems to have stopped updates/support for it.)
 * [Touch Portal Page H145](https://flightsim.to/file/35625/touch-portal-page-h145) by edheronde @ flighsim.to
 * [Touch Portal Page "Piston Single"](https://flightsim.to/file/7394/touch-portal-page-piston-single) by yushu @ flightsim.to
 * [Touch Portal Page for Fenix A320](https://flightsim.to/file/35834/touch-portal-page-for-fenix-a320) by FFEENNIIXX @ flightsim.to
