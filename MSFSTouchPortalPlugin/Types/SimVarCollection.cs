@@ -39,7 +39,7 @@ namespace MSFSTouchPortalPlugin.Types
   /// It provides an enumerable collection of SimVarItems as well as Dictionary-style behavior.
   /// </summary>
   [DebuggerDisplay("Count = {Count}")]
-  internal sealed class SimVarCollection : ICollection<SimVarItem>, ICollection, IDictionary<Definition, SimVarItem>, IReadOnlyDictionary<Definition, SimVarItem>
+  internal /*sealed*/ class SimVarCollection : ICollection<SimVarItem>, ICollection, IDictionary<Definition, SimVarItem>, IReadOnlyDictionary<Definition, SimVarItem>
   {
     internal event SimVarAddedHandler OnSimVarAdded;
     internal event SimVarRemovedHandler OnSimVarRemoved;
