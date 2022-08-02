@@ -202,6 +202,7 @@ namespace MSFSTouchPortalPlugin.Services
       ConnectWasm();
       SetupRequestTracking();
       RegisterRequests();
+      SubscribeSystemEvents();
       OnConnect?.Invoke(new SimulatorInfo(data));
     }
 
@@ -363,6 +364,12 @@ namespace MSFSTouchPortalPlugin.Services
       return SimVarRegistrationStatus.Error;
     }
 
+    void SubscribeSystemEvents()
+    {
+      for (EventIds eventId = EventIds.SimEventNone + 1; eventId < EventIds.SimEventLast; ++eventId)
+        SubscribeToSystemEvent(eventId, eventId.ToString());
+    }
+
     bool MapClientEventToSimEvent(Enum eventId, string eventName)
     {
       return InvokeSimMethod(MapClientEventToSimEventDelegate, eventId, eventName);
@@ -492,7 +499,7 @@ namespace MSFSTouchPortalPlugin.Services
         return false;
       if (!WasmConnected || evId >= EventIds.DynamicEventInit)
         return InvokeSimMethod(TransmitClientEventDelegate, SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, data, (Groups)SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
-      return _wlib.sendCommand(new Command(CommandId.SendKey, (uint)evId, null, data, 0)) == HR.OK;
+      return _wlib.sendCommand(new Command(CommandId.SendKey, (uint)evId, data)) == HR.OK;
     }
 
     public bool TransmitClientEvent(EventMappingRecord eventRecord, uint data)

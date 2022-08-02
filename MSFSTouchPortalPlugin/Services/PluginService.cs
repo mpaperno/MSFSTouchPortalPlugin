@@ -305,11 +305,6 @@ namespace MSFSTouchPortalPlugin.Services
       _simConnectionRequest.Reset();
       _simTasksCTS = new CancellationTokenSource();
       _simTasksCancelToken = _simTasksCTS.Token;
-
-      // Request system events
-      for (EventIds eventId = EventIds.SimEventNone + 1; eventId < EventIds.SimEventLast; ++eventId)
-        _simConnectService.SubscribeToSystemEvent(eventId, eventId.ToString());
-
       // start checking timer events
       _pluginEventsTask = Task.Run(PluginEventsTask);
       _pluginEventsTask.ConfigureAwait(false);  // needed?
