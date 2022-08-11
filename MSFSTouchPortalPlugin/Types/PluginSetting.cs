@@ -109,8 +109,28 @@ namespace MSFSTouchPortalPlugin.Types
       }
     }
 
+    public bool Equals(string other)
+    {
+      if (other == null)
+        return Value == null;
+
+      switch (ValueType) {
+        case DataType.Number: {
+          if (double.TryParse(other, out var numVal))
+            return RealValue == numVal;
+          return false;
+        }
+
+        case DataType.Switch:
+          return BoolValue == (bool)new BooleanString(other);
+
+        default:
+          return StringValue == other;
+      }
+    }
+
     public int IntValue => Value == null || ValueType == DataType.Text ? 0 : (int)Value;
-    public uint UIntValue => (uint)IntValue;
+    public uint UIntValue => unchecked((uint)IntValue);
     public byte ByteValue => (byte)(UIntValue & 0xFF);
     public bool BoolValue => Value == null ? false : ValueType == DataType.Text ? new BooleanString(StringValue) : ValueType == DataType.Number ? IntValue != 0 : (bool)Value;
     public double RealValue => Value == null ? double.NaN : (double)Value;
