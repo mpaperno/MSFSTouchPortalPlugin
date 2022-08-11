@@ -413,6 +413,8 @@ namespace MSFSTouchPortalPlugin.Services
       }
 
       HR hr;
+      byte simVarIdx = 0;
+      var simVarName = simVar.SimVarName.AsSpan();
       if (simVar.VariableType == 'L') {
         // Check if L var exists yet
         hr = _wlib.lookup(LookupItemType.LocalVariable, simVar.SimVarName, out int varId);
@@ -422,6 +424,18 @@ namespace MSFSTouchPortalPlugin.Services
           return SimVarRegistrationStatus.Error;
         }
       }
+      else if (simVar.VariableType == 'A') {
+        // Check for and extract possible index number in variable name.
+        var simVarIdxSpan = simVarName[^4..];
+        if (simVarIdxSpan.IndexOf(':') is var colIdx && colIdx > -1) {
+          if (!byte.TryParse(simVarIdxSpan[(colIdx + 1)..], out simVarIdx)) {
+            simVarIdx = 0;
+            _logger.LogWarning("Could not parse SimVar index from name {simVarName}", simVar.SimVarName);
+          }
+          simVarName = simVarName[..^(4 - colIdx)];
+        }
+      }
+      // Convert the update period enum and also adjust the interval if needed (eg. seconds to ms).
       uint interval = simVar.UpdateInterval;
       WasmUptPeriod period = PluginPeriodToWasmPeriod(simVar.UpdatePeriod, ref interval);
       var dr = new DataRequest() {
@@ -433,8 +447,9 @@ namespace MSFSTouchPortalPlugin.Services
         period = period,
         interval = interval,
         deltaEpsilon = simVar.DeltaEpsilon,
-        nameOrCode = new(simVar.SimVarName),
-        unitName = new(simVar.Unit)
+        nameOrCode = new(simVarName.ToString()),
+        unitName = new(simVar.Unit),
+        simVarIndex = simVarIdx,
       };
       if ((hr = _wlib.saveDataRequest(dr)) != HR.OK) {
         _logger.LogError((int)EventIds.SimError, "Could not complete request due to WASimClient error '{hr}', check log messages.", hr.ToString());
