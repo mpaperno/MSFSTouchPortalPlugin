@@ -102,7 +102,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     bool _connected;
     bool _connecting;
-    bool _simConnectException = false;
+    bool _simConnectHasQuit = false;  // flag to prevent trying to invoke SimConnect in certain situations, eg. after a Quit or crash.
     int _reqTrackIndex = 0;  // current write slot index in _requestTracking array
     uint _wasmClientId = 0xFF700C49;
     bool _wasmInitialUpdate = true;
@@ -238,7 +238,7 @@ namespace MSFSTouchPortalPlugin.Services
       }
       _simConnect = null;
       _messageWaitTask = null;
-      _simConnectException = false;
+      _simConnectHasQuit = false;
       _connected = false;
     }
 
@@ -260,7 +260,7 @@ namespace MSFSTouchPortalPlugin.Services
       catch (ObjectDisposedException) { /* ignore but exit */ }
       catch (Exception e) {
         _logger.LogError((int)EventIds.Ignore, e, "ReceiveMessages task exception {HResult:X}, disconnecting.", e.HResult);
-        _simConnectException = true;
+        _simConnectHasQuit = true;
         Task.Run(Disconnect);  // async to avoid deadlock
         // COMException (0xC000014B) = broken pipe (sim crashed/network loss on a Pipe type connection)
       }
@@ -270,7 +270,7 @@ namespace MSFSTouchPortalPlugin.Services
     // Centralized SimConnect method handler
     bool InvokeSimMethod(Delegate method, params object[] args)
     {
-      if (method == null || !_connected || _simConnectException)
+      if (method == null || !_connected || _simConnectHasQuit)
         return false;
       try {
         _logger.LogTrace("Invoking: {methodName}({args})", method.Method.Name, string.Join(", ", args));
@@ -628,6 +628,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     private void Simconnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data) {
       _logger.LogInformation("Received shutdown command from SimConnect, disconnecting.");
+      _simConnectHasQuit = true;
       Task.Run(Disconnect);  // async to avoid deadlock
     }
 
