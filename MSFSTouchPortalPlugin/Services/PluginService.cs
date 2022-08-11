@@ -114,20 +114,17 @@ namespace MSFSTouchPortalPlugin.Services
 
       _logger.LogInformation("======= " + PLUGIN_ID + " Starting =======");
 
+      // register ctrl-c exit handler
+      Console.CancelKeyPress += (_, _) => {
+        _logger.LogInformation("Quitting due to keyboard interrupt.");
+        _hostApplicationLifetime.StopApplication();
+      };
+
       if (!Initialize()) {
         _hostApplicationLifetime.StopApplication();
         return Task.CompletedTask;
       }
 
-      // register ctrl-c exit handler
-      Console.CancelKeyPress += (_, _) => {
-        _logger.LogInformation("Quitting due to keyboard interrupt.");
-        _hostApplicationLifetime.StopApplication();
-        //Environment.Exit(0);
-      };
-
-      if (!_simAutoConnectDisable.IsSet)
-        _simConnectionRequest.Set();  // enable connection attempts
       return Task.WhenAll(SimConnectionMonitor());
     }
 
@@ -1275,8 +1272,9 @@ namespace MSFSTouchPortalPlugin.Services
         return;
       // loop over incoming new settings
       foreach (var s in settings) {
-        if (!pluginSettingsDictionary.TryGetValue(s.Name, out PluginSetting setting) || setting.StringValue == s.Value)
+        if (!pluginSettingsDictionary.TryGetValue(s.Name, out PluginSetting setting) || setting.Equals(s.Value))
           continue;
+        _logger.LogDebug("{setName}; current: {oldVal}; new: {newVal};", setting.Name, setting.StringValue, s.Value);
         setting.SetValueFromString(s.Value);
         if (!string.IsNullOrWhiteSpace(setting.TouchPortalStateId))
           _client.StateUpdate(setting.TouchPortalStateId, setting.StringValue);
@@ -1299,6 +1297,18 @@ namespace MSFSTouchPortalPlugin.Services
       // states dict will be empty on initial startup
       if (_simVarCollection.IsEmpty || p[0] != _pluginConfig.UserConfigFolder || p[1] != _pluginConfig.UserStateFiles)
         SetupSimVars();
+
+      // Initiate or cancel Sim auto-connection as per setting and current connection status.
+      if (Settings.ConnectSimOnStartup.BoolValue == _simAutoConnectDisable.IsSet) {
+        if (Settings.ConnectSimOnStartup.BoolValue) {
+          ConnectSimConnect();
+        }
+        else if (!_simConnectService.IsConnected) {
+          _simAutoConnectDisable.Set();
+          _simConnectionRequest.Reset();
+          UpdateSimConnectState();
+        }
+      }
     }
 
     #endregion Plugin Action/Event Handlers
@@ -1313,15 +1323,13 @@ namespace MSFSTouchPortalPlugin.Services
       );
 
       ProcessPluginSettings(message.Settings);
-      if (Settings.ConnectSimOnStartup.BoolValue)  // we only care about the Settings value at startup
-        _simAutoConnectDisable.Set();
+
       // Init HubHop database
       if (_presets.OpenDataFile() && Settings.UpdateHubHopOnStartup.BoolValue)
         UpdateHubHopData();
 
-
       // convert the entry.tp version back to the actual decimal value
-      if (!uint.TryParse($"{message.PluginVersion}", System.Globalization.NumberStyles.HexNumber, null, out uint tpVer))
+      if (!uint.TryParse($"{message.PluginVersion}", NumberStyles.HexNumber, null, out uint tpVer))
         tpVer = VersionInfo.GetProductVersionNumber();
       // update version states
       UpdateTpStateValue("RunningVersion", runtimeVer);
