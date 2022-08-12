@@ -50,6 +50,12 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("AP_BC_HOLD",           "Back Course Mode",  "Toggle")]
     [TouchPortalActionMapping("AP_BC_HOLD_ON",        "Back Course Mode",  "On")]
     [TouchPortalActionMapping("AP_BC_HOLD_OFF",       "Back Course Mode",  "Off")]
+    [TouchPortalActionMapping("AP_BANK_HOLD",         "Bank Mode",         "Toggle")]
+    [TouchPortalActionMapping("AP_BANK_HOLD_ON",      "Bank Mode",         "On")]
+    [TouchPortalActionMapping("AP_BANK_HOLD_OFF",     "Bank Mode",         "Off")]
+    [TouchPortalActionMapping("AP_FLIGHT_LEVEL_CHANGE",     "Flight Level Change",  "Toggle")]
+    [TouchPortalActionMapping("AP_FLIGHT_LEVEL_CHANGE_ON",  "Flight Level Change",  "On")]
+    [TouchPortalActionMapping("AP_FLIGHT_LEVEL_CHANGE_OFF", "Flight Level Change",  "Off")]
     [TouchPortalActionMapping("AP_HDG_HOLD",          "Heading Hold",      "Toggle")]
     [TouchPortalActionMapping("AP_HDG_HOLD_ON",       "Heading Hold",      "On")]
     [TouchPortalActionMapping("AP_HDG_HOLD_OFF",      "Heading Hold",      "Off")]
@@ -96,11 +102,22 @@ namespace MSFSTouchPortalPlugin.Objects
 
     #region Bank
 
-    [TouchPortalAction("AutoPilotBanking", "Max Bank Angle Adjust", "Max Bank Angle - {0}", true)]
+    [TouchPortalAction("AutoPilotBanking", "Max. Bank Angle Adjust", "Max Bank Angle - {0}", true)]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_MAX_BANK_INC", "Increase")]
     [TouchPortalActionMapping("AP_MAX_BANK_DEC", "Decrease")]
     public static readonly object AP_MAX_BANK;
+
+    [TouchPortalAction("AutoPilotMaxBankSet", "Max. Bank Set", true,
+      "Set Max Bank {0} Value to {1}",
+      "Set Max Bank {0}in Value\nRange:"
+    )]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionText("0", 0, 180, AllowDecimals = true)]
+    [TouchPortalActionMapping("AP_MAX_BANK_SET", "Limit Preset")]
+    [TouchPortalActionMapping("AP_MAX_BANK_ANGLE_SET", "Angle")]
+    [TouchPortalActionMapping("AP_MAX_BANK_VELOCITY_SET", "Velocity")]
+    public static readonly object AP_MAX_BANK_SET;
 
     #endregion
 
@@ -195,21 +212,34 @@ namespace MSFSTouchPortalPlugin.Objects
 
     #region AutoThrottle
 
-    [TouchPortalAction("AutoThrottle", "Auto Throttle Mode Switch", "Toggle Auto Throttle - {0}")]
+    [TouchPortalAction("AutoThrottle", "Auto Throttle", "Toggle Auto Throttle - {0}")]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AUTO_THROTTLE_ARM", "Arm")]
     [TouchPortalActionMapping("AUTO_THROTTLE_TO_GA", "GoAround")]
+    [TouchPortalActionMapping("AUTO_THROTTLE_DISCONNECT", "Disconnect")]
     public static readonly object AUTO_THROTTLE;
 
     #endregion
 
     #region AutoBrake
 
-    [TouchPortalAction("AutoBrake", "Auto Brake Adjust", "Auto Brake - {0}", true)]
+    [TouchPortalAction("AutoBrake", "Auto Brake", "Auto Brake - {0}", true)]
     [TouchPortalActionChoice()]
-    [TouchPortalActionMapping("INCREASE_AUTOBRAKE_CONTROL", "Increase")]
-    [TouchPortalActionMapping("DECREASE_AUTOBRAKE_CONTROL", "Decrease")]
+    [TouchPortalActionMapping("INC_AUTOBRAKE_CONTROL", "Increase")]
+    [TouchPortalActionMapping("INC_AUTOBRAKE_CONTROL", "Decrease")]
+    [TouchPortalActionMapping("AUTOBRAKE_DISARM", "Disarm")]
+    [TouchPortalActionMapping("AUTOBRAKE_LO_SET", "Set Low")]
+    [TouchPortalActionMapping("AUTOBRAKE_MED_SET", "Set Medium")]
+    [TouchPortalActionMapping("AUTOBRAKE_HI_SET", "Set Maximum")]
     public static readonly object AUTO_BRAKE;
+
+    [TouchPortalAction("AutoBrakeSet", "Auto Brake Set", true,
+      "Set Auto Brake Value to {0} (1-4)",
+      "Set Auto Brake\nin Value Range:"
+    )]
+    [TouchPortalActionText("0", 0, 4, AllowDecimals = false)]
+    [TouchPortalActionMapping("SET_AUTOBRAKE_CONTROL")]
+    public static readonly object AUTO_BRAKE_SET;
 
     #endregion
 
@@ -234,7 +264,8 @@ namespace MSFSTouchPortalPlugin.Objects
 
     #region Flight Director
 
-    [TouchPortalAction("AutoPilotFlightDirectorSwitches", "Flight Director Switches", "Toggle Flight Director {0} Switch On/Off")]
+    [TouchPortalAction("AutoPilotFlightDirectorSwitches", "Flight Director Switches", "Toggle Flight Director {0} Switch")]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("TOGGLE_FLIGHT_DIRECTOR",     "Master")]
     [TouchPortalActionMapping("SYNC_FLIGHT_DIRECTOR_PITCH", "Pitch Sync")]
     public static readonly object AP_FLIGHT_DIRECTOR_SW;
