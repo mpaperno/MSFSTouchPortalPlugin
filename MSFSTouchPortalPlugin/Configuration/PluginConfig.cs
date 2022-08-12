@@ -78,6 +78,7 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     public bool HaveUserStateFiles => _userStateFiles.Any();
     public IReadOnlyCollection<string> UserStateFilesArray => _userStateFiles;
+    public List<string> LoadedStateConfigFiles = new();
     public IEnumerable<string> ImportedSimVarCategoryNames => _importedSimVars.Keys;
     public IEnumerable<string> ImportedSimEvenCategoryNames => _importedSimEvents.Keys;
 
@@ -320,7 +321,8 @@ namespace MSFSTouchPortalPlugin.Configuration
     }
 
     // Loads an individual sim var states config file, either from user's config folder, the default app config location, or a full file path
-    public IReadOnlyCollection<SimVarItem> LoadSimVarItems(bool isUserConfig = true, string filename = default) {
+    public IReadOnlyCollection<SimVarItem> LoadSimVarItems(bool isUserConfig = true, string filename = default)
+    {
       List<SimVarItem> ret = new();
       filename = GetFullFilePath(filename, isUserConfig);
 
@@ -356,6 +358,7 @@ namespace MSFSTouchPortalPlugin.Configuration
         }
       }
 
+      LoadedStateConfigFiles.Add(Path.GetFileName(filename));
       _logger.LogDebug("Loaded {count} SimVars from '{filename}'", ret.Count, filename);
       return ret;
     }

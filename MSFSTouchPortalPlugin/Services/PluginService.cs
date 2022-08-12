@@ -392,6 +392,7 @@ namespace MSFSTouchPortalPlugin.Services
       foreach (var simVar in simVars)
         AddSimVar(simVar, postponeUpdate: true);
 
+      UpdateTpStateValue("LoadedStateConfigFiles", string.Join(',', _pluginConfig.LoadedStateConfigFiles));
       UpdateSimVarLists();
     }
 
@@ -439,6 +440,11 @@ namespace MSFSTouchPortalPlugin.Services
       var list = customOnly ? _simVarCollection.CustomVariables : _simVarCollection.Values.ToArray();
       foreach (SimVarItem simVar in list)
         RemoveSimVar(simVar, true);
+      bool usingDefaultConfig = _pluginConfig.LoadedStateConfigFiles.Contains(PluginConfig.StatesConfigFile);
+      _pluginConfig.LoadedStateConfigFiles.Clear();
+      if (customOnly && usingDefaultConfig)
+        _pluginConfig.LoadedStateConfigFiles.Add(PluginConfig.StatesConfigFile);
+      UpdateTpStateValue("LoadedStateConfigFiles", string.Join(',', _pluginConfig.LoadedStateConfigFiles));
       UpdateSimVarLists();
       _logger.LogInformation((int)EventIds.PluginInfo, "Removed {count}{type} variable requests.", list.Count(), (customOnly ? " Custom" : ""));
     }
@@ -452,8 +458,10 @@ namespace MSFSTouchPortalPlugin.Services
           byte res = AddSimVar(simVar, postponeUpdate: true);
           count += res == 2 ? 1 : res;
         }
-        UpdateSimVarLists();
+        UpdateTpStateValue("LoadedStateConfigFiles", string.Join(',', _pluginConfig.LoadedStateConfigFiles));
       }
+      if (count > 0)
+        UpdateSimVarLists();
       if (count == 0)
         _logger.LogError("Did not load any variable requests from file '{file}'", filepath);
       else if (count != simVars.Count)
@@ -1297,6 +1305,8 @@ namespace MSFSTouchPortalPlugin.Services
       // states dict will be empty on initial startup
       if (_simVarCollection.IsEmpty || p[0] != _pluginConfig.UserConfigFolder || p[1] != _pluginConfig.UserStateFiles)
         SetupSimVars();
+      // send state update with current user config files folder location
+      UpdateTpStateValue("UserConfigFilesPath", _pluginConfig.UserConfigFolder);
 
       // Initiate or cancel Sim auto-connection as per setting and current connection status.
       if (Settings.ConnectSimOnStartup.BoolValue == _simAutoConnectDisable.IsSet) {
@@ -1334,6 +1344,8 @@ namespace MSFSTouchPortalPlugin.Services
       // update version states
       UpdateTpStateValue("RunningVersion", runtimeVer);
       UpdateTpStateValue("EntryVersion", $"{tpVer:X}");
+      // set a state for TP config home path (workaround for no env. var access in TP)
+      UpdateTpStateValue("TouchPortalConfigPath", System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "TouchPortal"));
       // update action data lists
       UpdateCategoryLists();
       UpdateUnitsLists();
@@ -1506,8 +1518,10 @@ namespace MSFSTouchPortalPlugin.Services
       // not implemented yet
     }
 
-    public void OnBroadcastEvent(BroadcastEvent message) {
-      // not implemented yet
+    public void OnBroadcastEvent(BroadcastEvent message)
+    {
+      if (message.Event == "pageChange")
+        UpdateTpStateValue("CurrentTouchPortalPage", message.PageName.Replace(".tml", string.Empty, true, CultureInfo.InvariantCulture));
     }
 
     public void OnUnhandledEvent(string jsonMessage) {
