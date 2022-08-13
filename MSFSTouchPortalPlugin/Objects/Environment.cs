@@ -27,16 +27,66 @@ namespace MSFSTouchPortalPlugin.Objects
   [TouchPortalCategory(Groups.Environment)]
   internal static class EnvironmentMapping
   {
-    #region Anti-Ice
 
-    [TouchPortalAction("AntiIce", "Anti-Ice", "Anti Ice - {0}")]
+    [TouchPortalAction("AntiIceAdjust", "Anti Ice System Switches", "NOTE: Structural and Propeller De Ice can only be Toggled.", "{0} {1}")]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("ANTI_ICE_TOGGLE",         "Anti Ice Switches", "Toggle")]
+    [TouchPortalActionMapping("ANTI_ICE_TOGGLE_ENG1",    "Engine 1 Anti Ice", "Toggle")]
+    [TouchPortalActionMapping("ANTI_ICE_TOGGLE_ENG2",    "Engine 2 Anti Ice", "Toggle")]
+    [TouchPortalActionMapping("ANTI_ICE_TOGGLE_ENG3",    "Engine 3 Anti Ice", "Toggle")]
+    [TouchPortalActionMapping("ANTI_ICE_TOGGLE_ENG4",    "Engine 4 Anti Ice", "Toggle")]
+    [TouchPortalActionMapping("PITOT_HEAT_TOGGLE",       "Pitot Heat",        "Toggle")]
+    [TouchPortalActionMapping("WINDSHIELD_DEICE_TOGGLE", "Windshield De Ice", "Toggle")]
+    [TouchPortalActionMapping("TOGGLE_STRUCTURAL_DEICE", "Structural De Ice", "Toggle")]
+    [TouchPortalActionMapping("TOGGLE_PROPELLER_DEICE",  "Propeller De Ice",  "Toggle")]
+    [TouchPortalActionMapping("ANTI_ICE_ON",             "Anti Ice Switches", "On")]
+    [TouchPortalActionMapping("ANTI_ICE_SET_ENG1",       "Engine 1 Anti Ice", "On", 1)]
+    [TouchPortalActionMapping("ANTI_ICE_SET_ENG2",       "Engine 2 Anti Ice", "On", 1)]
+    [TouchPortalActionMapping("ANTI_ICE_SET_ENG3",       "Engine 3 Anti Ice", "On", 1)]
+    [TouchPortalActionMapping("ANTI_ICE_SET_ENG4",       "Engine 4 Anti Ice", "On", 1)]
+    [TouchPortalActionMapping("PITOT_HEAT_ON",           "Pitot Heat",        "On")]
+    [TouchPortalActionMapping("WINDSHIELD_DEICE_ON",     "Windshield De Ice", "On")]
+    [TouchPortalActionMapping("ANTI_ICE_OFF",            "Anti Ice Switches", "Off")]
+    [TouchPortalActionMapping("ANTI_ICE_SET_ENG1",       "Engine 1 Anti Ice", "Off", 0)]
+    [TouchPortalActionMapping("ANTI_ICE_SET_ENG2",       "Engine 2 Anti Ice", "Off", 0)]
+    [TouchPortalActionMapping("ANTI_ICE_SET_ENG3",       "Engine 3 Anti Ice", "Off", 0)]
+    [TouchPortalActionMapping("ANTI_ICE_SET_ENG4",       "Engine 4 Anti Ice", "Off", 0)]
+    [TouchPortalActionMapping("PITOT_HEAT_OFF",          "Pitot Heat",        "Off")]
+    [TouchPortalActionMapping("WINDSHIELD_DEICE_OFF",    "Windshield De Ice", "Off")]
+    public static readonly object ANTI_ICE_ADJUST;
+
+    [TouchPortalAction("AntiIceSet", "Anti Ice System Set", true,
+      "Set {0} to Value {1}",
+      "Set {0}in Value\nRange:"
+    )]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionText("1", 0, 16384, AllowDecimals = false)]
+    [TouchPortalActionMapping("ANTI_ICE_SET",              "Anti Ice Switches (0/1)")]
+    [TouchPortalActionMapping("ANTI_ICE_SET_ENG1",         "Engine 1 Anti Ice (0/1)")]
+    [TouchPortalActionMapping("ANTI_ICE_SET_ENG2",         "Engine 2 Anti Ice (0/1)")]
+    [TouchPortalActionMapping("ANTI_ICE_SET_ENG3",         "Engine 3 Anti Ice (0/1)")]
+    [TouchPortalActionMapping("ANTI_ICE_SET_ENG4",         "Engine 4 Anti Ice (0/1)")]
+    [TouchPortalActionMapping("ANTI_ICE_GRADUAL_SET",      "All Engines Anti Ice (0 - 16384)")]
+    [TouchPortalActionMapping("ANTI_ICE_GRADUAL_SET_ENG1", "Engine 1 Anti Ice (0 - 16384)")]
+    [TouchPortalActionMapping("ANTI_ICE_GRADUAL_SET_ENG2", "Engine 2 Anti Ice (0 - 16384)")]
+    [TouchPortalActionMapping("ANTI_ICE_GRADUAL_SET_ENG3", "Engine 3 Anti Ice (0 - 16384)")]
+    [TouchPortalActionMapping("ANTI_ICE_GRADUAL_SET_ENG4", "Engine 4 Anti Ice (0 - 16384)")]
+    [TouchPortalActionMapping("PITOT_HEAT_SET",            "Pitot Heat (0/1)")]
+    [TouchPortalActionMapping("WINDSHIELD_DEICE_SET",      "Windshield De Ice (0/1)")]
+    public static readonly object ANTI_ICE_SET;
+
+
+    #region DEPRECATED
+
+    [TouchPortalAction("AntiIce", "Anti-Ice", "Anti Ice - {0}", Deprecated = true)]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("ANTI_ICE_TOGGLE", "Toggle")]
     [TouchPortalActionMapping("ANTI_ICE_ON", "On")]
     [TouchPortalActionMapping("ANTI_ICE_OFF", "Off")]
     public static readonly object AntiIce;
 
-    [TouchPortalAction("AntiIceEng", "Anti-Ice Engine", "Anti Ice Engine {0} Toggle")]
+    [TouchPortalAction("AntiIceEng", "Anti-Ice Engine", "Anti Ice Engine {0} Toggle", Deprecated = true)]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("ANTI_ICE_TOGGLE_ENG1", "1")]
     [TouchPortalActionMapping("ANTI_ICE_TOGGLE_ENG2", "2")]
@@ -44,7 +94,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("ANTI_ICE_TOGGLE_ENG4", "4")]
     public static readonly object AntiIceEng;
 
-    [TouchPortalAction("AntiIceEngSet", "Anti-Ice Engine Set", "Anti Ice Engine {0} - {1}")]
+    [TouchPortalAction("AntiIceEngSet", "Anti-Ice Engine Set", "Anti Ice Engine {0} - {1}", Deprecated = true)]
     [TouchPortalActionChoice()]
     [TouchPortalActionSwitch()]
     [TouchPortalActionMapping("ANTI_ICE_SET_ENG1", "1")]
@@ -53,19 +103,15 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("ANTI_ICE_SET_ENG4", "4")]
     public static readonly object ANTI_ICE_ENGINE;
 
-    [TouchPortalAction("StructuralDeIce", "Structural De-ice", "Toggle Structural DeIce")]
+    [TouchPortalAction("StructuralDeIce", "Structural De-ice", "Toggle Structural DeIce", Deprecated = true)]
     [TouchPortalActionMapping("TOGGLE_STRUCTURAL_DEICE")]
     public static readonly object STRUCTURAL_DEICE;
 
-    [TouchPortalAction("PropellerDeIce", "Propeller De-ice", "Toggle Propeller DeIce")]
+    [TouchPortalAction("PropellerDeIce", "Propeller De-ice", "Toggle Propeller DeIce", Deprecated = true)]
     [TouchPortalActionMapping("TOGGLE_PROPELLER_DEICE")]
     public static readonly object PROPELLER_DEICE;
 
-    #endregion
-
-    #region Pitot Heat
-
-    [TouchPortalAction("PitotHeat", "Pitot Heat", "Pitot Heat - {0}")]
+    [TouchPortalAction("PitotHeat", "Pitot Heat", "Pitot Heat - {0}", Deprecated = true)]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("PITOT_HEAT_TOGGLE", "Toggle")]
     [TouchPortalActionMapping("PITOT_HEAT_ON", "On")]
