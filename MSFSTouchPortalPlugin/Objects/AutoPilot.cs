@@ -171,7 +171,7 @@ namespace MSFSTouchPortalPlugin.Objects
     #region Vertical Speed
 
     [TouchPortalAction("AutoPilotVerticalSpeedVar", "Vertical Speed Value Adj/Sel/Hold", "Vertical Speed Value - {0}", true)]
-    [TouchPortalActionChoice(new [] { "Select", "Increase", "Decrease", "Set Current" })]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("VSI_BUG_SELECT", "Select")]
     [TouchPortalActionMapping("AP_VS_VAR_INC", "Increase")]
     [TouchPortalActionMapping("AP_VS_VAR_DEC", "Decrease")]
