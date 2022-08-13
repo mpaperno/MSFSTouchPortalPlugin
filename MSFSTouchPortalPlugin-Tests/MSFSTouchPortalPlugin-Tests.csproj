@@ -25,14 +25,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="TouchPortal-CS-API" Version="1.45.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MSFSTouchPortalPlugin\MSFSTouchPortalPlugin.csproj" />
-    <Reference Include="TouchPortalSDK, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\MSFSTouchPortalPlugin\lib\TouchPortalSDK\TouchPortalSDK.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
   </ItemGroup>
 
 </Project>
