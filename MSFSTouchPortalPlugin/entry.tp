@@ -1,6 +1,6 @@
 {
   "sdk": 6,
-  "version": 1010003,
+  "version": 1010004,
   "name": "MSFS Touch Portal Plugin",
   "id": "MSFSTouchPortalPlugin",
   "configuration": {
@@ -1495,6 +1495,30 @@
           "type": "text",
           "desc": "MSFS - Plugin - Most recent plugin log messages.",
           "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Plugin.State.UserConfigFilesPath",
+          "type": "text",
+          "desc": "MSFS - Plugin - Plugin configuration files path.",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Plugin.State.LoadedStateConfigFiles",
+          "type": "text",
+          "desc": "MSFS - Plugin - List of currently loaded state configuration file(s).",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Plugin.State.TouchPortalConfigPath",
+          "type": "text",
+          "desc": "MSFS - Plugin - Touch Portal configuration files path.",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Plugin.State.CurrentTouchPortalPage",
+          "type": "text",
+          "desc": "MSFS - Plugin - The current device Touch Portal page name.",
+          "default": ""
         }
       ]
     },
@@ -1622,6 +1646,8 @@
                 "Approach Mode",
                 "Attitude Hold",
                 "Back Course Mode",
+                "Bank Mode",
+                "Flight Level Change",
                 "Heading Hold",
                 "Localizer",
                 "Mach Hold",
@@ -1690,7 +1716,7 @@
         },
         {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoBrake",
-          "name": "Auto Brake Adjust",
+          "name": "Auto Brake",
           "prefix": "MSFS",
           "type": "communicate",
           "description": "",
@@ -1705,14 +1731,39 @@
               "default": "Increase",
               "valueChoices": [
                 "Increase",
-                "Decrease"
+                "Decrease",
+                "Disarm",
+                "Set Low",
+                "Set Medium",
+                "Set Maximum"
               ]
             }
           ]
         },
         {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoBrakeSet",
+          "name": "Auto Brake Set",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "",
+          "tryInline": true,
+          "hasHoldFunctionality": true,
+          "format": "Set Auto Brake Value to {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoBrakeSet.Data.0$} (1-4)",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoBrakeSet.Data.0",
+              "type": "text",
+              "label": "Action",
+              "default": "0",
+              "minValue": 0.0,
+              "maxValue": 4.0,
+              "allowDecimals": false
+            }
+          ]
+        },
+        {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoThrottle",
-          "name": "Auto Throttle Mode Switch",
+          "name": "Auto Throttle",
           "prefix": "MSFS",
           "type": "communicate",
           "description": "",
@@ -1727,7 +1778,8 @@
               "default": "Arm",
               "valueChoices": [
                 "Arm",
-                "GoAround"
+                "GoAround",
+                "Disconnect"
               ]
             }
           ]
@@ -1740,8 +1792,19 @@
           "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
-          "format": "Toggle Flight Director {0} Switch On/Off",
-          "data": []
+          "format": "Toggle Flight Director {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotFlightDirectorSwitches.Data.0$} Switch",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotFlightDirectorSwitches.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Master",
+              "valueChoices": [
+                "Master",
+                "Pitch Sync"
+              ]
+            }
+          ]
         },
         {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeadingVar",
@@ -1831,7 +1894,7 @@
         },
         {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotBanking",
-          "name": "Max Bank Angle Adjust",
+          "name": "Max. Bank Angle Adjust",
           "prefix": "MSFS",
           "type": "communicate",
           "description": "",
@@ -1848,6 +1911,37 @@
                 "Increase",
                 "Decrease"
               ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaxBankSet",
+          "name": "Max. Bank Set",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "description": "",
+          "tryInline": true,
+          "hasHoldFunctionality": true,
+          "format": "Set Max Bank {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaxBankSet.Data.0$} Value to {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaxBankSet.Data.1$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaxBankSet.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Limit Preset",
+              "valueChoices": [
+                "Limit Preset",
+                "Angle",
+                "Velocity"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaxBankSet.Data.1",
+              "type": "text",
+              "label": "Action",
+              "default": "0",
+              "minValue": 0.0,
+              "maxValue": 180.0
             }
           ]
         },
@@ -1892,7 +1986,7 @@
                 "Select",
                 "Increase",
                 "Decrease",
-                "Set Current"
+                "Hold Current"
               ]
             }
           ]
@@ -1981,6 +2075,76 @@
             },
             {
               "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotAttitudeSet.Data.FbRangeMax",
+              "type": "text",
+              "label": "Feedback Range Maximum",
+              "default": "",
+              "minValue": -3.4028234663852886E+38,
+              "maxValue": 3.4028234663852886E+38,
+              "allowDecimals": false
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet",
+          "name": "Max. Bank Set",
+          "format": "Set Max Bank {$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.0$}in Value\nRange:{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.FbRangeMax$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Limit Preset",
+              "valueChoices": [
+                "Limit Preset",
+                "Angle",
+                "Velocity"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.RangeMin",
+              "type": "text",
+              "label": "Value Range Minimum",
+              "default": "0",
+              "minValue": 0.0,
+              "maxValue": 180.0
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.RangeMax",
+              "type": "text",
+              "label": "Value Range Maximum",
+              "default": "180",
+              "minValue": 0.0,
+              "maxValue": 180.0
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.FbCatId",
+              "type": "choice",
+              "label": "Feedback Category",
+              "default": "",
+              "valueChoices": [
+                "[connect plugin]"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.FbVarName",
+              "type": "choice",
+              "label": "Feedback Variable",
+              "default": "",
+              "valueChoices": [
+                "[select a category]"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.FbRangeMin",
+              "type": "text",
+              "label": "Feedback Range Minimum",
+              "default": "",
+              "minValue": -3.4028234663852886E+38,
+              "maxValue": 3.4028234663852886E+38,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.FbRangeMax",
               "type": "text",
               "label": "Feedback Range Maximum",
               "default": "",
@@ -2168,6 +2332,67 @@
             },
             {
               "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotAirSpeedSet.Data.FbRangeMax",
+              "type": "text",
+              "label": "Feedback Range Maximum",
+              "default": "",
+              "minValue": -3.4028234663852886E+38,
+              "maxValue": 3.4028234663852886E+38,
+              "allowDecimals": false
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet",
+          "name": "Auto Brake Set",
+          "format": "Set Auto Brake\nin Value Range:{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.FbRangeMax$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.RangeMin",
+              "type": "text",
+              "label": "Value Range Minimum",
+              "default": "0",
+              "minValue": 0.0,
+              "maxValue": 4.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.RangeMax",
+              "type": "text",
+              "label": "Value Range Maximum",
+              "default": "4",
+              "minValue": 0.0,
+              "maxValue": 4.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.FbCatId",
+              "type": "choice",
+              "label": "Feedback Category",
+              "default": "",
+              "valueChoices": [
+                "[connect plugin]"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.FbVarName",
+              "type": "choice",
+              "label": "Feedback Variable",
+              "default": "",
+              "valueChoices": [
+                "[select a category]"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.FbRangeMin",
+              "type": "text",
+              "label": "Feedback Range Minimum",
+              "default": "",
+              "minValue": -3.4028234663852886E+38,
+              "maxValue": 3.4028234663852886E+38,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.FbRangeMax",
               "type": "text",
               "label": "Feedback Range Maximum",
               "default": "",
@@ -3498,94 +3723,75 @@
       "imagepath": "%TP_PLUGIN_FOLDER%MSFS-TouchPortal-Plugin/airplane_takeoff24.png",
       "actions": [
         {
-          "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIce",
-          "name": "Anti-Ice",
+          "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceSet",
+          "name": "Anti Ice System Set",
           "prefix": "MSFS",
           "type": "communicate",
           "description": "",
           "tryInline": true,
-          "hasHoldFunctionality": false,
-          "format": "Anti Ice - {$MSFSTouchPortalPlugin.Environment.Action.AntiIce.Data.0$}",
+          "hasHoldFunctionality": true,
+          "format": "Set {$MSFSTouchPortalPlugin.Environment.Action.AntiIceSet.Data.0$} to Value {$MSFSTouchPortalPlugin.Environment.Action.AntiIceSet.Data.1$}",
           "data": [
             {
-              "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIce.Data.0",
+              "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceSet.Data.0",
               "type": "choice",
               "label": "Action",
-              "default": "Toggle",
+              "default": "Anti Ice Switches (0/1)",
               "valueChoices": [
-                "Toggle",
-                "On",
-                "Off"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceEng",
-          "name": "Anti-Ice Engine",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "",
-          "tryInline": true,
-          "hasHoldFunctionality": false,
-          "format": "Anti Ice Engine {$MSFSTouchPortalPlugin.Environment.Action.AntiIceEng.Data.0$} Toggle",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceEng.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "1",
-              "valueChoices": [
-                "1",
-                "2",
-                "3",
-                "4"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceEngSet",
-          "name": "Anti-Ice Engine Set",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "",
-          "tryInline": true,
-          "hasHoldFunctionality": false,
-          "format": "Anti Ice Engine {$MSFSTouchPortalPlugin.Environment.Action.AntiIceEngSet.Data.0$} - {$MSFSTouchPortalPlugin.Environment.Action.AntiIceEngSet.Data.1$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceEngSet.Data.0",
-              "type": "choice",
-              "label": "Action",
-              "default": "1",
-              "valueChoices": [
-                "1",
-                "2",
-                "3",
-                "4"
+                "Anti Ice Switches (0/1)",
+                "Engine 1 Anti Ice (0/1)",
+                "Engine 2 Anti Ice (0/1)",
+                "Engine 3 Anti Ice (0/1)",
+                "Engine 4 Anti Ice (0/1)",
+                "All Engines Anti Ice (0 - 16384)",
+                "Engine 1 Anti Ice (0 - 16384)",
+                "Engine 2 Anti Ice (0 - 16384)",
+                "Engine 3 Anti Ice (0 - 16384)",
+                "Engine 4 Anti Ice (0 - 16384)",
+                "Pitot Heat (0/1)",
+                "Windshield De Ice (0/1)"
               ]
             },
             {
-              "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceEngSet.Data.1",
-              "type": "switch",
+              "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceSet.Data.1",
+              "type": "text",
               "label": "Action",
-              "default": false
+              "default": "1",
+              "minValue": 0.0,
+              "maxValue": 16384.0,
+              "allowDecimals": false
             }
           ]
         },
         {
-          "id": "MSFSTouchPortalPlugin.Environment.Action.PitotHeat",
-          "name": "Pitot Heat",
+          "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceAdjust",
+          "name": "Anti Ice System Switches",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
+          "description": "NOTE: Structural and Propeller De Ice can only be Toggled.",
           "tryInline": true,
           "hasHoldFunctionality": false,
-          "format": "Pitot Heat - {$MSFSTouchPortalPlugin.Environment.Action.PitotHeat.Data.0$}",
+          "format": "{$MSFSTouchPortalPlugin.Environment.Action.AntiIceAdjust.Data.0$} {$MSFSTouchPortalPlugin.Environment.Action.AntiIceAdjust.Data.1$}",
           "data": [
             {
-              "id": "MSFSTouchPortalPlugin.Environment.Action.PitotHeat.Data.0",
+              "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceAdjust.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Anti Ice Switches",
+              "valueChoices": [
+                "Anti Ice Switches",
+                "Engine 1 Anti Ice",
+                "Engine 2 Anti Ice",
+                "Engine 3 Anti Ice",
+                "Engine 4 Anti Ice",
+                "Pitot Heat",
+                "Windshield De Ice",
+                "Structural De Ice",
+                "Propeller De Ice"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Environment.Action.AntiIceAdjust.Data.1",
               "type": "choice",
               "label": "Action",
               "default": "Toggle",
@@ -3596,31 +3802,91 @@
               ]
             }
           ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.Action.PropellerDeIce",
-          "name": "Propeller De-ice",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "",
-          "tryInline": true,
-          "hasHoldFunctionality": false,
-          "format": "Toggle Propeller DeIce",
-          "data": []
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Environment.Action.StructuralDeIce",
-          "name": "Structural De-ice",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "",
-          "tryInline": true,
-          "hasHoldFunctionality": false,
-          "format": "Toggle Structural DeIce",
-          "data": []
         }
       ],
-      "connectors": [],
+      "connectors": [
+        {
+          "id": "MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet",
+          "name": "Anti Ice System Set",
+          "format": "Set {$MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.0$}in Value\nRange:{$MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.FbRangeMax$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Anti Ice Switches (0/1)",
+              "valueChoices": [
+                "Anti Ice Switches (0/1)",
+                "Engine 1 Anti Ice (0/1)",
+                "Engine 2 Anti Ice (0/1)",
+                "Engine 3 Anti Ice (0/1)",
+                "Engine 4 Anti Ice (0/1)",
+                "All Engines Anti Ice (0 - 16384)",
+                "Engine 1 Anti Ice (0 - 16384)",
+                "Engine 2 Anti Ice (0 - 16384)",
+                "Engine 3 Anti Ice (0 - 16384)",
+                "Engine 4 Anti Ice (0 - 16384)",
+                "Pitot Heat (0/1)",
+                "Windshield De Ice (0/1)"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.RangeMin",
+              "type": "text",
+              "label": "Value Range Minimum",
+              "default": "0",
+              "minValue": 0.0,
+              "maxValue": 16384.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.RangeMax",
+              "type": "text",
+              "label": "Value Range Maximum",
+              "default": "16384",
+              "minValue": 0.0,
+              "maxValue": 16384.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.FbCatId",
+              "type": "choice",
+              "label": "Feedback Category",
+              "default": "",
+              "valueChoices": [
+                "[connect plugin]"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.FbVarName",
+              "type": "choice",
+              "label": "Feedback Variable",
+              "default": "",
+              "valueChoices": [
+                "[select a category]"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.FbRangeMin",
+              "type": "text",
+              "label": "Feedback Range Minimum",
+              "default": "",
+              "minValue": -3.4028234663852886E+38,
+              "maxValue": 3.4028234663852886E+38,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.FbRangeMax",
+              "type": "text",
+              "label": "Feedback Range Maximum",
+              "default": "",
+              "minValue": -3.4028234663852886E+38,
+              "maxValue": 3.4028234663852886E+38,
+              "allowDecimals": false
+            }
+          ]
+        }
+      ],
       "events": [],
       "states": []
     },

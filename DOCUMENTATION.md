@@ -4,7 +4,7 @@ This plugin provides a two-way interface between Touch Portal and Flight Simulat
 
 For further documentation, please see https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki
 
-This documentation generated for plugin v1.1.0.3-beta3
+This documentation generated for plugin v1.1.0.4-rc1
 
 ---
 
@@ -407,6 +407,10 @@ Feedback From Category:{0}Variable:{1}Value Range:{2}-{3}</td><td><ol start=0>
 | RunningVersion |  | The running plugin version number. | number |  | 0|  |
 | EntryVersion |  | The loaded entry.tp plugin version number. | number |  | 0|  |
 | LogMessages |  | Most recent plugin log messages. | string |  | |  |
+| UserConfigFilesPath |  | Plugin configuration files path. | string |  | |  |
+| LoadedStateConfigFiles |  | List of currently loaded state configuration file(s). | string |  | |  |
+| TouchPortalConfigPath |  | Touch Portal configuration files path. | string |  | |  |
+| CurrentTouchPortalPage |  | The current device Touch Portal page name. | string |  | |  |
 
 
 </details>
@@ -442,10 +446,10 @@ Feedback From Category:{0}Variable:{1}Value Range:{2}-{3}</td><td><ol start=0>
 <td><dl><dt>Set English</dt><dd>AP_ALT_VAR_SET_ENGLISH</dd><dt>Set Metric</dt><dd>AP_ALT_VAR_SET_METRIC</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>AP Switches</td><td></td><td>Auto Pilot {0} Switch {1}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Master</b>, Airspeed Hold, Altitude Hold, Approach Mode, Attitude Hold, Back Course Mode, Heading Hold, Localizer, Mach Hold, Nav1 Hold, Vertical Speed, Wing Leveler, Yaw Dampener</li>
+<li>[choice] &nbsp; <b>Master</b>, Airspeed Hold, Altitude Hold, Approach Mode, Attitude Hold, Back Course Mode, Bank Mode, Flight Level Change, Heading Hold, Localizer, Mach Hold, Nav1 Hold, Vertical Speed, Wing Leveler, Yaw Dampener</li>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Master+Toggle</dt><dd>AP_MASTER</dd><dt>Master+On</dt><dd>AUTOPILOT_ON</dd><dt>Master+Off</dt><dd>AUTOPILOT_OFF</dd><dt>Airspeed Hold+Toggle</dt><dd>AP_AIRSPEED_HOLD</dd><dt>Airspeed Hold+On</dt><dd>AP_AIRSPEED_ON</dd><dt>Airspeed Hold+Off</dt><dd>AP_AIRSPEED_OFF</dd><dt>Altitude Hold+Toggle</dt><dd>AP_ALT_HOLD</dd><dt>Altitude Hold+On</dt><dd>AP_ALT_HOLD_ON</dd><dt>Altitude Hold+Off</dt><dd>AP_ALT_HOLD_OFF</dd><dt>Approach Mode+Toggle</dt><dd>AP_APR_HOLD</dd><dt>Approach Mode+On</dt><dd>AP_APR_HOLD_ON</dd><dt>Approach Mode+Off</dt><dd>AP_APR_HOLD_OFF</dd><dt>Attitude Hold+Toggle</dt><dd>AP_ATT_HOLD</dd><dt>Attitude Hold+On</dt><dd>AP_ATT_HOLD_ON</dd><dt>Attitude Hold+Off</dt><dd>AP_ATT_HOLD_OFF</dd><dt>Back Course Mode+Toggle</dt><dd>AP_BC_HOLD</dd><dt>Back Course Mode+On</dt><dd>AP_BC_HOLD_ON</dd><dt>Back Course Mode+Off</dt><dd>AP_BC_HOLD_OFF</dd><dt>Heading Hold+Toggle</dt><dd>AP_HDG_HOLD</dd><dt>Heading Hold+On</dt><dd>AP_HDG_HOLD_ON</dd><dt>Heading Hold+Off</dt><dd>AP_HDG_HOLD_OFF</dd><dt>Localizer+Toggle</dt><dd>AP_LOC_HOLD</dd><dt>Localizer+On</dt><dd>AP_LOC_HOLD_ON</dd><dt>Localizer+Off</dt><dd>AP_LOC_HOLD_OFF</dd><dt>Mach Hold+Toggle</dt><dd>AP_MACH_HOLD</dd><dt>Mach Hold+On</dt><dd>AP_MACH_ON</dd><dt>Mach Hold+Off</dt><dd>AP_MACH_OFF</dd><dt>Nav1 Hold+Toggle</dt><dd>AP_NAV1_HOLD</dd><dt>Nav1 Hold+On</dt><dd>AP_NAV1_HOLD_ON</dd><dt>Nav1 Hold+Off</dt><dd>AP_NAV1_HOLD_OFF</dd><dt>Vertical Speed+Toggle</dt><dd>AP_VS_HOLD</dd><dt>Vertical Speed+On</dt><dd>AP_VS_ON</dd><dt>Vertical Speed+Off</dt><dd>AP_VS_OFF</dd><dt>Wing Leveler+Toggle</dt><dd>AP_WING_LEVELER</dd><dt>Wing Leveler+On</dt><dd>AP_WING_LEVELER_ON</dd><dt>Wing Leveler+Off</dt><dd>AP_WING_LEVELER_OFF</dd><dt>Yaw Dampener+Toggle</dt><dd>YAW_DAMPER_TOGGLE</dd><dt>Yaw Dampener+On</dt><dd>YAW_DAMPER_ON</dd><dt>Yaw Dampener+Off</dt><dd>YAW_DAMPER_OFF</dd></dl></details></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Master+Toggle</dt><dd>AP_MASTER</dd><dt>Master+On</dt><dd>AUTOPILOT_ON</dd><dt>Master+Off</dt><dd>AUTOPILOT_OFF</dd><dt>Airspeed Hold+Toggle</dt><dd>AP_AIRSPEED_HOLD</dd><dt>Airspeed Hold+On</dt><dd>AP_AIRSPEED_ON</dd><dt>Airspeed Hold+Off</dt><dd>AP_AIRSPEED_OFF</dd><dt>Altitude Hold+Toggle</dt><dd>AP_ALT_HOLD</dd><dt>Altitude Hold+On</dt><dd>AP_ALT_HOLD_ON</dd><dt>Altitude Hold+Off</dt><dd>AP_ALT_HOLD_OFF</dd><dt>Approach Mode+Toggle</dt><dd>AP_APR_HOLD</dd><dt>Approach Mode+On</dt><dd>AP_APR_HOLD_ON</dd><dt>Approach Mode+Off</dt><dd>AP_APR_HOLD_OFF</dd><dt>Attitude Hold+Toggle</dt><dd>AP_ATT_HOLD</dd><dt>Attitude Hold+On</dt><dd>AP_ATT_HOLD_ON</dd><dt>Attitude Hold+Off</dt><dd>AP_ATT_HOLD_OFF</dd><dt>Back Course Mode+Toggle</dt><dd>AP_BC_HOLD</dd><dt>Back Course Mode+On</dt><dd>AP_BC_HOLD_ON</dd><dt>Back Course Mode+Off</dt><dd>AP_BC_HOLD_OFF</dd><dt>Bank Mode+Toggle</dt><dd>AP_BANK_HOLD</dd><dt>Bank Mode+On</dt><dd>AP_BANK_HOLD_ON</dd><dt>Bank Mode+Off</dt><dd>AP_BANK_HOLD_OFF</dd><dt>Flight Level Change+Toggle</dt><dd>AP_FLIGHT_LEVEL_CHANGE</dd><dt>Flight Level Change+On</dt><dd>AP_FLIGHT_LEVEL_CHANGE_ON</dd><dt>Flight Level Change+Off</dt><dd>AP_FLIGHT_LEVEL_CHANGE_OFF</dd><dt>Heading Hold+Toggle</dt><dd>AP_HDG_HOLD</dd><dt>Heading Hold+On</dt><dd>AP_HDG_HOLD_ON</dd><dt>Heading Hold+Off</dt><dd>AP_HDG_HOLD_OFF</dd><dt>Localizer+Toggle</dt><dd>AP_LOC_HOLD</dd><dt>Localizer+On</dt><dd>AP_LOC_HOLD_ON</dd><dt>Localizer+Off</dt><dd>AP_LOC_HOLD_OFF</dd><dt>Mach Hold+Toggle</dt><dd>AP_MACH_HOLD</dd><dt>Mach Hold+On</dt><dd>AP_MACH_ON</dd><dt>Mach Hold+Off</dt><dd>AP_MACH_OFF</dd><dt>Nav1 Hold+Toggle</dt><dd>AP_NAV1_HOLD</dd><dt>Nav1 Hold+On</dt><dd>AP_NAV1_HOLD_ON</dd><dt>Nav1 Hold+Off</dt><dd>AP_NAV1_HOLD_OFF</dd><dt>Vertical Speed+Toggle</dt><dd>AP_VS_HOLD</dd><dt>Vertical Speed+On</dt><dd>AP_VS_ON</dd><dt>Vertical Speed+Off</dt><dd>AP_VS_OFF</dd><dt>Wing Leveler+Toggle</dt><dd>AP_WING_LEVELER</dd><dt>Wing Leveler+On</dt><dd>AP_WING_LEVELER_ON</dd><dt>Wing Leveler+Off</dt><dd>AP_WING_LEVELER_OFF</dd><dt>Yaw Dampener+Toggle</dt><dd>YAW_DAMPER_TOGGLE</dd><dt>Yaw Dampener+On</dt><dd>YAW_DAMPER_ON</dd><dt>Yaw Dampener+Off</dt><dd>YAW_DAMPER_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Attitude Hold Pitch Value Adj/Sel</td><td></td><td>Attitude Hold Pitch Value {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Select</b>, Increase, Decrease</li>
@@ -457,17 +461,23 @@ Feedback From Category:{0}Variable:{1}Value Range:{2}-{3}</td><td><ol start=0>
 </ol></td>
 <td><dl><dd>AP_PITCH_REF_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Auto Brake Adjust</td><td></td><td>Auto Brake - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
+<tr valign='top'><td>Auto Brake</td><td></td><td>Auto Brake - {0}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Increase</b>, Decrease, Disarm, Set Low, Set Medium, Set Maximum</li>
 </ol></td>
-<td><dl><dt>Increase</dt><dd>INCREASE_AUTOBRAKE_CONTROL</dd><dt>Decrease</dt><dd>DECREASE_AUTOBRAKE_CONTROL</dd></dl></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Increase</dt><dd>INC_AUTOBRAKE_CONTROL</dd><dt>Decrease</dt><dd>INC_AUTOBRAKE_CONTROL</dd><dt>Disarm</dt><dd>AUTOBRAKE_DISARM</dd><dt>Set Low</dt><dd>AUTOBRAKE_LO_SET</dd><dt>Set Medium</dt><dd>AUTOBRAKE_MED_SET</dd><dt>Set Maximum</dt><dd>AUTOBRAKE_HI_SET</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Auto Throttle Mode Switch</td><td></td><td>Toggle Auto Throttle - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Arm</b>, GoAround</li>
+<tr valign='top'><td>Auto Brake Set</td><td></td><td>Set Auto Brake Value to {0} (1-4)</td><td><ol start=0>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 4&gt;</sub></li>
 </ol></td>
-<td><dl><dt>Arm</dt><dd>AUTO_THROTTLE_ARM</dd><dt>GoAround</dt><dd>AUTO_THROTTLE_TO_GA</dd></dl></td>
+<td><dl><dd>SET_AUTOBRAKE_CONTROL</dd></dl></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Auto Throttle</td><td></td><td>Toggle Auto Throttle - {0}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Arm</b>, GoAround, Disconnect</li>
+</ol></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Arm</dt><dd>AUTO_THROTTLE_ARM</dd><dt>GoAround</dt><dd>AUTO_THROTTLE_TO_GA</dd><dt>Disconnect</dt><dd>AUTO_THROTTLE_DISCONNECT</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Flight Director Switches</td><td></td><td>Toggle Flight Director {0} Switch On/Off</td><td><ol start=0>
+<tr valign='top'><td>Flight Director Switches</td><td></td><td>Toggle Flight Director {0} Switch</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Master</b>, Pitch Sync</li>
 </ol></td>
 <td><dl><dt>Master</dt><dd>TOGGLE_FLIGHT_DIRECTOR</dd><dt>Pitch Sync</dt><dd>SYNC_FLIGHT_DIRECTOR_PITCH</dd></dl></td>
 <td align='center'></td></tr>
@@ -491,10 +501,16 @@ Feedback From Category:{0}Variable:{1}Value Range:{2}-{3}</td><td><ol start=0>
 </ol></td>
 <td><dl><dd>AP_MACH_VAR_SET</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Max Bank Angle Adjust</td><td></td><td>Max Bank Angle - {0}</td><td><ol start=0>
+<tr valign='top'><td>Max. Bank Angle Adjust</td><td></td><td>Max Bank Angle - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
 <td><dl><dt>Increase</dt><dd>AP_MAX_BANK_INC</dd><dt>Decrease</dt><dd>AP_MAX_BANK_DEC</dd></dl></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Max. Bank Set</td><td></td><td>Set Max Bank {0} Value to {1}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Limit Preset</b>, Angle, Velocity</li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 180.00&gt;</sub></li>
+</ol></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Limit Preset</dt><dd>AP_MAX_BANK_SET</dd><dt>Angle</dt><dd>AP_MAX_BANK_ANGLE_SET</dd><dt>Velocity</dt><dd>AP_MAX_BANK_VELOCITY_SET</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Nav Mode Select</td><td></td><td>Select Nav Mode {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>1</b>, 2</li>
@@ -502,7 +518,7 @@ Feedback From Category:{0}Variable:{1}Value Range:{2}-{3}</td><td><ol start=0>
 <td><dl><dt>1</dt><dd>AP_NAV_SELECT_SET</dd><dt>2</dt><dd>AP_NAV_SELECT_SET</dd></dl></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Vertical Speed Value Adj/Sel/Hold</td><td></td><td>Vertical Speed Value - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Select</b>, Increase, Decrease, Set Current</li>
+<li>[choice] &nbsp; <b>Select</b>, Increase, Decrease, Hold Current</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Select</dt><dd>VSI_BUG_SELECT</dd><dt>Increase</dt><dd>AP_VS_VAR_INC</dd><dt>Decrease</dt><dd>AP_VS_VAR_DEC</dd><dt>Hold Current</dt><dd>AP_VS_VAR_SET_CURRENT</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
@@ -541,6 +557,17 @@ Range:{4}-{5}</td><td><ol start=0>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 </ol></td>
+<tr valign='top'><td>Auto Brake Set</td><td></td><td>Set Auto Brake
+in Value Range:{0}-{1}| Feedback From
+| State (opt):{2}{3}
+Range:{4}-{5}</td><td><ol start=0>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 4&gt;</sub></li>
+<li>[text] &nbsp; <b>4</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 4&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
 <tr valign='top'><td>Heading Hold Value Set</td><td></td><td>Set Heading Hold
 in Value Range:{0}-{1}| Feedback From
 | State (opt):{2}{3}
@@ -558,6 +585,18 @@ in Value Range:{0}-{1}| Feedback From
 Range:{4}-{5}</td><td><ol start=0>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 20.00&gt;</sub></li>
 <li>[text] &nbsp; <b>20</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 20.00&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Max. Bank Set</td><td></td><td>Set Max Bank {0}in Value
+Range:{1}-{2}| Feedback From
+| State (opt):{3}{4}
+Range:{5}-{6}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Limit Preset</b>, Angle, Velocity</li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 180.00&gt;</sub></li>
+<li>[text] &nbsp; <b>180</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 180.00&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -598,7 +637,7 @@ Range:{5}-{6}</td><td><ol start=0>
 | AutoPilotHeadingVar | AUTOPILOT HEADING LOCK DIR | AutoPilot Heading Direction | degrees | F0 | | &#9745; |
 | AutoPilotHeadingHold | AUTOPILOT HEADING LOCK | AutoPilot Heading Status | Bool |  | |  |
 | AutoPilotMach | AUTOPILOT MACH HOLD | AutoPilot Mach Hold | Bool |  | |  |
-| AutoPilotMachVar | AUTOPILOT MACH HOLD VAR | AutoPilot Mach Value | number |  | |  |
+| AutoPilotMachVar | AUTOPILOT MACH HOLD VAR | AutoPilot Mach Value | number | 0.## | |  |
 | AutoPilotMaster | AUTOPILOT MASTER | AutoPilot Master Status | Bool |  | |  |
 | AutoPilotBanking | AUTOPILOT MAX BANK | AutoPilot Max Bank Angle | degrees | F2 | |  |
 | AutoPilotNavSelected | AUTOPILOT NAV SELECTED | AutoPilot Nav Selected Index | number |  | |  |
@@ -959,35 +998,37 @@ Range:{5}-{6}</td><td><ol start=0>
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
-<tr valign='top'><td>Anti-Ice</td><td></td><td>Anti Ice - {0}</td><td><ol start=0>
+<tr valign='top'><td>Anti Ice System Set</td><td></td><td>Set {0} to Value {1}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Anti Ice Switches (0/1)</b>, Engine 1 Anti Ice (0/1), Engine 2 Anti Ice (0/1), Engine 3 Anti Ice (0/1), Engine 4 Anti Ice (0/1), All Engines Anti Ice (0 - 16384), Engine 1 Anti Ice (0 - 16384), Engine 2 Anti Ice (0 - 16384), Engine 3 Anti Ice (0 - 16384), Engine 4 Anti Ice (0 - 16384), Pitot Heat (0/1), Windshield De Ice (0/1)</li>
+<li>[text] &nbsp; <b>1</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+</ol></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Anti Ice Switches (0/1)</dt><dd>ANTI_ICE_SET</dd><dt>Engine 1 Anti Ice (0/1)</dt><dd>ANTI_ICE_SET_ENG1</dd><dt>Engine 2 Anti Ice (0/1)</dt><dd>ANTI_ICE_SET_ENG2</dd><dt>Engine 3 Anti Ice (0/1)</dt><dd>ANTI_ICE_SET_ENG3</dd><dt>Engine 4 Anti Ice (0/1)</dt><dd>ANTI_ICE_SET_ENG4</dd><dt>All Engines Anti Ice (0 - 16384)</dt><dd>ANTI_ICE_GRADUAL_SET</dd><dt>Engine 1 Anti Ice (0 - 16384)</dt><dd>ANTI_ICE_GRADUAL_SET_ENG1</dd><dt>Engine 2 Anti Ice (0 - 16384)</dt><dd>ANTI_ICE_GRADUAL_SET_ENG2</dd><dt>Engine 3 Anti Ice (0 - 16384)</dt><dd>ANTI_ICE_GRADUAL_SET_ENG3</dd><dt>Engine 4 Anti Ice (0 - 16384)</dt><dd>ANTI_ICE_GRADUAL_SET_ENG4</dd><dt>Pitot Heat (0/1)</dt><dd>PITOT_HEAT_SET</dd><dt>Windshield De Ice (0/1)</dt><dd>WINDSHIELD_DEICE_SET</dd></dl></details></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Anti Ice System Switches</td><td>NOTE: Structural and Propeller De Ice can only be Toggled.</td><td>{0} {1}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Anti Ice Switches</b>, Engine 1 Anti Ice, Engine 2 Anti Ice, Engine 3 Anti Ice, Engine 4 Anti Ice, Pitot Heat, Windshield De Ice, Structural De Ice, Propeller De Ice</li>
 <li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>ANTI_ICE_TOGGLE</dd><dt>On</dt><dd>ANTI_ICE_ON</dd><dt>Off</dt><dd>ANTI_ICE_OFF</dd></dl></details></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Anti Ice Switches+Toggle</dt><dd>ANTI_ICE_TOGGLE</dd><dt>Engine 1 Anti Ice+Toggle</dt><dd>ANTI_ICE_TOGGLE_ENG1</dd><dt>Engine 2 Anti Ice+Toggle</dt><dd>ANTI_ICE_TOGGLE_ENG2</dd><dt>Engine 3 Anti Ice+Toggle</dt><dd>ANTI_ICE_TOGGLE_ENG3</dd><dt>Engine 4 Anti Ice+Toggle</dt><dd>ANTI_ICE_TOGGLE_ENG4</dd><dt>Pitot Heat+Toggle</dt><dd>PITOT_HEAT_TOGGLE</dd><dt>Windshield De Ice+Toggle</dt><dd>WINDSHIELD_DEICE_TOGGLE</dd><dt>Structural De Ice+Toggle</dt><dd>TOGGLE_STRUCTURAL_DEICE</dd><dt>Propeller De Ice+Toggle</dt><dd>TOGGLE_PROPELLER_DEICE</dd><dt>Anti Ice Switches+On</dt><dd>ANTI_ICE_ON</dd><dt>Engine 1 Anti Ice+On</dt><dd>ANTI_ICE_SET_ENG1</dd><dt>Engine 2 Anti Ice+On</dt><dd>ANTI_ICE_SET_ENG2</dd><dt>Engine 3 Anti Ice+On</dt><dd>ANTI_ICE_SET_ENG3</dd><dt>Engine 4 Anti Ice+On</dt><dd>ANTI_ICE_SET_ENG4</dd><dt>Pitot Heat+On</dt><dd>PITOT_HEAT_ON</dd><dt>Windshield De Ice+On</dt><dd>WINDSHIELD_DEICE_ON</dd><dt>Anti Ice Switches+Off</dt><dd>ANTI_ICE_OFF</dd><dt>Engine 1 Anti Ice+Off</dt><dd>ANTI_ICE_SET_ENG1</dd><dt>Engine 2 Anti Ice+Off</dt><dd>ANTI_ICE_SET_ENG2</dd><dt>Engine 3 Anti Ice+Off</dt><dd>ANTI_ICE_SET_ENG3</dd><dt>Engine 4 Anti Ice+Off</dt><dd>ANTI_ICE_SET_ENG4</dd><dt>Pitot Heat+Off</dt><dd>PITOT_HEAT_OFF</dd><dt>Windshield De Ice+Off</dt><dd>WINDSHIELD_DEICE_OFF</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Anti-Ice Engine</td><td></td><td>Anti Ice Engine {0} Toggle</td><td><ol start=0>
-<li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
+</table>
+
+
+#### Connectors
+
+<table>
+<tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th></tr>
+<tr valign='top'><td>Anti Ice System Set</td><td></td><td>Set {0}in Value
+Range:{1}-{2}| Feedback From
+| State (opt):{3}{4}
+Range:{5}-{6}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Anti Ice Switches (0/1)</b>, Engine 1 Anti Ice (0/1), Engine 2 Anti Ice (0/1), Engine 3 Anti Ice (0/1), Engine 4 Anti Ice (0/1), All Engines Anti Ice (0 - 16384), Engine 1 Anti Ice (0 - 16384), Engine 2 Anti Ice (0 - 16384), Engine 3 Anti Ice (0 - 16384), Engine 4 Anti Ice (0 - 16384), Pitot Heat (0/1), Windshield De Ice (0/1)</li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 16384&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 </ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>1</dt><dd>ANTI_ICE_TOGGLE_ENG1</dd><dt>2</dt><dd>ANTI_ICE_TOGGLE_ENG2</dd><dt>3</dt><dd>ANTI_ICE_TOGGLE_ENG3</dd><dt>4</dt><dd>ANTI_ICE_TOGGLE_ENG4</dd></dl></details></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Anti-Ice Engine Set</td><td></td><td>Anti Ice Engine {0} - {1}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>1</b>, 2, 3, 4</li>
-<li>[switch] &nbsp; <b>False</b></li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>1</dt><dd>ANTI_ICE_SET_ENG1</dd><dt>2</dt><dd>ANTI_ICE_SET_ENG2</dd><dt>3</dt><dd>ANTI_ICE_SET_ENG3</dd><dt>4</dt><dd>ANTI_ICE_SET_ENG4</dd></dl></details></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Pitot Heat</td><td></td><td>Pitot Heat - {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle</b>, On, Off</li>
-</ol></td>
-<td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>PITOT_HEAT_TOGGLE</dd><dt>On</dt><dd>PITOT_HEAT_ON</dd><dt>Off</dt><dd>PITOT_HEAT_OFF</dd></dl></details></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Propeller De-ice</td><td></td><td>Toggle Propeller DeIce</td><td><ol start=0>
-</ol></td>
-<td><dl><dd>TOGGLE_PROPELLER_DEICE</dd></dl></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Structural De-ice</td><td></td><td>Toggle Structural DeIce</td><td><ol start=0>
-</ol></td>
-<td><dl><dd>TOGGLE_STRUCTURAL_DEICE</dd></dl></td>
-<td align='center'></td></tr>
 </table>
 
 
@@ -1053,14 +1094,14 @@ Range:{5}-{6}</td><td><ol start=0>
 | PlaneAltitudeAGL | PLANE ALT ABOVE GROUND | Altitude Above Ground (feet) | feet | 0.# | | &#9745; |
 | PlaneAltitudeIndicated | INDICATED ALTITUDE | Altitude Indicated (feet) | feet | F1 | | &#9745; |
 | PlaneAltitude | PLANE ALTITUDE | Altitude True (feet) | feet | 0.# | | &#9745; |
-| PlaneBankAngle | PLANE BANK DEGREES | Bank Angle (degrees) | degrees | 0 | | &#9745; |
+| PlaneBankAngle | PLANE BANK DEGREES | Bank Angle (degrees) | degrees | F0 | | &#9745; |
 | FlapSpeedExceeeded | FLAP SPEED EXCEEDED | Flap Speed Exceeded Warning (0/1) | Bool |  | |  |
 | GroundAltitude | GROUND ALTITUDE | Ground level (feet) | feet | 0.# | |  |
 | GroundVelocity | GROUND VELOCITY | Ground Speed (knots) | knots | 0.0# | |  |
-| PlaneHeadingMagnetic | PLANE HEADING DEGREES MAGNETIC | Heading (Magnetic North) (degrees) | degrees | 0 | | &#9745; |
-| PlaneHeadingTrue | PLANE HEADING DEGREES TRUE | Heading (True North) (degrees) | degrees | 0 | | &#9745; |
+| PlaneHeadingMagnetic | PLANE HEADING DEGREES MAGNETIC | Heading (Magnetic North) (degrees) | degrees | F0 | | &#9745; |
+| PlaneHeadingTrue | PLANE HEADING DEGREES TRUE | Heading (True North) (degrees) | degrees | F0 | | &#9745; |
 | OverspeedWarning | OVERSPEED WARNING | Overspeed Warning (0/1) | Bool |  | |  |
-| PlanePitchAngle | PLANE PITCH DEGREES | Pitch Angle (degrees) | degrees | 0 | | &#9745; |
+| PlanePitchAngle | PLANE PITCH DEGREES | Pitch Angle (degrees) | degrees | F0 | | &#9745; |
 | StallWarning | STALL WARNING | Stall Warning (0/1) | Bool |  | |  |
 | VerticalSpeed | VERTICAL SPEED | Vertical Speed (f/m) | feet/minute | 0.0# | | &#9745; |
 
@@ -1323,13 +1364,13 @@ Range:{4}-{5}</td><td><ol start=0>
 | --- | --- | --- | --- | --- | --- | --- |
 | AileronTrim | AILERON TRIM | Aileron Trim Angle | degrees | F2 | |  |
 | AileronTrimPct | AILERON TRIM PCT | Aileron Trim Percent | percent | F1 | 0| &#9745; |
-| CowlFlaps1Percent | RECIP ENG COWL FLAP POSITION:1 | Cowl Flaps 1 Opened Percentage | percent | 0.0# | | &#9745; |
-| CowlFlaps2Percent | RECIP ENG COWL FLAP POSITION:2 | Cowl Flaps 2 Opened Percentage | percent | 0.0# | | &#9745; |
-| CowlFlaps3Percent | RECIP ENG COWL FLAP POSITION:3 | Cowl Flaps 3 Opened Percentage | percent | 0.0# | | &#9745; |
-| CowlFlaps4Percent | RECIP ENG COWL FLAP POSITION:4 | Cowl Flaps 4 Opened Percentage | percent | 0.0# | | &#9745; |
+| CowlFlaps1Percent | RECIP ENG COWL FLAP POSITION:1 | Cowl Flaps 1 Opened Percentage | percent | F1 | | &#9745; |
+| CowlFlaps2Percent | RECIP ENG COWL FLAP POSITION:2 | Cowl Flaps 2 Opened Percentage | percent | F1 | | &#9745; |
+| CowlFlaps3Percent | RECIP ENG COWL FLAP POSITION:3 | Cowl Flaps 3 Opened Percentage | percent | F1 | | &#9745; |
+| CowlFlaps4Percent | RECIP ENG COWL FLAP POSITION:4 | Cowl Flaps 4 Opened Percentage | percent | F1 | | &#9745; |
 | ElevatorTrim | ELEVATOR TRIM POSITION | Elevator Trim Angle | degrees | F2 | | &#9745; |
 | ElevatorTrimPct | ELEVATOR TRIM PCT | Elevator Trim Percent | percent | F1 | 0|  |
-| FlapsHandlePercent | FLAPS HANDLE PERCENT | Flaps Handle Percentage | percent | 0.0# | |  |
+| FlapsHandlePercent | FLAPS HANDLE PERCENT | Flaps Handle Percentage | percent | F1 | |  |
 | ParkingBrakeIndicator | BRAKE PARKING POSITION | Parking Brake Indicator (0/1) | Bool |  | |  |
 | RudderTrim | RUDDER TRIM | Rudder Trim Angle | degrees | F2 | |  |
 | RudderTrimPct | RUDDER TRIM PCT | Rudder Trim Percent | percent | F1 | 0| &#9745; |
