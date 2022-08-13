@@ -1,6 +1,29 @@
 # MSFS Touch Portal Plugin Change Log
 
-## 1.1.0.3 (Aug-2-2022)
+## 1.1.0.4-rc1 (Aug-13-2022)
+* Fixed: Requests for indexed SimVars with an Update Period of type "Millisecond" were not working.
+* Fixed "AutoPilot - Flight Director Switches" action missing choice selector for Master/Pitch Sync switch.
+* Fixed "Auto Pilot - Vertical Speed -> Hold Current" action.
+* Added Auto Pilot actions:
+  * "Bank Mode" and "Flight Level Change" switches (on/off/toggle).
+  * "Auto Throttle Disconnect"
+  * "Max. Bank Set" - Preset position, Angle, or Velocity  (action/connector)
+  * Auto Brake - "Set Off/Low/Medium/Maximum" switch actions & "Set to Value" (action/connector)
+* Consolidated "Anti/De Ice System" switch actions (on/off/toggle)
+* Added Anti/De Ice System actions:
+  * "Windshield De Ice Switch" Toggle/On/Off/Set.
+  * Set actions for "Engines 1-4 Anti Ice" and "Pitot Heat" Switch states.
+  * "Engines 1-4 Anti Ice Set" value range (0 - 16384) action/connector.
+* Adjusted Delta Epsilon properties for the default included variable requests to match the displayed decimal precision.
+* Added new states in "MSFS - Plugin" category to facilitate handling of custom variable request configuration files and page imports:
+  * Plugin configuration files path.
+  * Touch Portal configuration files path.
+  * List of currently loaded state configuration file(s).
+  * The current device Touch Portal page name (including folder, if any).
+* Changes to the "Connect To Flight Sim on Startup" setting now take effect w/out a plugin restart.
+
+---
+## 1.1.0.3-beta3 (Aug-2-2022)
 * Enabled WASimModule integration from multiple simultaneous plugin instances (when using multiple Touch Portal servers/devices).
 * Improved several aspects of custom variable requests for stability and usability, such as utilizing WASM integration when available, and more informative logging.
 * Improved aspects of triggering Simulator Events, including utilizing WASM module integration when available, for greater efficiency.
