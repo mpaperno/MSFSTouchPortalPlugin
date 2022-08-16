@@ -54,11 +54,6 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("TOGGLE_ALTERNATOR4", "4")]
     public static readonly object ALTERNATOR_INDEX;
 
-    // Deprecated
-    [TouchPortalAction("MasterAlternator", "Master Alternator", "Toggle Master Alternator", Deprecated = true)]
-    [TouchPortalActionMapping("TOGGLE_MASTER_ALTERNATOR")]
-    public static readonly object MASTER_ALTERNATOR;
-
     #endregion
 
     #region Lights
@@ -120,7 +115,7 @@ namespace MSFSTouchPortalPlugin.Objects
     public static readonly object LIGHT_SWITCHES;
 
     [TouchPortalAction("LightPorentiometerSet", "Light Dimming", true,
-      "Set Light Potentiometer {0} to {0} (0 to 100)",
+      "Set Light Potentiometer {0} to {1} (0 to 100)",
       "Set Light Potentiometer {0}in Value\nRange:"
     )]
     [TouchPortalActionChoice()]
@@ -162,6 +157,10 @@ namespace MSFSTouchPortalPlugin.Objects
 
     #region DEPRECATED
     // Preserve backwards compatibility with hidden actions,
+
+    [TouchPortalAction("MasterAlternator", "Master Alternator", "Toggle Master Alternator", Deprecated = true)]
+    [TouchPortalActionMapping("TOGGLE_MASTER_ALTERNATOR")]
+    public static readonly object MASTER_ALTERNATOR;
 
     [TouchPortalAction("ToggleLights", "Toggle All/Specific Lights", "Toggle Lights - {0}", Deprecated = true)]
     [TouchPortalActionChoice(new[] { "All", "Beacon", "Taxi", "Logo", "Recognition", "Wing", "Nav", "Cabin" })]
