@@ -358,7 +358,9 @@ namespace MSFSTouchPortalPlugin.Configuration
         }
       }
 
-      LoadedStateConfigFiles.Add(Path.GetFileName(filename));
+      string bareName = Path.GetFileName(filename);
+      if (!LoadedStateConfigFiles.Contains(bareName))
+        LoadedStateConfigFiles.Add(bareName);
       _logger.LogDebug("Loaded {count} SimVars from '{filename}'", ret.Count, filename);
       return ret;
     }
