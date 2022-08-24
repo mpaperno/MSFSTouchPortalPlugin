@@ -1346,6 +1346,8 @@ namespace MSFSTouchPortalPlugin.Services
       UpdateTpStateValue("EntryVersion", $"{tpVer:X}");
       // set a state for TP config home path (workaround for no env. var access in TP)
       UpdateTpStateValue("TouchPortalConfigPath", System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "TouchPortal"));
+      // update current repeat rate state
+      UpdateTpStateValue(Settings.ActionRepeatInterval.SettingID, Settings.ActionRepeatInterval.StringValue);
       // update action data lists
       UpdateCategoryLists();
       UpdateUnitsLists();
