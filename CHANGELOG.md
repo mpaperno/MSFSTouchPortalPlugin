@@ -1,5 +1,15 @@
 # MSFS Touch Portal Plugin Change Log
 
+## 1.1.0.5-rc1 (Aug-24-2022)
+* Fixed reporting initial value of Action Repeat Interval state at plugin startup (thanks @ magicnorm on TP's Discord for reports).
+* Fixed: "Electrical - Light Dimming" action was missing the Value field (the pots list was repeated instead; connector version was OK).
+* Fixed duplicates appearing in "List of currently loaded state configuration file(s)" state when files were being reloaded.
+* Any Connectors (Sliders) which use "feedback" are now set to the corresponding default state values upon initial plugin startup.
+* Added new action to force update of all Connectors (Sliders) which use "feedback" states to represent current values ("MSFS Plugin -> Connect & Update -> Re-Send All Connector Feedback Values").
+* Added experimental color coding around log level indicator in "Most recent plugin log messages" state.
+* The "Update Local Var. List" and "Re-Submit Local Var. Requests" actions were renamed with "... Airplane Local ..." for clarity (backwards compatible).
+
+---
 ## 1.1.0.4-rc1 (Aug-13-2022)
 * Fixed: Requests for indexed SimVars with an Update Period of type "Millisecond" were not working.
 * Fixed "AutoPilot - Flight Director Switches" action missing choice selector for Master/Pitch Sync switch.
