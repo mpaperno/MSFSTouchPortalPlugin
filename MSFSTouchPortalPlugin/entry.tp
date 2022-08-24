@@ -1,6 +1,6 @@
 {
   "sdk": 6,
-  "version": 1010004,
+  "version": 1010005,
   "name": "MSFS Touch Portal Plugin",
   "id": "MSFSTouchPortalPlugin",
   "configuration": {
@@ -35,8 +35,9 @@
                 "Disconnect from Simulator",
                 "Reload State Files",
                 "Re-Send All State Values",
-                "Update Local Var. List",
-                "Re-Submit Local Var. Requests",
+                "Re-Send All Connector Feedback Values",
+                "Update Airplane Local Vars List",
+                "Re-Submit Airplane Local Var Requests",
                 "Update HubHop Data"
               ]
             }
@@ -2749,7 +2750,7 @@
           "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
-          "format": "Set Light Potentiometer {$MSFSTouchPortalPlugin.Electrical.Action.LightPorentiometerSet.Data.0$} to {$MSFSTouchPortalPlugin.Electrical.Action.LightPorentiometerSet.Data.0$} (0 to 100)",
+          "format": "Set Light Potentiometer {$MSFSTouchPortalPlugin.Electrical.Action.LightPorentiometerSet.Data.0$} to {$MSFSTouchPortalPlugin.Electrical.Action.LightPorentiometerSet.Data.1$} (0 to 100)",
           "data": [
             {
               "id": "MSFSTouchPortalPlugin.Electrical.Action.LightPorentiometerSet.Data.0",

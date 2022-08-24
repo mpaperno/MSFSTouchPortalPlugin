@@ -4,7 +4,7 @@ This plugin provides a two-way interface between Touch Portal and Flight Simulat
 
 For further documentation, please see https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki
 
-This documentation generated for plugin v1.1.0.4-rc1
+This documentation generated for plugin v1.1.0.5-rc2
 
 ---
 
@@ -138,7 +138,7 @@ Set to `1` to have all Local ('L') simulator variables sorted in alphabetical or
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>On<br/>Hold</sub></div></th></tr>
 <tr valign='top'><td>Connect & Update</td><td>Control connection to the Simulator, or perform various data update tasks.</td><td>Plugin Action: {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle Simulator Connection</b>, Connect to Simulator, Disconnect from Simulator, Reload State Files, Re-Send All State Values, Update Local Var. List, Re-Submit Local Var. Requests, Update HubHop Data</li>
+<li>[choice] &nbsp; <b>Toggle Simulator Connection</b>, Connect to Simulator, Disconnect from Simulator, Reload State Files, Re-Send All State Values, Re-Send All Connector Feedback Values, Update Airplane Local Vars List, Re-Submit Airplane Local Var Requests, Update HubHop Data</li>
 </ol></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Action Repeat Interval</td><td>Held Action Repeat Rate (ms)</td><td>Repeat Interval: {0} to/by: {1} ms</td><td><ol start=0>
@@ -740,7 +740,7 @@ Range:{6}-{7}</td><td><ol start=0>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Toggle</dt><dd>LANDING_LIGHTS_TOGGLE</dd><dt>On</dt><dd>LANDING_LIGHTS_ON</dd><dt>Off</dt><dd>LANDING_LIGHTS_OFF</dd><dt>Left</dt><dd>LANDING_LIGHT_LEFT</dd><dt>Right</dt><dd>LANDING_LIGHT_RIGHT</dd><dt>Up</dt><dd>LANDING_LIGHT_UP</dd><dt>Down</dt><dd>LANDING_LIGHT_DOWN</dd><dt>Home</dt><dd>LANDING_LIGHT_HOME</dd></dl></details></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Light Dimming</td><td></td><td>Set Light Potentiometer {0} to {0} (0 to 100)</td><td><ol start=0>
+<tr valign='top'><td>Light Dimming</td><td></td><td>Set Light Potentiometer {0} to {1} (0 to 100)</td><td><ol start=0>
 <li>[choice] &nbsp; <b>0</b>, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30</li>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 100&gt;</sub></li>
 </ol></td>
