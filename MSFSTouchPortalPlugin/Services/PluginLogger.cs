@@ -57,7 +57,8 @@ namespace MSFSTouchPortalPlugin.Services
       OnMessageReady.Invoke(message, logLevel, eventId);
     }
 
-    static readonly string[] _logLevelStrings = new [] { "TRC", "DBG", "INF", "WRN", "ERR", "CRT", "UNK" };
+    // special color code formatting specifically for Touch Portal, undocumented feature.
+    static readonly string[] _logLevelStrings = new [] { "TRC", "[c#859aad]DBG[/c]", "[c#006eff]INF[/c]", "[c#e5c32b]WRN[/c]", "[c#d32e2e]ERR[/c]", "[c#bc2ac9]CRT[/c]", "UNK" };
     static string GetLogLevelStr(LogLevel logLevel)
     {
       try { return _logLevelStrings[(int)logLevel]; }
