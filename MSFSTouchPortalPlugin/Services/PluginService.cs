@@ -771,6 +771,10 @@ namespace MSFSTouchPortalPlugin.Services
           SendAllSimVarStates();
           break;
 
+        case PluginActions.UpdateConnectorValues:
+          UpdateAllRelatedConnectors();
+          break;
+
         case PluginActions.UpdateHubHopPresets:
           UpdateHubHopData();
           break;

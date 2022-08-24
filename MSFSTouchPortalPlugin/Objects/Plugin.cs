@@ -37,13 +37,16 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping(PluginActions.Disconnect, "Disconnect from Simulator")]
     [TouchPortalActionMapping(PluginActions.ReloadStates, "Reload State Files")]
     [TouchPortalActionMapping(PluginActions.ResendStates, "Re-Send All State Values")]
-    [TouchPortalActionMapping(PluginActions.UpdateLocalVarsList, "Update Local Var. List")]
-    [TouchPortalActionMapping(PluginActions.ReRegisterLocalVars, "Re-Submit Local Var. Requests")]
+    [TouchPortalActionMapping(PluginActions.UpdateConnectorValues, "Re-Send All Connector Feedback Values")]
+    [TouchPortalActionMapping(PluginActions.UpdateLocalVarsList, "Update Airplane Local Vars List")]
+    [TouchPortalActionMapping(PluginActions.ReRegisterLocalVars, "Re-Submit Airplane Local Var Requests")]
     [TouchPortalActionMapping(PluginActions.UpdateHubHopPresets, "Update HubHop Data")]
     // deprecated mappings
     [TouchPortalActionMapping(PluginActions.ToggleConnection, "Toggle", Deprecated = true)]
     [TouchPortalActionMapping(PluginActions.Connect, "On", Deprecated = true)]
     [TouchPortalActionMapping(PluginActions.Disconnect, "Off", Deprecated = true)]
+    [TouchPortalActionMapping(PluginActions.UpdateLocalVarsList, "Update Local Var. List", Deprecated = true)]
+    [TouchPortalActionMapping(PluginActions.ReRegisterLocalVars, "Re-Submit Local Var. Requests", Deprecated = true)]
     public static readonly object Connection;
 
     [TouchPortalAction(PluginActions.ActionRepeatInterval, "Action Repeat Interval",
