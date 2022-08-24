@@ -780,7 +780,7 @@ namespace MSFSTouchPortalPlugin.Services
           double value;
           if (connValue < 0) {
             string errMsg = null;
-            // preserve backwards compatibility with oldVar actions which used indexed data IDs
+            // preserve backwards compatibility with old actions which used indexed data IDs
             if (data == null || !(data.TryGetValue("Value", out var sVal) || data.TryGetValue("1", out sVal)) || !TryEvaluateValue(sVal, out value, out errMsg)) {
               if (string.IsNullOrEmpty(errMsg))
                   errMsg = "Required parameter 'Value' missing or invalid.";
@@ -799,8 +799,8 @@ namespace MSFSTouchPortalPlugin.Services
           value = Math.Clamp(value, Settings.ActionRepeatInterval.MinValue, Settings.ActionRepeatInterval.MaxValue);
           if (value != Settings.ActionRepeatInterval.RealValue) {
             Settings.ActionRepeatInterval.Value = (uint)value;
-            _client.StateUpdate(Settings.ActionRepeatInterval.TouchPortalStateId, Settings.ActionRepeatInterval.StringValue);
-            UpdateRelatedConnectors("ActionRepeatInterval", value);
+            UpdateTpStateValue(Settings.ActionRepeatInterval.SettingID, Settings.ActionRepeatInterval.StringValue);
+            UpdateRelatedConnectors(Settings.ActionRepeatInterval.SettingID, value);
           }
           break;
         }
@@ -1285,7 +1285,7 @@ namespace MSFSTouchPortalPlugin.Services
         _logger.LogDebug("{setName}; current: {oldVal}; new: {newVal};", setting.Name, setting.StringValue, s.Value);
         setting.SetValueFromString(s.Value);
         if (!string.IsNullOrWhiteSpace(setting.TouchPortalStateId))
-          _client.StateUpdate(setting.TouchPortalStateId, setting.StringValue);
+          UpdateTpStateValue(setting.TouchPortalStateId, setting.StringValue);
       }
 
       // Check if number formatting rules have changed

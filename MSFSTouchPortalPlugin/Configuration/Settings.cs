@@ -107,8 +107,6 @@ namespace MSFSTouchPortalPlugin.Configuration
     // Random part of WASimClient ID, set once per plugin installation and saved in settings config file.
     public static readonly PluginSetting WasimClientIdHighByte = new("WasimClientIdHighByte", 0, 0xFF, "0");
     // Held action repeat interval; settable by user.
-    public static readonly PluginSetting ActionRepeatInterval = new("ActionRepeatInterval", 50, uint.MaxValue, "450") {
-      TouchPortalStateId = "ActionRepeatInterval"
-    };
+    public static readonly PluginSetting ActionRepeatInterval = new("ActionRepeatInterval", 50, uint.MaxValue, "450");
   }
 }

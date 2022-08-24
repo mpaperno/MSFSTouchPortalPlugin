@@ -259,11 +259,9 @@ namespace MSFSTouchPortalPlugin.Services
       foreach (Type setCtr in setContainers) {
         var settingFields = setCtr.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
         foreach (FieldInfo field in settingFields) {
-          if (field.FieldType == typeof(PluginSetting) && ((PluginSetting)field.GetValue(null) is var setting && setting != null)) {
-            if (!string.IsNullOrWhiteSpace(setting.TouchPortalStateId))
-              setting.TouchPortalStateId = $"{TouchPortalBaseId}.Plugin.State.{setting.TouchPortalStateId}";
-            if (!string.IsNullOrEmpty(setting.Name))
-              returnDict.TryAdd(setting.Name, setting);
+          if (field.FieldType == typeof(PluginSetting) && (PluginSetting)field.GetValue(null) is var setting && setting != null && !string.IsNullOrEmpty(setting.Name)) {
+            if (!returnDict.TryAdd(setting.Name, setting))
+              _logger.LogError("Duplicate Setting name detected: {name}", setting.Name);
           }
         }
       }
