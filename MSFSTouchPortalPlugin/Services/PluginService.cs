@@ -493,6 +493,14 @@ namespace MSFSTouchPortalPlugin.Services
         _client.StateUpdate(simVar.TouchPortalStateId, simVar.FormattedValue);
     }
 
+    void UpdateAllRelatedConnectors()
+    {
+      foreach (SimVarItem simVar in _simVarCollection)
+        UpdateRelatedConnectors(simVar.Id, simVar);
+      // don't forget the plugin internal values too
+      UpdateRelatedConnectors(Settings.ActionRepeatInterval.SettingID, Settings.ActionRepeatInterval.RealValue);
+    }
+
     // Action data list updaters
 
     // common handler for other action list updaters
@@ -1354,6 +1362,8 @@ namespace MSFSTouchPortalPlugin.Services
       UpdateSimVarCategories();
       UpdateSimEventAircraft();
       UpdateSimEventCategories();
+      // schedule update of connector values once TP has reported any of our Connectors with shortConnectorIdNotification events
+      Task.Delay(800).ContinueWith(t => UpdateAllRelatedConnectors());
     }
 
     public void OnClosedEvent(string message)
