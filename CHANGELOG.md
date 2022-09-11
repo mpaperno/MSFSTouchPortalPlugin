@@ -1,6 +1,11 @@
 # MSFS Touch Portal Plugin Change Log
 
-## 1.1.0.5-rc1 (Aug-24-2022)
+## 1.1.0.6 (Sept-11-2022)
+* Fixed possible plugin startup issue when Windows user name has space(s) in it (adds quotes around startup command).
+* Added new "Miscellaneous" category for sorting custom states, by user request.
+
+---
+## 1.1.0.5-rc2 (Aug-24-2022)
 * Fixed reporting initial value of Action Repeat Interval state at plugin startup (thanks @ magicnorm on TP's Discord for reports).
 * Fixed: "Electrical - Light Dimming" action was missing the Value field (the pots list was repeated instead; connector version was OK).
 * Fixed duplicates appearing in "List of currently loaded state configuration file(s)" state when files were being reloaded.
