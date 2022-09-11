@@ -105,7 +105,7 @@ namespace MSFSTouchPortalPlugin_Generator
         Id = _options.PluginId
       };
       if (!_options.Debug)
-        model.Plugin_start_cmd = $"{basePath}dist/{_options.PluginId}.exe";
+        model.Plugin_start_cmd = $"\"{basePath}dist/{_options.PluginId}.exe\"";
       model.Configuration.ColorDark = "#" + _options.ColorDark.Trim('#');
       model.Configuration.ColorLight = "#" + _options.ColorLight.Trim('#');
 
