@@ -1,13 +1,13 @@
 {
   "sdk": 6,
-  "version": 1010005,
+  "version": 1010006,
   "name": "MSFS Touch Portal Plugin",
   "id": "MSFSTouchPortalPlugin",
   "configuration": {
     "colorDark": "#212121",
     "colorLight": "#0090ff"
   },
-  "plugin_start_cmd": "%TP_PLUGIN_FOLDER%MSFS-TouchPortal-Plugin/dist/MSFSTouchPortalPlugin.exe",
+  "plugin_start_cmd": "\"%TP_PLUGIN_FOLDER%MSFS-TouchPortal-Plugin/dist/MSFSTouchPortalPlugin.exe\"",
   "categories": [
     {
       "id": "MSFSTouchPortalPlugin.Plugin",
@@ -5369,6 +5369,15 @@
           ]
         }
       ],
+      "events": [],
+      "states": []
+    },
+    {
+      "id": "MSFSTouchPortalPlugin.Miscellaneous",
+      "name": "MSFS - Miscellaneous",
+      "imagepath": "%TP_PLUGIN_FOLDER%MSFS-TouchPortal-Plugin/airplane_takeoff24.png",
+      "actions": [],
+      "connectors": [],
       "events": [],
       "states": []
     },
