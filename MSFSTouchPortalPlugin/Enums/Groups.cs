@@ -33,6 +33,7 @@ namespace MSFSTouchPortalPlugin.Enums {
     FlightInstruments,
     FlightSystems,
     Fuel,
+    Miscellaneous,
     SimSystem,
   }
 }

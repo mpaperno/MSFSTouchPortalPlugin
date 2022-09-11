@@ -44,6 +44,7 @@ namespace MSFSTouchPortalPlugin.Constants
       /* FlightInstruments, */  "Flight Instruments",
       /* FlightSystems, */      "Flight Systems",
       /* Fuel, */               "Fuel",
+      /* Miscellaneous */       "Miscellaneous",
       /* SimSystem, */          "System",
     };
 
