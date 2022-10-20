@@ -241,6 +241,27 @@ Send a request for a list update to the server. The results are delivered using 
 (which may be `S_OK`, `E_FAIL` if server returned `Nak`, or `E_TIMEOUT` if the list request did not complete (results may be empty or partial)).
 \sa \refwce{CommandId::List}
 </member>
+        <member name="M:WASimCommander.Client.WASimClient.sendKeyEvent(std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.UInt32)">
+Trigger a simulator Key Event by name, with up to 5 optional values which are passed onto the event handler.
+This is equivalent to the MSFS Gauge API function `trigger_key_event_EX1()` and similar to `SimConnect_TransmitClientEvent_EX1()` (MSFS SU10 and above).
+
+Note that on first usage the event name is resolved to an ID (using the `lookup()` method) and the resulting ID (if valid) is cached for future uses.
+The cache is kept as a simple `std::unordered_map` type, so if you have a better way to save the event IDs from `lookup()`, use that and call the `sendKeyEvent(uint32_t keyEventId, ...)` overload directly.
+\param keyEventName Name of the Event to trigger. These are typically the same names found in MSFS Event IDs reference (and as lited in the header file 'MSFS/Legacy/gauges.h' but w/out the "KEY_" prefix).
+\param v1-v5 Optional values to pass to the event handler. Defaults are all zeros (same as for `trigger_key_event_EX1()`).
+\return `S_OK` on success, `E_INVALIDARG` if event name could not be resolved to an ID, `E_NOT_CONNECTED` if not connected to server, `E_TIMEOUT` on server communication failure, or `E_FAIL` on unexpected SimConnect error.
+\note Server responds asynchronously with an Ack resonse to `CommandId::SendKey` command type.
+\since v1.1.0
+</member>
+        <member name="M:WASimCommander.Client.WASimClient.sendKeyEvent(System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.UInt32)">
+Trigger a simulator Key Event by ID, with up to 5 optional values which are passed onto the event handler.
+This is equivalent to the MSFS Gauge API function `trigger_key_event_EX1()` and similar to `SimConnect_TransmitClientEvent_EX1()` (MSFS SU10 and above).
+\param keyEventId Numeric ID of the Event to trigger. These are found in the header file 'MSFS/Legacy/gauges.h'. Event names can be resolved to IDs using the `lookup()` method.
+\param v1-v5 Optional values to pass to the event handler. Defaults are all zeros (same as for `trigger_key_event_EX1()`).
+\return `S_OK` on success, `E_NOT_CONNECTED` if not connected to server, `E_TIMEOUT` on server communication failure, or `E_FAIL` on unexpected SimConnect error.
+\note Server responds asynchronously with an Ack/Nak resonse to `CommandId::SendKey` command type; A Nak means the event ID is not valid.
+\since v1.1.0
+</member>
         <member name="M:WASimCommander.Client.WASimClient.registeredEvents">
 Returns a list of all registered events which have been added to the Client with `registerEvent()`. The list members are created by copy.
 </member>
@@ -511,6 +532,18 @@ Default constructor with all parameters optional.
 </member>
         <member name="T:WASimCommander.LogRecord">
 Log record structure. \sa WASimCommander:CommandId::Log command.
+</member>
+        <member name="M:WASimCommander.KeyEvent.op_LeftShift(std.basic_ostream&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte}&gt;*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,WASimCommander.KeyEvent!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)">
+`ostream` operator for logging purposes
+</member>
+        <member name="M:WASimCommander.KeyEvent.#ctor(System.UInt32,std.initializer_list&lt;System.UInt32&gt;,System.UInt32)">
+Default constructor with all parameters optional. The `values` initializer list may contain up to 5 members (any additional are ignored).
+</member>
+        <member name="T:WASimCommander.KeyEvent">
+Data structure for sending Key Events to the sim with up to 5 event values. Events are specified using numeric MSFS Event IDs (names can be resolved to IDs via `Lookup` command).
+This supports the new functionality in MSFS SU10 with `trigger_key_event_EX1()` Gauge API function (similar to `SimConnect_TransmitClientEvent_EX1()`).
+The server will respond with an Ack/Nak for a `SendKey` command, echoing the given `token`. For events with zero or one value, the `SendKey` command can be used instead.
+\since v1.1.0  \sa Enums::CommandId::SendKey, Enums::CommandId::Lookup
 </member>
         <member name="M:WASimCommander.DataRequest.op_LeftShift(std.basic_ostream&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte}&gt;*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,WASimCommander.DataRequest!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)">
 `ostream` operator for logging purposes
