@@ -52,8 +52,9 @@ namespace MSFSTouchPortalPlugin.Interfaces
 
     uint Connect(uint configIndex = 0);
     void Disconnect();
-    bool TransmitClientEvent(Enum eventId, uint data);
-    bool TransmitClientEvent(EventMappingRecord eventRecord, uint data);
+    bool TransmitClientEvent(Enum eventId, uint data, uint d2 = 0, uint d3 = 0, uint d4 = 0, uint d5 = 0);
+    bool TransmitClientEvent(EventMappingRecord eventRecord, uint data, uint d2 = 0, uint d3 = 0, uint d4 = 0, uint d5 = 0);
+    bool TransmitClientEvent(EventMappingRecord eventRecord, uint[] data);
     bool RequestDataOnSimObject(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER);
     bool RequestDataOnSimObjectType(SimVarItem simVar, SIMCONNECT_SIMOBJECT_TYPE objectType = SIMCONNECT_SIMOBJECT_TYPE.USER);
     bool SetDataOnSimObject(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER);

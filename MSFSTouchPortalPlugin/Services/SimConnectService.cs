@@ -31,7 +31,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-//using WASimCommander.CLI;
 using WASimCommander.CLI.Enums;
 using WASimCommander.CLI.Structs;
 using WASMLib = WASimCommander.CLI.Client.WASimClient;
@@ -121,7 +120,8 @@ namespace MSFSTouchPortalPlugin.Services
     Action<Enum, string>     MapClientEventToSimEventDelegate;
     Action<Enum, string>     SubscribeToSystemEventDelegate;
     Action<Enum, Enum, uint, SIMCONNECT_SIMOBJECT_TYPE>   RequestDataOnSimObjectTypeDelegate;
-    Action<uint, Enum, uint, Enum, SIMCONNECT_EVENT_FLAG> TransmitClientEventDelegate;
+    //Action<uint, Enum, uint, Enum, SIMCONNECT_EVENT_FLAG> TransmitClientEventDelegate;
+    Action<uint, Enum, Enum, SIMCONNECT_EVENT_FLAG, uint, uint, uint, uint, uint> TransmitClientEventEx1Delegate;
     Action<Enum, uint, SIMCONNECT_DATA_SET_FLAG, object>  SetDataOnSimObjectDelegate;
     Action<Enum, string, string, SIMCONNECT_DATATYPE, float, uint> AddToDataDefinitionDelegate;
     Action<Enum, Enum, uint, SIMCONNECT_PERIOD, SIMCONNECT_DATA_REQUEST_FLAG, uint, uint, uint> RequestDataOnSimObjectDelegate;
@@ -184,7 +184,8 @@ namespace MSFSTouchPortalPlugin.Services
 
       // Method delegates
       MapClientEventToSimEventDelegate          = _simConnect.MapClientEventToSimEvent;
-      TransmitClientEventDelegate               = _simConnect.TransmitClientEvent;
+      //TransmitClientEventDelegate               = _simConnect.TransmitClientEvent;
+      TransmitClientEventEx1Delegate            = _simConnect.TransmitClientEvent_EX1;
       ClearDataDefinitionDelegate               = _simConnect.ClearDataDefinition;
       AddToDataDefinitionDelegate               = _simConnect.AddToDataDefinition;
       RequestDataOnSimObjectDelegate            = _simConnect.RequestDataOnSimObject;
@@ -507,17 +508,17 @@ namespace MSFSTouchPortalPlugin.Services
       OnDisconnect?.Invoke();
     }
 
-    public bool TransmitClientEvent(Enum eventId, uint data)
+    public bool TransmitClientEvent(Enum eventId, uint data, uint d2 = 0, uint d3 = 0, uint d4 = 0, uint d5 = 0)
     {
       EventIds evId = (EventIds)eventId;
       if (evId <= EventIds.InternalEventsLast)
         return false;
       if (!WasmConnected || evId >= EventIds.DynamicEventInit)
-        return InvokeSimMethod(TransmitClientEventDelegate, SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, data, (Groups)SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
-      return _wlib.sendCommand(new Command(CommandId.SendKey, (uint)evId, data)) == HR.OK;
+        return InvokeSimMethod(TransmitClientEventEx1Delegate, SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, (Groups)SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY, data, d2, d3, d4, d5);
+      return _wlib.sendKeyEvent((uint)evId, data, d2, d3, d4, d5) == HR.OK;
     }
 
-    public bool TransmitClientEvent(EventMappingRecord eventRecord, uint data)
+    public bool TransmitClientEvent(EventMappingRecord eventRecord, uint data, uint d2 = 0, uint d3 = 0, uint d4 = 0, uint d5 = 0)
     {
       if (eventRecord == null)
         return false;
@@ -538,7 +539,14 @@ namespace MSFSTouchPortalPlugin.Services
             return false;
         }
       }
-      return TransmitClientEvent(eventRecord.EventId, data);
+      return TransmitClientEvent(eventRecord.EventId, data, d2, d3, d4, d5);
+    }
+
+    public bool TransmitClientEvent(EventMappingRecord eventRecord, uint[] data)
+    {
+      if (data.Length < 5)
+        return false;
+      return TransmitClientEvent(eventRecord, data[0], data[1], data[2], data[3], data[4]);
     }
 
     public bool RequestDataOnSimObjectType(SimVarItem simVar, SIMCONNECT_SIMOBJECT_TYPE objectType = SIMCONNECT_SIMOBJECT_TYPE.USER) {
