@@ -20,6 +20,29 @@ and is also available at <http://www.gnu.org/licenses/>.
 using MSFSTouchPortalPlugin.Enums;
 using System.Collections.Generic;
 
+namespace MSFSTouchPortalPlugin.Enums
+{
+  public enum Groups
+  {
+    None = 0,
+    Plugin,
+    StatesEditor,
+    // categories for custom states
+    AutoPilot,
+    Camera,
+    Communication,
+    Electrical,
+    Engine,
+    Environment,
+    Failures,
+    FlightInstruments,
+    FlightSystems,
+    Fuel,
+    Miscellaneous,
+    SimSystem,
+  }
+}
+
 namespace MSFSTouchPortalPlugin.Constants
 {
   internal static class Categories
@@ -34,9 +57,10 @@ namespace MSFSTouchPortalPlugin.Constants
     {
       /* None, */               "None",
       /* Plugin, */             "Plugin",
+      /* StatesEditor, */       "Custom States & Variables",
       /* AutoPilot, */          "AutoPilot",
       /* Camera, */             "Camera & Views",
-      /* Communication, */      "Communication",
+      /* Communication, */      "Radio & Navigation",
       /* Electrical, */         "Electrical",
       /* Engine, */             "Engine",
       /* Environment, */        "Environment",
@@ -45,13 +69,34 @@ namespace MSFSTouchPortalPlugin.Constants
       /* FlightSystems, */      "Flight Systems",
       /* Fuel, */               "Fuel",
       /* Miscellaneous */       "Miscellaneous",
-      /* SimSystem, */          "System",
+      /* SimSystem, */          "Simulator System",
     };
 
-    private static readonly List<string> usableCategoryNames = categoryNames.GetRange(2, categoryNames.Count - 2);
+    private static readonly Dictionary<string, Groups> nameIdMap = new()
+    {
+      { categoryNames[(int)Groups.None],              Groups.None },
+      { categoryNames[(int)Groups.Plugin],            Groups.Plugin },
+      { categoryNames[(int)Groups.StatesEditor],      Groups.StatesEditor },
+      { categoryNames[(int)Groups.AutoPilot],         Groups.AutoPilot },
+      { categoryNames[(int)Groups.Communication],     Groups.Communication },
+      { "Communication",                              Groups.Communication },  // legacy
+      { categoryNames[(int)Groups.Electrical],        Groups.Electrical },
+      { categoryNames[(int)Groups.Engine],            Groups.Engine },
+      { categoryNames[(int)Groups.Environment],       Groups.Environment },
+      { categoryNames[(int)Groups.Failures],          Groups.Failures },
+      { categoryNames[(int)Groups.FlightInstruments], Groups.FlightInstruments },
+      { categoryNames[(int)Groups.FlightSystems],     Groups.FlightSystems },
+      { categoryNames[(int)Groups.Fuel],              Groups.Fuel },
+      { categoryNames[(int)Groups.Miscellaneous],     Groups.Miscellaneous },
+      { categoryNames[(int)Groups.SimSystem],         Groups.SimSystem },
+      { "System",                                     Groups.SimSystem },  // legacy
+    };
+
+    private static readonly List<string> usableCategoryNames = categoryNames.GetRange((int)Groups.AutoPilot, categoryNames.Count - (int)Groups.AutoPilot);
 
     public static IReadOnlyCollection<string> ListAll => categoryNames;
     public static IReadOnlyCollection<string> ListUsable => usableCategoryNames;  // w/out None and Plugin
+    public static readonly List<Groups> InternalActionCategories = new() { Groups.Plugin, Groups.StatesEditor };
 
     /// <summary>
     /// Returns the category name for given enum value, or a blank string if the id is invalid..
@@ -65,17 +110,14 @@ namespace MSFSTouchPortalPlugin.Constants
     /// <summary>
     /// Returns the category ID for given name, or Groups.None if the string is invalid..
     /// </summary>
-    internal static Groups CategoryId(string name) =>
-      categoryNames.IndexOf(name) is var idx && idx > -1 ? (Groups)idx : Groups.None;
+    internal static Groups CategoryId(string name) => nameIdMap.GetValueOrDefault(name, Groups.None);
 
     /// <summary>
     /// Places the category ID for given name in the out parameter, and returns true if string was valid.
     /// </summary>
     internal static bool TryGetCategoryId(string name, out Groups id) {
-      if (categoryNames.IndexOf(name) is var idx && idx > -1) {
-        id = (Groups)idx;
+      if (nameIdMap.TryGetValue(name, out id))
         return true;
-      }
       id = Groups.None;
       return false;
     }
@@ -104,13 +146,15 @@ namespace MSFSTouchPortalPlugin.Constants
     }
 
     /// <summary>
-    /// Workaround for legacy issue with mis-named actions in category InstrumentsSystems.Fuel instead of just Fuel.  TODO
+    /// Maps category IDs to strings, possibly aliased for public entry.tp usage.
+    /// Also workaround for legacy issue with mis-named actions in category InstrumentsSystems.Fuel instead of just Fuel.
     /// </summary>
     internal static string ActionCategoryId(Groups catId) {
-      string ret = catId.ToString();
+      if (catId == Groups.StatesEditor)
+        return Groups.Plugin.ToString();
       if (catId == Groups.Fuel)
-        return "InstrumentsSystems." + ret;
-      return ret;
+        return "InstrumentsSystems." + catId.ToString();
+      return catId.ToString();
     }
 
     internal static string CategoryImage(Groups catId) {
