@@ -21,6 +21,7 @@ and is also available at <http://www.gnu.org/licenses/>.
 
 using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Enums;
+using System.Reflection.Emit;
 using SimVarItem = MSFSTouchPortalPlugin.Types.SimVarItem;
 
 namespace MSFSTouchPortalPlugin.Objects
@@ -65,30 +66,68 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalConnectorMeta(1000, 50, 50, int.MaxValue, false, false, RangeStartIndex = 3)]
     public static readonly object ActionRepeatInterval;
 
+    // Trigger Events
 
     [TouchPortalAction(PluginActions.SetCustomSimEvent, "Activate a Named Simulator Event",
-      "Trigger or set value of a Simulator Event by name.\n" +
-        "The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.",
-      "Activate Event {0} with value {1} (if any)",
-      "Set Event:{0}Value\nRange:",
+      "Trigger any Simulator Event by name with optional parameter value(s). See MSFS SDK Documentation 'Event IDs' for reference.\n" +
+        "The value(s), if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.",
+      "Activate Event {0} with value(s): {1} {2} {3} {4} {5}",
+      //"Set Event:{0}Value\nRange:",
       holdable: true)]
     [TouchPortalActionText("SIMULATOR_EVENT_NAME", Id = "EvtId", Label = "Event ID")]
-    [TouchPortalActionText("", float.MinValue, float.MaxValue, Id = "Value", Label = "Value")]
-    [TouchPortalConnectorMeta()]
+    [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value", Label = "Value 1")]
+    [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value2", Label = "Value 2")]
+    [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value3", Label = "Value 3")]
+    [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value4", Label = "Value 4")]
+    [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value5", Label = "Value 5")]
+    //[TouchPortalConnectorMeta(RangeStartIndex = 1)]
     public static readonly object SetCustomSimEvent;
 
+    [TouchPortalConnector(PluginActions.SetCustomSimEvent, "Activate a Named Simulator Event",
+      "Trigger any Simulator Event by name setting one parameter value with a slider, with optional extra parameter value(s). See MSFS SDK Documentation 'Event IDs' for reference.\n" +
+        "The extra value(s), if any, should evaluate to numeric. They are typically used to select a sub-system which will be affected (eg. one of several engines).",
+      "Set Event:{0} in Value\nRange {1}-{2} | With Other\n| Values (opt) {3} {4} Connector\nValue Index {5}"
+    )]
+    [TouchPortalActionText("SIMULATOR_EVENT_NAME", Id = "EvtId", Label = "Event ID")]
+    [TouchPortalActionText("-16384", int.MinValue, uint.MaxValue, Id = "RangeMin", Label = "Value Range Minimum")]
+    [TouchPortalActionText("16384", int.MinValue, uint.MaxValue, Id = "RangeMax", Label = "Value Range Maximum")]
+    [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value", Label = "Value 1")]
+    [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value2", Label = "Value 2")]
+    //[TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value3", Label = "Value 3")]
+    [TouchPortalActionChoice(new[] { "0-first", "1-mid", "2-last", /*"3-last"*/ }, Id = "ConnValIdx", Label = "Conn. Value Index")]
+    [TouchPortalConnectorMeta(InsertValueRange = false)]
+    public static readonly object SetCustomSimEventConn;
 
-    [TouchPortalAction(PluginActions.SetKnownSimEvent, "Activate a Simulator Event From List",
-      "Trigger or set value of a Simulator Event selected from a list of imported events.\n" +
-        "The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.",
-      "From Category {0} Activate Event {1} with value {2} (if any)",
-      "From\nCategory:{0}Activate\nEvent:{1}Value\nRange:",
+
+    [TouchPortalAction(PluginActions.SetKnownSimEvent, "Activate a Selected Simulator Event",
+      "Trigger a selected Simulator Event, with optional parameter value(s). See MSFS SDK Documentation 'Event IDs' for reference.\n" +
+        "The value(s), if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.",
+      "From Category {0} Activate Event {1} with value(s) {2} {3} {4}",
+      //"From\nCategory:{0}Activate\nEvent:{1}Value\nRange:",
       holdable: true)]
     [TouchPortalActionChoice("[plugin not connected]", "", Id = "SimCatName", Label = "Category")]
     [TouchPortalActionChoice("[select a category]", "", Id = "EvtId", Label = "Event ID")]
-    [TouchPortalActionText("", float.MinValue, float.MaxValue, Id = "Value", Label = "Value")]
-    [TouchPortalConnectorMeta()]
+    [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value", Label = "Value 1")]
+    [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value2", Label = "Value 2")]
+    [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value3", Label = "Value 3")]
+    //[TouchPortalConnectorMeta(RangeStartIndex = 2)]
     public static readonly object SetKnownSimEvent;
+
+    [TouchPortalConnector(PluginActions.SetKnownSimEvent, "Activate a Selected Simulator Event",
+      "Trigger a selected Simulator Event, setting one parameter value with a slider, with optional extra parameter value(s). See MSFS SDK Documentation 'Event IDs' for reference.\n" +
+        "The extra value(s), if any, should evaluate to numeric. They are typically used to select a sub-system which will be affected (eg. one of several engines).",
+      "From Category {0} Activate Event {1} in Value\nRange {2}-{3} | With Other\n| Values (opt) {4} {5} Connector\nValue Index {6}"
+    )]
+    [TouchPortalActionChoice("[plugin not connected]", "", Id = "SimCatName", Label = "Category")]
+    [TouchPortalActionChoice("[select a category]", "", Id = "EvtId", Label = "Event ID")]
+    [TouchPortalActionText("-16384", int.MinValue, uint.MaxValue, Id = "RangeMin", Label = "Value Range Minimum")]
+    [TouchPortalActionText("16384", int.MinValue, uint.MaxValue, Id = "RangeMax", Label = "Value Range Maximum")]
+    [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value", Label = "Value 1")]
+    [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value2", Label = "Value 2")]
+    //[TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value3", Label = "Value 3")]
+    [TouchPortalActionChoice(new[] { "0-first", "1-mid", "2-last", /*"3-last"*/ }, Id = "ConnValIdx", Label = "Conn. Value Index")]
+    [TouchPortalConnectorMeta(InsertValueRange = false)]
+    public static readonly object SetKnownSimEventConn;
 
 
     [TouchPortalAction(PluginActions.SetHubHopEvent, "Activate an Input Event From HubHop",
@@ -101,10 +140,11 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionChoice("[plugin not connected]", "", Id = "VendorAircraft", Label = "Aircraft")]
     [TouchPortalActionChoice("[select an aircraft]", "", Id = "System", Label = "System")]
     [TouchPortalActionChoice("[select a system]", "", Id = "EvtId", Label = "Event Name")]
-    [TouchPortalActionText("", float.MinValue, float.MaxValue, Id = "Value", Label = "Value")]
+    [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value", Label = "Value")]
     [TouchPortalConnectorMeta()]
     public static readonly object SetHubHopEvent;
 
+    // Set Variables
 
     [TouchPortalAction(PluginActions.SetSimVar, "Set Simulator Variable (SimVar)",
       "Sets the value of a Simulator Variable selected from a list of Sim Vars which are marked as settable.",
@@ -146,7 +186,7 @@ namespace MSFSTouchPortalPlugin.Objects
 
     [TouchPortalConnector(PluginActions.SetVariable, "Set Named Variable Value",
       "Sets a value on any named variable of various types. SimVar types require a Unit specifier.\t\t\t\t\t** Requires WASimModule **",
-      "Variable\nType:{0}Name:{1}Units\n(opt):{2}Value\nRange:"  // {3}-{4}| Feedback From\n| State (opt):{5}{6}\nRange:{7}-{8}
+      "Variable\nType:{0}Name:{1}Units\n(opt):{2}Value\nRange:"
     )]
     [TouchPortalActionChoice(new[] { "A: SimVar", "C: GPS", "H: HTML Event", "K: Key Event", "L: Local", "Z: Custom SimVar" }, Id = "VarType", Label = "Variable Type")]
     [TouchPortalActionText("", Id = "VarName", Label = "Variable Name")]
@@ -154,6 +194,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalConnectorMeta()]
     public static readonly object SetVariableConn;
 
+    // Exec Calc Code
 
     [TouchPortalAction(PluginActions.ExecCalcCode, "Execute Calculator Code",
       "Execute Calculator Code\n" +
@@ -168,12 +209,31 @@ namespace MSFSTouchPortalPlugin.Objects
       "Calculator Code:\n(@ as placeholder(s) for value){0}Value\nRange:"
     )]
     [TouchPortalActionText("@ 1 (>K:2:PANEL_LIGHTS_POWER_SETTING_SET)", Id = "Code", Label = "Code")]
-    [TouchPortalConnectorMeta(decimals: true, feedback: true)]
+    [TouchPortalConnectorMeta()]
     public static readonly object ExecCalcCodeConn;
 
+    // Visual Feedback
 
-    // The spacing and titles here are very carefully chosen to help align labels on the top row with entry fields on the bottom row, including the default lists/values.
-    // Do not change without testing in TP!
+    [TouchPortalConnector(PluginActions.SetConnectorValue, "Visual Feedback Connector",
+      "This connector provides only visual feedback by setting the position of a slider based on an existing State/variable value.",
+      "Set Connector Value Based on\nFeedback From Category:{0}Variable:{1}Value Range:{2}-{3}"
+    )]
+    [TouchPortalActionChoice("[connect plugin]", "", Id = "FbCatId", Label = "Feedback Category")]
+    [TouchPortalActionChoice("[select a category]", "", Id = "FbVarName", Label = "Feedback Variable")]
+    [TouchPortalActionText("-16384", float.MinValue, float.MaxValue, true, Id = "FbRangeMin", Label = "Feedback Range Minimum")]
+    [TouchPortalActionText("16384", float.MinValue, float.MaxValue, true, Id = "FbRangeMax", Label = "Feedback Range Maximum")]
+    public static readonly object SetConnectorValue;
+
+  }
+
+  // Actions for editing variable requests has own category in TP UI, though actually these act as if they were in `Groups.Plugin`.
+  [TouchPortalCategory(Groups.StatesEditor)]
+  internal static class StatesEditorMapping
+  {
+
+    // The spacing and titles in the actions below are very carefully chosen to help align labels on the top row with entry fields on the bottom row,
+    // including the default lists/values. Do not change without testing in TP!
+
     [TouchPortalAction(PluginActions.AddCustomSimVar, "Request a Custom Simulator Variable",
       "Request Simulator Variable Name:                            Index (if req'd):               " +
         "Units:                                                                " +
@@ -193,8 +253,6 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionNumeric(SimVarItem.DELTA_EPSILON_DEFAULT, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
     public static readonly object AddCustomSimVar;
 
-    // The spacing and titles here are very carefully chosen to help align labels on the top row with entry fields on the bottom row, including the default lists/values.
-    // Do not change without testing in TP!
     [TouchPortalAction(PluginActions.AddKnownSimVar, "Request a Variable From List",
       "Request a Variable from Simulator\t\t\t\t\t** Local Variables support requires WASimModule **\n" +
         "Category or Local Aircraft          " +
@@ -217,8 +275,6 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionNumeric(SimVarItem.DELTA_EPSILON_DEFAULT, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
     public static readonly object AddKnownSimVar;
 
-    // The spacing and titles here are very carefully chosen to help align labels on the top row with entry fields on the bottom row, including the default lists/values.
-    // Do not change without testing in TP!
     [TouchPortalAction(PluginActions.AddNamedVariable, "Request a Named Variable",
       "Request a Named Variable                       For indexed SimVars, include it in the name after a : (colon).\t\t\t\t\t** Requires WASimModule **\n" +
         "Variable Type:                Name:                                                   " +
@@ -239,8 +295,6 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionNumeric(SimVarItem.DELTA_EPSILON_DEFAULT, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
     public static readonly object AddNamedVariable;
 
-    // The spacing and titles here are very carefully chosen to help align labels on the top row with entry fields on the bottom row, including the default lists/values.
-    // Do not change without testing in TP!
     [TouchPortalAction(PluginActions.AddCalculatedValue, "Request a Calculated Value",
       "Request a Calculated Value\t\t\t\t\t** Requires WASimModule **\n" +
         "Calculator Code:                                                                                                         " +
@@ -298,17 +352,6 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping(PluginActions.SaveCustomSimVars, "Custom")]
     [TouchPortalActionMapping(PluginActions.SaveAllSimVars, "All")]
     public static readonly object SaveSimVars;
-
-
-    [TouchPortalConnector(PluginActions.SetConnectorValue, "Visual Feedback Connector",
-      "This connector provides only visual feedback by setting the position of a slider based on an existing State/variable value.",
-      "Set Connector Value Based on\nFeedback From Category:{0}Variable:{1}Value Range:{2}-{3}"
-    )]
-    [TouchPortalActionChoice("[connect plugin]", "", Id = "FbCatId", Label = "Feedback Category")]
-    [TouchPortalActionChoice("[select a category]", "", Id = "FbVarName", Label = "Feedback Variable")]
-    [TouchPortalActionText("-16384", float.MinValue, float.MaxValue, true, Id = "FbRangeMin", Label = "Feedback Range Minimum")]
-    [TouchPortalActionText("16384", float.MinValue, float.MaxValue, true, Id = "FbRangeMax", Label = "Feedback Range Maximum")]
-    public static readonly object SetConnectorValue;
 
   }
 }
