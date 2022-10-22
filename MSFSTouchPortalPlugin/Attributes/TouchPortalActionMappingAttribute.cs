@@ -30,7 +30,7 @@ namespace MSFSTouchPortalPlugin.Attributes
     public Enum EnumId { get; set; } = default;
     public string ActionId { get; set; }
     public string[] Values { get; set; } = Array.Empty<string>();
-    public uint EventValue { get; set; } = 0;
+    public uint[] EventValues { get; set; } = null;
     public bool Deprecated { get; set; } = false;  // exclude from generated entry.tp and docs if true, but preserve mapping for backwards compat.
 
     public TouchPortalActionMappingAttribute(string actionId, string value, uint eventValue = 0) :
@@ -40,10 +40,14 @@ namespace MSFSTouchPortalPlugin.Attributes
     public TouchPortalActionMappingAttribute(string actionId, string value1, string value2, string value3, uint eventValue = 0) :
       this(actionId, new[] { value1, value2, value3 }, eventValue) { }
 
-    public TouchPortalActionMappingAttribute(string actionId, string[] values = null, uint eventValue = 0) {
+    public TouchPortalActionMappingAttribute(string actionId, string[] values, uint eventValue) :
+      this(actionId, values, eventValue > 0 ? new[] { eventValue } : null) { }
+
+    public TouchPortalActionMappingAttribute(string actionId, string[] values = null, uint[] eventValues = null)
+    {
       ActionId = actionId;
       Values = values ?? Array.Empty<string>();
-      EventValue = eventValue;
+      EventValues = eventValues;
     }
 
     public TouchPortalActionMappingAttribute(PluginActions actionId, string value) : this(actionId, new[] { value }) { }

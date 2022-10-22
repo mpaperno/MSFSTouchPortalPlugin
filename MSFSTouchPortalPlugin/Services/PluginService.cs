@@ -820,6 +820,17 @@ namespace MSFSTouchPortalPlugin.Services
       return true;
     }
 
+    // Send a Key Event to the sim
+    bool TransmitSimEvent(ActionEventType action, EventMappingRecord eventRecord, uint[] values)
+    {
+      if (eventRecord == null || values.Length < 5)
+        return false;
+      _logger.LogDebug("Sending Sim Event: action: {actionId}; category: {catId}; name: {name}; data: {data}", action.ActionId, action.CategoryId, eventRecord.EventName, values);
+      if (_simConnectService.IsConnected)
+        return _simConnectService.TransmitClientEvent(eventRecord, values);
+      return false;
+    }
+
     // Parse and process PluginActions.SetSimVar action or connector
     bool SetSimVarValueFromActionData(ActionData data, int connValue = -1)
     {
@@ -1041,23 +1052,44 @@ namespace MSFSTouchPortalPlugin.Services
         _logger.LogError("Could not find Event Name parameter for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
         return false;
       }
-
-      string sValue = default;
-      double dVal = double.NaN;
-      // Validate action value
-      if (connValue < 0) {
-        if (!data.TryGetValue("Value", out sValue)) {
-          _logger.LogError("Could not find Value parameter for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
-          return false;
-        }
-      }
-      // Validate and convert slider value into range
-      else if (!ConvertSliderValueRange(connValue, data, out dVal)) {
-        // no valid value
-        return false;
-      }
-
       eventName = eventName.Trim();
+
+      // Collect array of event parameter value(s) from the action/connector data.
+      uint[] values = new uint[5];
+      bool isConn = connValue > -1;
+      // how many ValueN action data parameters to expect, including connector value
+      int maxVals = actId == PluginActions.SetHubHopEvent ? 1 : isConn || actId == PluginActions.SetKnownSimEvent ? 3 : 5;
+      int connValIdx = -1; // position of connector value in parameter value data array
+      if (isConn) {
+        if (data.TryGetValue("ConnValIdx", out string sValIdx))
+          _ = int.TryParse(sValIdx.AsSpan(0, 1), out connValIdx);  // default on failure is 0
+        else
+          connValIdx = 0;
+      }
+      double dVal;  // temp
+      int valN = 1;  // starting "ValueN" action data parameter name
+      for (int i = 0; i < maxVals; ++i) {
+        if (connValIdx == i) {
+          if (!ConvertSliderValueRange(connValue, data, out dVal))
+            return false;
+        }
+        else {
+          // For legacy/BC reasons, the first value doesn't have a digit after the name, and is also the only one expected to exist.
+          string dataName = valN == 1 ? "Value" : "Value" + valN.ToString();
+          string sVal = data.GetValueOrDefault(dataName, null);
+          if (string.IsNullOrWhiteSpace(sVal)) {
+            if (i == 0 && sVal == null)
+              _logger.LogWarning("Could not find {dataName} parameter for {actId} in data: {data}", dataName, actId, ActionDataToKVPairString(data));
+            break;  // exit on first empty value
+          }
+          if (!ConvertStringValue(sVal, DataType.Text, int.MinValue, uint.MaxValue, out dVal)) {
+            _logger.LogError("Error evaluating {dataName} parameter for {actId} with data: {data}", dataName, actId, ActionDataToKVPairString(data));
+            return false;
+          }
+          ++valN;
+        }
+        values[i] = (uint)Math.Round(dVal);
+      }
 
       if (actId == PluginActions.SetHubHopEvent) {
         if (!data.TryGetValue("VendorAircraft", out var sVa) || !data.TryGetValue("System", out var sSystem)) {
@@ -1069,21 +1101,12 @@ namespace MSFSTouchPortalPlugin.Services
           _logger.LogError("Could not find Preset for action data: {data}", ActionDataToKVPairString(data));
           return false;
         }
-
-        // Handle the preset action
+        // Handle the preset action; first try use WASM module to execute the code directly.
+        // MAYBE: save as registered event? Should be handled in SimConnectService probably.
         if (_simConnectService.WasmStatus != WasmModuleStatus.NotFound) {
-          // use WASM module to execute the code directly.  MAYBE: save as registered event?
-          eventName = p.Code;
           // HubHop actions have "@" placeholder where a value would go
-          if (p.PresetType == HubHopType.InputPotentiometer && eventName.IndexOf('@') > -1) {
-            if (double.IsNaN(dVal) && !TryEvaluateValue(sValue, out dVal, out var errMsg)) {
-              _logger.LogError("Data conversion for string '{sValue}' failed for {actId} on with Error: {errMsg}.", sValue, actId, errMsg);
-              return false;
-            }
-            eventName = eventName.Replace("@", dVal.ToString("0.#######", CultureInfo.InvariantCulture));
-          }
-          _logger.LogDebug("Sending: {evName}", eventName);
-          return _simConnectService.ExecuteCalculatorCode(eventName);
+          string eventCode = p.PresetType == HubHopType.InputPotentiometer ? p.Code.Replace("@", ((int)values[0]).ToString(CultureInfo.InvariantCulture)) : p.Code;
+          return _simConnectService.ExecuteCalculatorCode(eventCode);
         }
 
         // No WASM module... try to use a named MobiFlight event... I guess. Then fall through and treat it as any other custom named action event.
@@ -1098,13 +1121,11 @@ namespace MSFSTouchPortalPlugin.Services
       // dynamically add an action if it doesn't already exist
       if (!actionsDictionary.TryGetValue(actionKey, out ActionEventType ev)) {
         // Dynamically added events only have one action mapping, which will be returned with ActionEventType.GetEventMapping().
-        ev = new ActionEventType(eventName, Groups.Plugin, !string.IsNullOrWhiteSpace(sValue));
+        ev = new ActionEventType(eventName);
         actionsDictionary[actionKey] = ev;
       }
 
-      if (_simConnectService.IsConnected)
-        return ProcessSimEvent(ev, ev.GetEventMapping(), sValue, (uint)Math.Round(dVal, 0));
-      return false;
+      return TransmitSimEvent(ev, ev.GetEventMapping(), values);
     }
 
     bool ProcessCalculatorEventFromActionData(PluginActions actId, ActionData data, int connValue = -1)
@@ -1137,40 +1158,21 @@ namespace MSFSTouchPortalPlugin.Services
     {
       var idParts = actionEvent.Id.Split('.', StringSplitOptions.RemoveEmptyEntries);
       if (idParts.Length < 4) {
-        _logger.LogWarning("Malformed action ID '{0}'", actionEvent.Id);
+        _logger.LogWarning("Malformed action ID '{actId}'", actionEvent.Id);
         return false;
       }
       string sActId = idParts[^3] + '.' + idParts[^1];
       if (!actionsDictionary.TryGetValue(sActId, out ActionEventType action)) {
         if (sActId != "Plugin.SetConnectorValue")  // exception for no-op event (hacky)
-          _logger.LogWarning("Unknown action ID '{0}'", sActId);
+          _logger.LogWarning("Unknown action ID '{actId}'", sActId);
         return false;
       }
 
       int connValue = (actionEvent.GetType() == typeof(ConnectorChangeEvent)) ? ((ConnectorChangeEvent)actionEvent).Value : -1;
-      if (action.CategoryId == Groups.Plugin)
+      if (action.InternalEvent)
         return ProcessInternalEvent(action, actionEvent.Data, connValue);
 
-      if (!_simConnectService.IsConnected)
-        return false;
-      if (!action.TryGetEventMapping(actionEvent.Data.Values, out EventMappingRecord eventRecord))
-        return false;
-
-      string sValue = null;
-      uint uValue = 0;
-      if (connValue < 0) {
-        if (action.ValueIndex > -1 && action.ValueIndex < actionEvent.Data.Values.Count)
-          sValue = actionEvent.Data.Values.ElementAt(action.ValueIndex);
-        else if (eventRecord.Values?.Length > 0)
-          uValue = eventRecord.Values[0];  // using only one value for now
-      }
-      else if (ConvertSliderValueRange(connValue, actionEvent.Data, out var dVal)) {
-        uValue = (uint)Math.Round(dVal, 0);
-      }
-      else {
-        return false;
-      }
-      return ProcessSimEvent(action, eventRecord, sValue, uValue);
+      return ProcessSimEvent(action, actionEvent.Data, connValue);
     }
 
     bool ProcessInternalEvent(ActionEventType action, ActionData data, int connValue = -1)
@@ -1250,38 +1252,45 @@ namespace MSFSTouchPortalPlugin.Services
       }
     }
 
-    bool ProcessSimEvent(ActionEventType action, EventMappingRecord eventRecord, string value = null, uint uValue = 0)
+    // This method handles all "static" actions and connectors for Sim events where the event name to be triggered is mapped
+    // to a plugin action and, possibly, its data values. Some of these event actions pass parameter value(s) as well, and of course
+    // connectors only make sense with events which have a value. All these actions are defined in the "Objects" files, everything besides the Plugin category.
+    bool ProcessSimEvent(ActionEventType action, ActionData data, int connValue)
     {
-      if (eventRecord == null)
+      if (!action.TryGetEventMapping(data.Values, out EventMappingRecord eventRecord)) {
+        _logger.LogError("Could not find mapped Sim Event for action '{actId}' with data {data}.", action.ActionId, ActionDataToKVPairString(data));
         return false;
-      if (!string.IsNullOrWhiteSpace(value)) {
-        double dataReal = double.NaN;
-        switch (action.ValueType) {
-          case DataType.Number:
-          case DataType.Text:
-            if (!TryEvaluateValue(value, out dataReal, out var errMsg)) {
-              _logger.LogError(
-                "Data conversion for string '{value}' failed for action '{actId}' on sim event '{evName}' with Error: {errMsg}.",
-                value, action.ActionId, eventRecord.EventName, errMsg);
-              return false;
-            }
-            break;
-          case DataType.Switch:
-            dataReal = new BooleanString(value);
-            break;
-        }
-        if (!double.IsNaN(dataReal)) {
-          if (!double.IsNaN(action.MinValue))
-            dataReal = Math.Max(dataReal, action.MinValue);
-          if (!double.IsNaN(action.MaxValue))
-            dataReal = Math.Min(dataReal, action.MaxValue);
-          uValue = (uint)Math.Round(dataReal);
+      }
+
+      // Event values array to pass to the simulator (up to 5).
+      uint[] values = new uint[5];
+      int nextValIndex = 0;
+      if (connValue < 0) {
+        // Value from action data (only single value, at least for now).
+        if (action.ValueIndex > -1 && action.ValueIndex < data.Values.Count) {
+          if (!ConvertStringValue(data.Values.ElementAt(action.ValueIndex), action.ValueType, action.MinValue, action.MaxValue, out var dVal)) {
+            _logger.LogError("Data conversion failed for action '{actId}' on sim event '{evName}'.", action.ActionId, eventRecord.EventName);
+            return false;
+          }
+          values[nextValIndex++] = (uint)Math.Round(dVal, 0);
         }
       }
-      _logger.LogDebug(
-        "Firing Sim Event - action: {actionId}; category: {catId}; name: {name}; data {uValue}",
-        action.ActionId, action.CategoryId, eventRecord.EventName, uValue);
-      return _simConnectService.TransmitClientEvent(eventRecord, uValue);
+      else if (ConvertSliderValueRange(connValue, data, out var dVal)) {
+        // Value from connector (only 1).
+        values[nextValIndex++] = (uint)Math.Round(dVal, 0);
+      }
+      else {
+        // no valid value
+        _logger.LogError("Connector value conversion failed for action '{actId}' on sim event '{evName}'.", action.ActionId, eventRecord.EventName);
+        return false;
+      }
+      // An event mapping record may have some fixed value(s) embedded. Append those;
+      // TODO: Actually, do we start with those or append them? Probably need a way to indicate which parameter index they should be placed in.
+      // Unfortunately there doesn't seem to be a convention in MSFS as to which parameter selects a subsystem and which is/are the value(s).
+      if (eventRecord.Values?.Length > 0)
+        Array.Copy(eventRecord.Values, 0, destinationArray: values, destinationIndex: nextValIndex, length: Math.Min(eventRecord.Values.Length, 5 - nextValIndex));
+
+      return TransmitSimEvent(action, eventRecord, values);
     }
 
     // Handles an array of `Setting` types sent from TP/API. This could come from either the
@@ -1568,7 +1577,31 @@ namespace MSFSTouchPortalPlugin.Services
       return true;
     }
 
-    private static bool TryGetSimVarIdFromActionData(string varName, out string varId) {
+    bool ConvertStringValue(string value, DataType type, double minVal, double maxVal, out double result)
+    {
+      result = double.NaN;
+      switch (type) {
+        case DataType.Number:
+        case DataType.Text:
+          if (!TryEvaluateValue(value, out result, out var errMsg)) {
+            _logger.LogError("Data conversion for string '{value}' failed with error: {errMsg}.", value, errMsg);
+            return false;
+          }
+          break;
+        case DataType.Switch:
+          result = new BooleanString(value);
+          break;
+      }
+      if (double.IsNaN(result))
+        return false;
+      if (!double.IsNaN(minVal))
+        result = Math.Max(result, minVal);
+      if (!double.IsNaN(maxVal))
+        result = Math.Min(result, maxVal);
+      return true;
+    }
+
+    static bool TryGetSimVarIdFromActionData(string varName, out string varId) {
       if (varName[^1] == ']' && (varName.IndexOf('[') is var brIdx && brIdx > -1)) {
         varId = varName[++brIdx..^1];
         return true;
@@ -1604,6 +1637,36 @@ namespace MSFSTouchPortalPlugin.Services
       float scale = dlta == 0.0f ? 100.0f : 100.0f / dlta;
       return Math.Clamp((int)Math.Round((value - rangeMin) * scale), 0, 100);
     }
+
+    /*
+    struct ActionValue
+    {
+      public string strValue;
+      public uint uValue;
+      public DataType type;
+      public double minVal;
+      public double maxVal;
+      public ActionValue(string sVal = null, DataType t = DataType.Text, double min = double.NaN, double max = double.NaN, uint defaultVal = 0) {
+        strValue = sVal; type = t; minVal = min; maxVal = max; uValue = defaultVal;
+      }
+    };
+
+    uint[] ConvertStringValues(ActionValue[] values, out bool ok)
+    {
+      ok = true;
+      uint[] d = new uint[5];
+      for (int i = 0, e = Math.Min(values.Length, 5); i < e; ++i) {
+        ActionValue v = values[i];
+        if (string.IsNullOrWhiteSpace(v.strValue))
+          break;  // exit on first empty value
+        if (ConvertStringValue(v.strValue, v.type, v.minVal, v.maxVal, out double dVal))
+          d[i] = (uint)Math.Round(dVal);
+        else
+          ok = false;
+      }
+      return d;
+    }
+    */
 
     #endregion Utilities
 

@@ -133,6 +133,7 @@ namespace MSFSTouchPortalPlugin.Attributes
     public int RangeStartIndex { get; set; } = -1;
     public bool AllowDecimals { get; set; } = true;
     public bool UseFeedback { get; set; } = true;
+    public bool InsertValueRange { get; set; } = true;
 
     public TouchPortalConnectorMetaAttribute() { }
     public TouchPortalConnectorMetaAttribute(bool decimals, bool feedback = true)

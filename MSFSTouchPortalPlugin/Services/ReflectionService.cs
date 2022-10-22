@@ -21,6 +21,7 @@ and is also available at <http://www.gnu.org/licenses/>.
 
 using Microsoft.Extensions.Logging;
 using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Types;
@@ -83,20 +84,22 @@ namespace MSFSTouchPortalPlugin.Services
             continue;
           connData = actAttr.Data.Where(m => m != valueAttrib).ToList();
           format = actAttr.ConnectorFormat;
-          if (metaAttrib == null)
-            metaAttrib = new TouchPortalConnectorMetaAttribute(valueAttrib.MinValue, valueAttrib.MaxValue, valueAttrib.MinValue, valueAttrib.MaxValue, valueAttrib.AllowDecimals);
+          metaAttrib ??= new TouchPortalConnectorMetaAttribute(valueAttrib.MinValue, valueAttrib.MaxValue, valueAttrib.MinValue, valueAttrib.MaxValue, valueAttrib.AllowDecimals);
         }
         if (metaAttrib != null) {
-          int fmtN = metaAttrib.RangeStartIndex < 0 ? connData.Count : metaAttrib.RangeStartIndex;
-          format += $"{{{fmtN++}}}-{{{fmtN++}}}";
-          connData.Add(new TouchPortalActionTextAttribute(metaAttrib.DefaultMin.ToString(), metaAttrib.MinValue, metaAttrib.MaxValue, metaAttrib.AllowDecimals) { Id = "RangeMin", Label = "Value Range Minimum" });
-          connData.Add(new TouchPortalActionTextAttribute(metaAttrib.DefaultMax.ToString(), metaAttrib.MinValue, metaAttrib.MaxValue, metaAttrib.AllowDecimals) { Id = "RangeMax", Label = "Value Range Maximum" });
+          int fmtN = metaAttrib.RangeStartIndex < 0 ? connData.Count : metaAttrib.RangeStartIndex,
+            idxN = fmtN;
+          if (metaAttrib.InsertValueRange) {
+            format += $"{{{fmtN++}}}-{{{fmtN++}}}";
+            connData.Insert(idxN++, new TouchPortalActionTextAttribute(metaAttrib.DefaultMin.ToString(), metaAttrib.MinValue, metaAttrib.MaxValue, metaAttrib.AllowDecimals) { Id = "RangeMin", Label = "Value Range Minimum" });
+            connData.Insert(idxN++, new TouchPortalActionTextAttribute(metaAttrib.DefaultMax.ToString(), metaAttrib.MinValue, metaAttrib.MaxValue, metaAttrib.AllowDecimals) { Id = "RangeMax", Label = "Value Range Maximum" });
+          }
           if (metaAttrib.UseFeedback) {
             format += $"| Feedback From\n| State (opt):{{{fmtN++}}}{{{fmtN++}}}\nRange:{{{fmtN++}}}-{{{fmtN}}}";
-            connData.Add(new TouchPortalActionChoiceAttribute("[connect plugin]", "") { Id = "FbCatId", Label = "Feedback Category" });
-            connData.Add(new TouchPortalActionChoiceAttribute("[select a category]", "") { Id = "FbVarName", Label = "Feedback Variable" });
-            connData.Add(new TouchPortalActionTextAttribute("", float.MinValue, float.MaxValue) { Id = "FbRangeMin", Label = "Feedback Range Minimum" });
-            connData.Add(new TouchPortalActionTextAttribute("", float.MinValue, float.MaxValue) { Id = "FbRangeMax", Label = "Feedback Range Maximum" });
+            connData.Insert(idxN++, new TouchPortalActionChoiceAttribute("[connect plugin]", "") { Id = "FbCatId", Label = "Feedback Category" });
+            connData.Insert(idxN++, new TouchPortalActionChoiceAttribute("[select a category]", "") { Id = "FbVarName", Label = "Feedback Variable" });
+            connData.Insert(idxN++, new TouchPortalActionTextAttribute("", float.MinValue, float.MaxValue) { Id = "FbRangeMin", Label = "Feedback Range Minimum" });
+            connData.Insert(idxN++, new TouchPortalActionTextAttribute("", float.MinValue, float.MaxValue) { Id = "FbRangeMax", Label = "Feedback Range Maximum" });
           }
         }
         if (conn == null) {
@@ -170,13 +173,11 @@ namespace MSFSTouchPortalPlugin.Services
     private Dictionary<string, ActionEventType> GetInternalActionEvents()
     {
       var returnDict = new Dictionary<string, ActionEventType>();
-      var catAttribs = GetActionAttributes(Groups.Plugin);
+      var catAttribs = GetActionAttributes(Groups.Plugin).Concat(GetActionAttributes(Groups.StatesEditor));
       // Loop over all actions which have an action mapping, which is some unique combination of value(s) mapped to a SimConnect event name or internal event enum
       foreach (var actAttr in catAttribs) {
         // Create the action data object to store in the return dict, using the meta data we've collected so far.
-        ActionEventType act = new ActionEventType((PluginActions)actAttr.EnumId, actionId: actAttr.Id) {
-          DataAttributes = actAttr.Data.ToDictionary(d => d.Id, d => d)
-        };
+        ActionEventType act = new ActionEventType((PluginActions)actAttr.EnumId, actionId: actAttr.Id);
         // Put into returned collection
         if (!returnDict.TryAdd($"{Groups.Plugin}.{act.ActionId}", act)) {
           _logger.LogWarning("Duplicate action ID found for Plugin action '{actId}', skipping.'", act.ActionId);
@@ -205,7 +206,7 @@ namespace MSFSTouchPortalPlugin.Services
       var intActsCnt = returnDict.Count;
 
       foreach (var catAttr in catAttribs) {
-        if (catAttr.Id == Groups.Plugin)
+        if (Categories.InternalActionCategories.Contains(catAttr.Id))
           continue;
         // Loop over all actions which have an action mapping, which is some unique combination of value(s) mapped to a SimConnect event name or internal event enum
         foreach (var actAttr in catAttr.Actions) {
@@ -241,7 +242,7 @@ namespace MSFSTouchPortalPlugin.Services
           // Now get all the action mappings to produce the final list of all possible action events
           foreach (var ma in actAttr.Mappings) {
             // Put into collections
-            if (!act.TryAddSimEventMapping($"{string.Join(",", ma.Values)}", ma.EventValue, ma.ActionId))
+            if (!act.TryAddSimEventMapping($"{string.Join(",", ma.Values)}", ma.ActionId, ma.EventValues))
               _logger.LogWarning("Duplicate action-to-event mapping found for action {actId} with choices '{choices} for event '{mapId}'.", act.ActionId, string.Join(",", ma.Values), ma.ActionId);
           }
 

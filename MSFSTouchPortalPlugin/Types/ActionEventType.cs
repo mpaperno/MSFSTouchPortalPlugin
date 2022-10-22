@@ -34,24 +34,23 @@ namespace MSFSTouchPortalPlugin.Types
     // For internal plugin events its an actual member of the MSFSTouchPortalPlugin.Objects.Plugin.PluginActions enum.
     public Enum EventId = EventIds.None;
     // Value(s) may be zero or more static values which accompany the event
-    public uint[] Values = Array.Empty<uint>();
+    public uint[] Values = null;
 
     public EventMappingRecord(string eventName, Enum eventId = null, uint[] values = null)
     {
       EventName = eventName;
       if (eventId != null)
         EventId = eventId;
-      if (values != null)
-        Values = values;
+      Values = values;
     }
-    public EventMappingRecord(string eventName, Enum eventId, uint value) : this(eventName, eventId, new uint[] { value }) { }
-    public EventMappingRecord(string eventName, uint value) : this(eventName, null, value) { }
+    public EventMappingRecord(string eventName, uint[] values) : this(eventName, null, values) { }
   }
 
   internal class ActionEventType
   {
     public Enum Id;
     public Groups CategoryId;
+    public bool InternalEvent = false;
     public string ActionId;
     public int ValueIndex = -1;
     public string KeyFormatStr = string.Empty;
@@ -59,7 +58,7 @@ namespace MSFSTouchPortalPlugin.Types
     public double MaxValue = double.NaN;
     public DataType ValueType = DataType.None;  // assuming single value here also
 
-    public IReadOnlyDictionary<string, TouchPortalActionDataAttribute> DataAttributes;  // list of all data type attributes
+    //public IReadOnlyList<TouchPortalActionDataAttribute> DataAttributes;  // list of all data type attributes
 
     // Mapping of TP actions to SimConnect or "Native" events.
     readonly Dictionary<string, EventMappingRecord> TpActionToEventMap = new();
@@ -81,20 +80,20 @@ namespace MSFSTouchPortalPlugin.Types
       Id = eventId;
       ActionId = actionId;
       CategoryId = Groups.Plugin;
+      InternalEvent = true;
       TpActionToEventMap.TryAdd(actionId, new EventMappingRecord(ActionId, Id));
     }
 
     /// <summary> c'tor for dynamically added actions with just one sim event; creates a default mapping. </summary>
-    public ActionEventType(string actionId, Groups categoryId, bool hasValue) {
+    public ActionEventType(string actionId) {
       ActionId = actionId;
-      CategoryId = categoryId;
-      ValueIndex = hasValue ? 0 : -1;
+      CategoryId = Groups.Plugin;
       ValueType = DataType.Number;
       TpActionToEventMap.TryAdd(actionId, new EventMappingRecord(ActionId));
     }
 
-    public bool TryAddSimEventMapping(string actionKey, uint eventValue, string actionId) {
-      return TpActionToEventMap.TryAdd(actionKey, new EventMappingRecord(actionId, eventValue));
+    public bool TryAddSimEventMapping(string actionKey, string actionId, uint[] eventValues) {
+      return TpActionToEventMap.TryAdd(actionKey, new EventMappingRecord(actionId, eventValues));
     }
 
     public bool TryAddPluginEventMapping(string actionKey, PluginActions eventId, string actionId) {
