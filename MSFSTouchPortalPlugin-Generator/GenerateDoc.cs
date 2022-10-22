@@ -136,7 +136,7 @@ namespace MSFSTouchPortalPlugin_Generator
             SerializeActionData(action, actionAttrib.Data);
 
           // Action data mappings, but Plugin category doesn't show them anyway
-          if (catAttrib.Id == Groups.Plugin)
+          if (Categories.InternalActionCategories.Contains(catAttrib.Id))
             continue;
 
           // Warn about missing mappings
@@ -202,7 +202,7 @@ namespace MSFSTouchPortalPlugin_Generator
           continue;
 
         // Sort the actions and states for SimConnect groups
-        if (catAttrib.Id != Groups.Plugin) {
+        if (!Categories.InternalActionCategories.Contains(catAttrib.Id)) {
           category.Actions = category.Actions.OrderBy(c => c.Name).ToList();
           category.Connectors = category.Connectors.OrderBy(c => c.Name).ToList();
           category.States = category.States.OrderBy(c => c.Description).ToList();
@@ -255,7 +255,7 @@ namespace MSFSTouchPortalPlugin_Generator
       s.Append("</ol></td>\n");
     }
 
-    private static string CreateMarkdown(DocBase model) {
+    private string CreateMarkdown(DocBase model) {
       var s = new StringBuilder(85 * 1024);
 
       s.Append($"# {model.Title}\n\n");
@@ -315,14 +315,14 @@ namespace MSFSTouchPortalPlugin_Generator
             "<th>Description</th>" +
             "<th>Format</th>" +
             "<th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th>" +
-            (cat.CategoryId != Groups.Plugin ? "<th>Sim Event(s)</th>" : "") +
+            (!Categories.InternalActionCategories.Contains(cat.CategoryId) ? "<th>Sim Event(s)</th>" : "") +
             "<th>On<br/>Hold</sub></div></th>" +
             "</tr>\n");
           cat.Actions.ForEach(act => {
             // Loop action data
             CreateActionDataMd(s, act);
             // mappings (only for SimConnect events)
-            if (cat.CategoryId != Groups.Plugin) {
+            if (!Categories.InternalActionCategories.Contains(cat.CategoryId)) {
               s.Append("<td>");
               if (act.Mappings.Count > 2)  // collapsible only if more than 2 items
                 s.Append("<details><summary><sub>details</sub></summary>");

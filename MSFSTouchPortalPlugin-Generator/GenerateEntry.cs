@@ -23,6 +23,7 @@ using Microsoft.Extensions.Logging;
 using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Constants;
+using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Helpers;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Types;
@@ -153,6 +154,7 @@ namespace MSFSTouchPortalPlugin_Generator
           var action = new TouchPortalConnector {
             Id = $"{actionCatId}.Conn.{connAttrib.Id}",
             Name = connAttrib.Name,
+            Description = connAttrib.Description,
             Format = connAttrib.Format
           };
 
@@ -204,7 +206,7 @@ namespace MSFSTouchPortalPlugin_Generator
         }
 
         // Sort the actions and states for SimConnect groups
-        if (catAttrib.Id != MSFSTouchPortalPlugin.Enums.Groups.Plugin) {
+        if (!Categories.InternalActionCategories.Contains(catAttrib.Id)) {
           category.Actions = category.Actions.OrderBy(c => c.Name).ToList();
           category.Events = category.Events.OrderBy(c => c.Name).ToList();
           category.States = category.States.OrderBy(c => c.Description).ToList();

@@ -74,6 +74,8 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string Name { get; set; }
     [Required, MinLength(2)]
     public string Format { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public string Description { get; set; }
     public List<TouchPortalActionData> Data { get; set; } = new List<TouchPortalActionData>();
   }
 
@@ -83,8 +85,6 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string Prefix { get; set; }
     [Required, MinLength(2)]
     public string Type { get; set; }
-    [Required, MinLength(2)]
-    public string Description { get; set; }
     public bool TryInline { get; set; } = true;
     public bool HasHoldFunctionality { get; set; } = false;
   }
