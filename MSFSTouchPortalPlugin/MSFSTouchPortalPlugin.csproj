@@ -4,11 +4,11 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>MSFSTouchPortalPlugin</RootNamespace>
-    <Version>1.1.0.6</Version>
-    <FileVersion>1.1.0.6</FileVersion>
+    <Version>1.2.0.0</Version>
+    <FileVersion>1.2.0.0</FileVersion>
     <Platforms>x64</Platforms>
     <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath>
-    <AnalysisLevel>5.0</AnalysisLevel>
+    <AnalysisLevel>6.0</AnalysisLevel>
     <Configurations>Debug;Release;Publish</Configurations>
     <Copyright>Copyright Tim Lewis, Maxim Paperno, and project contributors; All rights reserved.</Copyright>
     <PackageProjectUrl>https://github.com/mpaperno/MSFSTouchPortalPlugin</PackageProjectUrl>
@@ -21,6 +21,7 @@
     <ApplicationIcon>app-icon.ico</ApplicationIcon>
     <ErrorReport>none</ErrorReport>
     <Company>MSFS Touch Portal Plugin Project</Company>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -49,7 +50,15 @@
     <TrimMode>copyused</TrimMode>
     <PublishSingleFile>False</PublishSingleFile>
     <PublishReadyToRun>False</PublishReadyToRun>
+    <DebugType>none</DebugType>
   </PropertyGroup>
+
+  <!-- attempt at RTR build with .net6; failed.
+  <ItemGroup>
+    <PublishReadyToRunExclude Include="SharpConfig.dll" />
+    <PublishReadyToRunExclude Include="WASimCommander.WASimClient.dll" />
+  </ItemGroup>
+  -->
 
   <!-- required for trimming otherwise we get missing dependencies at runtime -->
   <ItemGroup>
@@ -71,11 +80,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
@@ -113,18 +122,22 @@
       <HintPath>.\lib\SharpConfig\SharpConfig.dll</HintPath>
       <Private>true</Private>
       <EmbedInteropTypes>false</EmbedInteropTypes>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Reference>
     <!--<PackageReference Include="SharpConfig" Version="3.2.9.1" />-->
   </ItemGroup>
 
   <!-- WASimCommander Client -->
-  <ItemGroup Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Publish') And '$(Platform)'=='x64'">
-    <Reference Include="WASimCommander.WASimClient, Culture=neutral, processorArchitecture=MSIL">
+  <ItemGroup >
+    <!--Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Publish') And '$(Platform)'=='x64'"-->
+    <Reference Include="WASimCommander.WASimClient, Culture=neutral, processorArchitecture=MSIL" Version="1.1.0">
       <HintPath>.\lib\WASimCommander\WASimCommander.WASimClient.dll</HintPath>
       <Private>true</Private>
       <EmbedInteropTypes>false</EmbedInteropTypes>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Reference>
   </ItemGroup>
+  <!--
   <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Reference Include="WASimCommander.WASimClient_d, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>.\lib\WASimCommander\WASimCommander.WASimClient_d.dll</HintPath>
@@ -132,6 +145,7 @@
       <EmbedInteropTypes>false</EmbedInteropTypes>
     </Reference>
   </ItemGroup>
+  -->
   <ItemGroup>
     <ContentWithTargetPath Include=".\lib\WASimCommander\Ijwhost.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
