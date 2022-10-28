@@ -26,7 +26,7 @@ This project is a continuation of the original [MSFSTouchPortalPlugin by Tim Lew
 * Connects to local or remote simulators with SimConnect.
 * Allows getting data variables from simulator at regular intervals, such as flight instrument readings, control surface positions, or switch states.
 * Allows triggering any interactive aircraft event via Touch Portal Actions, such as setting switches, adjusting control surfaces, radio frequencies, and so on.
-* NEW: Use Touch Portal "Sliders" to control a value within any range, and/or provide visual feedback to simulator variable changes
+* Use Touch Portal "Sliders" to control a value within any range, and/or provide visual feedback to simulator variable changes
   (eg. a throttle slider can both control the sim throttle and show the actual position when the throttle is moved with mouse/joystick/keyboard).
 * Completely configurable to request any variable or trigger any event supported by the connected simulator, including with custom extensions like MobiFlight.
 * Supports simulator system events (such as "flight loaded" or "sim started") as Touch Portal Events.
@@ -38,11 +38,10 @@ This project is a continuation of the original [MSFSTouchPortalPlugin by Tim Lew
 
 ## Documentation
 
-See the [Wiki](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/) for some guides and tips.
+See the [Wiki](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/) for guides, tips, and example 
+[pages and buttons](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) to get started with
 
 Auto-generated documentation on all actions, connectors, events, settings, and default included states can be found in [DOCUMENTATION.md](DOCUMENTATION.md).
-
-**NEW IN THE WIKI:** Assets - [Pages, Buttons, & Graphics](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) to get started with.
 
 
 ## Installation
@@ -82,7 +81,7 @@ a full list of known pages.
 Keep in mind that while guides can be helpful as an overview and to get started,
 they do get outdated and also may not cover all that is possible to do or configure.
 
-* A recent video tutorial about the whole setup process was published by _OverKill Simulations_ on YouTube: [Microsoft Flight Simulator | MSFS Touch Portal | YOU NEED THIS!](https://www.youtube.com/watch?v=S4Pms-7oHf0)
+* A video tutorial about the whole setup process was published by _OverKill Simulations_ on YouTube: [Microsoft Flight Simulator | MSFS Touch Portal | YOU NEED THIS!](https://www.youtube.com/watch?v=S4Pms-7oHf0)
 * An older installation and usage guide was published on the _Simvol_ Web site: [How to use Touch Portal [with MSFS]](https://www.simvol.org/en/articles/tutorials/use-touch-portal).
 
 
@@ -92,17 +91,21 @@ they do get outdated and also may not cover all that is possible to do or config
 Here is a list of known pages which use this plugin. In no particular order, no endorsement, nor have I necessarily tried/tested all these. YMMV.
 
 * [Pages, Buttons, & Graphics](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) in the Wiki
-* [Touch Portal page for TBM 930](https://flightsim.to/file/37413/touch-portal-page-for-tbm-930) by GoodSeb @ flightsim.to
 * [FltSim-msfs2020-Control](https://github.com/HiDTH/FltSim-msfs2020-Control) by HiDTH @ GitHub<br />
   (**Page background graphic will cause issues, especially on iOS.**
   [Get a replacement here.](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics#replacement-for-hidths-fltsim-msfs2020-control-page-backgrounds)
   This is a cool page, but is complex and somewhat outdated, and some parts may not work properly! The author seems to have stopped updates/support for it.)
-* [Touch Portal Page H145](https://flightsim.to/file/35625/touch-portal-page-h145) by edheronde @ flighsim.to
+* [Touch Portal Page H145](https://flightsim.to/file/35625/touch-portal-page-h145) by redheronde @ flighsim.to
 * [Touch Portal Page "Piston Single"](https://flightsim.to/file/7394/touch-portal-page-piston-single) by yushu @ flightsim.to
 * [Touch Portal Page for Fenix A320](https://flightsim.to/file/35834/touch-portal-page-for-fenix-a320) by FFEENNIIXX @ flightsim.to
 * [MSFSTouchPortalPages](https://github.com/FordMustang0288/MSFSTouchPortalPages) by FordMustang0288 @ GitHub
 * [Special page for A32NX](https://www.simvol.org/en/downloads/miscellaneous/touch-portal-special-page-a32nx) by Pacha35 @ SimVol
 * [A320neo FlyByWire + CJ4 Working Title](https://flightsim.to/file/7406/touchportal-a320neo-flybywire) by fgrooten @ flightsim.to
+* [Touch Portal Page FCU and EFIS for FBWA32NX](https://flightsim.to/file/38012/touch-portal-page-fcu-and-efis-for-fbwa32nx) by Condor7777 @ flightsim.to
+* [Touch Portal page for TBM 930](https://flightsim.to/file/37413/touch-portal-page-for-tbm-930) by GoodSeb @ flightsim.to
+* [Touch Portal pages for FlyByWire A32NX](https://flightsim.to/file/40431/touch-portal-pages-for-flybywire-a32nx) by GoodSeb @ flightsim.to
+* [Touch Portal page for KODIAK 100](https://flightsim.to/file/38161/touch-portal-page-for-kodiak-100) by GoodSeb @ flightsim.to
+* [Touch Portal pages for CJ4 Working Title](https://flightsim.to/file/42677/touch-portal-pages-for-cj4-working-title) by GoodSeb @ flightsim.to
 * [MSFS Throttle Quad - Views - AP](https://github.com/mpaperno/TJoy/tree/main/assets) by mpaperno @ GitHub (requires my TJoy Plugin - [screenshot](https://github.com/mpaperno/TJoy/blob/main/assets/MSFS%20Throttle%20Quad%20-%20Views%20-%20AP.jpeg))
 
 Please let me know if you publish a page (or buttons/assets) which I could add to this list.
@@ -163,8 +166,6 @@ My [TJoy Touch Portal Plugin](https://github.com/mpaperno/TJoy) is an interface 
 
 ## References
 
-* [MSFS EventIDs (old but has all events on one page)](https://docs.microsoft.com/en-us/previous-versions/microsoft-esp/cc526980\(v=msdn.10\))
-* [MSFS Variables (also old but also all on one page)](https://docs.microsoft.com/en-us/previous-versions/microsoft-esp/cc526981\(v=msdn.10\))
 * [FlightSimulator.com SDK Reference (current)](https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_SDK.htm)
 * [SDK Event IDs (current)](https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Event_IDs.htm)
 * [SDK Simulator Variables (current)](https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Simulation_Variables.htm)
