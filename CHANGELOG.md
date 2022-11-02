@@ -1,5 +1,14 @@
 # MSFS Touch Portal Plugin Change Log
 
+## 1.2.0.0 (Nov-2-2022)
+* The "Activate a Named Simulator Event" and "Activate a Selected Simulator Event" actions and connectors can now transmit multiple values
+  for Simulator Key Events which require multiple parameters.
+* Renamed plugin action/state categories:
+  * "Communication" to "Radio & Navigation"
+  * "System" to "Simulator System"
+* All the custom variable request editing actions moved to new "Custom States & Variables" category in TP's' sidebar.
+
+---
 ## 1.1.0.6 (Sept-11-2022)
 * Fixed possible plugin startup issue when Windows user name has space(s) in it (adds quotes around startup command).
 * Added new "Miscellaneous" category for sorting custom states, by user request.
