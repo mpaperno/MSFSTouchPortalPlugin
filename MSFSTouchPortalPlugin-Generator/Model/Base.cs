@@ -72,10 +72,10 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     [Required, MinLength(5)]
     [JsonProperty(Order = -2)]
     public string Name { get; set; }
-    [Required, MinLength(2)]
-    public string Format { get; set; }
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public string Description { get; set; }
+    [Required, MinLength(2)]
+    public string Format { get; set; }
     public List<TouchPortalActionData> Data { get; set; } = new List<TouchPortalActionData>();
   }
 
