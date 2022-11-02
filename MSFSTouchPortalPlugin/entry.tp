@@ -1,6 +1,6 @@
 {
   "sdk": 6,
-  "version": 1010006,
+  "version": 1020000,
   "name": "MSFS Touch Portal Plugin",
   "id": "MSFSTouchPortalPlugin",
   "configuration": {
@@ -19,9 +19,9 @@
           "name": "Connect & Update",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Control connection to the Simulator, or perform various data update tasks.",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "Control connection to the Simulator, or perform various data update tasks.",
           "format": "Plugin Action: {$MSFSTouchPortalPlugin.Plugin.Action.Connection.Data.Action$}",
           "data": [
             {
@@ -48,9 +48,9 @@
           "name": "Action Repeat Interval",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Held Action Repeat Rate (ms)",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "Held Action Repeat Rate (ms)",
           "format": "Repeat Interval: {$MSFSTouchPortalPlugin.Plugin.Action.ActionRepeatInterval.Data.Action$} to/by: {$MSFSTouchPortalPlugin.Plugin.Action.ActionRepeatInterval.Data.Value$} ms",
           "data": [
             {
@@ -92,10 +92,10 @@
           "name": "Activate a Named Simulator Event",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Trigger or set value of a Simulator Event by name.\nThe value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.",
           "tryInline": true,
           "hasHoldFunctionality": true,
-          "format": "Activate Event {$MSFSTouchPortalPlugin.Plugin.Action.SetCustomSimEvent.Data.EvtId$} with value {$MSFSTouchPortalPlugin.Plugin.Action.SetCustomSimEvent.Data.Value$} (if any)",
+          "description": "Trigger any Simulator Event by name with optional parameter value(s). See MSFS SDK Documentation 'Event IDs' for reference.\nThe value(s), if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.",
+          "format": "Activate Event {$MSFSTouchPortalPlugin.Plugin.Action.SetCustomSimEvent.Data.EvtId$} with value(s): {$MSFSTouchPortalPlugin.Plugin.Action.SetCustomSimEvent.Data.Value$} {$MSFSTouchPortalPlugin.Plugin.Action.SetCustomSimEvent.Data.Value2$} {$MSFSTouchPortalPlugin.Plugin.Action.SetCustomSimEvent.Data.Value3$} {$MSFSTouchPortalPlugin.Plugin.Action.SetCustomSimEvent.Data.Value4$} {$MSFSTouchPortalPlugin.Plugin.Action.SetCustomSimEvent.Data.Value5$}",
           "data": [
             {
               "id": "MSFSTouchPortalPlugin.Plugin.Action.SetCustomSimEvent.Data.EvtId",
@@ -106,23 +106,59 @@
             {
               "id": "MSFSTouchPortalPlugin.Plugin.Action.SetCustomSimEvent.Data.Value",
               "type": "text",
-              "label": "Value",
+              "label": "Value 1",
               "default": "",
-              "minValue": -3.4028234663852886E+38,
-              "maxValue": 3.4028234663852886E+38,
+              "minValue": -2147483648.0,
+              "maxValue": 4294967295.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.SetCustomSimEvent.Data.Value2",
+              "type": "text",
+              "label": "Value 2",
+              "default": "",
+              "minValue": -2147483648.0,
+              "maxValue": 4294967295.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.SetCustomSimEvent.Data.Value3",
+              "type": "text",
+              "label": "Value 3",
+              "default": "",
+              "minValue": -2147483648.0,
+              "maxValue": 4294967295.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.SetCustomSimEvent.Data.Value4",
+              "type": "text",
+              "label": "Value 4",
+              "default": "",
+              "minValue": -2147483648.0,
+              "maxValue": 4294967295.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.SetCustomSimEvent.Data.Value5",
+              "type": "text",
+              "label": "Value 5",
+              "default": "",
+              "minValue": -2147483648.0,
+              "maxValue": 4294967295.0,
               "allowDecimals": false
             }
           ]
         },
         {
           "id": "MSFSTouchPortalPlugin.Plugin.Action.SetKnownSimEvent",
-          "name": "Activate a Simulator Event From List",
+          "name": "Activate a Selected Simulator Event",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Trigger or set value of a Simulator Event selected from a list of imported events.\nThe value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.",
           "tryInline": true,
           "hasHoldFunctionality": true,
-          "format": "From Category {$MSFSTouchPortalPlugin.Plugin.Action.SetKnownSimEvent.Data.SimCatName$} Activate Event {$MSFSTouchPortalPlugin.Plugin.Action.SetKnownSimEvent.Data.EvtId$} with value {$MSFSTouchPortalPlugin.Plugin.Action.SetKnownSimEvent.Data.Value$} (if any)",
+          "description": "Trigger a selected Simulator Event, with optional parameter value(s). See MSFS SDK Documentation 'Event IDs' for reference.\nThe value(s), if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.",
+          "format": "From Category {$MSFSTouchPortalPlugin.Plugin.Action.SetKnownSimEvent.Data.SimCatName$} Activate Event {$MSFSTouchPortalPlugin.Plugin.Action.SetKnownSimEvent.Data.EvtId$} with value(s) {$MSFSTouchPortalPlugin.Plugin.Action.SetKnownSimEvent.Data.Value$} {$MSFSTouchPortalPlugin.Plugin.Action.SetKnownSimEvent.Data.Value2$} {$MSFSTouchPortalPlugin.Plugin.Action.SetKnownSimEvent.Data.Value3$}",
           "data": [
             {
               "id": "MSFSTouchPortalPlugin.Plugin.Action.SetKnownSimEvent.Data.SimCatName",
@@ -145,10 +181,28 @@
             {
               "id": "MSFSTouchPortalPlugin.Plugin.Action.SetKnownSimEvent.Data.Value",
               "type": "text",
-              "label": "Value",
+              "label": "Value 1",
               "default": "",
-              "minValue": -3.4028234663852886E+38,
-              "maxValue": 3.4028234663852886E+38,
+              "minValue": -2147483648.0,
+              "maxValue": 4294967295.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.SetKnownSimEvent.Data.Value2",
+              "type": "text",
+              "label": "Value 2",
+              "default": "",
+              "minValue": -2147483648.0,
+              "maxValue": 4294967295.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.SetKnownSimEvent.Data.Value3",
+              "type": "text",
+              "label": "Value 3",
+              "default": "",
+              "minValue": -2147483648.0,
+              "maxValue": 4294967295.0,
               "allowDecimals": false
             }
           ]
@@ -158,9 +212,9 @@
           "name": "Activate an Input Event From HubHop",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t** Requires WASimModule or MobiFlight. **\nTrigger a Simulator Event from loaded HubHop data.\t\t\t\t\t\"Potentiometer\" type events are only supported with WASimModule (using the provided value, which should evaluate to numeric).",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t** Requires WASimModule or MobiFlight. **\nTrigger a Simulator Event from loaded HubHop data.\t\t\t\t\t\"Potentiometer\" type events are only supported with WASimModule (using the provided value, which should evaluate to numeric).",
           "format": "Aircraft/Device: {$MSFSTouchPortalPlugin.Plugin.Action.SetHubHopEvent.Data.VendorAircraft$} System: {$MSFSTouchPortalPlugin.Plugin.Action.SetHubHopEvent.Data.System$} Event Name: {$MSFSTouchPortalPlugin.Plugin.Action.SetHubHopEvent.Data.EvtId$} with value {$MSFSTouchPortalPlugin.Plugin.Action.SetHubHopEvent.Data.Value$} (if any)",
           "data": [
             {
@@ -195,8 +249,8 @@
               "type": "text",
               "label": "Value",
               "default": "",
-              "minValue": -3.4028234663852886E+38,
-              "maxValue": 3.4028234663852886E+38,
+              "minValue": -2147483648.0,
+              "maxValue": 4294967295.0,
               "allowDecimals": false
             }
           ]
@@ -206,9 +260,9 @@
           "name": "Set Simulator Variable (SimVar)",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Sets the value of a Simulator Variable selected from a list of Sim Vars which are marked as settable.",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "Sets the value of a Simulator Variable selected from a list of Sim Vars which are marked as settable.",
           "format": "From Category:{$MSFSTouchPortalPlugin.Plugin.Action.SetSimVar.Data.CatId$}Set Variable:{$MSFSTouchPortalPlugin.Plugin.Action.SetSimVar.Data.VarName$}To:{$MSFSTouchPortalPlugin.Plugin.Action.SetSimVar.Data.Value$} (Release AI:{$MSFSTouchPortalPlugin.Plugin.Action.SetSimVar.Data.RelAI$})",
           "data": [
             {
@@ -251,9 +305,9 @@
           "name": "Set Airplane Local Variable",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Sets a value on a Local variable from currently loaded aircraft.\t\t\t\t\t** Requires WASimModule **",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "Sets a value on a Local variable from currently loaded aircraft.\t\t\t\t\t** Requires WASimModule **",
           "format": "Set Variable:{$MSFSTouchPortalPlugin.Plugin.Action.SetLocalVar.Data.VarName$}To:{$MSFSTouchPortalPlugin.Plugin.Action.SetLocalVar.Data.Value$}in Units (opt){$MSFSTouchPortalPlugin.Plugin.Action.SetLocalVar.Data.Unit$}",
           "data": [
             {
@@ -290,9 +344,9 @@
           "name": "Set Named Variable Value",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Set a Named Variable\nSets a value on any named variable, by type of variable. Local (L) variables can also be created. SimVar types require a Unit specifier.\t\t\t\t\t** Requires WASimModule **",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "Set a Named Variable\nSets a value on any named variable, by type of variable. Local (L) variables can also be created. SimVar types require a Unit specifier.\t\t\t\t\t** Requires WASimModule **",
           "format": "Set\nVariable Type:{$MSFSTouchPortalPlugin.Plugin.Action.SetVariable.Data.VarType$}Named:{$MSFSTouchPortalPlugin.Plugin.Action.SetVariable.Data.VarName$} to Value:{$MSFSTouchPortalPlugin.Plugin.Action.SetVariable.Data.Value$} in Units\n(opt){$MSFSTouchPortalPlugin.Plugin.Action.SetVariable.Data.Unit$} (Create 'L' var: {$MSFSTouchPortalPlugin.Plugin.Action.SetVariable.Data.Create$}) (release AI: {$MSFSTouchPortalPlugin.Plugin.Action.SetVariable.Data.RelAI$})",
           "data": [
             {
@@ -357,9 +411,9 @@
           "name": "Execute Calculator Code",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Execute Calculator Code\nRuns any entered string of RPN code through the 'execute_calculator_code' Gauge API function. You may use TP state value macros to insert dynamic data.",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "Execute Calculator Code\nRuns any entered string of RPN code through the 'execute_calculator_code' Gauge API function. You may use TP state value macros to insert dynamic data.",
           "format": "Execute this code: {$MSFSTouchPortalPlugin.Plugin.Action.ExecCalcCode.Data.Code$} (must be valid RPN format)                             ** Requires WASimModule **",
           "data": [
             {
@@ -369,510 +423,13 @@
               "default": "1 (>H:AS1000_PFD_SOFTKEYS_1)"
             }
           ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar",
-          "name": "Request a Custom Simulator Variable",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Request Simulator Variable Name:                            Index (if req'd):               Units:                                                                Category:                                    Format:                            Default Value:                 Settable:           Update Period:                   Update Interval:               Delta Epsilon:     ",
-          "tryInline": true,
-          "hasHoldFunctionality": false,
-          "format": "{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.VarName$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.VarIndex$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.Unit$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.CatId$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.Format$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.DfltVal$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.CanSet$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.UpdPer$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.UpdInt$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.Epsilon$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.VarName",
-              "type": "text",
-              "label": "Simulator Variable Name",
-              "default": "SIMULATOR VARIABLE FULL NAME"
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.VarIndex",
-              "type": "number",
-              "label": "Variable Index",
-              "default": 0.0,
-              "minValue": 0.0,
-              "maxValue": 99.0,
-              "allowDecimals": false
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.Unit",
-              "type": "choice",
-              "label": "Unit Name",
-              "default": "",
-              "valueChoices": [
-                "[connect to plugin]                                 "
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.CatId",
-              "type": "choice",
-              "label": "Category",
-              "default": "",
-              "valueChoices": [
-                "[connect plugin]"
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.Format",
-              "type": "text",
-              "label": "Formatting String",
-              "default": "F2"
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.DfltVal",
-              "type": "text",
-              "label": "Default Value",
-              "default": "0"
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.CanSet",
-              "type": "switch",
-              "label": "Settable",
-              "default": false
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.UpdPer",
-              "type": "choice",
-              "label": "Update Period",
-              "default": "SimFrame",
-              "valueChoices": [
-                "Once",
-                "SimFrame",
-                "Second",
-                "Millisecond"
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.UpdInt",
-              "type": "number",
-              "label": "Interval",
-              "default": 0.0,
-              "minValue": 0.0,
-              "maxValue": 2147483647.0,
-              "allowDecimals": false
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.Epsilon",
-              "type": "number",
-              "label": "Delta Epsilon",
-              "default": 0.0,
-              "minValue": 0.0,
-              "maxValue": 3.4028234663852886E+38
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar",
-          "name": "Request a Variable From List",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Request a Variable from Simulator\t\t\t\t\t** Local Variables support requires WASimModule **\nCategory or Local Aircraft          Request Variable                                                                                               Index (if req'd):                Units:                                                                 Plugin Category:                         Format:                            Default Value:                 Update Period:                  Update Interval:              Delta Epsilon:      ",
-          "tryInline": true,
-          "hasHoldFunctionality": false,
-          "format": "{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.SimCatName$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.VarName$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.VarIndex$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.Unit$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.CatId$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.Format$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.DfltVal$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.UpdPer$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.UpdInt$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.Epsilon$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.SimCatName",
-              "type": "choice",
-              "label": "Category or Type",
-              "default": "",
-              "valueChoices": [
-                "[connect to plugin]"
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.VarName",
-              "type": "choice",
-              "label": "Simulator Variable Name",
-              "default": "",
-              "valueChoices": [
-                "[select a category]                                                            "
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.VarIndex",
-              "type": "number",
-              "label": "Variable Index",
-              "default": 0.0,
-              "minValue": 0.0,
-              "maxValue": 99.0,
-              "allowDecimals": false
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.Unit",
-              "type": "choice",
-              "label": "Unit Name",
-              "default": "number",
-              "valueChoices": [
-                "[connect to plugin]                                 "
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.CatId",
-              "type": "choice",
-              "label": "Category",
-              "default": "",
-              "valueChoices": [
-                "[connect plugin]"
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.Format",
-              "type": "text",
-              "label": "Formatting String",
-              "default": "F2"
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.DfltVal",
-              "type": "text",
-              "label": "Default Value",
-              "default": "0"
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.UpdPer",
-              "type": "choice",
-              "label": "Update Period",
-              "default": "SimFrame",
-              "valueChoices": [
-                "Once",
-                "SimFrame",
-                "Second",
-                "Millisecond"
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.UpdInt",
-              "type": "number",
-              "label": "Interval",
-              "default": 0.0,
-              "minValue": 0.0,
-              "maxValue": 2147483647.0,
-              "allowDecimals": false
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.Epsilon",
-              "type": "number",
-              "label": "Delta Epsilon",
-              "default": 0.0,
-              "minValue": 0.0,
-              "maxValue": 3.4028234663852886E+38
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable",
-          "name": "Request a Named Variable",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Request a Named Variable                       For indexed SimVars, include it in the name after a : (colon).\t\t\t\t\t** Requires WASimModule **\nVariable Type:                Name:                                                   Units (optional):                                               Plugin Category:                         Format:                            Default Value:                 Update Period:                Update Interval:              Delta Epsilon:     ",
-          "tryInline": true,
-          "hasHoldFunctionality": false,
-          "format": "{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.VarType$}{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.VarName$}{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.Unit$}{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.CatId$}{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.Format$}{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.DfltVal$}{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.UpdPer$}{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.UpdInt$}{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.Epsilon$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.VarType",
-              "type": "choice",
-              "label": "Variable Type",
-              "default": "A: SimVar",
-              "valueChoices": [
-                "A: SimVar",
-                "B: Input",
-                "C: GPS",
-                "E: Env.",
-                "L: Local",
-                "M: Mouse",
-                "R: Rsrc.",
-                "T: Token",
-                "Z: Custom"
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.VarName",
-              "type": "text",
-              "label": "Variable Name",
-              "default": "FULL VARIABLE NAME"
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.Unit",
-              "type": "choice",
-              "label": "Unit Name",
-              "default": "number",
-              "valueChoices": [
-                "[connect to plugin]                                 "
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.CatId",
-              "type": "choice",
-              "label": "Category",
-              "default": "",
-              "valueChoices": [
-                "[connect plugin]"
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.Format",
-              "type": "text",
-              "label": "Formatting String",
-              "default": "F2"
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.DfltVal",
-              "type": "text",
-              "label": "Default Value",
-              "default": "0"
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.UpdPer",
-              "type": "choice",
-              "label": "Update Period",
-              "default": "SimFrame",
-              "valueChoices": [
-                "Once",
-                "SimFrame",
-                "Second",
-                "Millisecond"
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.UpdInt",
-              "type": "number",
-              "label": "Interval",
-              "default": 0.0,
-              "minValue": 0.0,
-              "maxValue": 2147483647.0,
-              "allowDecimals": false
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.Epsilon",
-              "type": "number",
-              "label": "Delta Epsilon",
-              "default": 0.0,
-              "minValue": 0.0,
-              "maxValue": 3.4028234663852886E+38
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue",
-          "name": "Request a Calculated Value",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Request a Calculated Value\t\t\t\t\t** Requires WASimModule **\nCalculator Code:                                                                                                         Result Type:                  Plugin Category:                         State Name:                                                Format:                            Default Value:                 Update Period:                Update Interval:              Delta Epsilon:     ",
-          "tryInline": true,
-          "hasHoldFunctionality": false,
-          "format": "{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.CalcCode$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.ResType$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.CatId$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.VarName$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.Format$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.DfltVal$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.UpdPer$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.UpdInt$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.Epsilon$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.CalcCode",
-              "type": "text",
-              "label": "Calculator Code",
-              "default": "(A:TRAILING EDGE FLAPS LEFT ANGLE, degrees) 30 - abs 0.1 <"
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.ResType",
-              "type": "choice",
-              "label": "Result Type",
-              "default": "Double",
-              "valueChoices": [
-                "Double",
-                "Integer",
-                "String",
-                "Formatted"
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.CatId",
-              "type": "choice",
-              "label": "Category",
-              "default": "",
-              "valueChoices": [
-                "[connect plugin]"
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.VarName",
-              "type": "text",
-              "label": "State Name",
-              "default": "A name for the States list"
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.Format",
-              "type": "text",
-              "label": "Formatting String",
-              "default": "F2"
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.DfltVal",
-              "type": "text",
-              "label": "Default Value",
-              "default": "0"
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.UpdPer",
-              "type": "choice",
-              "label": "Update Period",
-              "default": "SimFrame",
-              "valueChoices": [
-                "Once",
-                "SimFrame",
-                "Second",
-                "Millisecond"
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.UpdInt",
-              "type": "number",
-              "label": "Interval",
-              "default": 0.0,
-              "minValue": 0.0,
-              "maxValue": 2147483647.0,
-              "allowDecimals": false
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.Epsilon",
-              "type": "number",
-              "label": "Delta Epsilon",
-              "default": 0.0,
-              "minValue": 0.0,
-              "maxValue": 3.4028234663852886E+38
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Plugin.Action.UpdateVarValue",
-          "name": "Update a Variable Value",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Request a value update for an added variable. This is especially useful for variables with a \"Once\" type Update Period.",
-          "tryInline": true,
-          "hasHoldFunctionality": false,
-          "format": "From Category {$MSFSTouchPortalPlugin.Plugin.Action.UpdateVarValue.Data.CatId$} Update Variable {$MSFSTouchPortalPlugin.Plugin.Action.UpdateVarValue.Data.VarName$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.UpdateVarValue.Data.CatId",
-              "type": "choice",
-              "label": "Category",
-              "default": "",
-              "valueChoices": [
-                "[connect plugin]"
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.UpdateVarValue.Data.VarName",
-              "type": "choice",
-              "label": "Simulator Variable",
-              "default": "",
-              "valueChoices": [
-                "[select a category]"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Plugin.Action.RemoveSimVar",
-          "name": "Remove a Simulator Variable",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Remove an existing Simulator Variable.",
-          "tryInline": true,
-          "hasHoldFunctionality": false,
-          "format": "From Category {$MSFSTouchPortalPlugin.Plugin.Action.RemoveSimVar.Data.CatId$} Remove Variable {$MSFSTouchPortalPlugin.Plugin.Action.RemoveSimVar.Data.VarName$}",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.RemoveSimVar.Data.CatId",
-              "type": "choice",
-              "label": "Category",
-              "default": "",
-              "valueChoices": [
-                "[connect plugin]"
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.RemoveSimVar.Data.VarName",
-              "type": "choice",
-              "label": "Simulator Variable",
-              "default": "",
-              "valueChoices": [
-                "[select a category]"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Plugin.Action.ClearSimVars",
-          "name": "Clear Variable Definitions",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Removes either all or only custom-added variable state definitions.",
-          "tryInline": true,
-          "hasHoldFunctionality": false,
-          "format": "Clear {$MSFSTouchPortalPlugin.Plugin.Action.ClearSimVars.Data.VarsSet$} states",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.ClearSimVars.Data.VarsSet",
-              "type": "choice",
-              "label": "Variables Set",
-              "default": "Custom",
-              "valueChoices": [
-                "Custom",
-                "All"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Plugin.Action.LoadSimVars",
-          "name": "Load Variable Definitions From File",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Load a set of variable state definitions from a configuration file.",
-          "tryInline": true,
-          "hasHoldFunctionality": false,
-          "format": "Load definitions from file {$MSFSTouchPortalPlugin.Plugin.Action.LoadSimVars.Data.VarsFile$} (file name only for user config. folder, or full path with file name)",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.LoadSimVars.Data.VarsFile",
-              "type": "text",
-              "label": "Load From File",
-              "default": "CustomStates.ini"
-            }
-          ]
-        },
-        {
-          "id": "MSFSTouchPortalPlugin.Plugin.Action.SaveSimVars",
-          "name": "Save Variable Definitions To File",
-          "prefix": "MSFS",
-          "type": "communicate",
-          "description": "Save the current simulator variable state definitions to a configuration file.",
-          "tryInline": true,
-          "hasHoldFunctionality": false,
-          "format": "Save {$MSFSTouchPortalPlugin.Plugin.Action.SaveSimVars.Data.VarsSet$} states to file {$MSFSTouchPortalPlugin.Plugin.Action.SaveSimVars.Data.VarsFile$} (file name only for user config. folder, or full path with file name)",
-          "data": [
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.SaveSimVars.Data.VarsSet",
-              "type": "choice",
-              "label": "Variables Set",
-              "default": "Custom",
-              "valueChoices": [
-                "Custom",
-                "All"
-              ]
-            },
-            {
-              "id": "MSFSTouchPortalPlugin.Plugin.Action.SaveSimVars.Data.VarsFile",
-              "type": "text",
-              "label": "Save to File",
-              "default": "CustomStates.ini"
-            }
-          ]
         }
       ],
       "connectors": [
         {
           "id": "MSFSTouchPortalPlugin.Plugin.Conn.ActionRepeatInterval",
           "name": "Action Repeat Interval",
+          "description": "Held Action Repeat Rate (ms)",
           "format": "Set Repeat Interval in Range (ms):{$MSFSTouchPortalPlugin.Plugin.Conn.ActionRepeatInterval.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.ActionRepeatInterval.Data.RangeMax$}",
           "data": [
             {
@@ -921,7 +478,8 @@
         {
           "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent",
           "name": "Activate a Named Simulator Event",
-          "format": "Set Event:{$MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.EvtId$}Value\nRange:{$MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.FbCatId$}{$MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.FbRangeMax$}",
+          "description": "Trigger any Simulator Event by name setting one parameter value with a slider, with optional extra parameter value(s). See MSFS SDK Documentation 'Event IDs' for reference.\nThe extra value(s), if any, should evaluate to numeric. They are typically used to select a sub-system which will be affected (eg. one of several engines).",
+          "format": "Set Event:{$MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.EvtId$} in Value\nRange {$MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.RangeMax$} | With Other\n| Values (opt) {$MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.Value$} {$MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.Value2$} Connector\nValue Index {$MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.ConnValIdx$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.FbCatId$}{$MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.FbRangeMax$}",
           "data": [
             {
               "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.EvtId",
@@ -934,16 +492,47 @@
               "type": "text",
               "label": "Value Range Minimum",
               "default": "-16384",
-              "minValue": -3.4028234663852886E+38,
-              "maxValue": 3.4028234663852886E+38
+              "minValue": -2147483648.0,
+              "maxValue": 4294967295.0,
+              "allowDecimals": false
             },
             {
               "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.RangeMax",
               "type": "text",
               "label": "Value Range Maximum",
               "default": "16384",
-              "minValue": -3.4028234663852886E+38,
-              "maxValue": 3.4028234663852886E+38
+              "minValue": -2147483648.0,
+              "maxValue": 4294967295.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.Value",
+              "type": "text",
+              "label": "Value 1",
+              "default": "",
+              "minValue": -2147483648.0,
+              "maxValue": 4294967295.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.Value2",
+              "type": "text",
+              "label": "Value 2",
+              "default": "",
+              "minValue": -2147483648.0,
+              "maxValue": 4294967295.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.ConnValIdx",
+              "type": "choice",
+              "label": "Conn. Value Index",
+              "default": "0-first",
+              "valueChoices": [
+                "0-first",
+                "1-mid",
+                "2-last"
+              ]
             },
             {
               "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetCustomSimEvent.Data.FbCatId",
@@ -985,8 +574,9 @@
         },
         {
           "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent",
-          "name": "Activate a Simulator Event From List",
-          "format": "From\nCategory:{$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.SimCatName$}Activate\nEvent:{$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.EvtId$}Value\nRange:{$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.FbCatId$}{$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.FbRangeMax$}",
+          "name": "Activate a Selected Simulator Event",
+          "description": "Trigger a selected Simulator Event, setting one parameter value with a slider, with optional extra parameter value(s). See MSFS SDK Documentation 'Event IDs' for reference.\nThe extra value(s), if any, should evaluate to numeric. They are typically used to select a sub-system which will be affected (eg. one of several engines).",
+          "format": "From Category {$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.SimCatName$} Activate Event {$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.EvtId$} in Value\nRange {$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.RangeMax$} | With Other\n| Values (opt) {$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.Value$} {$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.Value2$} Connector\nValue Index {$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.ConnValIdx$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.FbCatId$}{$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.FbRangeMax$}",
           "data": [
             {
               "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.SimCatName",
@@ -1011,16 +601,47 @@
               "type": "text",
               "label": "Value Range Minimum",
               "default": "-16384",
-              "minValue": -3.4028234663852886E+38,
-              "maxValue": 3.4028234663852886E+38
+              "minValue": -2147483648.0,
+              "maxValue": 4294967295.0,
+              "allowDecimals": false
             },
             {
               "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.RangeMax",
               "type": "text",
               "label": "Value Range Maximum",
               "default": "16384",
-              "minValue": -3.4028234663852886E+38,
-              "maxValue": 3.4028234663852886E+38
+              "minValue": -2147483648.0,
+              "maxValue": 4294967295.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.Value",
+              "type": "text",
+              "label": "Value 1",
+              "default": "",
+              "minValue": -2147483648.0,
+              "maxValue": 4294967295.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.Value2",
+              "type": "text",
+              "label": "Value 2",
+              "default": "",
+              "minValue": -2147483648.0,
+              "maxValue": 4294967295.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.ConnValIdx",
+              "type": "choice",
+              "label": "Conn. Value Index",
+              "default": "0-first",
+              "valueChoices": [
+                "0-first",
+                "1-mid",
+                "2-last"
+              ]
             },
             {
               "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetKnownSimEvent.Data.FbCatId",
@@ -1063,6 +684,7 @@
         {
           "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetHubHopEvent",
           "name": "Activate an Input Event From HubHop",
+          "description": "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t** Requires WASimModule or MobiFlight. **\nTrigger a Simulator Event from loaded HubHop data.\t\t\t\t\t\"Potentiometer\" type events are only supported with WASimModule (using the provided value, which should evaluate to numeric).",
           "format": "Aircraft\nDevice:{$MSFSTouchPortalPlugin.Plugin.Conn.SetHubHopEvent.Data.VendorAircraft$}System:{$MSFSTouchPortalPlugin.Plugin.Conn.SetHubHopEvent.Data.System$}Event\nName:{$MSFSTouchPortalPlugin.Plugin.Conn.SetHubHopEvent.Data.EvtId$}Value\nRange:{$MSFSTouchPortalPlugin.Plugin.Conn.SetHubHopEvent.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetHubHopEvent.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Plugin.Conn.SetHubHopEvent.Data.FbCatId$}{$MSFSTouchPortalPlugin.Plugin.Conn.SetHubHopEvent.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Plugin.Conn.SetHubHopEvent.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetHubHopEvent.Data.FbRangeMax$}",
           "data": [
             {
@@ -1149,6 +771,7 @@
         {
           "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetSimVar",
           "name": "Set Simulator Variable (SimVar)",
+          "description": "Sets the value of a Simulator Variable selected from a list of Sim Vars which are marked as settable.",
           "format": "From Category:{$MSFSTouchPortalPlugin.Plugin.Conn.SetSimVar.Data.CatId$}Set Variable:{$MSFSTouchPortalPlugin.Plugin.Conn.SetSimVar.Data.VarName$}Value\nRange:{$MSFSTouchPortalPlugin.Plugin.Conn.SetSimVar.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetSimVar.Data.RangeMax$}",
           "data": [
             {
@@ -1196,6 +819,7 @@
         {
           "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar",
           "name": "Set Airplane Local Variable",
+          "description": "Sets a value on a Local variable from currently loaded aircraft.\t\t\t\t\t** Requires WASimModule **",
           "format": "Set Variable:{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.VarName$}Units:\n(opt){$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.Unit$}Value\nRange{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.FbCatId$}{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.FbRangeMax$}",
           "data": [
             {
@@ -1273,6 +897,7 @@
         {
           "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetVariable",
           "name": "Set Named Variable Value",
+          "description": "Sets a value on any named variable of various types. SimVar types require a Unit specifier.\t\t\t\t\t** Requires WASimModule **",
           "format": "Variable\nType:{$MSFSTouchPortalPlugin.Plugin.Conn.SetVariable.Data.VarType$}Name:{$MSFSTouchPortalPlugin.Plugin.Conn.SetVariable.Data.VarName$}Units\n(opt):{$MSFSTouchPortalPlugin.Plugin.Conn.SetVariable.Data.Unit$}Value\nRange:{$MSFSTouchPortalPlugin.Plugin.Conn.SetVariable.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetVariable.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Plugin.Conn.SetVariable.Data.FbCatId$}{$MSFSTouchPortalPlugin.Plugin.Conn.SetVariable.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Plugin.Conn.SetVariable.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetVariable.Data.FbRangeMax$}",
           "data": [
             {
@@ -1361,6 +986,7 @@
         {
           "id": "MSFSTouchPortalPlugin.Plugin.Conn.ExecCalcCode",
           "name": "Execute Calculator Code",
+          "description": "Runs any entered string of RPN code through the 'execute_calculator_code' Gauge API function. Use an '@' placeholder for the connector value.\t\t\t** Requires WASimModule **",
           "format": "Calculator Code:\n(@ as placeholder(s) for value){$MSFSTouchPortalPlugin.Plugin.Conn.ExecCalcCode.Data.Code$}Value\nRange:{$MSFSTouchPortalPlugin.Plugin.Conn.ExecCalcCode.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.ExecCalcCode.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Plugin.Conn.ExecCalcCode.Data.FbCatId$}{$MSFSTouchPortalPlugin.Plugin.Conn.ExecCalcCode.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Plugin.Conn.ExecCalcCode.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.ExecCalcCode.Data.FbRangeMax$}",
           "data": [
             {
@@ -1426,6 +1052,7 @@
         {
           "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetConnectorValue",
           "name": "Visual Feedback Connector",
+          "description": "This connector provides only visual feedback by setting the position of a slider based on an existing State/variable value.",
           "format": "Set Connector Value Based on\nFeedback From Category:{$MSFSTouchPortalPlugin.Plugin.Conn.SetConnectorValue.Data.FbCatId$}Variable:{$MSFSTouchPortalPlugin.Plugin.Conn.SetConnectorValue.Data.FbVarName$}Value Range:{$MSFSTouchPortalPlugin.Plugin.Conn.SetConnectorValue.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetConnectorValue.Data.FbRangeMax$}",
           "data": [
             {
@@ -1524,6 +1151,514 @@
       ]
     },
     {
+      "id": "MSFSTouchPortalPlugin.StatesEditor",
+      "name": "MSFS - Custom States & Variables",
+      "imagepath": "%TP_PLUGIN_FOLDER%MSFS-TouchPortal-Plugin/airplane_takeoff24.png",
+      "actions": [
+        {
+          "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar",
+          "name": "Request a Custom Simulator Variable",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "tryInline": true,
+          "hasHoldFunctionality": false,
+          "description": "Request Simulator Variable Name:                            Index (if req'd):               Units:                                                                Category:                                    Format:                            Default Value:                 Settable:           Update Period:                   Update Interval:               Delta Epsilon:     ",
+          "format": "{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.VarName$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.VarIndex$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.Unit$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.CatId$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.Format$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.DfltVal$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.CanSet$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.UpdPer$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.UpdInt$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.Epsilon$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.VarName",
+              "type": "text",
+              "label": "Simulator Variable Name",
+              "default": "SIMULATOR VARIABLE FULL NAME"
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.VarIndex",
+              "type": "number",
+              "label": "Variable Index",
+              "default": 0.0,
+              "minValue": 0.0,
+              "maxValue": 99.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.Unit",
+              "type": "choice",
+              "label": "Unit Name",
+              "default": "",
+              "valueChoices": [
+                "[connect to plugin]                                 "
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.CatId",
+              "type": "choice",
+              "label": "Category",
+              "default": "",
+              "valueChoices": [
+                "[connect plugin]"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.Format",
+              "type": "text",
+              "label": "Formatting String",
+              "default": "F2"
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.DfltVal",
+              "type": "text",
+              "label": "Default Value",
+              "default": "0"
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.CanSet",
+              "type": "switch",
+              "label": "Settable",
+              "default": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.UpdPer",
+              "type": "choice",
+              "label": "Update Period",
+              "default": "SimFrame",
+              "valueChoices": [
+                "Once",
+                "SimFrame",
+                "Second",
+                "Millisecond"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.UpdInt",
+              "type": "number",
+              "label": "Interval",
+              "default": 0.0,
+              "minValue": 0.0,
+              "maxValue": 2147483647.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCustomSimVar.Data.Epsilon",
+              "type": "number",
+              "label": "Delta Epsilon",
+              "default": 0.0,
+              "minValue": 0.0,
+              "maxValue": 3.4028234663852886E+38
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar",
+          "name": "Request a Variable From List",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "tryInline": true,
+          "hasHoldFunctionality": false,
+          "description": "Request a Variable from Simulator\t\t\t\t\t** Local Variables support requires WASimModule **\nCategory or Local Aircraft          Request Variable                                                                                               Index (if req'd):                Units:                                                                 Plugin Category:                         Format:                            Default Value:                 Update Period:                  Update Interval:              Delta Epsilon:      ",
+          "format": "{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.SimCatName$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.VarName$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.VarIndex$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.Unit$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.CatId$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.Format$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.DfltVal$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.UpdPer$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.UpdInt$}{$MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.Epsilon$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.SimCatName",
+              "type": "choice",
+              "label": "Category or Type",
+              "default": "",
+              "valueChoices": [
+                "[connect to plugin]"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.VarName",
+              "type": "choice",
+              "label": "Simulator Variable Name",
+              "default": "",
+              "valueChoices": [
+                "[select a category]                                                            "
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.VarIndex",
+              "type": "number",
+              "label": "Variable Index",
+              "default": 0.0,
+              "minValue": 0.0,
+              "maxValue": 99.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.Unit",
+              "type": "choice",
+              "label": "Unit Name",
+              "default": "number",
+              "valueChoices": [
+                "[connect to plugin]                                 "
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.CatId",
+              "type": "choice",
+              "label": "Category",
+              "default": "",
+              "valueChoices": [
+                "[connect plugin]"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.Format",
+              "type": "text",
+              "label": "Formatting String",
+              "default": "F2"
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.DfltVal",
+              "type": "text",
+              "label": "Default Value",
+              "default": "0"
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.UpdPer",
+              "type": "choice",
+              "label": "Update Period",
+              "default": "SimFrame",
+              "valueChoices": [
+                "Once",
+                "SimFrame",
+                "Second",
+                "Millisecond"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.UpdInt",
+              "type": "number",
+              "label": "Interval",
+              "default": 0.0,
+              "minValue": 0.0,
+              "maxValue": 2147483647.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddKnownSimVar.Data.Epsilon",
+              "type": "number",
+              "label": "Delta Epsilon",
+              "default": 0.0,
+              "minValue": 0.0,
+              "maxValue": 3.4028234663852886E+38
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable",
+          "name": "Request a Named Variable",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "tryInline": true,
+          "hasHoldFunctionality": false,
+          "description": "Request a Named Variable                       For indexed SimVars, include it in the name after a : (colon).\t\t\t\t\t** Requires WASimModule **\nVariable Type:                Name:                                                   Units (optional):                                               Plugin Category:                         Format:                            Default Value:                 Update Period:                Update Interval:              Delta Epsilon:     ",
+          "format": "{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.VarType$}{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.VarName$}{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.Unit$}{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.CatId$}{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.Format$}{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.DfltVal$}{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.UpdPer$}{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.UpdInt$}{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.Epsilon$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.VarType",
+              "type": "choice",
+              "label": "Variable Type",
+              "default": "A: SimVar",
+              "valueChoices": [
+                "A: SimVar",
+                "B: Input",
+                "C: GPS",
+                "E: Env.",
+                "L: Local",
+                "M: Mouse",
+                "R: Rsrc.",
+                "T: Token",
+                "Z: Custom"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.VarName",
+              "type": "text",
+              "label": "Variable Name",
+              "default": "FULL VARIABLE NAME"
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.Unit",
+              "type": "choice",
+              "label": "Unit Name",
+              "default": "number",
+              "valueChoices": [
+                "[connect to plugin]                                 "
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.CatId",
+              "type": "choice",
+              "label": "Category",
+              "default": "",
+              "valueChoices": [
+                "[connect plugin]"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.Format",
+              "type": "text",
+              "label": "Formatting String",
+              "default": "F2"
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.DfltVal",
+              "type": "text",
+              "label": "Default Value",
+              "default": "0"
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.UpdPer",
+              "type": "choice",
+              "label": "Update Period",
+              "default": "SimFrame",
+              "valueChoices": [
+                "Once",
+                "SimFrame",
+                "Second",
+                "Millisecond"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.UpdInt",
+              "type": "number",
+              "label": "Interval",
+              "default": 0.0,
+              "minValue": 0.0,
+              "maxValue": 2147483647.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.Epsilon",
+              "type": "number",
+              "label": "Delta Epsilon",
+              "default": 0.0,
+              "minValue": 0.0,
+              "maxValue": 3.4028234663852886E+38
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue",
+          "name": "Request a Calculated Value",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "tryInline": true,
+          "hasHoldFunctionality": false,
+          "description": "Request a Calculated Value\t\t\t\t\t** Requires WASimModule **\nCalculator Code:                                                                                                         Result Type:                  Plugin Category:                         State Name:                                                Format:                            Default Value:                 Update Period:                Update Interval:              Delta Epsilon:     ",
+          "format": "{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.CalcCode$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.ResType$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.CatId$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.VarName$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.Format$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.DfltVal$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.UpdPer$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.UpdInt$}{$MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.Epsilon$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.CalcCode",
+              "type": "text",
+              "label": "Calculator Code",
+              "default": "(A:TRAILING EDGE FLAPS LEFT ANGLE, degrees) 30 - abs 0.1 <"
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.ResType",
+              "type": "choice",
+              "label": "Result Type",
+              "default": "Double",
+              "valueChoices": [
+                "Double",
+                "Integer",
+                "String",
+                "Formatted"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.CatId",
+              "type": "choice",
+              "label": "Category",
+              "default": "",
+              "valueChoices": [
+                "[connect plugin]"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.VarName",
+              "type": "text",
+              "label": "State Name",
+              "default": "A name for the States list"
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.Format",
+              "type": "text",
+              "label": "Formatting String",
+              "default": "F2"
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.DfltVal",
+              "type": "text",
+              "label": "Default Value",
+              "default": "0"
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.UpdPer",
+              "type": "choice",
+              "label": "Update Period",
+              "default": "SimFrame",
+              "valueChoices": [
+                "Once",
+                "SimFrame",
+                "Second",
+                "Millisecond"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.UpdInt",
+              "type": "number",
+              "label": "Interval",
+              "default": 0.0,
+              "minValue": 0.0,
+              "maxValue": 2147483647.0,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddCalculatedValue.Data.Epsilon",
+              "type": "number",
+              "label": "Delta Epsilon",
+              "default": 0.0,
+              "minValue": 0.0,
+              "maxValue": 3.4028234663852886E+38
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Plugin.Action.UpdateVarValue",
+          "name": "Update a Variable Value",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "tryInline": true,
+          "hasHoldFunctionality": false,
+          "description": "Request a value update for an added variable. This is especially useful for variables with a \"Once\" type Update Period.",
+          "format": "From Category {$MSFSTouchPortalPlugin.Plugin.Action.UpdateVarValue.Data.CatId$} Update Variable {$MSFSTouchPortalPlugin.Plugin.Action.UpdateVarValue.Data.VarName$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.UpdateVarValue.Data.CatId",
+              "type": "choice",
+              "label": "Category",
+              "default": "",
+              "valueChoices": [
+                "[connect plugin]"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.UpdateVarValue.Data.VarName",
+              "type": "choice",
+              "label": "Simulator Variable",
+              "default": "",
+              "valueChoices": [
+                "[select a category]"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Plugin.Action.RemoveSimVar",
+          "name": "Remove a Simulator Variable",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "tryInline": true,
+          "hasHoldFunctionality": false,
+          "description": "Remove an existing Simulator Variable.",
+          "format": "From Category {$MSFSTouchPortalPlugin.Plugin.Action.RemoveSimVar.Data.CatId$} Remove Variable {$MSFSTouchPortalPlugin.Plugin.Action.RemoveSimVar.Data.VarName$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.RemoveSimVar.Data.CatId",
+              "type": "choice",
+              "label": "Category",
+              "default": "",
+              "valueChoices": [
+                "[connect plugin]"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.RemoveSimVar.Data.VarName",
+              "type": "choice",
+              "label": "Simulator Variable",
+              "default": "",
+              "valueChoices": [
+                "[select a category]"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Plugin.Action.ClearSimVars",
+          "name": "Clear Variable Definitions",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "tryInline": true,
+          "hasHoldFunctionality": false,
+          "description": "Removes either all or only custom-added variable state definitions.",
+          "format": "Clear {$MSFSTouchPortalPlugin.Plugin.Action.ClearSimVars.Data.VarsSet$} states",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.ClearSimVars.Data.VarsSet",
+              "type": "choice",
+              "label": "Variables Set",
+              "default": "Custom",
+              "valueChoices": [
+                "Custom",
+                "All"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Plugin.Action.LoadSimVars",
+          "name": "Load Variable Definitions From File",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "tryInline": true,
+          "hasHoldFunctionality": false,
+          "description": "Load a set of variable state definitions from a configuration file.",
+          "format": "Load definitions from file {$MSFSTouchPortalPlugin.Plugin.Action.LoadSimVars.Data.VarsFile$} (file name only for user config. folder, or full path with file name)",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.LoadSimVars.Data.VarsFile",
+              "type": "text",
+              "label": "Load From File",
+              "default": "CustomStates.ini"
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.Plugin.Action.SaveSimVars",
+          "name": "Save Variable Definitions To File",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "tryInline": true,
+          "hasHoldFunctionality": false,
+          "description": "Save the current simulator variable state definitions to a configuration file.",
+          "format": "Save {$MSFSTouchPortalPlugin.Plugin.Action.SaveSimVars.Data.VarsSet$} states to file {$MSFSTouchPortalPlugin.Plugin.Action.SaveSimVars.Data.VarsFile$} (file name only for user config. folder, or full path with file name)",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.SaveSimVars.Data.VarsSet",
+              "type": "choice",
+              "label": "Variables Set",
+              "default": "Custom",
+              "valueChoices": [
+                "Custom",
+                "All"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.SaveSimVars.Data.VarsFile",
+              "type": "text",
+              "label": "Save to File",
+              "default": "CustomStates.ini"
+            }
+          ]
+        }
+      ],
+      "connectors": [],
+      "events": [],
+      "states": []
+    },
+    {
       "id": "MSFSTouchPortalPlugin.AutoPilot",
       "name": "MSFS - AutoPilot",
       "imagepath": "%TP_PLUGIN_FOLDER%MSFS-TouchPortal-Plugin/airplane_takeoff24.png",
@@ -1533,9 +1668,9 @@
           "name": "Airspeed Hold Value  Adj/Sel/Hold",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Airspeed Hold Value - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAirSpeedVar.Data.0$}",
           "data": [
             {
@@ -1557,9 +1692,9 @@
           "name": "Airspeed Hold Value Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set Airspeed Hold Value to {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAirSpeedSet.Data.0$} kts",
           "data": [
             {
@@ -1577,9 +1712,9 @@
           "name": "Altitude Hold Value Adj/Sel",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Altitude Hold Value - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAltitudeVar.Data.0$}",
           "data": [
             {
@@ -1600,9 +1735,9 @@
           "name": "Altitude Hold Value Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Altitude Hold Value {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAltitudeSet.Data.0$} to {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAltitudeSet.Data.1$}",
           "data": [
             {
@@ -1630,9 +1765,9 @@
           "name": "AP Switches",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Auto Pilot {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotSwitches.Data.0$} Switch {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotSwitches.Data.1$}",
           "data": [
             {
@@ -1676,9 +1811,9 @@
           "name": "Attitude Hold Pitch Value Adj/Sel",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Attitude Hold Pitch Value {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitudeVar.Data.0$}",
           "data": [
             {
@@ -1699,9 +1834,9 @@
           "name": "Attitude Hold Pitch Value Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set Attitude Hold Pitch Value to {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotAttitudeSet.Data.0$} (-16384 to +16384)",
           "data": [
             {
@@ -1720,9 +1855,9 @@
           "name": "Auto Brake",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Auto Brake - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoBrake.Data.0$}",
           "data": [
             {
@@ -1746,9 +1881,9 @@
           "name": "Auto Brake Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set Auto Brake Value to {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoBrakeSet.Data.0$} (1-4)",
           "data": [
             {
@@ -1767,9 +1902,9 @@
           "name": "Auto Throttle",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Toggle Auto Throttle - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoThrottle.Data.0$}",
           "data": [
             {
@@ -1790,9 +1925,9 @@
           "name": "Flight Director Switches",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Toggle Flight Director {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotFlightDirectorSwitches.Data.0$} Switch",
           "data": [
             {
@@ -1812,9 +1947,9 @@
           "name": "Heading Hold Value Adj/Sel",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Heading Hold Value - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeadingVar.Data.0$}",
           "data": [
             {
@@ -1835,9 +1970,9 @@
           "name": "Heading Hold Value Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set Heading Hold Value - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotHeadingSet.Data.0$}",
           "data": [
             {
@@ -1855,9 +1990,9 @@
           "name": "Mach Hold Value  Adj/Hold",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Mach Hold Value - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMachVar.Data.0$}",
           "data": [
             {
@@ -1878,9 +2013,9 @@
           "name": "Mach Hold Value Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set Mach Hold Value to {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMachSet.Data.0$}",
           "data": [
             {
@@ -1898,9 +2033,9 @@
           "name": "Max. Bank Angle Adjust",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Max Bank Angle - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotBanking.Data.0$}",
           "data": [
             {
@@ -1920,9 +2055,9 @@
           "name": "Max. Bank Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set Max Bank {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaxBankSet.Data.0$} Value to {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotMaxBankSet.Data.1$}",
           "data": [
             {
@@ -1951,9 +2086,9 @@
           "name": "Nav Mode Select",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Select Nav Mode {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotNavModeSelect.Data.0$}",
           "data": [
             {
@@ -1973,9 +2108,9 @@
           "name": "Vertical Speed Value Adj/Sel/Hold",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Vertical Speed Value - {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeedVar.Data.0$}",
           "data": [
             {
@@ -1997,9 +2132,9 @@
           "name": "Vertical Speed Value Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Vertical Speed Hold {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeedSet.Data.0$} to Value {$MSFSTouchPortalPlugin.AutoPilot.Action.AutoPilotVerticalSpeedSet.Data.1$}",
           "data": [
             {
@@ -2027,6 +2162,7 @@
         {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotAttitudeSet",
           "name": "Attitude Hold Pitch Value Set",
+          "description": "",
           "format": "Set Attitude Pitch Hold\nin Value Range:{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotAttitudeSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotAttitudeSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotAttitudeSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotAttitudeSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotAttitudeSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotAttitudeSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -2088,6 +2224,7 @@
         {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet",
           "name": "Max. Bank Set",
+          "description": "",
           "format": "Set Max Bank {$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.0$}in Value\nRange:{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMaxBankSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -2158,6 +2295,7 @@
         {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotHeadingSet",
           "name": "Heading Hold Value Set",
+          "description": "",
           "format": "Set Heading Hold\nin Value Range:{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotHeadingSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotHeadingSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotHeadingSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotHeadingSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotHeadingSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotHeadingSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -2217,6 +2355,7 @@
         {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotVerticalSpeedSet",
           "name": "Vertical Speed Value Set",
+          "description": "",
           "format": "Vertical Speed Hold {$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotVerticalSpeedSet.Data.0$}in Value\nRange:{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotVerticalSpeedSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotVerticalSpeedSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotVerticalSpeedSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotVerticalSpeedSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotVerticalSpeedSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotVerticalSpeedSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -2286,6 +2425,7 @@
         {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotAirSpeedSet",
           "name": "Airspeed Hold Value Set",
+          "description": "",
           "format": "Set Airspeed Hold\nin Value Range (kts):{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotAirSpeedSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotAirSpeedSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotAirSpeedSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotAirSpeedSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotAirSpeedSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotAirSpeedSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -2345,6 +2485,7 @@
         {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet",
           "name": "Auto Brake Set",
+          "description": "",
           "format": "Set Auto Brake\nin Value Range:{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoBrakeSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -2406,6 +2547,7 @@
         {
           "id": "MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMachSet",
           "name": "Mach Hold Value Set",
+          "description": "",
           "format": "Set Mach Hold\nin Value Range:{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMachSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMachSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMachSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMachSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMachSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.AutoPilot.Conn.AutoPilotMachSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -2477,7 +2619,7 @@
     },
     {
       "id": "MSFSTouchPortalPlugin.Communication",
-      "name": "MSFS - Communication",
+      "name": "MSFS - Radio & Navigation",
       "imagepath": "%TP_PLUGIN_FOLDER%MSFS-TouchPortal-Plugin/airplane_takeoff24.png",
       "actions": [
         {
@@ -2485,9 +2627,9 @@
           "name": "Radio Interaction",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Radio {$MSFSTouchPortalPlugin.Communication.Action.Radios.Data.0$} - {$MSFSTouchPortalPlugin.Communication.Action.Radios.Data.1$}",
           "data": [
             {
@@ -2533,9 +2675,9 @@
           "name": "Radio Values Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set Radio {$MSFSTouchPortalPlugin.Communication.Action.RadiosSet.Data.0$} {$MSFSTouchPortalPlugin.Communication.Action.RadiosSet.Data.1$} to Value {$MSFSTouchPortalPlugin.Communication.Action.RadiosSet.Data.2$}",
           "data": [
             {
@@ -2583,6 +2725,7 @@
         {
           "id": "MSFSTouchPortalPlugin.Communication.Conn.RadiosSet",
           "name": "Radio Values Set",
+          "description": "",
           "format": "Set Radio {$MSFSTouchPortalPlugin.Communication.Conn.RadiosSet.Data.0$} {$MSFSTouchPortalPlugin.Communication.Conn.RadiosSet.Data.1$}in Value\nRange:{$MSFSTouchPortalPlugin.Communication.Conn.RadiosSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Communication.Conn.RadiosSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Communication.Conn.RadiosSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.Communication.Conn.RadiosSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Communication.Conn.RadiosSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Communication.Conn.RadiosSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -2683,9 +2826,9 @@
           "name": "Alternator Switches",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Toggle Alternator - {$MSFSTouchPortalPlugin.Electrical.Action.AlternatorIndex.Data.0$}",
           "data": [
             {
@@ -2708,9 +2851,9 @@
           "name": "Avionics Master Switch",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Toggle Avionics Master",
           "data": []
         },
@@ -2719,9 +2862,9 @@
           "name": "Landing Lights Switch/Direction",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Landing Lights - {$MSFSTouchPortalPlugin.Electrical.Action.LandingLights.Data.0$}",
           "data": [
             {
@@ -2747,9 +2890,9 @@
           "name": "Light Dimming",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set Light Potentiometer {$MSFSTouchPortalPlugin.Electrical.Action.LightPorentiometerSet.Data.0$} to {$MSFSTouchPortalPlugin.Electrical.Action.LightPorentiometerSet.Data.1$} (0 to 100)",
           "data": [
             {
@@ -2807,9 +2950,9 @@
           "name": "Light Switches",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "NOTE: The 'All' lights can only be Toggled.",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "NOTE: The 'All' lights can only be Toggled.",
           "format": "Switch {$MSFSTouchPortalPlugin.Electrical.Action.LightSwitches.Data.0$} Light {$MSFSTouchPortalPlugin.Electrical.Action.LightSwitches.Data.1$}",
           "data": [
             {
@@ -2851,9 +2994,9 @@
           "name": "Master Battery",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Toggle Master Battery",
           "data": []
         },
@@ -2862,9 +3005,9 @@
           "name": "Master Battery & Alternator",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Toggle Master Battery & Alternator",
           "data": []
         }
@@ -2873,6 +3016,7 @@
         {
           "id": "MSFSTouchPortalPlugin.Electrical.Conn.LightPorentiometerSet",
           "name": "Light Dimming",
+          "description": "",
           "format": "Set Light Potentiometer {$MSFSTouchPortalPlugin.Electrical.Conn.LightPorentiometerSet.Data.0$}in Value\nRange:{$MSFSTouchPortalPlugin.Electrical.Conn.LightPorentiometerSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Electrical.Conn.LightPorentiometerSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Electrical.Conn.LightPorentiometerSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.Electrical.Conn.LightPorentiometerSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Electrical.Conn.LightPorentiometerSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Electrical.Conn.LightPorentiometerSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -2984,9 +3128,9 @@
           "name": "Engine Auto Start/Shutdown",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Start/Shutdown Engine",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "Start/Shutdown Engine",
           "format": "Engine - {$MSFSTouchPortalPlugin.Engine.Action.EngineAuto.Data.0$}",
           "data": [
             {
@@ -3006,9 +3150,9 @@
           "name": "Magnetos Switch - All",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "All Magnetos - {$MSFSTouchPortalPlugin.Engine.Action.AllMagenetos.Data.0$}",
           "data": [
             {
@@ -3034,9 +3178,9 @@
           "name": "Magnetos Switch - Individual",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Magneto {$MSFSTouchPortalPlugin.Engine.Action.MagnetoSpecific.Data.0$} - {$MSFSTouchPortalPlugin.Engine.Action.MagnetoSpecific.Data.1$}",
           "data": [
             {
@@ -3073,9 +3217,9 @@
           "name": "Magnetos Switch Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Set Magneto Switch {$MSFSTouchPortalPlugin.Engine.Action.MagnetoSet.Data.0$} to position {$MSFSTouchPortalPlugin.Engine.Action.MagnetoSet.Data.1$} (0-4)",
           "data": [
             {
@@ -3106,9 +3250,9 @@
           "name": "Master Ignition Switch",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Toggle Master Ignition Switch",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "Toggle Master Ignition Switch",
           "format": "Toggle Master Ignition Switch",
           "data": []
         },
@@ -3117,9 +3261,9 @@
           "name": "Mixture Adjust - All",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "All Mixtures - {$MSFSTouchPortalPlugin.Engine.Action.Mixture.Data.0$}",
           "data": [
             {
@@ -3144,9 +3288,9 @@
           "name": "Mixture Adjust - Individual",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Mixture {$MSFSTouchPortalPlugin.Engine.Action.MixtureSpecific.Data.0$} - {$MSFSTouchPortalPlugin.Engine.Action.MixtureSpecific.Data.1$}",
           "data": [
             {
@@ -3182,9 +3326,9 @@
           "name": "Mixture Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set Mixture {$MSFSTouchPortalPlugin.Engine.Action.MixtureSet.Data.0$} to {$MSFSTouchPortalPlugin.Engine.Action.MixtureSet.Data.1$} (-16384 to +16384)",
           "data": [
             {
@@ -3216,9 +3360,9 @@
           "name": "Propeller Pitch Adjust",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Pitch {$MSFSTouchPortalPlugin.Engine.Action.PropellerPitch.Data.0$} - {$MSFSTouchPortalPlugin.Engine.Action.PropellerPitch.Data.1$}",
           "data": [
             {
@@ -3256,9 +3400,9 @@
           "name": "Propeller Pitch Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set Propeller {$MSFSTouchPortalPlugin.Engine.Action.PropellerPitchSet.Data.0$} Pitch to {$MSFSTouchPortalPlugin.Engine.Action.PropellerPitchSet.Data.1$} (0 to 16384)",
           "data": [
             {
@@ -3290,9 +3434,9 @@
           "name": "Starters",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Toggle Starter - {$MSFSTouchPortalPlugin.Engine.Action.Starters.Data.0$}",
           "data": [
             {
@@ -3315,9 +3459,9 @@
           "name": "Throttle Adjust - All",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "All Throttles - {$MSFSTouchPortalPlugin.Engine.Action.Throttle.Data.0$}",
           "data": [
             {
@@ -3350,9 +3494,9 @@
           "name": "Throttle Adjust - Individual",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Throttle {$MSFSTouchPortalPlugin.Engine.Action.ThrottleSpecific.Data.0$} - {$MSFSTouchPortalPlugin.Engine.Action.ThrottleSpecific.Data.1$}",
           "data": [
             {
@@ -3388,9 +3532,9 @@
           "name": "Throttle Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set Throttle {$MSFSTouchPortalPlugin.Engine.Action.ThrottleSet.Data.0$} to {$MSFSTouchPortalPlugin.Engine.Action.ThrottleSet.Data.1$} (-16384 to +16384)",
           "data": [
             {
@@ -3422,6 +3566,7 @@
         {
           "id": "MSFSTouchPortalPlugin.Engine.Conn.MagnetoSet",
           "name": "Magnetos Switch Set",
+          "description": "",
           "format": "Set Magneto Switch{$MSFSTouchPortalPlugin.Engine.Conn.MagnetoSet.Data.0$}in Range:{$MSFSTouchPortalPlugin.Engine.Conn.MagnetoSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Engine.Conn.MagnetoSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Engine.Conn.MagnetoSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.Engine.Conn.MagnetoSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Engine.Conn.MagnetoSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Engine.Conn.MagnetoSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -3495,6 +3640,7 @@
         {
           "id": "MSFSTouchPortalPlugin.Engine.Conn.ThrottleSet",
           "name": "Throttle Set",
+          "description": "",
           "format": "Set Throttle{$MSFSTouchPortalPlugin.Engine.Conn.ThrottleSet.Data.0$}in Value\nRange:{$MSFSTouchPortalPlugin.Engine.Conn.ThrottleSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Engine.Conn.ThrottleSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Engine.Conn.ThrottleSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.Engine.Conn.ThrottleSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Engine.Conn.ThrottleSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Engine.Conn.ThrottleSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -3569,6 +3715,7 @@
         {
           "id": "MSFSTouchPortalPlugin.Engine.Conn.MixtureSet",
           "name": "Mixture Set",
+          "description": "",
           "format": "Set Mixture{$MSFSTouchPortalPlugin.Engine.Conn.MixtureSet.Data.0$}in Value\nRange:{$MSFSTouchPortalPlugin.Engine.Conn.MixtureSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Engine.Conn.MixtureSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Engine.Conn.MixtureSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.Engine.Conn.MixtureSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Engine.Conn.MixtureSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Engine.Conn.MixtureSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -3643,6 +3790,7 @@
         {
           "id": "MSFSTouchPortalPlugin.Engine.Conn.PropellerPitchSet",
           "name": "Propeller Pitch Set",
+          "description": "",
           "format": "Set Propeller{$MSFSTouchPortalPlugin.Engine.Conn.PropellerPitchSet.Data.0$}Pitch in\nValue Range:{$MSFSTouchPortalPlugin.Engine.Conn.PropellerPitchSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Engine.Conn.PropellerPitchSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Engine.Conn.PropellerPitchSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.Engine.Conn.PropellerPitchSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Engine.Conn.PropellerPitchSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Engine.Conn.PropellerPitchSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -3728,9 +3876,9 @@
           "name": "Anti Ice System Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set {$MSFSTouchPortalPlugin.Environment.Action.AntiIceSet.Data.0$} to Value {$MSFSTouchPortalPlugin.Environment.Action.AntiIceSet.Data.1$}",
           "data": [
             {
@@ -3769,9 +3917,9 @@
           "name": "Anti Ice System Switches",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "NOTE: Structural and Propeller De Ice can only be Toggled.",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "NOTE: Structural and Propeller De Ice can only be Toggled.",
           "format": "{$MSFSTouchPortalPlugin.Environment.Action.AntiIceAdjust.Data.0$} {$MSFSTouchPortalPlugin.Environment.Action.AntiIceAdjust.Data.1$}",
           "data": [
             {
@@ -3809,6 +3957,7 @@
         {
           "id": "MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet",
           "name": "Anti Ice System Set",
+          "description": "",
           "format": "Set {$MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.0$}in Value\nRange:{$MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Environment.Conn.AntiIceSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -3901,9 +4050,9 @@
           "name": "Failures",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Toggle Failure - {$MSFSTouchPortalPlugin.Failures.Action.Failures.Data.0$}",
           "data": [
             {
@@ -3952,9 +4101,9 @@
           "name": "Aileron Trim Adjust",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Adjust Aileron Trim {$MSFSTouchPortalPlugin.FlightSystems.Action.AileronTrim.Data.0$}",
           "data": [
             {
@@ -3974,9 +4123,9 @@
           "name": "Aileron Trim Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set Aileron Trim to {$MSFSTouchPortalPlugin.FlightSystems.Action.AileronTrimSet.Data.0$}% (-100 - +100)",
           "data": [
             {
@@ -3995,9 +4144,9 @@
           "name": "Ailerons Adjust",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Adjust Ailerons {$MSFSTouchPortalPlugin.FlightSystems.Action.Ailerons.Data.0$}",
           "data": [
             {
@@ -4018,9 +4167,9 @@
           "name": "Ailerons Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": " Set Ailerons",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": " Set Ailerons",
           "format": "Set Ailerons to {$MSFSTouchPortalPlugin.FlightSystems.Action.AileronsSet.Data.0$} (-16384 to +16384)",
           "data": [
             {
@@ -4039,9 +4188,9 @@
           "name": "Brake Axis Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set Brake Axis {$MSFSTouchPortalPlugin.FlightSystems.Action.BrakesSet.Data.0$} to {$MSFSTouchPortalPlugin.FlightSystems.Action.BrakesSet.Data.1$} (0 to 16384)",
           "data": [
             {
@@ -4070,9 +4219,9 @@
           "name": "Brakes Activate",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Activate {$MSFSTouchPortalPlugin.FlightSystems.Action.Brakes.Data.0$} Brakes",
           "data": [
             {
@@ -4093,9 +4242,9 @@
           "name": "Cowl Flap Levers Adjust",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Cowl Flaps Lever {$MSFSTouchPortalPlugin.FlightSystems.Action.CowlFlapsAdjust.Data.0$} {$MSFSTouchPortalPlugin.FlightSystems.Action.CowlFlapsAdjust.Data.1$}",
           "data": [
             {
@@ -4128,9 +4277,9 @@
           "name": "Cowl Flaps Lever Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set Cowl {$MSFSTouchPortalPlugin.FlightSystems.Action.CowlFlapsSet.Data.0$} Flaps Lever to {$MSFSTouchPortalPlugin.FlightSystems.Action.CowlFlapsSet.Data.0$} (0 to 16384)",
           "data": [
             {
@@ -4161,9 +4310,9 @@
           "name": "Elevator Adjust",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Adjust Elevator {$MSFSTouchPortalPlugin.FlightSystems.Action.Elevator.Data.0$}",
           "data": [
             {
@@ -4183,9 +4332,9 @@
           "name": "Elevator Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Set Elevator",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "Set Elevator",
           "format": "Set Elevator to {$MSFSTouchPortalPlugin.FlightSystems.Action.ElevatorSet.Data.0$} (-16384 to +16384)",
           "data": [
             {
@@ -4204,9 +4353,9 @@
           "name": "Elevator Trim Adjust",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Adjust Elevator Trim {$MSFSTouchPortalPlugin.FlightSystems.Action.ElevatorTrim.Data.0$}",
           "data": [
             {
@@ -4226,9 +4375,9 @@
           "name": "Elevator Trim Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set Elevator Trim to {$MSFSTouchPortalPlugin.FlightSystems.Action.ElevatorTrimSet.Data.0$} (-16384 to +16384)",
           "data": [
             {
@@ -4247,9 +4396,9 @@
           "name": "Flaps Adjust",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Flaps {$MSFSTouchPortalPlugin.FlightSystems.Action.Flaps.Data.0$}",
           "data": [
             {
@@ -4275,9 +4424,9 @@
           "name": "Flaps Handle Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Set Flaps Handle Position",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "Set Flaps Handle Position",
           "format": "Set Flaps Handle to {$MSFSTouchPortalPlugin.FlightSystems.Action.FlapsSet.Data.0$} (0 to 16384)",
           "data": [
             {
@@ -4296,9 +4445,9 @@
           "name": "Gear Manipulation",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Gear {$MSFSTouchPortalPlugin.FlightSystems.Action.Gear.Data.0$}",
           "data": [
             {
@@ -4320,9 +4469,9 @@
           "name": "Parking Brake Toggle",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Toggle the Parking Brake On/Off",
           "data": []
         },
@@ -4331,9 +4480,9 @@
           "name": "Rudder Adjust",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Adjust Rudder {$MSFSTouchPortalPlugin.FlightSystems.Action.Rudder.Data.0$}",
           "data": [
             {
@@ -4354,9 +4503,9 @@
           "name": "Rudder Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": " Set Rudder",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": " Set Rudder",
           "format": "Set Rudder to {$MSFSTouchPortalPlugin.FlightSystems.Action.RudderSet.Data.0$} (-16384 to +16384)",
           "data": [
             {
@@ -4375,9 +4524,9 @@
           "name": "Rudder Trim Adjust",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Adjust Rudder Trim {$MSFSTouchPortalPlugin.FlightSystems.Action.RudderTrim.Data.0$}",
           "data": [
             {
@@ -4397,9 +4546,9 @@
           "name": "Rudder Trim Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set Rudder Trim to {$MSFSTouchPortalPlugin.FlightSystems.Action.RudderTrimSet.Data.0$}% (-100 - +100)",
           "data": [
             {
@@ -4418,9 +4567,9 @@
           "name": "Spoilers Action",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Spoilers {$MSFSTouchPortalPlugin.FlightSystems.Action.Spoilers.Data.0$}",
           "data": [
             {
@@ -4441,9 +4590,9 @@
           "name": "Spoilers Arm",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Spoilers Arm {$MSFSTouchPortalPlugin.FlightSystems.Action.SpoilersArm.Data.0$}",
           "data": [
             {
@@ -4464,9 +4613,9 @@
           "name": "Spoilers Set",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "Set Spoilers handle position to {$MSFSTouchPortalPlugin.FlightSystems.Action.SpoilersSet.Data.0$} (0 to 16384)",
           "data": [
             {
@@ -4485,6 +4634,7 @@
         {
           "id": "MSFSTouchPortalPlugin.FlightSystems.Conn.AileronsSet",
           "name": "Ailerons Set",
+          "description": " Set Ailerons",
           "format": "Set Ailerons\nin Value Range:{$MSFSTouchPortalPlugin.FlightSystems.Conn.AileronsSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.AileronsSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.FlightSystems.Conn.AileronsSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.FlightSystems.Conn.AileronsSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.FlightSystems.Conn.AileronsSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.AileronsSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -4546,6 +4696,7 @@
         {
           "id": "MSFSTouchPortalPlugin.FlightSystems.Conn.ElevatorSet",
           "name": "Elevator Set",
+          "description": "Set Elevator",
           "format": "Set Elevator\nin Value Range:{$MSFSTouchPortalPlugin.FlightSystems.Conn.ElevatorSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.ElevatorSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.FlightSystems.Conn.ElevatorSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.FlightSystems.Conn.ElevatorSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.FlightSystems.Conn.ElevatorSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.ElevatorSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -4607,6 +4758,7 @@
         {
           "id": "MSFSTouchPortalPlugin.FlightSystems.Conn.BrakesSet",
           "name": "Brake Axis Set",
+          "description": "",
           "format": "Set Brake Axis{$MSFSTouchPortalPlugin.FlightSystems.Conn.BrakesSet.Data.0$}in Value\n Range:{$MSFSTouchPortalPlugin.FlightSystems.Conn.BrakesSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.BrakesSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.FlightSystems.Conn.BrakesSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.FlightSystems.Conn.BrakesSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.FlightSystems.Conn.BrakesSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.BrakesSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -4678,6 +4830,7 @@
         {
           "id": "MSFSTouchPortalPlugin.FlightSystems.Conn.FlapsSet",
           "name": "Flaps Handle Set",
+          "description": "Set Flaps Handle Position",
           "format": "Set Flaps Handle\nin Value Range:{$MSFSTouchPortalPlugin.FlightSystems.Conn.FlapsSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.FlapsSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.FlightSystems.Conn.FlapsSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.FlightSystems.Conn.FlapsSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.FlightSystems.Conn.FlapsSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.FlapsSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -4739,6 +4892,7 @@
         {
           "id": "MSFSTouchPortalPlugin.FlightSystems.Conn.CowlFlapsSet",
           "name": "Cowl Flaps Lever Set",
+          "description": "",
           "format": "Set Cowl{$MSFSTouchPortalPlugin.FlightSystems.Conn.CowlFlapsSet.Data.0$}Flaps Lever\nin Value Range:{$MSFSTouchPortalPlugin.FlightSystems.Conn.CowlFlapsSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.CowlFlapsSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.FlightSystems.Conn.CowlFlapsSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.FlightSystems.Conn.CowlFlapsSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.FlightSystems.Conn.CowlFlapsSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.CowlFlapsSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -4812,6 +4966,7 @@
         {
           "id": "MSFSTouchPortalPlugin.FlightSystems.Conn.RudderSet",
           "name": "Rudder Set",
+          "description": " Set Rudder",
           "format": "Set Rudder\nin Value Range:{$MSFSTouchPortalPlugin.FlightSystems.Conn.RudderSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.RudderSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.FlightSystems.Conn.RudderSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.FlightSystems.Conn.RudderSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.FlightSystems.Conn.RudderSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.RudderSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -4873,6 +5028,7 @@
         {
           "id": "MSFSTouchPortalPlugin.FlightSystems.Conn.SpoilersSet",
           "name": "Spoilers Set",
+          "description": "",
           "format": "Set Spoilers Handle\nPosition in Value Range:{$MSFSTouchPortalPlugin.FlightSystems.Conn.SpoilersSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.SpoilersSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.FlightSystems.Conn.SpoilersSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.FlightSystems.Conn.SpoilersSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.FlightSystems.Conn.SpoilersSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.SpoilersSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -4934,6 +5090,7 @@
         {
           "id": "MSFSTouchPortalPlugin.FlightSystems.Conn.AileronTrimSet",
           "name": "Aileron Trim Set",
+          "description": "",
           "format": "Set Aileron Trim\nin Value Range (%):{$MSFSTouchPortalPlugin.FlightSystems.Conn.AileronTrimSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.AileronTrimSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.FlightSystems.Conn.AileronTrimSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.FlightSystems.Conn.AileronTrimSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.FlightSystems.Conn.AileronTrimSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.AileronTrimSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -4995,6 +5152,7 @@
         {
           "id": "MSFSTouchPortalPlugin.FlightSystems.Conn.ElevatorTrimSet",
           "name": "Elevator Trim Set",
+          "description": "",
           "format": "Set Elevator Trim\nin Value Range:{$MSFSTouchPortalPlugin.FlightSystems.Conn.ElevatorTrimSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.ElevatorTrimSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.FlightSystems.Conn.ElevatorTrimSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.FlightSystems.Conn.ElevatorTrimSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.FlightSystems.Conn.ElevatorTrimSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.ElevatorTrimSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -5056,6 +5214,7 @@
         {
           "id": "MSFSTouchPortalPlugin.FlightSystems.Conn.RudderTrimSet",
           "name": "Rudder Trim Set",
+          "description": "",
           "format": "Set Rudder Trim\nin Value Range (%):{$MSFSTouchPortalPlugin.FlightSystems.Conn.RudderTrimSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.RudderTrimSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.FlightSystems.Conn.RudderTrimSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.FlightSystems.Conn.RudderTrimSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.FlightSystems.Conn.RudderTrimSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.FlightSystems.Conn.RudderTrimSet.Data.FbRangeMax$}",
           "data": [
             {
@@ -5128,9 +5287,9 @@
           "name": "Add Fuel",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "Add Fuel (1 to 65535 or zero for 25% of capacity)",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "Add Fuel (1 to 65535 or zero for 25% of capacity)",
           "format": "Add {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.AddFuel.Data.0$} amount of Fuel",
           "data": [
             {
@@ -5149,9 +5308,9 @@
           "name": "Cross Feed Switch",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Cross Feed - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.CrossFeed.Data.0$}",
           "data": [
             {
@@ -5172,9 +5331,9 @@
           "name": "Electric Fuel Pump",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Toggle Electric Fuel Pump: {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.ElectricFuelPump.Data.0$}",
           "data": [
             {
@@ -5197,9 +5356,9 @@
           "name": "Fuel Dump - Toggle",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Toggle Fuel Dump",
           "data": []
         },
@@ -5208,9 +5367,9 @@
           "name": "Fuel Pump",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Toggle Fuel Pump",
           "data": []
         },
@@ -5219,9 +5378,9 @@
           "name": "Fuel Selectors",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Fuel Selector {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelectors.Data.0$} - {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelSelectors.Data.1$}",
           "data": [
             {
@@ -5260,9 +5419,9 @@
           "name": "Fuel Valve",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Toggle Fuel Valve: {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.FuelValve.Data.0$}",
           "data": [
             {
@@ -5285,9 +5444,9 @@
           "name": "Primers",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": false,
+          "description": "",
           "format": "Toggle Primer(s): {$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Action.Primers.Data.0$}",
           "data": [
             {
@@ -5310,6 +5469,7 @@
         {
           "id": "MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Conn.AddFuel",
           "name": "Add Fuel",
+          "description": "Add Fuel (1 to 65535 or zero for 25% of capacity)",
           "format": "Add Fuel\nin Value Range:{$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Conn.AddFuel.Data.RangeMin$}-{$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Conn.AddFuel.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Conn.AddFuel.Data.FbCatId$}{$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Conn.AddFuel.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Conn.AddFuel.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.InstrumentsSystems.Fuel.Conn.AddFuel.Data.FbRangeMax$}",
           "data": [
             {
@@ -5383,7 +5543,7 @@
     },
     {
       "id": "MSFSTouchPortalPlugin.SimSystem",
-      "name": "MSFS - System",
+      "name": "MSFS - Simulator System",
       "imagepath": "%TP_PLUGIN_FOLDER%MSFS-TouchPortal-Plugin/airplane_takeoff24.png",
       "actions": [
         {
@@ -5391,9 +5551,9 @@
           "name": "Change Selected Value (+/-)",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "{$MSFSTouchPortalPlugin.SimSystem.Action.SelectedParameter.Data.0$} Selected Value",
           "data": [
             {
@@ -5413,9 +5573,9 @@
           "name": "Simulation Rate",
           "prefix": "MSFS",
           "type": "communicate",
-          "description": "",
           "tryInline": true,
           "hasHoldFunctionality": true,
+          "description": "",
           "format": "{$MSFSTouchPortalPlugin.SimSystem.Action.SimulationRate.Data.0$} Simulation Rate",
           "data": [
             {
@@ -5472,13 +5632,13 @@
         {
           "id": "MSFSTouchPortalPlugin.SimSystem.State.SimSystemEventData",
           "type": "text",
-          "desc": "MSFS - System - Data from the most recent Simulator System Event, if any.",
+          "desc": "MSFS - Simulator System - Data from the most recent Simulator System Event, if any.",
           "default": ""
         },
         {
           "id": "MSFSTouchPortalPlugin.SimSystem.State.SimSystemEvent",
           "type": "text",
-          "desc": "MSFS - System - Most recent Simulator System Event name.",
+          "desc": "MSFS - Simulator System - Most recent Simulator System Event name.",
           "default": ""
         }
       ]

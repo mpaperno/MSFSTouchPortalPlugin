@@ -4,7 +4,7 @@ This plugin provides a two-way interface between Touch Portal and Flight Simulat
 
 For further documentation, please see https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki
 
-This documentation generated for plugin v1.1.0.6
+This documentation generated for plugin v1.2.0.0
 
 ---
 
@@ -16,9 +16,11 @@ This documentation generated for plugin v1.1.0.6
 
 * [Plugin](#plugin)
 
+* [Custom States & Variables](#custom-states-&-variables)
+
 * [AutoPilot](#autopilot)
 
-* [Communication](#communication)
+* [Radio & Navigation](#radio-&-navigation)
 
 * [Electrical](#electrical)
 
@@ -34,7 +36,7 @@ This documentation generated for plugin v1.1.0.6
 
 * [Fuel](#fuel)
 
-* [System](#system)
+* [Simulator System](#simulator-system)
 
 ---
 
@@ -148,17 +150,23 @@ Set to `1` to have all Local ('L') simulator variables sorted in alphabetical or
 <li>[text] &nbsp; <b>[ActionRepeatInterval]</b></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Activate a Named Simulator Event</td><td>Trigger or set value of a Simulator Event by name.
-The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.</td><td>Activate Event {0} with value {1} (if any)</td><td><ol start=0>
+<tr valign='top'><td>Activate a Named Simulator Event</td><td>Trigger any Simulator Event by name with optional parameter value(s). See MSFS SDK Documentation 'Event IDs' for reference.
+The value(s), if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.</td><td>Activate Event {0} with value(s): {1} {2} {3} {4} {5}</td><td><ol start=0>
 <li>[text] &nbsp; <b>SIMULATOR_EVENT_NAME</b></li>
-<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Activate a Simulator Event From List</td><td>Trigger or set value of a Simulator Event selected from a list of imported events.
-The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.</td><td>From Category {0} Activate Event {1} with value {2} (if any)</td><td><ol start=0>
+<tr valign='top'><td>Activate a Selected Simulator Event</td><td>Trigger a selected Simulator Event, with optional parameter value(s). See MSFS SDK Documentation 'Event IDs' for reference.
+The value(s), if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.</td><td>From Category {0} Activate Event {1} with value(s) {2} {3} {4}</td><td><ol start=0>
 <li>[choice] &nbsp; <b></b>[plugin not connected]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
-<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Activate an Input Event From HubHop</td><td>																** Requires WASimModule or MobiFlight. **
@@ -166,7 +174,7 @@ Trigger a Simulator Event from loaded HubHop data.					"Potentiometer" type even
 <li>[choice] &nbsp; <b></b>[plugin not connected]</li>
 <li>[choice] &nbsp; <b></b>[select an aircraft]</li>
 <li>[choice] &nbsp; <b></b>[select a system]</li>
-<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Set Simulator Variable (SimVar)</td><td>Sets the value of a Simulator Variable selected from a list of Sim Vars which are marked as settable.</td><td>From Category:{0}Set Variable:{1}To:{2} (Release AI:{3})</td><td><ol start=0>
@@ -199,82 +207,6 @@ Runs any entered string of RPN code through the 'execute_calculator_code' Gauge 
 <li>[text] &nbsp; <b>1 (>H:AS1000_PFD_SOFTKEYS_1)</b></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Request a Custom Simulator Variable</td><td>Request Simulator Variable Name:                            Index (if req'd):               Units:                                                                Category:                                    Format:                            Default Value:                 Settable:           Update Period:                   Update Interval:               Delta Epsilon:     </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}</td><td><ol start=0>
-<li>[text] &nbsp; <b>SIMULATOR VARIABLE FULL NAME</b></li>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 99&gt;</sub></li>
-<li>[choice] &nbsp; <b></b>[connect to plugin]                                 </li>
-<li>[choice] &nbsp; <b></b>[connect plugin]</li>
-<li>[text] &nbsp; <b>F2</b></li>
-<li>[text] &nbsp; <b>0</b></li>
-<li>[switch] &nbsp; <b>False</b></li>
-<li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
-</ol></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Request a Variable From List</td><td>Request a Variable from Simulator					** Local Variables support requires WASimModule **
-Category or Local Aircraft          Request Variable                                                                                               Index (if req'd):                Units:                                                                 Plugin Category:                         Format:                            Default Value:                 Update Period:                  Update Interval:              Delta Epsilon:      </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}</td><td><ol start=0>
-<li>[choice] &nbsp; <b></b>[connect to plugin]</li>
-<li>[choice] &nbsp; <b></b>[select a category]                                                            </li>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 99&gt;</sub></li>
-<li>[choice] &nbsp; [connect to plugin]                                 </li>
-<li>[choice] &nbsp; <b></b>[connect plugin]</li>
-<li>[text] &nbsp; <b>F2</b></li>
-<li>[text] &nbsp; <b>0</b></li>
-<li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
-</ol></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Request a Named Variable</td><td>Request a Named Variable                       For indexed SimVars, include it in the name after a : (colon).					** Requires WASimModule **
-Variable Type:                Name:                                                   Units (optional):                                               Plugin Category:                         Format:                            Default Value:                 Update Period:                Update Interval:              Delta Epsilon:     </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>A: SimVar</b>, B: Input, C: GPS, E: Env., L: Local, M: Mouse, R: Rsrc., T: Token, Z: Custom</li>
-<li>[text] &nbsp; <b>FULL VARIABLE NAME</b></li>
-<li>[choice] &nbsp; [connect to plugin]                                 </li>
-<li>[choice] &nbsp; <b></b>[connect plugin]</li>
-<li>[text] &nbsp; <b>F2</b></li>
-<li>[text] &nbsp; <b>0</b></li>
-<li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
-</ol></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Request a Calculated Value</td><td>Request a Calculated Value					** Requires WASimModule **
-Calculator Code:                                                                                                         Result Type:                  Plugin Category:                         State Name:                                                Format:                            Default Value:                 Update Period:                Update Interval:              Delta Epsilon:     </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}</td><td><ol start=0>
-<li>[text] &nbsp; <b>(A:TRAILING EDGE FLAPS LEFT ANGLE, degrees) 30 - abs 0.1 <</b></li>
-<li>[choice] &nbsp; <b>Double</b>, Integer, String, Formatted</li>
-<li>[choice] &nbsp; <b></b>[connect plugin]</li>
-<li>[text] &nbsp; <b>A name for the States list</b></li>
-<li>[text] &nbsp; <b>F2</b></li>
-<li>[text] &nbsp; <b>0</b></li>
-<li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
-<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
-</ol></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Update a Variable Value</td><td>Request a value update for an added variable. This is especially useful for variables with a "Once" type Update Period.</td><td>From Category {0} Update Variable {1}</td><td><ol start=0>
-<li>[choice] &nbsp; <b></b>[connect plugin]</li>
-<li>[choice] &nbsp; <b></b>[select a category]</li>
-</ol></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Remove a Simulator Variable</td><td>Remove an existing Simulator Variable.</td><td>From Category {0} Remove Variable {1}</td><td><ol start=0>
-<li>[choice] &nbsp; <b></b>[connect plugin]</li>
-<li>[choice] &nbsp; <b></b>[select a category]</li>
-</ol></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Clear Variable Definitions</td><td>Removes either all or only custom-added variable state definitions.</td><td>Clear {0} states</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Custom</b>, All</li>
-</ol></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Load Variable Definitions From File</td><td>Load a set of variable state definitions from a configuration file.</td><td>Load definitions from file {0} (file name only for user config. folder, or full path with file name)</td><td><ol start=0>
-<li>[text] &nbsp; <b>CustomStates.ini</b></li>
-</ol></td>
-<td align='center'></td></tr>
-<tr valign='top'><td>Save Variable Definitions To File</td><td>Save the current simulator variable state definitions to a configuration file.</td><td>Save {0} states to file {1} (file name only for user config. folder, or full path with file name)</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Custom</b>, All</li>
-<li>[text] &nbsp; <b>CustomStates.ini</b></li>
-</ol></td>
-<td align='center'></td></tr>
 </table>
 
 
@@ -289,30 +221,38 @@ Calculator Code:                                                                
 <li>[text] &nbsp; <b>1000</b> &nbsp; <sub>&lt;min: 50&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
 <li>[text] &nbsp; <b>50</b> &nbsp; <sub>&lt;min: 50&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
 </ol></td>
-<tr valign='top'><td>Activate a Named Simulator Event</td><td>Trigger or set value of a Simulator Event by name.
-The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.</td><td>Set Event:{0}Value
-Range:{1}-{2}| Feedback From
-| State (opt):{3}{4}
-Range:{5}-{6}</td><td><ol start=0>
+<tr valign='top'><td>Activate a Named Simulator Event</td><td>Trigger any Simulator Event by name setting one parameter value with a slider, with optional extra parameter value(s). See MSFS SDK Documentation 'Event IDs' for reference.
+The extra value(s), if any, should evaluate to numeric. They are typically used to select a sub-system which will be affected (eg. one of several engines).</td><td>Set Event:{0} in Value
+Range {1}-{2} | With Other
+| Values (opt) {3} {4} Connector
+Value Index {5}| Feedback From
+| State (opt):{6}{7}
+Range:{8}-{9}</td><td><ol start=0>
 <li>[text] &nbsp; <b>SIMULATOR_EVENT_NAME</b></li>
-<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
-<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
+<li>[choice] &nbsp; <b>0-first</b>, 1-mid, 2-last</li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 </ol></td>
-<tr valign='top'><td>Activate a Simulator Event From List</td><td>Trigger or set value of a Simulator Event selected from a list of imported events.
-The value, if any, should evaluate to numeric. Using basic math operators and dynamic state values is possible.</td><td>From
-Category:{0}Activate
-Event:{1}Value
-Range:{2}-{3}| Feedback From
-| State (opt):{4}{5}
-Range:{6}-{7}</td><td><ol start=0>
+<tr valign='top'><td>Activate a Selected Simulator Event</td><td>Trigger a selected Simulator Event, setting one parameter value with a slider, with optional extra parameter value(s). See MSFS SDK Documentation 'Event IDs' for reference.
+The extra value(s), if any, should evaluate to numeric. They are typically used to select a sub-system which will be affected (eg. one of several engines).</td><td>From Category {0} Activate Event {1} in Value
+Range {2}-{3} | With Other
+| Values (opt) {4} {5} Connector
+Value Index {6}| Feedback From
+| State (opt):{7}{8}
+Range:{9}-{10}</td><td><ol start=0>
 <li>[choice] &nbsp; <b></b>[plugin not connected]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
-<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
-<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
+<li>[choice] &nbsp; <b>0-first</b>, 1-mid, 2-last</li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
@@ -411,6 +351,96 @@ Feedback From Category:{0}Variable:{1}Value Range:{2}-{3}</td><td><ol start=0>
 | LoadedStateConfigFiles |  | List of currently loaded state configuration file(s). | string |  | |  |
 | TouchPortalConfigPath |  | Touch Portal configuration files path. | string |  | |  |
 | CurrentTouchPortalPage |  | The current device Touch Portal page name. | string |  | |  |
+
+
+</details>
+
+---
+
+### Custom States & Variables
+<details><summary><sub>Click to expand</sub></summary>
+
+#### Actions
+
+<table>
+<tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>On<br/>Hold</sub></div></th></tr>
+<tr valign='top'><td>Request a Custom Simulator Variable</td><td>Request Simulator Variable Name:                            Index (if req'd):               Units:                                                                Category:                                    Format:                            Default Value:                 Settable:           Update Period:                   Update Interval:               Delta Epsilon:     </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}</td><td><ol start=0>
+<li>[text] &nbsp; <b>SIMULATOR VARIABLE FULL NAME</b></li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 99&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect to plugin]                                 </li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[text] &nbsp; <b>F2</b></li>
+<li>[text] &nbsp; <b>0</b></li>
+<li>[switch] &nbsp; <b>False</b></li>
+<li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+</ol></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Request a Variable From List</td><td>Request a Variable from Simulator					** Local Variables support requires WASimModule **
+Category or Local Aircraft          Request Variable                                                                                               Index (if req'd):                Units:                                                                 Plugin Category:                         Format:                            Default Value:                 Update Period:                  Update Interval:              Delta Epsilon:      </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b>[connect to plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]                                                            </li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 99&gt;</sub></li>
+<li>[choice] &nbsp; [connect to plugin]                                 </li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[text] &nbsp; <b>F2</b></li>
+<li>[text] &nbsp; <b>0</b></li>
+<li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+</ol></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Request a Named Variable</td><td>Request a Named Variable                       For indexed SimVars, include it in the name after a : (colon).					** Requires WASimModule **
+Variable Type:                Name:                                                   Units (optional):                                               Plugin Category:                         Format:                            Default Value:                 Update Period:                Update Interval:              Delta Epsilon:     </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>A: SimVar</b>, B: Input, C: GPS, E: Env., L: Local, M: Mouse, R: Rsrc., T: Token, Z: Custom</li>
+<li>[text] &nbsp; <b>FULL VARIABLE NAME</b></li>
+<li>[choice] &nbsp; [connect to plugin]                                 </li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[text] &nbsp; <b>F2</b></li>
+<li>[text] &nbsp; <b>0</b></li>
+<li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+</ol></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Request a Calculated Value</td><td>Request a Calculated Value					** Requires WASimModule **
+Calculator Code:                                                                                                         Result Type:                  Plugin Category:                         State Name:                                                Format:                            Default Value:                 Update Period:                Update Interval:              Delta Epsilon:     </td><td>{0}{1}{2}{3}{4}{5}{6}{7}{8}</td><td><ol start=0>
+<li>[text] &nbsp; <b>(A:TRAILING EDGE FLAPS LEFT ANGLE, degrees) 30 - abs 0.1 <</b></li>
+<li>[choice] &nbsp; <b>Double</b>, Integer, String, Formatted</li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[text] &nbsp; <b>A name for the States list</b></li>
+<li>[text] &nbsp; <b>F2</b></li>
+<li>[text] &nbsp; <b>0</b></li>
+<li>[choice] &nbsp; Once, <b>SimFrame</b>, Second, Millisecond</li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 2147483647&gt;</sub></li>
+<li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+</ol></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Update a Variable Value</td><td>Request a value update for an added variable. This is especially useful for variables with a "Once" type Update Period.</td><td>From Category {0} Update Variable {1}</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+</ol></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Remove a Simulator Variable</td><td>Remove an existing Simulator Variable.</td><td>From Category {0} Remove Variable {1}</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+</ol></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Clear Variable Definitions</td><td>Removes either all or only custom-added variable state definitions.</td><td>Clear {0} states</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Custom</b>, All</li>
+</ol></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Load Variable Definitions From File</td><td>Load a set of variable state definitions from a configuration file.</td><td>Load definitions from file {0} (file name only for user config. folder, or full path with file name)</td><td><ol start=0>
+<li>[text] &nbsp; <b>CustomStates.ini</b></li>
+</ol></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Save Variable Definitions To File</td><td>Save the current simulator variable state definitions to a configuration file.</td><td>Save {0} states to file {1} (file name only for user config. folder, or full path with file name)</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Custom</b>, All</li>
+<li>[text] &nbsp; <b>CustomStates.ini</b></li>
+</ol></td>
+<td align='center'></td></tr>
+</table>
 
 
 </details>
@@ -656,7 +686,7 @@ Range:{5}-{6}</td><td><ol start=0>
 
 ---
 
-### Communication
+### Radio & Navigation
 <details><summary><sub>Click to expand</sub></summary>
 
 #### Actions
@@ -1457,7 +1487,7 @@ Range:{4}-{5}</td><td><ol start=0>
 
 ---
 
-### System
+### Simulator System
 <details><summary><sub>Click to expand</sub></summary>
 
 #### Actions
