@@ -88,12 +88,13 @@ they do get outdated and also may not cover all that is possible to do or config
 ---
 ## Pages and Examples
 
-Here is a list of known pages which use this plugin. In no particular order, no endorsement, nor have I necessarily tried/tested all these. YMMV.
+Here is a list of known pages which use this plugin. No endorsement, YMMV, caveat emptor... I have not necessarily tried/tested any of these.<br />
+They are listed in the order I find out about them, more or less, newest at bottom.
 
 * [Pages, Buttons, & Graphics](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) in the Wiki
 * [FltSim-msfs2020-Control](https://github.com/HiDTH/FltSim-msfs2020-Control) by HiDTH @ GitHub<br />
   (**Page background graphic will cause issues, especially on iOS.**
-  [Get a replacement here.](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics#replacement-for-hidths-fltsim-msfs2020-control-page-backgrounds)
+  [Get a replacement here.](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics#replacement-for-hidths-fltsim-msfs2020-control-page-backgrounds)<br />
   This is a cool page, but is complex and somewhat outdated, and some parts may not work properly! The author seems to have stopped updates/support for it.)
 * [Touch Portal Page H145](https://flightsim.to/file/35625/touch-portal-page-h145) by redheronde @ flighsim.to
 * [Touch Portal Page "Piston Single"](https://flightsim.to/file/7394/touch-portal-page-piston-single) by yushu @ flightsim.to
@@ -106,9 +107,15 @@ Here is a list of known pages which use this plugin. In no particular order, no 
 * [Touch Portal pages for FlyByWire A32NX](https://flightsim.to/file/40431/touch-portal-pages-for-flybywire-a32nx) by GoodSeb @ flightsim.to
 * [Touch Portal page for KODIAK 100](https://flightsim.to/file/38161/touch-portal-page-for-kodiak-100) by GoodSeb @ flightsim.to
 * [Touch Portal pages for CJ4 Working Title](https://flightsim.to/file/42677/touch-portal-pages-for-cj4-working-title) by GoodSeb @ flightsim.to
-* [MSFS Throttle Quad - Views - AP](https://github.com/mpaperno/TJoy/tree/main/assets) by mpaperno @ GitHub (requires my TJoy Plugin - [screenshot](https://github.com/mpaperno/TJoy/blob/main/assets/MSFS%20Throttle%20Quad%20-%20Views%20-%20AP.jpeg))
+* [Fenix Overhead Panel for Touch Portal](https://flightsim.to/file/41272/fenix-overhead-panel-for-touch-portal) by ecstaticaviator @ flightsim.to
+* [Touch Portal page for Milviz Cessna 310R](https://flightsim.to/file/37082/touch-portal-page-for-milviz-cessna-310r) by martin_wizznet @ flightsim.to
+* [Touch Portal for Bonanza H35 V-Tail and B35-B33](https://flightsim.to/file/38692/touch-portal-page-for-beech-b35-b33) by piratewere @ flightsim.to
+* [Touch Portal page for the Flysimware C414AW Chancellor](https://flightsim.to/file/43564/touch-portal-page-for-the-flysimware-c414aw-chancellor) by Flak @ flightsim.to
+* [Touch Portal page for DC-3 Classic](https://flightsim.to/file/45207/pre-release-touch-portal-page-for-dc-3-classic) by Flak @ flightsim.to
 
 Please let me know if you publish a page (or buttons/assets) which I could add to this list.
+
+Also check out [#msfs2020 > The Sharing Thread](https://discord.com/channels/548426182698467339/1043528081723367444) @ [Touch Portal Discord](https://discord.gg/MgxQb8r) for possible other assets users share.
 
 
 ---
@@ -166,9 +173,9 @@ My [TJoy Touch Portal Plugin](https://github.com/mpaperno/TJoy) is an interface 
 
 ## References
 
-* [FlightSimulator.com SDK Reference (current)](https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_SDK.htm)
-* [SDK Event IDs (current)](https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Event_IDs.htm)
-* [SDK Simulator Variables (current)](https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Simulation_Variables.htm)
+* [FlightSimulator.com SDK Reference](https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_SDK.htm)
+* [SDK Event IDs](https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Event_IDs.htm)
+* [SDK Simulator Variables](https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Simulation_Variables.htm)
 * [HubHop Community Database](https://hubhop.mobiflight.com)
 
 
