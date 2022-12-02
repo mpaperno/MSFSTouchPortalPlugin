@@ -38,7 +38,7 @@ This project is a continuation of the original [MSFSTouchPortalPlugin by Tim Lew
 
 ## Documentation
 
-See the [Wiki](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/) for guides, tips, and example 
+See the [Wiki](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/) for guides, tips, and example
 [pages and buttons](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) to get started with
 
 Auto-generated documentation on all actions, connectors, events, settings, and default included states can be found in [DOCUMENTATION.md](DOCUMENTATION.md).
@@ -116,7 +116,7 @@ Please let me know if you publish a page (or buttons/assets) which I could add t
 
 The plugin logs errors and warnings to a plain-text file. 7 days worth of logs are kept by default (a new file is started for each day).
 The log files are located within the plugin's installation folder, which is in Touch Portal's configuration directory:<br />
-`C:\Users<User Name>\AppData\Roaming\TouchPortal\plugins\MSFSTouchPortalPlugin\logs` folder, where `<User Name>` is your Windows user name.
+`C:\Users\<User_Name>\AppData\Roaming\TouchPortal\plugins\MSFS-TouchPortal-Plugin\logs` folder, where `<User_Name>` is your Windows user name.
 
 **If something isn't working as expected, check the log.**
 
