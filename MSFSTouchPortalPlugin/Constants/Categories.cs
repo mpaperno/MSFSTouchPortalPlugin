@@ -78,6 +78,7 @@ namespace MSFSTouchPortalPlugin.Constants
       { categoryNames[(int)Groups.Plugin],            Groups.Plugin },
       { categoryNames[(int)Groups.StatesEditor],      Groups.StatesEditor },
       { categoryNames[(int)Groups.AutoPilot],         Groups.AutoPilot },
+      { categoryNames[(int)Groups.Camera],            Groups.Camera },
       { categoryNames[(int)Groups.Communication],     Groups.Communication },
       { "Communication",                              Groups.Communication },  // legacy
       { categoryNames[(int)Groups.Electrical],        Groups.Electrical },
