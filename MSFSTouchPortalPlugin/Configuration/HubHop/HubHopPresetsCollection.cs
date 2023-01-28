@@ -19,7 +19,6 @@ and is also available at <http://www.gnu.org/licenses/>.
 
 using Microsoft.Extensions.Logging;
 using MSFSTouchPortalPlugin.Configuration.HubHop;
-using MSFSTouchPortalPlugin.Enums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SQLite;
@@ -37,15 +36,15 @@ namespace MSFSTouchPortalPlugin.Configuration
     public string Aircraft;
     public string System;
     public string Label;
-    public string OrderyBy;
+    public string OrderBy;
 
-    public HubHopPresetQuery(HubHopType type, string vendor, string aircraft, string system, string label, string orderyBy = null) {
+    public HubHopPresetQuery(HubHopType type, string vendor, string aircraft, string system, string label, string orderBy = null) {
       Type = type;
       Vendor = vendor;
       Aircraft = aircraft;
       System = system;
       Label = label;
-      OrderyBy = orderyBy;
+      OrderBy = orderBy;
     }
     public HubHopPresetQuery() : this(HubHopType.Any) { }
     public HubHopPresetQuery(HubHopType type) : this(type, null) { }
@@ -68,17 +67,18 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     /// <summary> Opens the specified database file for reading and writing HubHop Data. The database must have the HubHopPreset table. Errors are reported via `OnDataErrorEvent` event handler. </summary>
     /// <returns>True on success, false on failure.</returns>
-    public bool OpenDataFile(string dbfile = default) {
-      // must open in ReadWrite otherwise it doesn't close properly if an async connection was used.... :-|
+    public bool OpenDataFile(string dbfile = default)
+    {
+      if (dbfile == default)
+        dbfile = Common.PresetsDb;
       try {
-        if (dbfile == default)
-          dbfile = Common.PresetsDb;
+        // must open in ReadWrite otherwise it doesn't close properly if an async connection was used.... :-|
         _db = new SQLiteConnection(dbfile, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.SharedCache);
         Common.Logger?.LogDebug("HubHopPresetsCollection: opened database: {file}", dbfile);
         return true;
       }
       catch (Exception e) {
-        OnDataErrorEvent?.Invoke(LogLevel.Critical, $"Unable to open database {(dbfile == default ? Common.PresetsDb : dbfile)}: {e.Message}");
+        OnDataErrorEvent?.Invoke(LogLevel.Critical, $"Unable to open database {dbfile}: {e.Message}");
         Common.Logger?.LogCritical(e, "HubHopPresetsCollection::OpenDataFile() - Cannot open database with Exception:");
       }
       return false;
@@ -86,7 +86,8 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     /// <summary> Asynchronously checks for latest HubHop preset and updates the database if needed. Status is "returned" using `OnDataUpdateEvent` or `OnDataErrorEvent`  event handlers. </summary>
     /// <param name="downloadTimeoutSec">Timeout value for the update check and download process, in seconds.</param>
-    public async Task UpdateIfNeededAsync(int downloadTimeoutSec = 60) {
+    public async Task UpdateIfNeededAsync(int downloadTimeoutSec = 60)
+    {
       if (_db == null)
         return;
       try {
@@ -116,7 +117,8 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     /// <summary> Asynchronously loads data from a JSON file of HubHop presets, updating or inserting entries as needed. Errors are reported via `OnDataErrorEvent` event handler. </summary>
     /// <returns>Returns false before async operation if JSON parsing fails, otherwise returns true after completion.</returns>
-    public async Task<bool> LoadAsync(string jsonFile = default) {
+    public async Task<bool> LoadAsync(string jsonFile = default)
+    {
       if (_db == null || !TryLoadJson(jsonFile == default ? Common.PresetsFile : jsonFile, out JToken presets))
         return false;
       var db = new SQLiteAsyncConnection(_db.DatabasePath, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.SharedCache);
@@ -130,7 +132,8 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     /// <summary> Synchronously loads data from a JSON file of HubHop presets, updating or inserting entries as needed. Errors are reported via `OnDataErrorEvent` event handler. </summary>
     /// <returns>Returns false if JSON parsing fails, otherwise returns true after completion.</returns>
-    public bool Load(string jsonFile = default) {
+    public bool Load(string jsonFile = default)
+    {
       if (_db != null && TryLoadJson(jsonFile == default ? Common.PresetsFile : jsonFile, out JToken presets)) {
         _db.RunInTransaction(() => { Load(presets, _db); });
         //_db.Execute("VACUUM");
@@ -157,7 +160,7 @@ namespace MSFSTouchPortalPlugin.Configuration
       return VendorAircraft(new HubHopPresetQuery(type));
     }
     public List<string> VendorAircraft(HubHopPresetQuery criteria) {
-      criteria.OrderyBy = "Vendor, Aircraft";
+      criteria.OrderBy = "Vendor, Aircraft";
       return QueryStringScalars("Vendor || ' - ' || Aircraft AS VendorAircraft", criteria);
     }
 
@@ -185,8 +188,8 @@ namespace MSFSTouchPortalPlugin.Configuration
     }
 
     public List<HubHopPreset> Presets(HubHopPresetQuery criteria) {
-      if (string.IsNullOrWhiteSpace(criteria.OrderyBy))
-        criteria.OrderyBy = "Label";
+      if (string.IsNullOrWhiteSpace(criteria.OrderBy))
+        criteria.OrderBy = "Label";
       var qry = BuildQuery("*", criteria);
       return _db?.Query<HubHopPreset>(qry.Item1, qry.Item2);
     }
@@ -261,12 +264,12 @@ namespace MSFSTouchPortalPlugin.Configuration
         cond.Add("Label = ?");
         args.Add(qry.Label);
       }
-      if (qry.OrderyBy == null)
-        qry.OrderyBy = fieldName;
+      if (qry.OrderBy == null)
+        qry.OrderBy = fieldName;
       if (cond.Count > 0)
         where = "WHERE " + string.Join(" AND ", cond);
-      //Common.Logger?.LogTrace("\"{qry}\" ?= {{{args}}}", string.Format(_selectTemplate, fieldName, where, qry.OrderyBy), string.Join(", ", args));
-      return new Tuple<string, object[]>(string.Format(_selectTemplate, fieldName, where, qry.OrderyBy), args.ToArray());
+      //Common.Logger?.LogTrace("\"{qry}\" ?= {{{args}}}", string.Format(_selectTemplate, fieldName, where, qry.OrderBy), string.Join(", ", args));
+      return new Tuple<string, object[]>(string.Format(_selectTemplate, fieldName, where, qry.OrderBy), args.ToArray());
     }
 
     bool TryLoadJson(string filename, out JToken presets) {
