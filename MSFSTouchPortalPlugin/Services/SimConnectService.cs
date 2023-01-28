@@ -76,6 +76,7 @@ namespace MSFSTouchPortalPlugin.Services
     public const uint VIEW_EVENT_DATA_ORTHOGONAL = 0x00000004;      // Orthogonal (Map) view
 
     public bool IsConnected => _connected;
+    public bool WasmAvailable => WasmStatus != WasmModuleStatus.NotFound;
     public WasmModuleStatus WasmStatus { get; private set; } = WasmModuleStatus.Unknown;
 
     public SimConnectService(ILogger<SimConnectService> logger, IReflectionService reflectionService, SimVarCollection simVarCollection) {

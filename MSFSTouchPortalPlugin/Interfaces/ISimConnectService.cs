@@ -48,6 +48,7 @@ namespace MSFSTouchPortalPlugin.Interfaces
     event LocalVarsListUpdatedHandler OnLVarsListUpdated;
 
     bool IsConnected { get; }
+    bool WasmAvailable { get; }
     WasmModuleStatus WasmStatus { get; }
 
     uint Connect(uint configIndex = 0);
