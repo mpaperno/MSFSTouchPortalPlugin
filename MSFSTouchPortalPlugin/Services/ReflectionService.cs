@@ -105,7 +105,8 @@ namespace MSFSTouchPortalPlugin.Services
         if (conn == null) {
           conn = new (actAttr.Id, actAttr.Name, actAttr.Description, format) {
             Data = connData.ToArray(),
-            Mappings = actAttr.Mappings
+            Mappings = actAttr.Mappings,
+            Deprecated = actAttr.Deprecated,
           };
         }
         else if (metaAttrib != null) {
