@@ -44,6 +44,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
+    <DefineConstants>PUBLISH_BUILD</DefineConstants>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
     <PublishTrimmed>True</PublishTrimmed>
@@ -67,14 +68,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="appsettings.release.json">
+      <CopyToOutputDirectory Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Debug'">PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <Content Include="appsettings.debug.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory Condition="'$(Configuration)'=='Debug'">PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory Condition="'$(Configuration)'=='Publish'">PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

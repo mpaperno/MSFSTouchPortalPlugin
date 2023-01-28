@@ -45,10 +45,13 @@ namespace MSFSTouchPortalPlugin {
       //Build configuration:
       var configurationRoot = new ConfigurationBuilder()
           .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
+#if PUBLISH_BUILD
           .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-#if DEBUG
-          // optional settings override for debug builds (eg. for logging levels)
+#else
+          .AddJsonFile("appsettings.release.json", optional: false, reloadOnChange: true)
+  #if DEBUG
           .AddJsonFile("appsettings.debug.json", optional: true, reloadOnChange: true)
+  #endif
 #endif
           .AddEnvironmentVariables()  // inject env. vars
           .Build();
