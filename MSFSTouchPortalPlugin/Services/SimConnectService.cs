@@ -325,7 +325,7 @@ namespace MSFSTouchPortalPlugin.Services
         simVar.RegistrationStatus = RegisterToSimConnect(simVar);
       }
       if (simVar.RegistrationStatus == SimVarRegistrationStatus.Error)
-        _logger.LogError((int)EventIds.SimError, "Could not complete simulator variable request, check previous log messages.");
+        _logger.LogError("Could not complete simulator variable request, check previous log messages.");
     }
 
     void DeregisterDataRequest(SimVarItem simVar)
@@ -335,15 +335,18 @@ namespace MSFSTouchPortalPlugin.Services
       if (simVar.DataProvider == SimVarDataProvider.SimConnect) {
         // We need to first suspend updates for this variable before removing it, otherwise it seems SimConnect will sometimes crash
         var oldPeriod = simVar.UpdatePeriod;
-        simVar.UpdatePeriod = SimConUpdPeriod.Never;
-        RequestDataOnSimObject(simVar);
+        if (simVar.UpdatePeriod != SimConUpdPeriod.Never) {
+          simVar.UpdatePeriod = SimConUpdPeriod.Never;
+          RequestDataOnSimObject(simVar);
+        }
         // Now we can remove it.
         InvokeSimMethod(ClearDataDefinitionDelegate, simVar.Def);
         // Now set it back to original value (in case it is not actually being deleted).
         simVar.UpdatePeriod = oldPeriod;
       }
-      else
+      else {
         _wlib?.removeDataRequest((uint)simVar.Def);
+      }
       simVar.RegistrationStatus = SimVarRegistrationStatus.Unregistered;
     }
 
@@ -361,7 +364,7 @@ namespace MSFSTouchPortalPlugin.Services
       if (!InvokeSimMethod(registerDataDelegate, simVar.Def))
         return SimVarRegistrationStatus.Error;
 
-      if (simVar.NeedsScheduledRequest || RequestDataOnSimObject(simVar))
+      if (simVar.NeedsScheduledRequest || simVar.UpdatePeriod == SimConUpdPeriod.Never || RequestDataOnSimObject(simVar))
         return SimVarRegistrationStatus.Registered;
       return SimVarRegistrationStatus.Error;
     }
@@ -383,7 +386,7 @@ namespace MSFSTouchPortalPlugin.Services
     {
       if (_wlib != null)
         _wlib.Dispose();
-      _wlib = new WASMLib(_wasmClientId);
+      _wlib = new WASMLib(_wasmClientId, Configuration.PluginConfig.AppRootFolder);
       _wlib.OnClientEvent += WASMLib_OnClientEvent;
       _wlib.OnLogRecordReceived += WASMLib_OnLogEntryReceived;
       _wlib.OnDataReceived += WASMLib_OnValueChanged;
