@@ -1345,6 +1345,16 @@ namespace MSFSTouchPortalPlugin.Services
       // Event values array to pass to the simulator (up to 5).
       uint[] values = new uint[5];
       int nextValIndex = 0;
+      int recValsLen = eventRecord.Values?.Length ?? 0;
+      // An event mapping record may have some static value(s) embedded. Prepend them if any user-provided values should come after them.
+      if (recValsLen > 0 && action.OutputValueIndex < 0) {
+        Array.Copy(eventRecord.Values, 0, destinationArray: values, destinationIndex: nextValIndex, length: Math.Min(recValsLen, 5));
+        if (recValsLen >= 5) {
+          // In the unlikely event that there are already 5 values, send them now and return.
+          return TransmitSimEvent(action, eventRecord, values);
+        }
+        nextValIndex = recValsLen;
+      }
       if (connValue < 0) {
         // Value from action data (only single value, at least for now).
         if (action.ValueIndex > -1 && action.ValueIndex < data.Values.Count) {
@@ -1364,10 +1374,8 @@ namespace MSFSTouchPortalPlugin.Services
         _logger.LogError("Connector value conversion failed for action '{actId}' on sim event '{evName}'.", action.ActionId, eventRecord.EventName);
         return false;
       }
-      // An event mapping record may have some fixed value(s) embedded. Append those;
-      // TODO: Actually, do we start with those or append them? Probably need a way to indicate which parameter index they should be placed in.
-      // Unfortunately there doesn't seem to be a convention in MSFS as to which parameter selects a subsystem and which is/are the value(s).
-      if (eventRecord.Values?.Length > 0)
+      // Append any static values
+      if (recValsLen > 0 && action.OutputValueIndex > -1 && nextValIndex < 5)
         Array.Copy(eventRecord.Values, 0, destinationArray: values, destinationIndex: nextValIndex, length: Math.Min(eventRecord.Values.Length, 5 - nextValIndex));
 
       return TransmitSimEvent(action, eventRecord, values);

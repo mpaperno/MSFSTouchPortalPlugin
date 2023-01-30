@@ -36,6 +36,7 @@ namespace MSFSTouchPortalPlugin.Attributes
     public string ConnectorFormat { get; set; } = null;
     public System.Reflection.MemberInfo ParentObject { get; set; } = null;
     public bool Deprecated { get; set; } = false;  // exclude from generated entry.tp and docs if true, but preserve mappings for backwards compat.
+    public int UserValueIndex { get; set; } = 0;  // index at which to insert user-provided value(s) in relation to any static values; -1 means append to end.
     public TouchPortalActionDataAttribute[] Data { get; set; } = Array.Empty<TouchPortalActionDataAttribute>();
     public TouchPortalActionMappingAttribute[] Mappings { get; set; } = Array.Empty<TouchPortalActionMappingAttribute>();
 
