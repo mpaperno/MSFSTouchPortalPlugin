@@ -27,5 +27,6 @@ namespace MSFSTouchPortalPlugin.Enums
     UserFile,     // loaded from user-provided file, either at startup or dynamically from Action
     Dynamic,      // added (or edited) by user via TP Action
     Imported,     // for meta data
+    Temporary,    // for settings SimVars via SimConnect which are not requested already
   }
 }

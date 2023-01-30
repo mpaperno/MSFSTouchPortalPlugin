@@ -54,8 +54,6 @@ namespace MSFSTouchPortalPlugin.Types
     object ICollection.SyncRoot => _idxByDef;
     bool ICollection.IsSynchronized => false;
 
-    public IReadOnlyList<SimVarItem> SettableVars => _settableVars;
-
     public IReadOnlyList<SimVarItem> PolledUpdateVars {
       get {
         int cnt = _polledUpdateVars.Count;
@@ -69,7 +67,14 @@ namespace MSFSTouchPortalPlugin.Types
     }
 
     // List of vars which were not read from default config file.
-    public IEnumerable<SimVarItem> CustomVariables => (from SimVarItem s in _idxByDef.Values where s.DefinitionSource != SimVarDefinitionSource.DefaultFile select s);
+    public IEnumerable<SimVarItem> CustomVariables =>
+      (from SimVarItem s in _idxByDef.Values where (s.DefinitionSource == SimVarDefinitionSource.DefaultFile || s.DefinitionSource == SimVarDefinitionSource.Dynamic) select s);
+    // List of all vars except temporary/internal use ones.
+    public IEnumerable<SimVarItem> RequestedVariables =>
+      (from SimVarItem s in _idxByDef.Values where s.DefinitionSource != SimVarDefinitionSource.Temporary select s);
+    // List of all SimVar (A) types that have a category
+    public IEnumerable<string> SimVarNames =>
+      (from SimVarItem s in _idxByDef.Values where (s.VariableType == 'A' && s.CategoryId != Groups.None) select s.SimVarName);
 
     const int MAX_CONCURRENCY = 6;
     const int INITIAL_CAPACITY = 500;
@@ -79,7 +84,6 @@ namespace MSFSTouchPortalPlugin.Types
     readonly Dictionary<string, SimVarItem> _idxById = new(INITIAL_CAPACITY);       // index by string id
     readonly Dictionary<string, SimVarItem> _idxBySimName = new(INITIAL_CAPACITY);  // index by SimVarName
     readonly Dictionary<Groups, List<Definition>> _idxByCategory = new(INITIAL_CAPACITY);  // index by Category Id
-    readonly List<SimVarItem> _settableVars = new(INITIAL_CAPACITY / 4);            // list of all settables
     readonly List<SimVarItem> _polledUpdateVars = new();                            // list of all vars needing request polling, protected by lock
 
     SimVarItem IDictionary<Definition, SimVarItem>.this[Definition def]
@@ -162,8 +166,6 @@ namespace MSFSTouchPortalPlugin.Types
       if (!_idxByCategory.ContainsKey(item.CategoryId))
         _idxByCategory.Add(item.CategoryId, new());
       _idxByCategory[item.CategoryId].Add(item.Def);
-      if (item.CanSet)
-        _settableVars.Add(item);
       if (item.NeedsScheduledRequest) {
         lock (_polledUpdateVars)
           _polledUpdateVars.Add(item);
@@ -191,8 +193,6 @@ namespace MSFSTouchPortalPlugin.Types
       _idxBySimName.Remove(item.SimVarName, out _);
       if (_idxByCategory.ContainsKey(item.CategoryId))
         _idxByCategory[item.CategoryId].Remove(item.Def);
-      if (item.CanSet)
-        _settableVars.Remove(item);
       if (item.NeedsScheduledRequest) {
         lock (_polledUpdateVars)
           _polledUpdateVars.Remove(item);
@@ -210,30 +210,20 @@ namespace MSFSTouchPortalPlugin.Types
       _idxById.Clear();
       _idxBySimName.Clear();
       _idxByCategory.Clear();
-      _settableVars.Clear();
       lock (_polledUpdateVars)
         _polledUpdateVars.Clear();
     }
 
     // Utility methods
 
-    public IOrderedEnumerable<string> GetSimVarSelectorList(bool settable = false) {
-      IEnumerable<SimVarItem> src = settable ? SettableVars : this;
-      int cnt = settable ? SettableVars.Count : this.Count;
-      List<string> list = new(cnt);
-      foreach (SimVarItem v in src)
-        list.Add(v.TouchPortalSelector);
-      return list.OrderBy(n => n);
-    }
-
-    public IOrderedEnumerable<string> GetSimVarSelectorList(Groups categoryId, bool settable = false)
+    public IOrderedEnumerable<string> GetSimVarSelectorList(Groups categoryId)
     {
       if (!_idxByCategory.ContainsKey(categoryId))
         return new List<string>().OrderBy(n => n);
       List <Definition> cat = _idxByCategory[categoryId];
       List<string> list = new(cat.Count);
       foreach (Definition v in cat)
-        if (Get(v) is var sv && sv != null && (!settable || sv.CanSet))
+        if (Get(v) is var sv && sv != null)
           list.Add(sv.TouchPortalSelector);
       return list.OrderBy(n => n);
     }
@@ -280,8 +270,6 @@ namespace MSFSTouchPortalPlugin.Types
       if (newItem.CategoryId != oldItem.CategoryId && _idxByCategory.ContainsKey(oldItem.CategoryId))
         _idxByCategory[oldItem.CategoryId].Remove(oldItem.Def);
       // check if settable flag has changed
-      if (oldItem.CanSet && !newItem.CanSet)
-        _settableVars.Remove(oldItem);
       // removed from polled vars list if no longer required
       if (oldItem.NeedsScheduledRequest && !newItem.NeedsScheduledRequest) {
         lock (_polledUpdateVars)

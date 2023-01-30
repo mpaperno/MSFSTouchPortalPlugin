@@ -129,7 +129,7 @@
   </ItemGroup>
 
   <!-- WASimCommander Client -->
-  <ItemGroup >
+  <ItemGroup>
     <!--Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Publish') And '$(Platform)'=='x64'"-->
     <Reference Include="WASimCommander.WASimClient, Culture=neutral, processorArchitecture=MSIL" Version="1.1.0">
       <HintPath>.\lib\WASimCommander\WASimCommander.WASimClient.dll</HintPath>
@@ -166,18 +166,20 @@
     <None Update="Configuration\States.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Configuration\SimVariables.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Configuration\SimEvents.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Configuration\SimConnect.cfg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Configuration\HubHop\hubhop_presets.sqlite3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Configuration\MSFS_SDK_Doc_Import.sqlite3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <!--
+    <None Update="Configuration\MSFS_SDK_Doc_Import-flighting.sqlite3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    -->
   </ItemGroup>
 
 </Project>

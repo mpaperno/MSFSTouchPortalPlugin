@@ -21,27 +21,20 @@ and is also available at <http://www.gnu.org/licenses/>.
 
 namespace MSFSTouchPortalPlugin.Types
 {
-  // This container class is currently used for retrieving "known" SimVars/states from a database to present in a UI to the user for selection.
-  internal class SimVariable
+  // This container class is currently used for retrieving "known" SimConnect SimVar Units from a database to present in a UI to the user for selection.
+  [SQLite.Table("SimVarUnits")]
+  internal class SimVarUnit
   {
+    /// <summary> Category of unit (eg. Length, Area, etc). </summary>
+    public string Measure { get; set; }
     /// <summary> Unique ID string. </summary>
-    public string System { get; set; }
-    /// <summary> Category for sorting/organizing. </summary>
-    public string Category { get; set; }
-    /// <summary> SimConnect SimVar name. </summary>
     [SQLite.PrimaryKey]
     public string Name { get; set; }
+    /// <summary> Usually an abbreviation, sometimes just singular version, sometimes same as Name. </summary>
+    public string ShortName { get; set; }
+    /// <summary> List of all names for this unit. </summary>
+    public string Aliases { get; set; }
     /// <summary> Long Description. </summary>
     public string Description { get; set; }
-    /// <summary> SimConnect unit name. </summary>
-    public string Units { get; set; }
-    /// <summary> SimConnect settable value </summary>
-    public bool Settable { get; set; } = false;
-    /// <summary> Multi-player participation, if any. </summary>
-    public string Multiplayer { get; set; }
-    /// <summary> SimConnect expects an index value appended to the name </summary>
-    public bool Indexed { get; set; }
-    /// <summary> Deprecated or not. </summary>
-    public bool Deprecated { get; set; }
   }
 }

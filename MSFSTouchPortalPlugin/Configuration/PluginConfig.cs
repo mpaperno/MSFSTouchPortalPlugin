@@ -18,7 +18,6 @@ and is also available at <http://www.gnu.org/licenses/>.
 */
 
 using Microsoft.Extensions.Logging;
-using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Helpers;
 using MSFSTouchPortalPlugin.Types;
@@ -39,8 +38,6 @@ namespace MSFSTouchPortalPlugin.Configuration
     public static string SettingsConfigFile { get; set; } = "plugin_settings.ini";
     public static string StatesConfigFile { get; set; }       = "States.ini";
     public static string PluginStatesConfigFile { get; set; } = "PluginStates.ini";
-    public static string SimVarsImportsFile { get; set; }     = "SimVariables.ini";
-    public static string SimEventsImportsFile { get; set; }   = "SimEvents.ini";
 
     public static string AppRootFolder    { get; set; } = Path.GetDirectoryName(AppContext.BaseDirectory);
     public static string AppConfigFolder  { get; set; } = Path.Combine(AppRootFolder, "Configuration");
@@ -79,16 +76,12 @@ namespace MSFSTouchPortalPlugin.Configuration
     public bool HaveUserStateFiles => _userStateFiles.Any();
     public IReadOnlyCollection<string> UserStateFilesArray => _userStateFiles;
     public List<string> LoadedStateConfigFiles = new();
-    public IEnumerable<string> ImportedSimVarCategoryNames => _importedSimVars.Keys;
-    public IEnumerable<string> ImportedSimEvenCategoryNames => _importedSimEvents.Keys;
 
     const string STR_DEFAULT = "default";
     static readonly string _defaultUserCfgFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), RootName);
     static readonly Regex _reSimVarIdFromName = new Regex(@"(?:\b|\W|_)(\w)");  // for creating a PascalCase ID from a SimVar name
     string _currentUserCfgFolder = _defaultUserCfgFolder;
     string[] _userStateFiles = Array.Empty<string>();
-    IReadOnlyDictionary<string, IReadOnlyDictionary<string, SimVariable>> _importedSimVars;
-    IReadOnlyDictionary<string, IReadOnlyDictionary<string, SimEvent>> _importedSimEvents;
     readonly ILogger<PluginConfig> _logger;
 
     public PluginConfig(ILogger<PluginConfig> logger) {
@@ -102,51 +95,17 @@ namespace MSFSTouchPortalPlugin.Configuration
     // Loads all imports
     public void Init() {
       ReadOrCreateSettingsFile();
-      _importedSimVars = ImportSimVars();
-      _importedSimEvents = ImportSimEvents();
       // Check for custom SimConnect.cfg and try copy it to application dir (may require elevated privileges)
       CopySimConnectConfig();
     }
 
     // SimVar/SimVariable helper methods
 
-    public bool TryGetImportedSimVarNamesForCateogy(string simCategoryName, out IEnumerable<string> list) {
-      if (_importedSimVars.TryGetValue(simCategoryName, out var dict)) {
-        list = dict.Keys;
-        return true;
-      }
-      list = Array.Empty<string>();
-      return false;
-    }
-
-    public bool TryGetImportedSimVarsForCateogy(string simCategoryName, out IEnumerable<SimVariable> list) {
-      if (_importedSimVars.TryGetValue(simCategoryName, out var dict)) {
-        list = dict.Values;
-        return true;
-      }
-      list = Array.Empty<SimVariable>();
-      return false;
-    }
-
-    public bool TryGetImportedSimVarBySelector(string selector, out SimVariable simVar) {
-      return TryGetImportedSimVarBySelector(selector, out simVar, out _, out _);
-    }
-
-    bool TryGetImportedSimVarBySelector(string varName, out SimVariable simVar, out string cleanName, out uint index) {
-      simVar = null;
-      if (!TryNormalizeVarName(varName, out cleanName, out index))
-        return false;
-      foreach (var cat in _importedSimVars.Values) {
-        if (cat.TryGetValue(cleanName, out simVar))
-          return true;
-      }
-      return false;
-    }
-
     // "normalize" a SimVar name passed from touch portal
-    static bool TryNormalizeVarName(string name, out string varName, out uint index) {
+    public static bool TryNormalizeVarName(string name, out string varName, out uint index) {
       index = 0;
-      varName = name.Trim();
+      // Some values may have multiple lines
+      varName = name.Split('\n', 2, StringSplitOptions.TrimEntries)[0].Trim();
       if (string.IsNullOrEmpty(varName))
         return false;
       // strip leading "exists" indicator "* "
@@ -165,32 +124,20 @@ namespace MSFSTouchPortalPlugin.Configuration
         varName = varName[..^3];
       }
       // otherwise check and strip ":index" suffix
-      else if (varName[^6] == ':' && varName[^5..].ToLowerInvariant() == "index")
-        varName = varName[..^6];
+      //else if (varName[^6] == ':' && varName[^5..].ToLowerInvariant() == "index")
+      //  varName = varName[..^6];
       return true;
     }
 
     // This is a helper for creating SimVars dynamically at runtime. It is here to centralize how some of the
     // information is populated/formatted to keep things consistent with SimVars read from config files.
-    public SimVarItem CreateDynamicSimVarItem(char varType, string varName, Groups catId, string unit, uint index, SimVarCollection current)
+    public static SimVarItem CreateDynamicSimVarItem(char varType, string varName, Groups catId, string unit, uint index, SimVarCollection current = null)
     {
-      string name = varName;
       string varId;
-      bool canSet = false;
-      uint parsedIndex = 0;
-      if (varType == 'A' && TryGetImportedSimVarBySelector(varName, out SimVariable impSimVar, out name, out parsedIndex)) {
-        varId = impSimVar.Id;
-        name = impSimVar.Name;
-        varName = impSimVar.SimVarName;
-        canSet = impSimVar.CanSet;
-      }
-      else {
-        if (varType != 'A')
-          name = name.Trim();
-        varName = name;
-        // Create a reasonable string for a TP state ID
-        varId = _reSimVarIdFromName.Replace(name.ToLower(), m => (m.Groups[1].ToString().ToUpper()));
-      }
+      if (!TryNormalizeVarName(varName, out var name, out uint parsedIndex))
+        return null;
+      varName = name;
+      varId = _reSimVarIdFromName.Replace(name.ToLower(), m => (m.Groups[1].ToString().ToUpper()));
       if (parsedIndex > 0 && index == 0)
         index = parsedIndex;
       if (index > 0) {
@@ -201,7 +148,7 @@ namespace MSFSTouchPortalPlugin.Configuration
       }
 
       // check if this variable already exists, avoid duplicates and keep any default naming
-      if (current.TryGetBySimName(varName, out SimVarItem existingVar)) {
+      if (current != null && current.TryGetBySimName(varName, out SimVarItem existingVar)) {
         varId = existingVar.Id;
         if (varType != 'Q')
           name = existingVar.Name;
@@ -214,10 +161,10 @@ namespace MSFSTouchPortalPlugin.Configuration
         Name = name,
         SimVarName = varName,
         Unit = unit ?? "number",
-        CanSet = canSet,
         DefinitionSource = SimVarDefinitionSource.Dynamic
       };
-      SetSimVarItemTpMetaData(simVar);
+      if (catId != Groups.None)
+        SetSimVarItemTpMetaData(simVar);
       return simVar;
     }
 
@@ -226,25 +173,6 @@ namespace MSFSTouchPortalPlugin.Configuration
       simVar.TouchPortalStateId = $"{RootName}.{simVar.CategoryId}.State.{simVar.Id}";
       simVar.TouchPortalSelector = $"{simVar.Name} ({simVar.Unit}) [{simVar.Id}]";
     }
-
-
-    // Imported SimEvents methods
-
-    public bool TryGetImportedSimEventNamesForCateogy(string simCategoryName, out IEnumerable<string> list) {
-      if (_importedSimEvents.TryGetValue(simCategoryName, out var dict)) {
-        list = dict.Keys;
-        return true;
-      }
-      list = Array.Empty<string>();
-      return false;
-    }
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static")]
-    public bool TryGetImportedSimEventIdFromSelector(string selector, out string eventId) {
-      eventId = selector?.Split('-', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).First() ?? string.Empty;
-      return !string.IsNullOrWhiteSpace(eventId);
-    }
-
 
     // Config File loaders
 
@@ -338,7 +266,7 @@ namespace MSFSTouchPortalPlugin.Configuration
           simVar = item.ToObject<SimVarItem>();
         }
         catch (Exception e) {
-          _logger.LogError(e, "Deserialize exception for section '{item}': {message}:", item, e.Message);
+          _logger.LogError(e, "De-serialize exception for section '{item}': {message}:", item, e.Message);
           continue;
         }
         if (simVar == null) {
@@ -413,8 +341,6 @@ namespace MSFSTouchPortalPlugin.Configuration
             sect.Add("DefaultValue", item.DefaultValue);
           if (!string.IsNullOrWhiteSpace(item.FormattingString))
             sect.Add("StringFormat", item.FormattingString);
-          if (item.CanSet)
-            sect.Add("CanSet", item.CanSet);
           if (item.UpdatePeriod != UpdatePeriod.Default)
             sect.Add("UpdatePeriod", item.UpdatePeriod);
           if (item.UpdateInterval != 0)
@@ -435,140 +361,6 @@ namespace MSFSTouchPortalPlugin.Configuration
       else
         count = 0;
       return count;
-    }
-
-
-    // private importers, loaded data is stored internally
-
-    IReadOnlyDictionary<string, IReadOnlyDictionary<string, SimVariable>> ImportSimVars() {
-      Dictionary<string, IReadOnlyDictionary<string, SimVariable>> ret = new();
-      var filename = Path.Combine(AppConfigFolder, SimVarsImportsFile);
-      _logger.LogDebug("Importing SimVars from file '{filename}'...", filename);
-
-      if (!LoadFromFile(filename, out var cfg))
-        return ret;
-
-      int count = 0;
-      string currCatName = string.Empty;
-      Dictionary<string, SimVariable> catDict = null;
-      foreach (SharpConfig.Section section in cfg) {
-        if (section.Name == SharpConfig.Section.DefaultSectionName)
-          continue;
-
-        // new category
-        if (section.Name.StartsWith("category_")) {
-          if (catDict != null) {
-            ret[currCatName] = catDict.OrderBy(kv => kv.Key).ToDictionary(s => s.Key, s => s.Value);
-          }
-          if (section.TryGetSetting("Name", out var setting)) {
-            currCatName = setting.StringValue;
-            // the categories should be sequential, but JIC we check if we already have it
-            catDict = ret.GetValueOrDefault(currCatName, new Dictionary<string, SimVariable>()).ToDictionary(s => s.Key, s => s.Value);
-          }
-          continue;
-        }
-        if (catDict == null)
-          continue;
-
-        SimVariable simVar;
-        try {
-          simVar = section.ToObject<SimVariable>();
-        }
-        catch (Exception e) {
-          _logger.LogError(e, "Deserialize exception for section '{section}': {message}:", section, e.Message);
-          continue;
-        }
-        if (simVar == null) {
-          _logger.LogError("Produced SimVar is null from section '{section}':", section);
-          continue;
-        }
-        string normUnit = Units.NormalizedUnit(simVar.Unit);
-        if (normUnit != null)
-          simVar.Unit = normUnit;
-        else
-          _logger.LogWarning("Could not find Unit '{simVarUnit}' for '{simVarId}'", simVar.Unit, simVar.Id);
-
-        // set a default name. Some of the Descriptions would be suitable names but it's tricky to filter that.
-        if (string.IsNullOrWhiteSpace(simVar.Name))
-          simVar.Name = simVar.SimVarName;
-        // set up a name to use in the TP UI selection list
-        simVar.TouchPortalSelectorName = $"{simVar.SimVarName}{(simVar.Indexed ? ":N" : "")}";
-        // pad with 2 spaces per char because TP uses _very_ proportional fonts and we need the names to be of same width
-        simVar.TouchPortalSelectorName += string.Concat(Enumerable.Repeat("  ", Math.Max(0, 45 - simVar.TouchPortalSelectorName.Length)));
-
-        // check unique
-        if (!catDict.TryAdd(simVar.SimVarName, simVar)) {
-          catDict[simVar.SimVarName] = simVar;
-          _logger.LogWarning("Duplicate SimVar ID found for '{simVarId}' ('{simVarName}'), overwriting.", simVar.Id, simVar.SimVarName);
-        }
-        else {
-          ++count;
-        }
-      }
-      ret = ret.OrderBy(s => s.Key).ToDictionary(s => s.Key, s => s.Value);
-      _logger.LogDebug("Imported {count} SimVars in {catCount} categories from '{filename}'", count, ret.Count, filename);
-      return ret;
-    }
-
-    IReadOnlyDictionary<string, IReadOnlyDictionary<string, SimEvent>> ImportSimEvents() {
-      Dictionary<string, IReadOnlyDictionary<string, SimEvent>> ret = new();
-      var filename = Path.Combine(AppConfigFolder, SimEventsImportsFile);
-      _logger.LogDebug("Importing SimEvents from file '{filename}'...", filename);
-
-      if (!LoadFromFile(filename, out var cfg))
-        return ret;
-
-      int count = 0;
-      string currCatName = string.Empty;
-      Dictionary<string, SimEvent> catDict = null;
-      foreach (SharpConfig.Section section in cfg) {
-        if (section.Name == SharpConfig.Section.DefaultSectionName)
-          continue;
-
-        // new category
-        if (section.Name.StartsWith("category_")) {
-          if (catDict != null) {
-            ret[currCatName] = catDict.OrderBy(kv => kv.Key).ToDictionary(s => s.Key, s => s.Value);
-          }
-          if (section.TryGetSetting("Name", out var setting)) {
-            currCatName = setting.StringValue;
-            // the categories should be sequential, but JIC we check if we already have it
-            catDict = ret.GetValueOrDefault(currCatName, new Dictionary<string, SimEvent>()).ToDictionary(s => s.Key, s => s.Value);
-          }
-          continue;
-        }
-        if (catDict == null)
-          continue;
-
-        SimEvent simEvt;
-        try {
-          simEvt = section.ToObject<SimEvent>();
-        }
-        catch (Exception e) {
-          _logger.LogError(e, "Deserialize exception for section '{section}': {message}:", section, e.Message);
-          continue;
-        }
-        if (simEvt == null) {
-          _logger.LogError("Produced SimEvent is null from section '{section}':", section);
-          continue;
-        }
-        // INI section name is the ID
-        simEvt.Id = section.Name;
-        // set up a name to use in the TP UI selection list
-        simEvt.TouchPortalSelectorName = $"{simEvt.Id} - {simEvt.Name}";
-
-        // check unique
-        if (!catDict.TryAdd(simEvt.TouchPortalSelectorName, simEvt)) {
-          catDict[simEvt.TouchPortalSelectorName] = simEvt;
-          _logger.LogWarning("Duplicate SimEvent ID found for '{simEvtId}', overwriting.", simEvt.Id);
-        }
-        else {
-          ++count;
-        }
-      }
-      ret = ret.OrderBy(s => s.Key).ToDictionary(s => s.Key, s => s.Value);
-      _logger.LogDebug("Imported {count} SimEvents in {catCount} categories from '{filename}'", count, ret.Count, filename);
-      return ret;
     }
 
 

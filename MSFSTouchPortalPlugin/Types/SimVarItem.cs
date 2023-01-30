@@ -62,12 +62,10 @@ namespace MSFSTouchPortalPlugin.Types
     public char VariableType { get; set; } = 'A';
     /// <summary> Descriptive name for this data (for TouchPortal or other UI). </summary>
     public string Name { get; set; }
-    /// <summary> Corresponding SimConnect Variable name or calculator code (blank if used for internal purposes). </summary>
+    /// <summary> Corresponding SimConnect Variable name or calculator code. </summary>
     public string SimVarName { get; set; }
     /// <summary> Default value string when no data from SimConnect. </summary>
     public string DefaultValue { get; set; }
-    /// <summary> SimConnect settable Sim Var </summary>
-    public bool CanSet { get; set; } = false;
     /// <summary> How often updates are sent by SimConnect if value changes (SIMCONNECT_PERIOD). Default is equivalent to SIMCONNECT_PERIOD_SIM_FRAME. </summary>
     public UpdatePeriod UpdatePeriod { get; set; } = UpdatePeriod.Default;
     /// <summary> The number of UpdatePeriod events that should elapse between data updates. Default is 0, which means the data is transmitted every Period.
@@ -122,11 +120,11 @@ namespace MSFSTouchPortalPlugin.Types
           return;
         _calcResultType = value;
         if (value == WASimCommander.CLI.Enums.CalcResultType.Double)
-          Unit = Units.number;
+          Unit = "number";
         else if (value == WASimCommander.CLI.Enums.CalcResultType.Integer)
-          Unit = Units.integer;
+          Unit = "integer";
         else
-          Unit = Units.String;
+          Unit = "string";
       }
     }
 
