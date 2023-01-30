@@ -38,9 +38,15 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("AP_AIRSPEED_HOLD",     "Airspeed Hold",     "Toggle")]
     [TouchPortalActionMapping("AP_AIRSPEED_ON",       "Airspeed Hold",     "On")]
     [TouchPortalActionMapping("AP_AIRSPEED_OFF",      "Airspeed Hold",     "Off")]
+    [TouchPortalActionMapping("AP_PANEL_SPEED_HOLD",   "Panel Airspeed Hold", "Toggle")]
+    [TouchPortalActionMapping("AP_PANEL_SPEED_ON",     "Panel Airspeed Hold", "On")]
+    [TouchPortalActionMapping("AP_PANEL_SPEED_OFF",    "Panel Airspeed Hold", "Off")]
     [TouchPortalActionMapping("AP_ALT_HOLD",          "Altitude Hold",     "Toggle")]
     [TouchPortalActionMapping("AP_ALT_HOLD_ON",       "Altitude Hold",     "On")]
     [TouchPortalActionMapping("AP_ALT_HOLD_OFF",      "Altitude Hold",     "Off")]
+    [TouchPortalActionMapping("PANEL_ALTITUDE_HOLD",  "Panel Altitude Hold", "Toggle")]
+    [TouchPortalActionMapping("PANEL_ALTITUDE_ON",    "Panel Altitude Hold", "On")]
+    [TouchPortalActionMapping("PANEL_ALTITUDE_OFF",   "Panel Altitude Hold", "Off")]
     [TouchPortalActionMapping("AP_APR_HOLD",          "Approach Mode",     "Toggle")]
     [TouchPortalActionMapping("AP_APR_HOLD_ON",       "Approach Mode",     "On")]
     [TouchPortalActionMapping("AP_APR_HOLD_OFF",      "Approach Mode",     "Off")]
@@ -53,30 +59,40 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("AP_BANK_HOLD",         "Bank Mode",         "Toggle")]
     [TouchPortalActionMapping("AP_BANK_HOLD_ON",      "Bank Mode",         "On")]
     [TouchPortalActionMapping("AP_BANK_HOLD_OFF",     "Bank Mode",         "Off")]
-    [TouchPortalActionMapping("AP_FLIGHT_LEVEL_CHANGE",     "Flight Level Change",  "Toggle")]
-    [TouchPortalActionMapping("AP_FLIGHT_LEVEL_CHANGE_ON",  "Flight Level Change",  "On")]
-    [TouchPortalActionMapping("AP_FLIGHT_LEVEL_CHANGE_OFF", "Flight Level Change",  "Off")]
+    [TouchPortalActionMapping("AP_FLIGHT_LEVEL_CHANGE",     "Flight Level Change", "Toggle")]
+    [TouchPortalActionMapping("AP_FLIGHT_LEVEL_CHANGE_ON",  "Flight Level Change", "On")]
+    [TouchPortalActionMapping("AP_FLIGHT_LEVEL_CHANGE_OFF", "Flight Level Change", "Off")]
     [TouchPortalActionMapping("AP_HDG_HOLD",          "Heading Hold",      "Toggle")]
     [TouchPortalActionMapping("AP_HDG_HOLD_ON",       "Heading Hold",      "On")]
     [TouchPortalActionMapping("AP_HDG_HOLD_OFF",      "Heading Hold",      "Off")]
+    [TouchPortalActionMapping("AP_PANEL_HEADING_HOLD", "Panel Heading Hold", "Toggle")]
+    [TouchPortalActionMapping("AP_PANEL_HEADING_ON",   "Panel Heading Hold", "On")]
+    [TouchPortalActionMapping("AP_PANEL_HEADING_OFF",  "Panel Heading Hold", "Off")]
     [TouchPortalActionMapping("AP_LOC_HOLD",          "Localizer",         "Toggle")]
     [TouchPortalActionMapping("AP_LOC_HOLD_ON",       "Localizer",         "On")]
     [TouchPortalActionMapping("AP_LOC_HOLD_OFF",      "Localizer",         "Off")]
     [TouchPortalActionMapping("AP_MACH_HOLD",         "Mach Hold",         "Toggle")]
     [TouchPortalActionMapping("AP_MACH_ON",           "Mach Hold",         "On")]
     [TouchPortalActionMapping("AP_MACH_OFF",          "Mach Hold",         "Off")]
+    [TouchPortalActionMapping("AP_PANEL_MACH_HOLD",   "Panel Mach Hold",   "Toggle")]
+    [TouchPortalActionMapping("AP_PANEL_MACH_ON",     "Panel Mach Hold",   "On")]
+    [TouchPortalActionMapping("AP_PANEL_MACH_OFF",    "Panel Mach Hold",   "Off")]
+    [TouchPortalActionMapping("AP_N1_HOLD",           "N1 Hold",         "Toggle")]
     [TouchPortalActionMapping("AP_NAV1_HOLD",         "Nav1 Hold",         "Toggle")]
     [TouchPortalActionMapping("AP_NAV1_HOLD_ON",      "Nav1 Hold",         "On")]
     [TouchPortalActionMapping("AP_NAV1_HOLD_OFF",     "Nav1 Hold",         "Off")]
     [TouchPortalActionMapping("AP_VS_HOLD",           "Vertical Speed",    "Toggle")]
     [TouchPortalActionMapping("AP_VS_ON",             "Vertical Speed",    "On")]
     [TouchPortalActionMapping("AP_VS_OFF",            "Vertical Speed",    "Off")]
+    [TouchPortalActionMapping("AP_PANEL_VS_ON",       "Panel Vertical Speed", "On")]
+    [TouchPortalActionMapping("AP_PANEL_VS_OFF",      "Panel Vertical Speed", "Off")]
     [TouchPortalActionMapping("AP_WING_LEVELER",      "Wing Leveler",      "Toggle")]
     [TouchPortalActionMapping("AP_WING_LEVELER_ON",   "Wing Leveler",      "On")]
     [TouchPortalActionMapping("AP_WING_LEVELER_OFF",  "Wing Leveler",      "Off")]
     [TouchPortalActionMapping("YAW_DAMPER_TOGGLE",    "Yaw Dampener",      "Toggle")]
     [TouchPortalActionMapping("YAW_DAMPER_ON",        "Yaw Dampener",      "On")]
     [TouchPortalActionMapping("YAW_DAMPER_OFF",       "Yaw Dampener",      "Off")]
+
     public static readonly object AP_SWITCHES;
 
     #endregion
@@ -197,7 +213,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("AIRSPEED_BUG_SELECT", "Select")]
     [TouchPortalActionMapping("AP_SPD_VAR_INC", "Increase")]
     [TouchPortalActionMapping("AP_SPD_VAR_DEC", "Decrease")]
-    [TouchPortalActionMapping("AUTOPILOT_AIRSPEED_HOLD_CURRENT", "Hold Current")]  // WASM only, SimConnect reports event name error even though this is a valid KEY ID
+    [TouchPortalActionMapping("AP_PANEL_SPEED_HOLD_TOGGLE", "Hold Current")]  // KEY_AUTOPILOT_AIRSPEED_HOLD_CURRENT
     public static readonly object AP_AIRSPEED_VAR;
 
     [TouchPortalAction("AutoPilotAirSpeedSet", "Airspeed Hold Value Set", true,
@@ -245,11 +261,11 @@ namespace MSFSTouchPortalPlugin.Objects
 
     #region Mach
 
-    [TouchPortalAction("AutoPilotMachVar", "Mach Hold Value  Adj/Hold", "Mach Hold Value - {0}")]
+    [TouchPortalAction("AutoPilotMachVar", "Mach Hold Value Adjust/Hold", "Mach Hold Value - {0}", true)]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_MACH_VAR_INC", "Increase")]
     [TouchPortalActionMapping("AP_MACH_VAR_DEC", "Decrease")]
-    [TouchPortalActionMapping("AUTOPILOT_MACH_HOLD_CURRENT", "Hold Current")]  // WASM only, SimConnect reports event name error even though this is a valid KEY ID
+    [TouchPortalActionMapping("AP_PANEL_MACH_HOLD_TOGGLE", "Hold Current")]  // KEY_AUTOPILOT_MACH_HOLD_CURRENT
     public static readonly object AP_MACH_VAR;
 
     [TouchPortalAction("AutoPilotMachSet", "Mach Hold Value Set", true,
@@ -259,6 +275,25 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionText("0", 0, 20, AllowDecimals = true)]
     [TouchPortalActionMapping("AP_MACH_VAR_SET")]
     public static readonly object AP_MACH_SET;
+
+    #endregion
+
+    #region N1
+
+    [TouchPortalAction("AutoPilotN1Ref", "N1 Reference Value Adjust/Hold", "N1 Reference Value - {0}", true)]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("AP_N1_REF_INC", "Increase")]
+    [TouchPortalActionMapping("AP_N1_REF_DEC", "Decrease")]
+    [TouchPortalActionMapping("AP_N1_HOLD", "Hold Current")]
+    public static readonly object N1_REF_ADJ;
+
+    [TouchPortalAction("AutoPilotN1RefSet", "N1 Reference Value Set", true,
+      "Set N1 Reference Value to {0}",
+      "Set N1 Reference\nin Value Range:"
+    )]
+    [TouchPortalActionText("0", 0, 150, AllowDecimals = true)]
+    [TouchPortalActionMapping("AP_N1_REF_SET")]
+    public static readonly object N1_REF_SET;
 
     #endregion
 
@@ -377,28 +412,11 @@ namespace MSFSTouchPortalPlugin.Objects
     //FLY_BY_WIRE_FAC_TOGGLE,
     //FLY_BY_WIRE_SEC_TOGGLE,
 
-    //AP_PANEL_SPEED_HOLD_TOGGLE, // With current speed
-    //AP_PANEL_MACH_HOLD_TOGGLE, // WIth Current Mach
-
     //// Doesn't set value
-    //AP_PANEL_ALTITUDE_HOLD,
-    //AP_PANEL_ALTITUDE_ON,
-    //AP_PANEL_ALTITUDE_OFF,
     //AP_PANEL_ALTITUDE_SET,
-    //AP_PANEL_HEADING_HOLD,
-    //AP_PANEL_HEADING_ON,
-    //AP_PANEL_HEADING_OFF,
     //AP_PANEL_HEADING_SET,
-    //AP_PANEL_MACH_HOLD,
-    //AP_PANEL_MACH_ON,
-    //AP_PANEL_MACH_OFF,
     //AP_PANEL_MACH_SET,
-    //AP_PANEL_SPEED_HOLD,
-    //AP_PANEL_SPEED_ON,
-    //AP_PANEL_SPEED_OFF,
     //AP_PANEL_SPEED_SET,
-    //AP_PANEL_VS_OFF,
-    //AP_PANEL_VS_ON,
     //AP_PANEL_VS_SET,
 
     #endregion

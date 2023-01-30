@@ -36,6 +36,12 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("ADD_FUEL_QUANTITY")]
     public static readonly object ADD_FUEL;
 
+    [TouchPortalAction("FuelRefillRepair", "Refuel & Repair", "Action: {0}")]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("REQUEST_FUEL_KEY", "Request Fuel (parked)")]
+    [TouchPortalActionMapping("REPAIR_AND_REFUEL", "Repair & Refuel (unrealistic)")]
+    public static readonly object FUEL_R_AND_R;
+
     [TouchPortalAction("FuelSelectors", "Fuel Selectors", "Fuel Selector {0} - {1}")]
     [TouchPortalActionChoice()]
     [TouchPortalActionChoice()]
@@ -48,6 +54,8 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("FUEL_SELECTOR_LEFT_AUX", new[] { "1", "Left - Aux" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_RIGHT_AUX", new[] { "1", "Right - Aux" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_CENTER", new[] { "1", "Center" })]
+    [TouchPortalActionMapping("FUEL_SELECTOR_1_CROSSFEED", new[] { "1", "Crossfeed" })]
+    [TouchPortalActionMapping("FUEL_SELECTOR_1_ISOLATE",   new[] { "1", "Isolate" })]
 
     [TouchPortalActionMapping("FUEL_SELECTOR_2_ALL", new[] { "2", "All" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_2_OFF", new[] { "2", "Off" })]
@@ -58,6 +66,8 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("FUEL_SELECTOR_2_LEFT_AUX", new[] { "2", "Left - Aux" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_2_RIGHT_AUX", new[] { "2", "Right - Aux" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_2_CENTER", new[] { "2", "Center" })]
+    [TouchPortalActionMapping("FUEL_SELECTOR_2_CROSSFEED", new[] { "2", "Crossfeed" })]
+    [TouchPortalActionMapping("FUEL_SELECTOR_2_ISOLATE",   new[] { "2", "Isolate" })]
 
     [TouchPortalActionMapping("FUEL_SELECTOR_3_ALL", new[] { "3", "All" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_3_OFF", new[] { "3", "Off" })]
@@ -68,6 +78,8 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("FUEL_SELECTOR_3_LEFT_AUX", new[] { "3", "Left - Aux" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_3_RIGHT_AUX", new[] { "3", "Right - Aux" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_3_CENTER", new[] { "3", "Center" })]
+    [TouchPortalActionMapping("FUEL_SELECTOR_3_CROSSFEED", new[] { "3", "Crossfeed" })]
+    [TouchPortalActionMapping("FUEL_SELECTOR_3_ISOLATE",   new[] { "3", "Isolate" })]
 
     [TouchPortalActionMapping("FUEL_SELECTOR_4_ALL", new[] { "4", "All" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_4_OFF", new[] { "4", "Off" })]
@@ -78,26 +90,34 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("FUEL_SELECTOR_4_LEFT_AUX", new[] { "4", "Left - Aux" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_4_RIGHT_AUX", new[] { "4", "Right - Aux" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_4_CENTER", new[] { "4", "Center" })]
+    [TouchPortalActionMapping("FUEL_SELECTOR_4_CROSSFEED", new[] { "4", "Crossfeed" })]
+    [TouchPortalActionMapping("FUEL_SELECTOR_4_ISOLATE",   new[] { "4", "Isolate" })]
     public static readonly object FUEL_SELECTORS;
 
-    [TouchPortalAction("Primers", "Primers", "Toggle Primer(s): {0}")]
+    [TouchPortalAction("FuelSystem", "Fuel System Component", "Set {0} on Fuel System @ Index {1}")]
     [TouchPortalActionChoice()]
-    [TouchPortalActionMapping("TOGGLE_PRIMER", "All")]
-    [TouchPortalActionMapping("TOGGLE_PRIMER1", "1")]
-    [TouchPortalActionMapping("TOGGLE_PRIMER2", "2")]
-    [TouchPortalActionMapping("TOGGLE_PRIMER3", "3")]
-    [TouchPortalActionMapping("TOGGLE_PRIMER4", "4")]
-    public static readonly object PRIMERS;
+    [TouchPortalActionMapping("FUELSYSTEM_PUMP_SET",    "Pump Auto", 2 )]
+    [TouchPortalActionMapping("FUELSYSTEM_PUMP_OFF",    "Pump Off"    )]
+    [TouchPortalActionMapping("FUELSYSTEM_PUMP_ON",     "Pump On"     )]
+    [TouchPortalActionMapping("FUELSYSTEM_PUMP_TOGGLE", "Pump Toggle" )]
+    [TouchPortalActionMapping("FUELSYSTEM_TRIGGER_OFF",    "Trigger Event Off")]
+    [TouchPortalActionMapping("FUELSYSTEM_TRIGGER_ON",     "Trigger Event On")]
+    [TouchPortalActionMapping("FUELSYSTEM_TRIGGER_TOGGLE", "Trigger Event Toggle")]
+    [TouchPortalActionMapping("FUELSYSTEM_VALVE_OFF",    "Valve Close")]
+    [TouchPortalActionMapping("FUELSYSTEM_VALVE_ON",     "Valve Open")]
+    [TouchPortalActionMapping("FUELSYSTEM_VALVE_TOGGLE", "Valve Toggle")]
+    [TouchPortalActionText("1", 0, 99)]
+    public static readonly object FUEL_SYSTEM;
 
-    [TouchPortalAction("FuelDump", "Fuel Dump - Toggle", "Toggle Fuel Dump")]
-    [TouchPortalActionMapping("FUEL_DUMP_TOGGLE")]
-    public static readonly object FUEL_DUMP;
+    #region Engine-related
 
     [TouchPortalAction("CrossFeed", "Cross Feed Switch", "Cross Feed - {0}")]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("CROSS_FEED_TOGGLE", "Toggle")]
     [TouchPortalActionMapping("CROSS_FEED_OPEN", "Open")]
     [TouchPortalActionMapping("CROSS_FEED_OFF", "Off")]
+    [TouchPortalActionMapping("CROSS_FEED_LEFT_TO_RIGHT", "Left To Right")]
+    [TouchPortalActionMapping("CROSS_FEED_RIGHT_TO_LEFT", "Right To Left")]
     public static readonly object CROSS_FEED;
 
     [TouchPortalAction("FuelValve", "Fuel Valve", "Toggle Fuel Valve: {0}")]
@@ -109,20 +129,41 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("TOGGLE_FUEL_VALVE_ENG4", "4")]
     public static readonly object FUEL_VALVE;
 
-    #region Fuel Pump
+    [TouchPortalAction("ElectricFuelPumpSet", "Electric Fuel Pump Set", "Set Electric Fuel Pump {0} to {1} (0 = Off; 1 = On; 2 = Auto)")]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("ELECT_FUEL_PUMP1_SET", "1")]
+    [TouchPortalActionMapping("ELECT_FUEL_PUMP2_SET", "2")]
+    [TouchPortalActionMapping("ELECT_FUEL_PUMP3_SET", "3")]
+    [TouchPortalActionMapping("ELECT_FUEL_PUMP4_SET", "4")]
+    [TouchPortalActionText("1", 0, 2)]
+    public static readonly object ELECTRIC_FUEL_PUMP_SET;
 
-    [TouchPortalAction("FuelPump", "Fuel Pump", "Toggle Fuel Pump")]
-    [TouchPortalActionMapping("FUEL_PUMP")]
-    public static readonly object FUEL_PUMP;
-
-    [TouchPortalAction("ElectricFuelPump", "Electric Fuel Pump", "Toggle Electric Fuel Pump: {0}")]
+    [TouchPortalAction("ElectricFuelPump", "Electric Fuel Pump Toggle", "Toggle Electric Fuel Pump: {0}")]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("TOGGLE_ELECT_FUEL_PUMP", "All")]
     [TouchPortalActionMapping("TOGGLE_ELECT_FUEL_PUMP1", "1")]
     [TouchPortalActionMapping("TOGGLE_ELECT_FUEL_PUMP2", "2")]
     [TouchPortalActionMapping("TOGGLE_ELECT_FUEL_PUMP3", "3")]
     [TouchPortalActionMapping("TOGGLE_ELECT_FUEL_PUMP4", "4")]
-    public static readonly object ELECTRIC_FUEL_PUMP;
+    public static readonly object ELECTRIC_FUEL_PUMP_TOGGLE;
+
+    #endregion
+
+    [TouchPortalAction("FuelDump", "Fuel Dump / Tank Drop", "Action: {0}")]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("FUEL_DUMP_TOGGLE", "Toggle Fuel Dump")]
+    [TouchPortalActionMapping("RELEASE_DROP_TANK_1", "Release Drop Tank 1")]
+    [TouchPortalActionMapping("RELEASE_DROP_TANK_2", "Release Drop Tank 2")]
+    [TouchPortalActionMapping("RELEASE_DROP_TANK_ALL", "Release All Drop Tanks")]
+    public static readonly object FUEL_DUMP;
+
+
+    #region DEPRECATED
+    // Preserve backwards compatibility with hidden actions,
+
+    [TouchPortalAction("FuelPump", "Fuel Pump Toggle", "Toggle Fuel Pump", Deprecated = true)]
+    [TouchPortalActionMapping("FUEL_PUMP")]
+    public static readonly object FUEL_PUMP;
 
     #endregion
   }

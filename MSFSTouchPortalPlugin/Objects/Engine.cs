@@ -28,7 +28,7 @@ namespace MSFSTouchPortalPlugin.Objects
   internal static class EngineMapping
   {
 
-    #region Ignition
+    #region Ignition/Master
 
     [TouchPortalAction("MasterIgnition", "Master Ignition Switch", "Toggle Master Ignition Switch", "Toggle Master Ignition Switch")]
     [TouchPortalActionMapping("TOGGLE_MASTER_IGNITION_SWITCH")]
@@ -39,6 +39,38 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("ENGINE_AUTO_START", "Start")]
     [TouchPortalActionMapping("ENGINE_AUTO_SHUTDOWN", "Shutdown")]
     public static readonly object ENGINE_AUTO;
+
+    [TouchPortalAction("EngineMasterTgl", "Engine Master Toggle", "Toggle Engine Master Switch {0}")]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("ENGINE_MASTER_TOGGLE", "All")]
+    [TouchPortalActionMapping("ENGINE_MASTER_1_TOGGLE", "1")]
+    [TouchPortalActionMapping("ENGINE_MASTER_2_TOGGLE", "2")]
+    [TouchPortalActionMapping("ENGINE_MASTER_3_TOGGLE", "3")]
+    [TouchPortalActionMapping("ENGINE_MASTER_4_TOGGLE", "4")]
+    public static readonly object ENGINE_MASTER_TGL;
+
+    [TouchPortalAction("EngineMasterSet", "Engine Master Set", "Set Engine {0} Master Switch to {1} (0/1)")]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("ENGINE_MASTER_SET", "All")]
+    [TouchPortalActionMapping("ENGINE_MASTER_1_SET", "1")]
+    [TouchPortalActionMapping("ENGINE_MASTER_2_SET", "2")]
+    [TouchPortalActionMapping("ENGINE_MASTER_3_SET", "3")]
+    [TouchPortalActionMapping("ENGINE_MASTER_4_SET", "4")]
+    [TouchPortalActionNumeric(1, 0, 1)]
+    public static readonly object ENGINE_MASTER_SET;
+
+    #endregion
+
+    #region Primers
+
+    [TouchPortalAction("Primers", "Primers", "Toggle Primer(s): {0}")]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("TOGGLE_PRIMER", "All")]
+    [TouchPortalActionMapping("TOGGLE_PRIMER1", "1")]
+    [TouchPortalActionMapping("TOGGLE_PRIMER2", "2")]
+    [TouchPortalActionMapping("TOGGLE_PRIMER3", "3")]
+    [TouchPortalActionMapping("TOGGLE_PRIMER4", "4")]
+    public static readonly object PRIMERS;
 
     #endregion
 
@@ -110,14 +142,31 @@ namespace MSFSTouchPortalPlugin.Objects
 
     #region Starters
 
-    [TouchPortalAction("Starters", "Starters", "Toggle Starter - {0}")]
+    [TouchPortalAction("Starters", "Starters Toggle", "Toggle Starter - {0}")]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("TOGGLE_ALL_STARTERS", "All")]
     [TouchPortalActionMapping("TOGGLE_STARTER1", "1")]
     [TouchPortalActionMapping("TOGGLE_STARTER2", "2")]
     [TouchPortalActionMapping("TOGGLE_STARTER3", "3")]
     [TouchPortalActionMapping("TOGGLE_STARTER4", "4")]
+    [TouchPortalActionMapping("TOGGLE_MASTER_STARTER_SWITCH", "Master Switch")]
     public static readonly object STARTERS;
+
+    [TouchPortalAction("StartersSet", "Starters Set", "Starter {0} {1} to {2} (0/1)")]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("STARTER_SET",  new[] { "All", "Set" })]
+    [TouchPortalActionMapping("STARTER1_SET", new[] { "1",   "Set" })]
+    [TouchPortalActionMapping("STARTER2_SET", new[] { "2",   "Set" })]
+    [TouchPortalActionMapping("STARTER3_SET", new[] { "3",   "Set" })]
+    [TouchPortalActionMapping("STARTER4_SET", new[] { "4",   "Set" })]
+    [TouchPortalActionMapping("SET_STARTER_ALL_HELD",  new[] { "All", "Set Held" })]
+    [TouchPortalActionMapping("SET_STARTER1__HELD",    new[] { "1",   "Set Held" })]
+    [TouchPortalActionMapping("SET_STARTER2__HELD",    new[] { "2",   "Set Held" })]
+    [TouchPortalActionMapping("SET_STARTER3__HELD",    new[] { "3",   "Set Held" })]
+    [TouchPortalActionMapping("SET_STARTER4__HELD",    new[] { "4",   "Set Held" })]
+    [TouchPortalActionNumeric(1, 0, 1)]
+    public static readonly object STARTERS_SET;
 
     #endregion
 
@@ -184,6 +233,15 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("THROTTLE4_SET", new[] { "4" })]
     public static readonly object THROTTLE_SET;
 
+    [TouchPortalAction("EngineAfterburners", "Afterburner Toggle", "Toggle Afterburner(s): {0}")]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("TOGGLE_AFTERBURNER", "All")]
+    [TouchPortalActionMapping("TOGGLE_AFTERBURNER1", "1")]
+    [TouchPortalActionMapping("TOGGLE_AFTERBURNER1", "2")]
+    [TouchPortalActionMapping("TOGGLE_AFTERBURNER1", "3")]
+    [TouchPortalActionMapping("TOGGLE_AFTERBURNER1", "4")]
+    public static readonly object AFTERBURNERS;
+
     #endregion
 
     #region Mixture
@@ -243,6 +301,59 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("MIXTURE3_SET", new[] { "3" })]
     [TouchPortalActionMapping("MIXTURE4_SET", new[] { "4" })]
     public static readonly object MIXTURE_SET;
+
+    #endregion
+
+    #region Condition Lever
+
+    [TouchPortalAction("ConditionLever", "Condition Lever Adjust", "Condition Lever {0} {1}", true)]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("CONDITION_LEVER_INC", "All", "Increment")]
+    [TouchPortalActionMapping("CONDITION_LEVER_1_INC", "1", "Increment")]
+    [TouchPortalActionMapping("CONDITION_LEVER_2_INC", "2", "Increment")]
+    [TouchPortalActionMapping("CONDITION_LEVER_3_INC", "3", "Increment")]
+    [TouchPortalActionMapping("CONDITION_LEVER_4_INC", "4", "Increment")]
+    [TouchPortalActionMapping("CONDITION_LEVER_DEC", "All", "Decrement")]
+    [TouchPortalActionMapping("CONDITION_LEVER_1_DEC", "1", "Decrement")]
+    [TouchPortalActionMapping("CONDITION_LEVER_2_DEC", "2", "Decrement")]
+    [TouchPortalActionMapping("CONDITION_LEVER_3_DEC", "3", "Decrement")]
+    [TouchPortalActionMapping("CONDITION_LEVER_4_DEC", "4", "Decrement")]
+    [TouchPortalActionMapping("CONDITION_LEVER_HIGH_IDLE", "All", "Set to High Idle")]
+    [TouchPortalActionMapping("CONDITION_LEVER_1_HIGH_IDLE", "1", "Set to High Idle")]
+    [TouchPortalActionMapping("CONDITION_LEVER_2_HIGH_IDLE", "2", "Set to High Idle")]
+    [TouchPortalActionMapping("CONDITION_LEVER_3_HIGH_IDLE", "3", "Set to High Idle")]
+    [TouchPortalActionMapping("CONDITION_LEVER_4_HIGH_IDLE", "4", "Set to High Idle")]
+    [TouchPortalActionMapping("CONDITION_LEVER_LOW_IDLE", "All", "Set to Low Idle")]
+    [TouchPortalActionMapping("CONDITION_LEVER_1_LOW_IDLE", "1", "Set to Low Idle")]
+    [TouchPortalActionMapping("CONDITION_LEVER_2_LOW_IDLE", "2", "Set to Low Idle")]
+    [TouchPortalActionMapping("CONDITION_LEVER_3_LOW_IDLE", "3", "Set to Low Idle")]
+    [TouchPortalActionMapping("CONDITION_LEVER_4_LOW_IDLE", "4", "Set to Low Idle")]
+    [TouchPortalActionMapping("CONDITION_LEVER_CUT_OFF", "All", "Cutoff")]
+    [TouchPortalActionMapping("CONDITION_LEVER_1_CUT_OFF", "1", "Cutoff")]
+    [TouchPortalActionMapping("CONDITION_LEVER_2_CUT_OFF", "2", "Cutoff")]
+    [TouchPortalActionMapping("CONDITION_LEVER_3_CUT_OFF", "3", "Cutoff")]
+    [TouchPortalActionMapping("CONDITION_LEVER_4_CUT_OFF", "4", "Cutoff")]
+    public static readonly object CONDITION_LEVER_ADJ;
+
+    [TouchPortalAction("ConditionLeverSet", "Condition Lever Set", true,
+      "Set Condition Lever {0} {1} to {2} (Position: 0 - 2, Axis: 0 - 100)",
+      "Set Condition Lever {0} {1} in Value Range\n(Position: 0 - 2, Axis: 0 - 100):"
+    )]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionText("0", 0, 16384)]
+    [TouchPortalActionMapping("CONDITION_LEVER_SET", "All", "Position" )]
+    [TouchPortalActionMapping("CONDITION_LEVER_1_SET", "1", "Position" )]
+    [TouchPortalActionMapping("CONDITION_LEVER_2_SET", "2", "Position" )]
+    [TouchPortalActionMapping("CONDITION_LEVER_3_SET", "3", "Position" )]
+    [TouchPortalActionMapping("CONDITION_LEVER_4_SET", "4", "Position")]
+    [TouchPortalActionMapping("AXIS_CONDITION_LEVER_SET", "All", "Axis" )]
+    [TouchPortalActionMapping("AXIS_CONDITION_LEVER_1_SET", "1", "Axis" )]
+    [TouchPortalActionMapping("AXIS_CONDITION_LEVER_2_SET", "2", "Axis" )]
+    [TouchPortalActionMapping("AXIS_CONDITION_LEVER_3_SET", "3", "Axis" )]
+    [TouchPortalActionMapping("AXIS_CONDITION_LEVER_4_SET", "4", "Axis" )]
+    public static readonly object CONDITION_LEVER_SET;
 
     #endregion
 
