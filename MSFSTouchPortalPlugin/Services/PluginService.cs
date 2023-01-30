@@ -129,7 +129,7 @@ namespace MSFSTouchPortalPlugin.Services
         return Task.CompletedTask;
       }
 
-      return Task.WhenAll(SimConnectionMonitor());
+      return SimConnectionMonitor();
     }
 
     /// <summary>
@@ -193,7 +193,7 @@ namespace MSFSTouchPortalPlugin.Services
           if (!_simConnectService.IsConnected && (hResult = _simConnectService.Connect(Settings.SimConnectConfigIndex.UIntValue)) != SimConnectService.S_OK) {
             switch (hResult) {
               case SimConnectService.E_FAIL:   // sim not running, keep trying
-                _logger.LogWarning((int)EventIds.SimTimedOut, "Connection to Simulator failed, retrying in " + SIM_RECONNECT_DELAY_SEC.ToString() + " seconds...");
+                _logger.LogWarning((int)EventIds.SimTimedOut, "Connection to Simulator failed, retrying in {retrySec} seconds...", SIM_RECONNECT_DELAY_SEC.ToString());
                 break;
 
               case SimConnectService.E_TIMEOUT:  // unexpected timeout, keep trying... ?
@@ -202,15 +202,15 @@ namespace MSFSTouchPortalPlugin.Services
 
               case SimConnectService.E_INVALIDARG:  // invalid SimConnect.cfg index value
                 _logger.LogError((int)EventIds.SimError,
-                  "SimConnect returned IVALID ARGUMENT for SimConnect.cfg index value " + Settings.SimConnectConfigIndex.UIntValue.ToString() +
-                  ". Connection attempts aborted. Please fix setting or config. file and retry.");
+                  "SimConnect returned IVALID ARGUMENT for SimConnect.cfg index value {cfgIndex}" +
+                  ". Connection attempts aborted. Please fix setting or config. file and retry.", Settings.SimConnectConfigIndex.UIntValue.ToString());
                 DisconnectSimConnect();
                 continue;
 
               default:  // other unexpected error
                 _logger.LogError((int)EventIds.SimError,
                   "Unknown exception occurred trying to connect to SimConnect. Connection attempts aborted, please check plugin logs. " +
-                  "Error code/message: " + $"{hResult:X}");
+                  "Error code/message: {hResult:X}", hResult);
                 DisconnectSimConnect();
                 continue;
 
@@ -300,8 +300,9 @@ namespace MSFSTouchPortalPlugin.Services
 
     #region SimConnect Events   /////////////////////////////////////
 
-    private void SimConnectEvent_OnConnect(SimulatorInfo info) {
-      _logger.LogInformation((int)EventIds.PluginInfo, "Connected to " + info.ToString());
+    void SimConnectEvent_OnConnect(SimulatorInfo info)
+    {
+      _logger.LogInformation((int)EventIds.PluginInfo, "Connected to {info}", info.ToString());
 
       _simConnectionRequest.Reset();
       _simTasksCTS = new CancellationTokenSource();
@@ -366,8 +367,8 @@ namespace MSFSTouchPortalPlugin.Services
       }
     }
 
-    private void SimConnectEvent_OnException(RequestTrackingData data) {
-      _logger.LogWarning((int)EventIds.SimError, "SimConnect Request Error: " + data.ToString());
+    void SimConnectEvent_OnException(RequestTrackingData data) {
+      _logger.LogWarning((int)EventIds.SimError, "SimConnect Request Error: {error}", data.ToString());
     }
 
     void SimConnect_OnLVarsListUpdated(IReadOnlyDictionary<int, string> list) {
