@@ -8,7 +8,7 @@ Version number: `1030000`
 * _Any_ SimVar marked settable in MSFS docs is now available in (the updated) "Set a Selected Simulator Variable" action/connector with a selectable Unit type. 
   * The SimVar no longer has to be "requested" first. This works with or without _WASimModule_ integration (_SimConnect_ only).
     * In the latter case, _SimConnect_ only, any action/connector which sets the same SimVar (at the same index, if any) must use the same Unit type.
-  * Connector type now has "feedback" as an option; when enabled, the corresponding SimVar is automatically requested from the simulator if it not been already.
+  * Connector type now has "feedback" as an option; when enabled, the corresponding SimVar is automatically requested from the simulator if it has not been already.
 * When selecting imported SimVars in actions (for Set or Request), only compatible Unit types are now shown (eg. all distance type measures for an "altitude" value).
 * Fixed that selecting "Camera & Views" category didn't properly show the available variable requests in some actions (https://github.com/mpaperno/MSFSTouchPortalPlugin/issues/47).
 * Removed the "Can Set" SimVar request property (`CanSet` is ignored if found in existing .INI config files); Also removes the corresponding indicator column from generated documentation.

@@ -363,7 +363,7 @@ Feedback From Category:{0}Variable:{1}Value Range:{2}-{3}</td><td><ol start=0>
  **Base Id:** MSFSTouchPortalPlugin.Plugin.State.
 
 | Id | SimVar Name | Description | Unit | Format | DefaultValue |
-| --- | --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- |
 | ActionRepeatInterval |  | The current Held Action Repeat Rate (ms) | millisecond |  | 450 |
 | Connected |  | The status of SimConnect (true/false/connecting) | string |  | false |
 | RunningVersion |  | The running plugin version number. | number |  | 0 |
@@ -718,7 +718,7 @@ Range:{5}-{6}</td><td><ol start=0>
  **Base Id:** MSFSTouchPortalPlugin.AutoPilot.State.
 
 | Id | SimVar Name | Description | Unit | Format | DefaultValue |
-| --- | --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- |
 | AutoThrottleArm | AUTOPILOT THROTTLE ARM | Auto Throttle Armed | Bool |  |  |
 | AutoThrottleGoAround | AUTOPILOT TAKEOFF POWER ACTIVE | Auto Throttle GoAround | Bool |  |  |
 | AutoPilotAirSpeedHold | AUTOPILOT AIRSPEED HOLD | AutoPilot Air Speed Status | Bool |  |  |
@@ -837,7 +837,7 @@ Range:{6}-{7}</td><td><ol start=0>
  **Base Id:** MSFSTouchPortalPlugin.Communication.State.
 
 | Id | SimVar Name | Description | Unit | Format | DefaultValue |
-| --- | --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- |
 | Com1ActiveFrequency | COM ACTIVE FREQUENCY:1 | The frequency of the active COM1 radio | MHz | 0.000# |  |
 | Com2ActiveFrequency | COM ACTIVE FREQUENCY:2 | The frequency of the active COM2 radio | MHz | 0.000# |  |
 | Nav1ActiveFrequency | NAV ACTIVE FREQUENCY:1 | The frequency of the active NAV1 radio | MHz | 0.000# |  |
@@ -934,7 +934,7 @@ Range:{5}-{6}</td><td><ol start=0>
  **Base Id:** MSFSTouchPortalPlugin.Electrical.State.
 
 | Id | SimVar Name | Description | Unit | Format | DefaultValue |
-| --- | --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- |
 | AvionicsMasterSwitch | AVIONICS MASTER SWITCH | Avionics Master Switch | Bool |  |  |
 | LightBeaconOn | LIGHT BEACON | Light Beacon Switch Status | Bool |  |  |
 | LightBrakeOn | LIGHT BRAKE ON | Light Brake Switch or Light Status | Bool |  |  |
@@ -1156,7 +1156,7 @@ Range:{5}-{6}</td><td><ol start=0>
  **Base Id:** MSFSTouchPortalPlugin.Engine.State.
 
 | Id | SimVar Name | Description | Unit | Format | DefaultValue |
-| --- | --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- |
 | MasterIgnitionSwitch | MASTER IGNITION SWITCH | Master Ignition Switch Status | Bool |  |  |
 | MixtureEngine1 | GENERAL ENG MIXTURE LEVER POSITION:1 | Mixture - Engine 1 - Percentage | percent | 0.0# |  |
 | MixtureEngine2 | GENERAL ENG MIXTURE LEVER POSITION:2 | Mixture - Engine 2 - Percentage | percent | 0.0# |  |
@@ -1238,7 +1238,7 @@ Range:{5}-{6}</td><td><ol start=0>
  **Base Id:** MSFSTouchPortalPlugin.Environment.State.
 
 | Id | SimVar Name | Description | Unit | Format | DefaultValue |
-| --- | --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- |
 | AntiIceEng1 | GENERAL ENG ANTI ICE POSITION:1 | Anti-Ice Engine 1 | Bool |  |  |
 | AntiIceEng2 | GENERAL ENG ANTI ICE POSITION:2 | Anti-Ice Engine 2 | Bool |  |  |
 | AntiIceEng3 | GENERAL ENG ANTI ICE POSITION:3 | Anti-Ice Engine 3 | Bool |  |  |
@@ -1288,7 +1288,7 @@ Range:{5}-{6}</td><td><ol start=0>
  **Base Id:** MSFSTouchPortalPlugin.FlightInstruments.State.
 
 | Id | SimVar Name | Description | Unit | Format | DefaultValue |
-| --- | --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- |
 | AirSpeedIndicated | AIRSPEED INDICATED | Air Speed indicated (knots) | knots | 0.0# |  |
 | AirSpeedMach | AIRSPEED MACH | Air Speed indicated (Mach) | mach | 0.0# |  |
 | AirSpeedTrue | AIRSPEED TRUE | Air Speed true (knots) | knots | 0.0# |  |
@@ -1562,7 +1562,7 @@ Range:{4}-{5}</td><td><ol start=0>
  **Base Id:** MSFSTouchPortalPlugin.FlightSystems.State.
 
 | Id | SimVar Name | Description | Unit | Format | DefaultValue |
-| --- | --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- |
 | AileronTrim | AILERON TRIM | Aileron Trim Angle | degrees | F2 |  |
 | AileronTrimPct | AILERON TRIM PCT | Aileron Trim Percent | percent | F1 | 0 |
 | CowlFlaps1Percent | RECIP ENG COWL FLAP POSITION:1 | Cowl Flaps 1 Opened Percentage | percent | F1 |  |
@@ -1726,7 +1726,7 @@ Range:{4}-{5}</td><td><ol start=0>
  **Base Id:** MSFSTouchPortalPlugin.SimSystem.State.
 
 | Id | SimVar Name | Description | Unit | Format | DefaultValue |
-| --- | --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- |
 | AtcId | ATC ID | Aircraft Id used by ATC | string |  |  |
 | AircraftTitle | TITLE | Aircraft Title | string |  |  |
 | AtcAirline | ATC AIRLINE | Airline used by ATC | string |  |  |
