@@ -45,18 +45,8 @@ namespace MSFSTouchPortalPlugin.Services
   /// <summary>
   /// Wrapper for SimConnect
   /// </summary>
-  internal class SimConnectService : ISimConnectService {
-    #region DLL Imports
-    // Set up tracking requests by their SendID for diagnostic purposes with Simconnect_OnRecvException()
-    // https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Debug/SimConnect_GetLastSentPacketID.htm
-    IntPtr _hSimConnect = IntPtr.Zero;  // native SimConnect handle pointer
-    // Import methods from the actual SimConnect client which aren't available in the C# wrapper.
-    [DllImport("SimConnect.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-    static extern int /* HRESULT */ SimConnect_GetLastSentPacketID(IntPtr hSimConnect, out uint /* DWORD */ dwSendID);
-    // Get a FieldInfo object on the SimConnect.hSimConnect private field variable so that we can query its value to get the handle to the actual SimConnect client.
-    static readonly FieldInfo _fiSimConnect = typeof(SimConnect).GetField("hSimConnect", BindingFlags.NonPublic | BindingFlags.Instance);
-    #endregion DLL Imports
-
+  internal class SimConnectService : ISimConnectService
+  {
     #region Public
     public event DataUpdateEventHandler OnDataUpdateEvent;
     public event RecvEventEventHandler OnEventReceived;
@@ -109,7 +99,7 @@ namespace MSFSTouchPortalPlugin.Services
     bool WasmConnected => WasmStatus == WasmModuleStatus.Connected;
     bool WasmInitialized => WasmStatus > WasmModuleStatus.NotFound;
     Task _messageWaitTask;
-    SimConnect _simConnect;
+    SimConnect _simConnect = null;
     WASMLib _wlib = null;
     readonly EventWaitHandle _scReady = new EventWaitHandle(false, EventResetMode.AutoReset);
     readonly AutoResetEvent _scQuit = new(false);
@@ -202,7 +192,6 @@ namespace MSFSTouchPortalPlugin.Services
       _registerDataDelegates.Add(typeof(StringVal), _simConnect.RegisterDataDefineStruct<StringVal>);
 
       ConnectWasm();
-      SetupRequestTracking();
       RegisterRequests();
       SubscribeSystemEvents();
       OnConnect?.Invoke(new SimulatorInfo(data));
@@ -682,28 +671,18 @@ namespace MSFSTouchPortalPlugin.Services
 
     #region SimConnect Request Tracking
 
-    private void SetupRequestTracking() {
-      // Get direct access to the SimConnect handle, to use functions otherwise not supported.
+    private void AddRequestRecord(MethodInfo info, params object[] args) {
+      if (_simConnect == null)
+        return;
       try {
-        _hSimConnect = (IntPtr)_fiSimConnect.GetValue(_simConnect);
-        _reqTrackIndex = 0;
+        uint dwSendID = _simConnect.GetLastSentPacketID();
+        if (dwSendID > 0) {
+          _requestTracking[_reqTrackIndex] = new RequestTrackingData(dwSendID, info.Name, info.GetParameters(), args);
+          _reqTrackIndex = (_reqTrackIndex + 1) % MAX_STORED_REQUEST_RECORDS;
+        }
       }
       catch (Exception e) {
-        _hSimConnect = IntPtr.Zero;
-        _logger.LogError((int)EventIds.Ignore, e, "Exception trying to get handle to SimConnect:");
-      }
-    }
-
-    private void AddRequestRecord(MethodInfo info, params object[] args) {
-      if (_simConnect == null || _hSimConnect == IntPtr.Zero)
-        return;
-
-      if (SimConnect_GetLastSentPacketID(_hSimConnect, out uint dwSendID) == S_OK && (int)dwSendID != -1) {
-        _requestTracking[_reqTrackIndex] = new RequestTrackingData(dwSendID, info.Name, info.GetParameters(), args);
-        _reqTrackIndex = (_reqTrackIndex + 1) % MAX_STORED_REQUEST_RECORDS;
-      }
-      else {
-        _logger.LogWarning((int)EventIds.Ignore, "SimConnect_GetLastSentPacketID returned E_FAIL");
+        _logger.LogWarning((int)EventIds.Ignore, "SimConnect.GetLastSentPacketID returned [{result:X}] {message}", e.HResult, e.Message);
       }
     }
 
