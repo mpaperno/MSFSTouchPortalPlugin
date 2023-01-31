@@ -31,14 +31,15 @@ namespace MSFSTouchPortalPlugin.Enums
     SetCustomSimEvent,
     SetKnownSimEvent,
     SetHubHopEvent,
-    SetSimVar,
+    SetSimulatorVar,
     SetLocalVar,
     SetVariable,
     ExecCalcCode,
     SetConnectorValue,
+    SetSimVar,       // deprecated
 
-    AddCustomSimVar,
-    AddKnownSimVar,
+    AddSimulatorVar,
+    AddLocalVar,
     AddNamedVariable,
     AddCalculatedValue,
     UpdateVarValue,
@@ -46,6 +47,8 @@ namespace MSFSTouchPortalPlugin.Enums
     ClearSimVars,
     SaveSimVars,
     LoadSimVars,
+    AddKnownSimVar,   // deprecated
+    AddCustomSimVar,  // deprecated
 
     // Action choice mapping IDs
     ToggleConnection,

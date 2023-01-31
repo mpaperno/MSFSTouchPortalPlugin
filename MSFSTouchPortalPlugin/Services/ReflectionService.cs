@@ -105,7 +105,8 @@ namespace MSFSTouchPortalPlugin.Services
         if (conn == null) {
           conn = new (actAttr.Id, actAttr.Name, actAttr.Description, format) {
             Data = connData.ToArray(),
-            Mappings = actAttr.Mappings
+            Mappings = actAttr.Mappings,
+            Deprecated = actAttr.Deprecated,
           };
         }
         else if (metaAttrib != null) {
@@ -222,6 +223,7 @@ namespace MSFSTouchPortalPlugin.Services
             _logger.LogWarning("Duplicate action ID found for action '{actId}' in category '{catName}', skipping.", act.ActionId, catAttr.Name);
             continue;
           }
+          act.OutputValueIndex = actAttr.UserValueIndex;
           // Loop over all the data attributes to find the "choice" types for mapping and also the index of any free-form data value field
           int i = 0;
           List<string> fmtStrList = new();

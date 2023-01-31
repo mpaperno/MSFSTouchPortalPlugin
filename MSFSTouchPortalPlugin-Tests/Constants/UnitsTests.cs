@@ -7,7 +7,7 @@ namespace MSFSTouchPortalPlugin_Tests.Constants {
     public void IsRealType_ShouldReturnTrue() {
       // arrange
       // act
-      var result = Units.IsRealType(Units.degrees);
+      var result = Units.IsRealType("degrees");
       // assert
       Assert.True(result);
     }
@@ -16,32 +16,32 @@ namespace MSFSTouchPortalPlugin_Tests.Constants {
     public void IsRealType_ShouldReturnFalse() {
       // arrange
       // act
-      var result = Units.IsRealType(Units.Boolean);
+      var result = Units.IsRealType("Boolean");
       // assert
       Assert.False(result);
     }
 
     [Fact]
     public void IsStringType_ShouldReturnTrue() {
-      var result = Units.IsStringType(Units.String);
+      var result = Units.IsStringType("String");
       Assert.True(result);
     }
 
     [Fact]
     public void IsIntegralType_ShouldReturnTrue() {
-      var result = Units.IsIntegralType(Units.position16k);
+      var result = Units.IsIntegralType("position 16k");
       Assert.True(result);
     }
 
     [Fact]
     public void IsIntegralType_ShouldReturnFalse() {
-      var result = Units.IsIntegralType(Units.Bool);
+      var result = Units.IsIntegralType("Bool");
       Assert.False(result);
     }
 
     [Fact]
     public void IsBooleanType_ShouldReturnTrue() {
-      var result = Units.IsBooleanType(Units.Boolean);
+      var result = Units.IsBooleanType("Boolean");
       Assert.True(result);
     }
 

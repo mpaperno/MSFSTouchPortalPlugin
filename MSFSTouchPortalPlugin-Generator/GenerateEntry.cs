@@ -151,6 +151,8 @@ namespace MSFSTouchPortalPlugin_Generator
 
         // Connectors
         foreach (var connAttrib in catAttrib.Connectors) {
+          if (connAttrib.Deprecated)
+            continue;
           var action = new TouchPortalConnector {
             Id = $"{actionCatId}.Conn.{connAttrib.Id}",
             Name = connAttrib.Name,

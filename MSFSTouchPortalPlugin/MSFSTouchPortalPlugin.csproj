@@ -44,6 +44,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
+    <DefineConstants>PUBLISH_BUILD</DefineConstants>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
     <PublishTrimmed>True</PublishTrimmed>
@@ -67,14 +68,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="appsettings.release.json">
+      <CopyToOutputDirectory Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Debug'">PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <Content Include="appsettings.debug.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory Condition="'$(Configuration)'=='Debug'">PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory Condition="'$(Configuration)'=='Publish'">PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
@@ -128,7 +129,7 @@
   </ItemGroup>
 
   <!-- WASimCommander Client -->
-  <ItemGroup >
+  <ItemGroup>
     <!--Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Publish') And '$(Platform)'=='x64'"-->
     <Reference Include="WASimCommander.WASimClient, Culture=neutral, processorArchitecture=MSIL" Version="1.1.0">
       <HintPath>.\lib\WASimCommander\WASimCommander.WASimClient.dll</HintPath>
@@ -165,18 +166,20 @@
     <None Update="Configuration\States.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Configuration\SimVariables.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Configuration\SimEvents.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Configuration\SimConnect.cfg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Configuration\HubHop\hubhop_presets.sqlite3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Configuration\MSFS_SDK_Doc_Import.sqlite3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <!--
+    <None Update="Configuration\MSFS_SDK_Doc_Import-flighting.sqlite3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    -->
   </ItemGroup>
 
 </Project>

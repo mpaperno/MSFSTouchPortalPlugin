@@ -30,7 +30,7 @@ namespace MSFSTouchPortalPlugin.Configuration
 {
   internal static class HubHopDataUpdater
   {
-    const string ApiBaseURL = "https://hubhop-api-mgtm.azure-api.net/api/v1/";
+    const string ApiBaseURL = "https://hubhop-api-mgtm.azure-api.net/api/v1/msfs2020/";
     const string ApiPresetsCmd = "presets?type=json";
     const string ApiMostRecentCmd = "statistics/last";
 

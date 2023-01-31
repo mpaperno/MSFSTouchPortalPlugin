@@ -53,6 +53,7 @@ namespace MSFSTouchPortalPlugin.Types
     public bool InternalEvent = false;
     public string ActionId;
     public int ValueIndex = -1;
+    public int OutputValueIndex { get; set; } = 0;  // index at which to insert user-provided value(s) in relation to any static values; -1 means append to end. \sa TouchPortalActionBaseAttribute.UserValueIndex
     public string KeyFormatStr = string.Empty;
     public double MinValue = double.NaN;  // for basic validation of a single value
     public double MaxValue = double.NaN;
