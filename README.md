@@ -1,7 +1,8 @@
 # MSFS/SimConnect Touch Portal Plugin
 
-[![verify-build](https://github.com/mpaperno/MSFSTouchPortalPlugin/actions/workflows/verify-build.yml/badge.svg)](https://github.com/mpaperno/MSFSTouchPortalPlugin/actions/workflows/verify-build.yml)
+[![Made for Touch POrtal](https://img.shields.io/static/v1?style=flat&labelColor=5884b3&color=black&label=made%20for&message=Touch%20Portal&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAetJREFUeNp0UruqWlEQXUePb1HERi18gShYWVqJYGeXgF+Qzh9IGh8QiOmECIYkpRY21pZWFnZaqWBhUG4KjWih4msys8FLbrhZMOfsx6w1e9beWjAYBOMtx0eOGBEZzuczrtcreAyTyQSz2QxN04j3f3J84vim8+cNR4s3rKfTSUQQi8UQjUYlGYvFAtPpVIQ0u90eZrGvnHLXuOKcB1GpkkqlUCqVEA6HsVqt4HA4EAgEMJvNUC6XMRwOwWTRfhIi3e93WK1W1Go1dbTBYIDj8YhOp4NIJIJGo4FEIoF8Po/JZAKLxQIIUSIUChGrEy9Sr9cjQTKZJJvNRtlsVs3r9Tq53W6Vb+Cy0rQyQtd1OJ1O9b/dbpCTyHoul1O9z+dzGI1Gla7jFUiyGBWPx9FsNpHJZNBqtdDtdlXfAv3vZLmCB6SiJIlJhUIB/X7/cS0viXI8n8+nrBcRIblcLlSrVez3e4jrD6LsK3O8Xi8Vi0ViJ4nVid2kB3a7HY3HY2q325ROp8nv94s5d0XkSsR90OFwoOVySaPRiF6DiHs8nmdXn+QInIxKpaJclWe4Xq9fxGazAQvDYBAKfssDeMeD7zITc1gR/4M8isvlIn2+F3N+cIjMB76j4Ha7fb7bf8H7v5j0hYef/wgwAKl+FUPYXaLjAAAAAElFTkSuQmCC)](https://www.touch-portal.com/)
 [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/mpaperno/MSFSTouchPortalPlugin?include_prereleases)](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases)
+[![verify-build](https://github.com/mpaperno/MSFSTouchPortalPlugin/actions/workflows/verify-build.yml/badge.svg)](https://github.com/mpaperno/MSFSTouchPortalPlugin/actions/workflows/verify-build.yml)
 [![Downloads](https://img.shields.io/github/downloads/mpaperno/MSFSTouchPortalPlugin/total.svg)](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases)
 [![Downloads of latest release](https://img.shields.io/github/downloads/mpaperno/MSFSTouchPortalPlugin/latest/total)](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases/latest)
 [![License](https://img.shields.io/badge/license-GPL3-blue.svg)](LICENSE)
@@ -31,9 +32,10 @@ This project is a continuation of the original [MSFSTouchPortalPlugin by Tim Lew
 * Completely configurable to request any variable or trigger any event supported by the connected simulator, including with custom extensions like MobiFlight.
 * Supports simulator system events (such as "flight loaded" or "sim started") as Touch Portal Events.
 * Allows simultaneous usage from multiple networked Touch Portal devices.
-* Optional WASM module integration allows even greater expansion, with access to many variable types (including "Local" variables) and events/actions not normally
+* Optional WASM (Web ASsembly Module) integration allows even greater expansion, with access to many variable types (including "Local" variables) and events/actions not normally
   accessible via SimConnect alone.
-* Integrates live HubHop data for activating thousands of available Input Events provided by the community.
+* Categorized lists of all SimConnect Event IDs and Simulator Variables to choose from, custom imported from MSFS online documentation (exclusive feature!).
+* Integrates live HubHop data for activating thousands of available Input Events provided by the community (requires WASM integration).
 
 
 ## Documentation
@@ -46,77 +48,54 @@ Auto-generated documentation on all actions, connectors, events, settings, and d
 
 ## Installation
 
+Note: As with all plugins, this requires the Touch Portal Pro (paid) version to function. Use the latest available Touch Portal version for best results.
+
 1. Get the latest release of this plugin from the  [Releases](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases) page.
-2. The plugin is distributed and installed as a standard Touch Portal `.tpp` plugin file. If you know how to import a plugin,
-just do that and skip to step 5. There is also a [short guide](https://www.touch-portal.com/blog/post/tutorials/import-plugin-guide.php) on the Touch Portal site.
+2. The plugin is distributed and installed as a standard Touch Portal `.tpp` plugin file. If you know how to import a plugin, just do that and skip to step 4.
 3. Import the plugin:
     1. Start/open _Touch Portal_.
-    2. Click the "gear" icon at the top and select "Import plugin..." from the menu.
+    2. Click the Settings "gear" icon at the top-right and select "Import plugin..." from the menu.
     3. Browse to where you downloaded this plugin's `.tpp` file and select it.
-4. Restart _Touch Portal_
-    * When prompted by _Touch Portal_ to trust the plugin startup script, select "Yes" (the source code is public!).
-5. **By default the plugin will not attempt to connect to a flight simulator on startup.** You have two options:
+    4. When prompted by _Touch Portal_ to trust the plugin startup script, select "Trust Always" or "Yes" (the source code is public!).
+       * "Trust Always" will automatically start the plugin each time Touch Portal starts.
+       * "Yes" will start the plugin this time and then prompt again each time Touch Portal starts.
+       * If you select "No" then you can still start the plugin manually from Touch Portal's _Settings -> Plug-ins_ dialog.
+4. **By default the plugin will not attempt to connect to a flight simulator on startup.** You have two options:
     1. Recommended: Create/import a [Touch Portal button](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics#the-connect-button)
      which triggers the "_MSFS - Plugin - Connect & Update -> Toggle Simulator Connection_" action. (Also a good place to show the current connection status.)
     2. Change the plugin's settings: Click the Touch Portal "gear" icon at top right of the main screen,
     then navigate to _Settings -> Plugins -> "MSFS Touch Portal Plugin"_. Set the
     "Connect To Flight Sim on Startup" setting to a value of `1` (one) and save the settings.
     The plugin will keep attempting to connect to the simulator every 30 seconds.
-6. **For use with FS-X** (and compatible sims): Change the "SimConnect.cfg Index" plugin setting to `1` (one).
+5. **For use with FS-X** (and compatible sims): Change the "SimConnect.cfg Index" plugin setting to `1` (one).
 
 ### Optional WASM Module (only for MSFS 2020 on PC)
 
-7. The optional `WASimModule` MSFS component is **highly recommended** as a companion to this plugin. It it not required to use most
+6. The optional `WASimModule` MSFS component is **highly recommended** as a companion to this plugin. It it not required to use most
 of the basic plugin features, but it will provide a more advanced feature set (such as access to local "L" variables and HubHop Input Events)
 and further optimizations.
     1. Download the `WASimModule` .zip file from the same published Release as the plugin.
     2. Extract the contents into your MSFS _Community_ folder (so that the folder _wasimcommander-module_ is directly inside the _Community_ folder).
     3. If already running, MSFS would need to be restarted after adding the module.
 
-Check out the [Pages, Buttons, & Graphics](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) for examples to get started with, and see below for
-a full list of known pages.
+### Updates
+
+The plugin can be updated to a new version by following the same installation procedure described above. It is _not_ necessary to remove any previous version first.
+The only thing to be aware of is that any old plugin log files will be removed during the update process.
 
 ### Installation Guides
 
-Keep in mind that while guides can be helpful as an overview and to get started,
-they do get outdated and also may not cover all that is possible to do or configure.
+Keep in mind that while guides can be helpful as an overview and to get started, they do get outdated and also may not cover all that is possible to do or configure.
 
 * A video tutorial about the whole setup process was published by _OverKill Simulations_ on YouTube: [Microsoft Flight Simulator | MSFS Touch Portal | YOU NEED THIS!](https://www.youtube.com/watch?v=S4Pms-7oHf0)
 * An older installation and usage guide was published on the _Simvol_ Web site: [How to use Touch Portal [with MSFS]](https://www.simvol.org/en/articles/tutorials/use-touch-portal).
 
-
 ---
 ## Pages and Examples
 
-Here is a list of known pages which use this plugin. No endorsement, YMMV, caveat emptor... I have not necessarily tried/tested any of these.<br />
-They are listed in the order I find out about them, more or less, newest at bottom.
+Check out the [Pages, Buttons, & Graphics](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) for examples to get started with.
 
-* [Pages, Buttons, & Graphics](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) in the Wiki
-* [FltSim-msfs2020-Control](https://github.com/HiDTH/FltSim-msfs2020-Control) by HiDTH @ GitHub<br />
-  (**Page background graphic will cause issues, especially on iOS.**
-  [Get a replacement here.](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics#replacement-for-hidths-fltsim-msfs2020-control-page-backgrounds)<br />
-  This is a cool page, but is complex and somewhat outdated, and some parts may not work properly! The author seems to have stopped updates/support for it.)
-* [Touch Portal Page H145](https://flightsim.to/file/35625/touch-portal-page-h145) by redheronde @ flighsim.to
-* [Touch Portal Page "Piston Single"](https://flightsim.to/file/7394/touch-portal-page-piston-single) by yushu @ flightsim.to
-* [Touch Portal Page for Fenix A320](https://flightsim.to/file/35834/touch-portal-page-for-fenix-a320) by FFEENNIIXX @ flightsim.to
-* [MSFSTouchPortalPages](https://github.com/FordMustang0288/MSFSTouchPortalPages) by FordMustang0288 @ GitHub
-* [Special page for A32NX](https://www.simvol.org/en/downloads/miscellaneous/touch-portal-special-page-a32nx) by Pacha35 @ SimVol
-* [A320neo FlyByWire + CJ4 Working Title](https://flightsim.to/file/7406/touchportal-a320neo-flybywire) by fgrooten @ flightsim.to
-* [Touch Portal Page FCU and EFIS for FBWA32NX](https://flightsim.to/file/38012/touch-portal-page-fcu-and-efis-for-fbwa32nx) by Condor7777 @ flightsim.to
-* [Touch Portal page for TBM 930](https://flightsim.to/file/37413/touch-portal-page-for-tbm-930) by GoodSeb @ flightsim.to
-* [Touch Portal pages for FlyByWire A32NX](https://flightsim.to/file/40431/touch-portal-pages-for-flybywire-a32nx) by GoodSeb @ flightsim.to
-* [Touch Portal page for KODIAK 100](https://flightsim.to/file/38161/touch-portal-page-for-kodiak-100) by GoodSeb @ flightsim.to
-* [Touch Portal pages for CJ4 Working Title](https://flightsim.to/file/42677/touch-portal-pages-for-cj4-working-title) by GoodSeb @ flightsim.to
-* [Fenix Overhead Panel for Touch Portal](https://flightsim.to/file/41272/fenix-overhead-panel-for-touch-portal) by ecstaticaviator @ flightsim.to
-* [Touch Portal page for Milviz Cessna 310R](https://flightsim.to/file/37082/touch-portal-page-for-milviz-cessna-310r) by martin_wizznet @ flightsim.to
-* [Touch Portal for Bonanza H35 V-Tail and B35-B33](https://flightsim.to/file/38692/touch-portal-page-for-beech-b35-b33) by piratewere @ flightsim.to
-* [Touch Portal page for the Flysimware C414AW Chancellor](https://flightsim.to/file/43564/touch-portal-page-for-the-flysimware-c414aw-chancellor) by Flak @ flightsim.to
-* [Touch Portal page for DC-3 Classic](https://flightsim.to/file/45207/pre-release-touch-portal-page-for-dc-3-classic) by Flak @ flightsim.to
-
-Please let me know if you publish a page (or buttons/assets) which I could add to this list.
-
-Also check out [#msfs2020 > The Sharing Thread](https://discord.com/channels/548426182698467339/1043528081723367444) @ [Touch Portal Discord](https://discord.gg/MgxQb8r) for possible other assets users share.
-
+The list of known pages has also moved to the Wiki: [List of Published Touch Portal Pages for MSFS Plugin](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/List-of-Published-Touch-Portal-Pages-for-MSFS-Plugin)
 
 ---
 ## Troubleshooting
@@ -138,12 +117,13 @@ You could also monitor the _MSFS - System -> Simulator System Event_ for the `Pl
 For example you could have a button light up red when this event happens, so you can know to go check the log.
 
 
+---
 ## Support and Discussion
 
 Please use the GitHub [Issues](https://github.com/mpaperno/MSFSTouchPortalPlugin/issues) pages for bug reports and concise feature requests.
 Use the [Discussions](https://github.com/mpaperno/MSFSTouchPortalPlugin/discussions) pages for general conversation on any related topic like suggestions or support questions.
 
-There is also a Touch Portal Discord server discussion room at [#msfs2020](https://discord.com/channels/548426182698467339/750791488501448887)
+There is also a Touch Portal Discord server discussion room at [#msfs2020](https://discord.gg/JyZg4vqs)
 
 
 ---
@@ -154,7 +134,7 @@ The latest version of this software is always published on the GitHub [Releases]
 You have several options for getting **automatically notified** about new releases:
 * **If you have a GitHub account**, just open the _Watch_ menu of this repo in the top right of this page, then go to  _Custom_ and select the
 _Releases_ option, then hit _Apply_ button.
-* The plugin and updates are [published on Flightsim.to](https://flightsim.to/file/36546/msfs-touch-portal-plugin) where one could "subscribe" to release notificaations (account required).
+* The plugin and updates are [published on Flightsim.to](https://flightsim.to/file/36546/msfs-touch-portal-plugin) where one could "subscribe" to release notifications (account required).
 * **If you already use an RSS/Atom feed reader**, just subscribe to the [feed URL](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases.atom).
 * **Use an RSS/Atom feed notification service**, either one specific for GitHub or a generic one, such as
 (a list of services I found, I haven't necessarily tried nor do I endorse any of these):
@@ -170,12 +150,16 @@ I will also post update notices in the Touch Portal Discord server room [#msfs20
 
 My [TJoy Touch Portal Plugin](https://github.com/mpaperno/TJoy) is an interface between Touch Portal and several virtual joystick/game pad emulation drivers like _vJoy_, _vXBox_, and _ViGEm Bus_.
 
+My [Dynamic Script Engine Plugin](https://dse.tpp.max.paperno.us/) is a great companion for anything from custom data formatting and math operations to a full-blown scripting using JavaScript.
+
+[TouchPortal-Dynamic-Icons](https://github.com/spdermn02/TouchPortal-Dynamic-Icons) can be used to create a wide variety of dynamic images and animations, from basic shapes and styled text to
+beautiful multi-layered gauges animated in real-time based on Simulator data.
 
 ## References
 
-* [FlightSimulator.com SDK Reference](https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_SDK.htm)
 * [SDK Event IDs](https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Event_IDs.htm)
 * [SDK Simulator Variables](https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Simulation_Variables.htm)
+* [FlightSimulator.com SDK Reference](https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_SDK.htm)
 * [HubHop Community Database](https://hubhop.mobiflight.com)
 
 
@@ -186,6 +170,8 @@ Currently maintained by Maxim Paperno at https://github.com/mpaperno/MSFSTouchPo
 Originally created by Tim Lewis at https://github.com/tlewis17/MSFSTouchPortalPlugin and published under the MIT License.
 
 Uses components of the [WASimCommander project](https://github.com/mpaperno/WASimCommander) under terms of the GNU Public License v3 (GPLv3).
+
+Uses tools and data from [MSFS Tools project](https://github.com/mpaperno/MSFS-Tools) under terms of the GNU Public License v3 (GPLv3).
 
 Uses the [Touch Portal C# and .NET API](https://github.com/mpaperno/TouchPortal-CS-API) library, under terms of the MIT License.
 

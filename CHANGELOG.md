@@ -1,6 +1,74 @@
 # MSFS Touch Portal Plugin Change Log
 
+## 1.3.0.0 (Jan-31-2023)
+Version number: `1030000`
+
+* Added database of Events, SimVars, and Unit types imported ("scraped") from MSFS SDK Web site documentation (part of my separate "MSFS Tools" project).
+* Event and SimVar actions which allowed selection from lists now refer to imported MSFS documentation. These now show partial descriptions and Event parameter meanings (when available).
+* _Any_ SimVar marked settable in MSFS docs is now available in (the updated) "Set a Selected Simulator Variable" action/connector with a selectable Unit type. 
+  * The SimVar no longer has to be "requested" first. This works with or without _WASimModule_ integration (_SimConnect_ only).
+    * In the latter case, _SimConnect_ only, any action/connector which sets the same SimVar (at the same index, if any) must use the same Unit type.
+  * Connector type now has "feedback" as an option; when enabled, the corresponding SimVar is automatically requested from the simulator if it not been already.
+* When selecting imported SimVars in actions (for Set or Request), only compatible Unit types are now shown (eg. all distance type measures for an "altitude" value).
+* Fixed that selecting "Camera & Views" category didn't properly show the available variable requests in some actions (https://github.com/mpaperno/MSFSTouchPortalPlugin/issues/47).
+* Removed the "Can Set" SimVar request property (`CanSet` is ignored if found in existing .INI config files); Also removes the corresponding indicator column from generated documentation.
+* Removed the "Release AI" option on all "set variable" type actions (doesn't seem to have any effect on user aircraft; please let me know if you did, in fact, use that option).
+* Plugin now only sends "fatal" level messages to Touch Portal's log file, all others go only to plugin's own log (eliminates duplicate logging).
+* Updated WASimModule to v1.1.1 with optimized build for MSFS SU11+ and updated Key Event data.
+* Updated SimConnect libraries to latest versions (SDK v0.20.5.0).
+
+### Added or Updated Actions/Connectors
+In the list, `+` means added and `~` means updated. A few of these actions were renamed as detailed in the next section.
+
+* `~` "AP Switches" - added Panel Switch On/Off/Toggle for: Speed Hold, Altitude Hold, Heading Hold, Mach Hold, VS (on/off).
+* `+` "N1 Reference Value Adjust/Hold" and "Set" AP actions.
+* `+` "ADF Adjust" and "Set" actions to control ADF1/2 radios.
+* `+` "Transponder Adjust" and "Set" actions to control XPNDR code and IDENT state.
+* `~` "Radio Interaction" - COM1-3 added "Copilot Transmit Select" and "Receive De-select"; Fixed that "Receive Select" option was not a toggle.
+* `~` "Radio Values Set" - Added "Receive Select (0/1)" for COM1-3.
+* `~` "Avionics Master Switch" - Added "Off" and "On" options for individual Master 1 and 2 switches.
+* `+` "Alternator Control" to set On/Off/Toggle any indexed alternator.
+* `~` "Landing Lights Switch/Direction" - added `circuit index` value field.
+* `~` "Light Switch Control" - renamed and added `circuit index` value field and "Circuit Toggle" option.
+* `+` "External Power" On/Off/Toggle with optional index value.
+* `+` "Engine Master Toggle" and "Set" actions for engines All/1/2/3/4.
+* `~` "Starters Toggle" - added Master Switch option.
+* `+` "Starters Set" action with "Set" and "Set Held" options.
+* `+` "Afterburner Toggle" for engines All/1/2/3/4.
+* `+` "Engine Condition Lever Adjust" and "Set" (by Position/Axis) actions for engines All/1/2/3/4.
+* `+` "Refuel & Repair" - Request Fuel (parked) and Repair & Refuel (depends on realism settings) actions.
+* `~` "Fuel Selectors" - added Crossfeed and Isolate actions for each selector.
+* `+` "Fuel System Component" action for controlling Pumps, Triggers, and Valves indexed fuel systems.
+* `~` "Cross Feed Switch" - added Left to Right and Right to Left options.
+* `+` "Electric Fuel Pump Set" On/Off/Auto for pumps 1-4.
+* `~` "Fuel Dump / Tank Drop" - renamed and added "Release Drop Tank" (All/1/2) options.
+
+### Renamed or Replaced Actions/Connectors
+* "Set Simulator Variable (SimVar)" --> "Set a Selected Simulator Variable"
+* "Set Airplane Local Variable" --> "Set a Selected Airplane Local Variable"
+* "Set Named Variable Value" --> "Set a Named Variable"
+* "Request a Custom Simulator Variable" --> "Request a Named Variable"
+* "Request a Variable From List" --> split to:
+  * "Request a Selected Simulator Variable"
+  * "Request an Airplane Local Variable"
+* "Alternator Switches" --> "Alternator Toggle"
+* "Light Switches" --> "Light Switch Control"
+* "Starters" --> "Starters Toggle"
+* "Electric Fuel Pump" --> "Electric Fuel Pump Toggle"
+* "Fuel Dump - Toggle" --> "Fuel Dump / Tank Drop"
+* [Fuel] "Primers" action moved to Engine category.
+
+### DEPRECATED Actions/Connectors
+Existing instances will still work but cannot be edited. **Please update to new versions and report any regression issues with existing instances.**
+* "Set Simulator Variable (SimVar)" (use "Set a Selected Simulator Variable" instead).
+* "Request a Custom Simulator Variable" (use "Request a Named Variable" instead).
+* "Request a Variable From List" (use "Request a Selected Simulator Variable" or "Request an Airplane Local Variable" instead).
+* "Fuel Pump" (use "Electric Fuel Pump Set" and "Toggle" actions).
+
+---
 ## 1.2.0.0 (Nov-2-2022)
+Version number: `1020000`
+
 * The "Activate a Named Simulator Event" and "Activate a Selected Simulator Event" actions and connectors can now transmit multiple values
   for Simulator Key Events which require multiple parameters.
 * Renamed plugin action/state categories:
@@ -10,11 +78,15 @@
 
 ---
 ## 1.1.0.6 (Sept-11-2022)
+Version number: `1010006`
+
 * Fixed possible plugin startup issue when Windows user name has space(s) in it (adds quotes around startup command).
 * Added new "Miscellaneous" category for sorting custom states, by user request.
 
 ---
 ## 1.1.0.5-rc2 (Aug-24-2022)
+Version number: `1010005`
+
 * Fixed reporting initial value of Action Repeat Interval state at plugin startup (thanks @ magicnorm on TP's Discord for reports).
 * Fixed: "Electrical - Light Dimming" action was missing the Value field (the pots list was repeated instead; connector version was OK).
 * Fixed duplicates appearing in "List of currently loaded state configuration file(s)" state when files were being reloaded.
@@ -25,6 +97,8 @@
 
 ---
 ## 1.1.0.4-rc1 (Aug-13-2022)
+Version number: `1010004`
+
 * Fixed: Requests for indexed SimVars with an Update Period of type "Millisecond" were not working.
 * Fixed "AutoPilot - Flight Director Switches" action missing choice selector for Master/Pitch Sync switch.
 * Fixed "Auto Pilot - Vertical Speed -> Hold Current" action.
@@ -48,6 +122,8 @@
 
 ---
 ## 1.1.0.3-beta3 (Aug-2-2022)
+Version number: `1010003`
+
 * Enabled WASimModule integration from multiple simultaneous plugin instances (when using multiple Touch Portal servers/devices).
 * Improved several aspects of custom variable requests for stability and usability, such as utilizing WASM integration when available, and more informative logging.
 * Improved aspects of triggering Simulator Events, including utilizing WASM module integration when available, for greater efficiency.
@@ -70,6 +146,8 @@
 
 ---
 ## 1.1.0.2-beta2 (July-22-2022)
+Version number: `1010002`
+
 * Added new Setting for always using "neutral" numeric formatting with period decimal separators, ignoring any region-specific formatting conventions.
   Works around Touch Portal issue with not being able to do math comparison operations on numeric values with comma decimal separators.<br />
   !! This setting is now _enabled_ by default. !!  (With apologies to everyone who expects proper number formatting for their locale.)
@@ -80,6 +158,8 @@
 
 ---
 ## 1.1.0.0-beta1 (July-19-2022)
+Version number: `1010000`
+
 * Added Connector (Slider) functionality with feedback capabilities (eg. move slider in response to simulator event).
 * Added 29 new connectors to set variables, trigger events with value ranges, or use as visual value indicators.
 * Added new "Camera & Views" category for custom states.
@@ -110,6 +190,8 @@
 
 ---
 ## 1.0.1.0 (July-19-2022)
+Version number: `1000100`
+
 * Removed all static Sim Var states from entry.tp file -- all states are now dynamic.
 * Added new Setting option to sort Local ('L') Airplane variables list alphabetically.
 * Added new Setting option to control HubHop data update timeout value.
@@ -124,6 +206,8 @@
 
 ---
 ## 1.0.0.0-beta1 (July-09-2022)
+Version number: `1000000`
+
 * Adds support for integration with custom WASM module from the [WASimCommander project](https://github.com/mpaperno/WASimCommander) (WASimModule).
     * Get and Set "Local" variables as well as practically any other
       [variable type](https://docs.flightsimulator.com/html/Additional_Information/Reverse_Polish_Notation.htm#Types) available in the MSFS "Gauge API".
