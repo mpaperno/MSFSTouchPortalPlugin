@@ -400,7 +400,7 @@ namespace MSFSTouchPortalPlugin_Generator
           s.Append("#### States\n\n");
           s.Append($" **Base Id:** {cat.Id}.State.\n\n");
           s.Append("| Id | SimVar Name | Description | Unit | Format | DefaultValue |\n");
-          s.Append("| --- | --- | --- | --- | --- | --- | --- |\n");
+          s.Append("| --- | --- | --- | --- | --- | --- |\n");
           cat.States.ForEach(state => {
             s.Append($"| {state.Id} | {state.SimVarName} | {state.Description} | {state.Unit} | {state.FormattingString} | {state.DefaultValue} |\n");
           });
