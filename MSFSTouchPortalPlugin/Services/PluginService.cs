@@ -499,11 +499,12 @@ namespace MSFSTouchPortalPlugin.Services
 
     // Variables, setters and requesters  ----------------------------
 
-    // List of settable Local vars for all instances
+    // List of Local vars for all instances
     private void UpdateLocalVarsLists()
     {
       UpdateLocalVarsList(PluginActions.SetLocalVar, null, false);
       UpdateLocalVarsList(PluginActions.SetLocalVar, null, true);
+      UpdateLocalVarsList(PluginActions.AddLocalVar, null, false);
     }
 
     // Unit lists
@@ -1041,7 +1042,7 @@ namespace MSFSTouchPortalPlugin.Services
           return false;
         }
         if (data.TryGetValue("VarIndex", out var sIndex) && !string.IsNullOrEmpty(sIndex))
-        _ = uint.TryParse(sIndex, out index);
+          _ = uint.TryParse(sIndex, out index);
       }
 
       // create the SimVarItem from collected data
