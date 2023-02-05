@@ -1,5 +1,11 @@
 # MSFS Touch Portal Plugin Change Log
 
+## 1.3.1.0 (Feb-05-2023)
+Version number: `1030100`
+
+* Fixed updating the list of local variables for "Request an Airplane Local Variable" action (https://github.com/mpaperno/MSFSTouchPortalPlugin/issues/49).
+
+---
 ## 1.3.0.0 (Jan-31-2023)
 Version number: `1030000`
 
