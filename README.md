@@ -116,6 +116,11 @@ Another way to quickly see latest log entries is by using the provided TP States
 You could also monitor the _MSFS - System -> Simulator System Event_ for the `Plugin Error` and/or `SimConnect Error` events.
 For example you could have a button light up red when this event happens, so you can know to go check the log.
 
+Here's a **Windows PowerShell** command to show the last 20 entries from the current day's log file:
+```powershell
+Get-Content -Tail 20 $Env:APPDATA\TouchPortal\plugins\MSFS-TouchPortal-Plugin\logs\MSFSTouchPortalPlugin$(Get-Date -format 'yyyyMMdd').log
+```
+
 
 ---
 ## Support and Discussion
@@ -123,7 +128,9 @@ For example you could have a button light up red when this event happens, so you
 Please use the GitHub [Issues](https://github.com/mpaperno/MSFSTouchPortalPlugin/issues) pages for bug reports and concise feature requests.
 Use the [Discussions](https://github.com/mpaperno/MSFSTouchPortalPlugin/discussions) pages for general conversation on any related topic like suggestions or support questions.
 
-There is also a Touch Portal Discord server discussion room at [#msfs2020](https://discord.gg/JyZg4vqs)
+There is also a [Discord support forum](https://discord.gg/A7hyG2Xq) on my server, and discussion rooms
+on my Discord server channel [#msfs-general](https://discord.gg/T2YqN2Jv)
+and at Touch Portal's Discord server channel [#msfs2020](https://discord.gg/JyZg4vqs)
 
 
 ---
@@ -135,6 +142,7 @@ You have several options for getting **automatically notified** about new releas
 * **If you have a GitHub account**, just open the _Watch_ menu of this repo in the top right of this page, then go to  _Custom_ and select the
 _Releases_ option, then hit _Apply_ button.
 * The plugin and updates are [published on Flightsim.to](https://flightsim.to/file/36546/msfs-touch-portal-plugin) where one could "subscribe" to release notifications (account required).
+* If you use **Discord**, subscribe to notifications on my server channel [#msfs-plugin](https://discord.gg/vCfn5mjw).
 * **If you already use an RSS/Atom feed reader**, just subscribe to the [feed URL](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases.atom).
 * **Use an RSS/Atom feed notification service**, either one specific for GitHub or a generic one, such as
 (a list of services I found, I haven't necessarily tried nor do I endorse any of these):
@@ -143,9 +151,8 @@ _Releases_ option, then hit _Apply_ button.
   * https://newreleases.io/
   * https://gitpunch.com/
 
-I will also post update notices in the Touch Portal Discord server room [#msfs2020](https://discord.com/channels/548426182698467339/750791488501448887)
 
-
+---
 ## Related Plugin(s)
 
 My [TJoy Touch Portal Plugin](https://github.com/mpaperno/TJoy) is an interface between Touch Portal and several virtual joystick/game pad emulation drivers like _vJoy_, _vXBox_, and _ViGEm Bus_.
@@ -155,6 +162,7 @@ My [Dynamic Script Engine Plugin](https://dse.tpp.max.paperno.us/) is a great co
 [TouchPortal-Dynamic-Icons](https://github.com/spdermn02/TouchPortal-Dynamic-Icons) can be used to create a wide variety of dynamic images and animations, from basic shapes and styled text to
 beautiful multi-layered gauges animated in real-time based on Simulator data.
 
+---
 ## References
 
 * [SDK Event IDs](https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Event_IDs.htm)
