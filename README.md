@@ -128,9 +128,8 @@ Get-Content -Tail 20 $Env:APPDATA\TouchPortal\plugins\MSFS-TouchPortal-Plugin\lo
 Please use the GitHub [Issues](https://github.com/mpaperno/MSFSTouchPortalPlugin/issues) pages for bug reports and concise feature requests.
 Use the [Discussions](https://github.com/mpaperno/MSFSTouchPortalPlugin/discussions) pages for general conversation on any related topic like suggestions or support questions.
 
-There is also a [Discord support forum](https://discord.gg/A7hyG2Xq) on my server, and discussion rooms
-on my Discord server channel [#msfs-general](https://discord.gg/T2YqN2Jv)
-and at Touch Portal's Discord server channel [#msfs2020](https://discord.gg/JyZg4vqs)
+There is also a [Discord support forum](https://discord.gg/ypEY9Rk2TS) on my server, an [announcements channel](https://discord.gg/gUh5DwXjSj), and discussion rooms
+on my server channel [#msfs-general](https://discord.gg/6nHKnsWkB7) and at Touch Portal's Discord server channel [#msfs2020](https://discord.gg/B2frqDVtbA)
 
 
 ---
@@ -142,7 +141,7 @@ You have several options for getting **automatically notified** about new releas
 * **If you have a GitHub account**, just open the _Watch_ menu of this repo in the top right of this page, then go to  _Custom_ and select the
 _Releases_ option, then hit _Apply_ button.
 * The plugin and updates are [published on Flightsim.to](https://flightsim.to/file/36546/msfs-touch-portal-plugin) where one could "subscribe" to release notifications (account required).
-* If you use **Discord**, subscribe to notifications on my server channel [#msfs-plugin](https://discord.gg/vCfn5mjw).
+* If you use **Discord**, subscribe to notifications on my server channel [#msfs-plugin](https://discord.gg/gUh5DwXjSj).
 * **If you already use an RSS/Atom feed reader**, just subscribe to the [feed URL](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases.atom).
 * **Use an RSS/Atom feed notification service**, either one specific for GitHub or a generic one, such as
 (a list of services I found, I haven't necessarily tried nor do I endorse any of these):
