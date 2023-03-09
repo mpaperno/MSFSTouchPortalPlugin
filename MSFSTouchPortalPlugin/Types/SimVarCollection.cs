@@ -68,7 +68,7 @@ namespace MSFSTouchPortalPlugin.Types
 
     // List of vars which were not read from default config file.
     public IEnumerable<SimVarItem> CustomVariables =>
-      (from SimVarItem s in _idxByDef.Values where (s.DefinitionSource == SimVarDefinitionSource.DefaultFile || s.DefinitionSource == SimVarDefinitionSource.Dynamic) select s);
+      (from SimVarItem s in _idxByDef.Values where (s.DefinitionSource == SimVarDefinitionSource.UserFile || s.DefinitionSource == SimVarDefinitionSource.Dynamic) select s);
     // List of all vars except temporary/internal use ones.
     public IEnumerable<SimVarItem> RequestedVariables =>
       (from SimVarItem s in _idxByDef.Values where s.DefinitionSource != SimVarDefinitionSource.Temporary select s);
