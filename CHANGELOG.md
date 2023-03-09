@@ -1,5 +1,12 @@
 # MSFS Touch Portal Plugin Change Log
 
+## 1.3.2.0 (Mar-09-2023)
+Version number: `1030200`
+
+* Fixed "Clear Custom States" and "Save Custom States to File" actions not properly selecting variable requests which were loaded from custom configuration file(s).
+  The default states from the included States.ini configuration file were being deleted/saved instead.  Thanks to Glenn#6307 @ Discord for reporting!
+
+---
 ## 1.3.1.0 (Feb-05-2023)
 Version number: `1030100`
 
