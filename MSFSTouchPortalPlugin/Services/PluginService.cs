@@ -82,6 +82,8 @@ namespace MSFSTouchPortalPlugin.Services
     private CultureInfo _cultureInfo = CultureInfo.CurrentCulture;
     private readonly string _defaultCultureId = CultureInfo.CurrentCulture.Name;
 
+    SimPauseStates _simPauseState = SimPauseStates.OFF;  // Tracks pause state reported from last Pause_EX1 sim event.
+
     public PluginService(IHostApplicationLifetime hostApplicationLifetime, ILogger<PluginService> logger,
       ITouchPortalClientFactory clientFactory, ISimConnectService simConnectService, IReflectionService reflectionService,
       PluginConfig pluginConfig, SimVarCollection simVarCollection)
@@ -361,8 +363,38 @@ namespace MSFSTouchPortalPlugin.Services
 
     private void SimConnectEvent_OnEventReceived(EventIds eventId, Groups categoryId, object data) {
       if (eventId > EventIds.SimEventNone && eventId < EventIds.SimEventLast) {
-        if (eventId == EventIds.View)
+        if (eventId == EventIds.View) {
           eventId = (uint)data == SimConnectService.VIEW_EVENT_DATA_COCKPIT_3D ? EventIds.ViewCockpit : EventIds.ViewExternal;
+        }
+        else if (eventId == EventIds.Pause_EX1) {
+          SimPauseStates lastState = _simPauseState;
+          _simPauseState = (SimPauseStates)Convert.ToByte(data);
+          UpdateTpStateValue("SimPauseState", _simPauseState.ToString("G"), Groups.SimSystem);
+          if (_simPauseState == SimPauseStates.OFF) {
+            // "Unpaused" is reported as a separate event, do not duplicate.
+            return;
+          }
+          else {
+            // Report new pause state as an event
+            switch (_simPauseState & ~lastState) {
+              case SimPauseStates.OFF:
+                // no change
+                return;
+              case SimPauseStates.FULL:
+                eventId = EventIds.PauseFull;
+                break;
+              case SimPauseStates.ACTIVE:
+                eventId = EventIds.PauseActive;
+                break;
+              case SimPauseStates.SIM:
+                eventId = EventIds.PauseSimulator;
+                break;
+              case SimPauseStates.FULL_WITH_SOUND:
+                eventId = EventIds.PauseFullWithSound;
+                break;
+            }
+          }
+        }
         UpdateSimSystemEventState(eventId, data);
       }
     }
@@ -689,6 +721,7 @@ namespace MSFSTouchPortalPlugin.Services
     private void UpdateSimSystemEventState(EventIds eventId, object data = null) {
       if (SimSystemMapping.SimSystemEvent.ChoiceMappings.TryGetValue(eventId, out var eventName)) {
         UpdateTpStateValue("SimSystemEvent", eventName, Groups.SimSystem);
+        _logger.LogTrace("Updated SimSystemEvent state value to '{eventName}'", eventName);
         if (data is string)
           UpdateTpStateValue("SimSystemEventData", data.ToString(), Groups.SimSystem);
       }

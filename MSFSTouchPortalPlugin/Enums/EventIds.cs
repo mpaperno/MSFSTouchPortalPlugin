@@ -78,10 +78,13 @@ namespace MSFSTouchPortalPlugin.Enums
     //[Display(Description = "Upon every visual frame while simulator is not paused.")]
     //Frame,      // not used for now since it's a lot of data for no particular reason...
 
-    [Display(Name = "Pause Toggled", Description = "When the flight is paused or unpaused (but not active pause nor 'esc' pause).")]
+    [Display(Name = "Pause State Changed", Description = "When the flight is paused or unpaused, with more detail than the regular Pause system event.")]
+    Pause_EX1,      // this one is actually multiple events, (see "virtual" Pause* events below) and is currently not presented to the user as a choice.
+
+    [Display(Name = "Pause Toggled", Description = "When any pause mode is toggled or sim is unpaused completely (i.e. the Pause State changes).")]
     Pause,
 
-    [Display(Name = "Paused", Description = "When the flight is paused (but not active pause nor 'esc' pause).")]
+    [Display(Name = "Paused", Description = "When the flight is paused in any mode.")]
     Paused,
 
     //[Display(Name = "Pause Frame", Description = "Upon every visual frame that the simulation is paused.")]
@@ -102,7 +105,7 @@ namespace MSFSTouchPortalPlugin.Enums
     [Display(Name = "Sound Toggled", Description = "When the master sound switch is changed.")]
     Sound,
 
-    [Display(Name = "Unpaused", Description = "When the flight is un-paused  (but not active pause nor 'esc' pause).")]
+    [Display(Name = "Unpaused", Description = "When the flight is unpaused completely (Pause State if OFF).")]
     Unpaused,
 
     [Display(Name = "View Changed", Description = "When the user aircraft view is changed. This request will also return the current view immediately. A Enum type is returned in the dwData parameter (0 = External, 2 = Virtual cockpit, .. possibly others for FSX?).")]
@@ -117,9 +120,27 @@ namespace MSFSTouchPortalPlugin.Enums
     [Display(Name = "View External", Description = "When the view changes to an external view.")]
     ViewExternal,      // View event if dwData == 0
 
+    // Expanded pause states from Pause_EX1 values
+
+    // PAUSE_STATE_FLAG_PAUSE
+    [Display(Name = "Full Pause", Description = "\"full\" Pause (sim + traffic + etc...)")]
+    PauseFull,
+
+    // PAUSE_STATE_FLAG_PAUSE_WITH_SOUND
+    [Display(Name = "Full Pause (FSX Legacy)", Description = "FSX Legacy Pause (not used in FS2020)")]
+    PauseFullWithSound,
+
+    // PAUSE_STATE_FLAG_ACTIVE_PAUSE
+    [Display(Name = "Active Pause", Description = "Pause was activated using the \"Active Pause\" Button.")]
+    PauseActive,
+
+    // PAUSE_STATE_FLAG_SIM_PAUSE
+    [Display(Name = "Simulator Pause", Description = "Pause the player sim but traffic, multi, etc... will still run.")]
+    PauseSimulator,
+
     InternalEventsLast,  // marker
 
-    // Refernces to SimConnect constants, defined in gauges.h
+    // References to SimConnect constants, defined in gauges.h
     SimConnectKeyEventMin = 0x00010000,
     SimConnectKeyEventMax = 0x00010FFF,
     SimConnectThirdPPartyEventIdMin = 0x00011000,
