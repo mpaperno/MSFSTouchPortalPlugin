@@ -28,17 +28,44 @@ namespace MSFSTouchPortalPlugin.Objects
   [TouchPortalCategory(Groups.SimSystem)]
   internal static class SimSystemMapping
   {
-    [TouchPortalAction("SimulationRate", "Simulation Rate", "{0} Simulation Rate", true)]
-    [TouchPortalActionChoice()]
-    [TouchPortalActionMapping("SIM_RATE_INCR", "Increase")]
-    [TouchPortalActionMapping("SIM_RATE_DECR", "Decrease")]
-    public static readonly object SimulationRate;
 
-    [TouchPortalAction("SelectedParameter", "Change Selected Value (+/-)", "{0} Selected Value", true)]
+    [TouchPortalAction("SelectedParameter", "Adjust a Selected Value (+/-)", "{0} Selected Value", true,
+      Description = "This action affects any value previously \"selected\" with some other action (such as AP settings, frequencies, etc)."
+    )]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("PLUS", "Increase")]
     [TouchPortalActionMapping("MINUS", "Decrease")]
-    public static readonly object SELECTED_PARAMETER_CHANGE;
+    public static readonly object SelectedParameterChange;
+
+    [TouchPortalAction("PauseFullSet", "Pause - Full", "Set Full Pause to {0} (0/1)", false,
+      Description = "A \"full\" pause stops the simulation completely, including any time passing in the simulated world. Same as \"Dev Mode Pause.\""
+    )]
+    [TouchPortalActionText("1", 0, 1, AllowDecimals = true)]
+    [TouchPortalActionMapping("PAUSE_SET")]
+    public static readonly object PauseFullSet;
+
+    [TouchPortalAction("PauseSimSet", "Pause - Simulator", "{0} Simulator Pause", false,
+      Description = "A \"simulator\" pause stops some aspects of the simulation, but not time. Same as the \"Menu (ESC) Pause\" but w/out the actual menu."
+    )]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("PAUSE_ON", "Enable")]
+    [TouchPortalActionMapping("PAUSE_OFF", "Disable")]
+    public static readonly object PauseSimSet;
+
+    [TouchPortalAction("SimulationRate", "Simulation Rate Adjust", "{0} Simulation Rate", true)]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("SIM_RATE_INCR", "Increase")]
+    [TouchPortalActionMapping("SIM_RATE_DECR", "Decrease")]
+    [TouchPortalActionMapping("SIM_RATE", "Select (for +/- adjustment)")]
+    public static readonly object SimulationRate;
+
+    [TouchPortalAction("SimulationRateSet", "Simulation Rate Set", true,
+      "Set Simulation Rate to {0}",
+      "Set Simulation Rate\nin Value Range:"
+    )]
+    [TouchPortalActionText("1", 0, 50000, AllowDecimals = true)]
+    [TouchPortalActionMapping("SIM_RATE_SET")]
+    public static readonly object SimulationRateSet;
 
 
     // Event
