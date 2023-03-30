@@ -305,7 +305,7 @@ namespace MSFSTouchPortalPlugin.Services
         simVar.RegistrationStatus = SimVarRegistrationStatus.Unregistered;
         return;
       }
-      if (simVar.VariableType != 'A' || (simVar.NeedsScheduledRequest && WasmInitialized)) {
+      if ((simVar.NeedsScheduledRequest && WasmInitialized) || (simVar.VariableType != 'A' && simVar.VariableType != 'L')) {
         simVar.DataProvider = SimVarDataProvider.WASimClient;
         simVar.RegistrationStatus = RegisterToWasm(simVar);
       }
@@ -347,7 +347,8 @@ namespace MSFSTouchPortalPlugin.Services
       }
 
       string unitName = simVar.IsStringType ? null : simVar.Unit;
-      if (!InvokeSimMethod(AddToDataDefinitionDelegate, simVar.Def, simVar.SimVarName, unitName, simVar.SimConnectDataType, simVar.DeltaEpsilon, SimConnect.SIMCONNECT_UNUSED))
+      string varName = simVar.VariableType != 'A' ? simVar.VariableType + ':' + simVar.SimVarName : simVar.SimVarName;
+      if (!InvokeSimMethod(AddToDataDefinitionDelegate, simVar.Def, varName, unitName, simVar.SimConnectDataType, simVar.DeltaEpsilon, SimConnect.SIMCONNECT_UNUSED))
         return SimVarRegistrationStatus.Error;
 
       if (!InvokeSimMethod(registerDataDelegate, simVar.Def))
