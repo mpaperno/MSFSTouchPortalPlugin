@@ -952,13 +952,13 @@ namespace MSFSTouchPortalPlugin.Services
         return _simConnectService.SetVariable(varType, varName, dVal, unitName ?? "", createLvar);
       }
 
-      if (varType != 'A') {
+      if (varType != 'A' && varType != 'L') {
         _logger.LogError("Cannot set {varType} type variable {varName} without WASimModule!", varType, varName);
         return false;
       }
 
       if (!_simVarCollection.TryGetBySimName(varName, out SimVarItem simVar)) {
-        simVar = PluginConfig.CreateDynamicSimVarItem('A', varName, Groups.None, unitName, 0);
+        simVar = PluginConfig.CreateDynamicSimVarItem(varType, varName, Groups.None, unitName, 0);
         simVar.DefinitionSource = SimVarDefinitionSource.Temporary;
         simVar.UpdatePeriod = UpdatePeriod.Never;
         _simVarCollection.Add(simVar);
