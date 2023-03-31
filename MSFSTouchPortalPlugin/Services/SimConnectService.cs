@@ -543,6 +543,9 @@ namespace MSFSTouchPortalPlugin.Services
       return TransmitClientEvent(eventRecord, data[0], data[1], data[2], data[3], data[4]);
     }
 
+    public bool CanRequestVariableType(char varType) => (WasmAvailable || varType == 'A' || varType == 'L');
+    public bool CanSetVariableType(char varType) => CanRequestVariableType(varType);
+
     public bool RequestDataOnSimObjectType(SimVarItem simVar, SIMCONNECT_SIMOBJECT_TYPE objectType = SIMCONNECT_SIMOBJECT_TYPE.USER) {
       return InvokeSimMethod(RequestDataOnSimObjectTypeDelegate, simVar.Def, simVar.Def, 0U, objectType);
     }
