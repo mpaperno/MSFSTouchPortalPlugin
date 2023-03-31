@@ -255,7 +255,7 @@ namespace MSFSTouchPortalPlugin.Configuration
       filename = GetFullFilePath(filename, isUserConfig);
 
       _logger.LogDebug("Loading SimVars from file '{filename}'...", filename);
-      if (!LoadFromFile(filename, out var cfg))
+      if (!LoadFromFile(filename, out SharpConfig.Configuration cfg))
         return ret;
 
       foreach (SharpConfig.Section item in cfg) {
@@ -266,7 +266,7 @@ namespace MSFSTouchPortalPlugin.Configuration
           simVar = item.ToObject<SimVarItem>();
         }
         catch (Exception e) {
-          _logger.LogError(e, "De-serialize exception for section '{item}': {message}:", item, e.Message);
+          _logger.LogError(e, "Exception while importing Variable Request '{item}': {message}:", item, e.Message);
           continue;
         }
         if (simVar == null) {
@@ -275,6 +275,15 @@ namespace MSFSTouchPortalPlugin.Configuration
         }
         simVar.Id = item.Name;
         simVar.DefinitionSource = isUserConfig ? SimVarDefinitionSource.UserFile : SimVarDefinitionSource.DefaultFile;
+
+        if (!simVar.Validate(out var validationError)) {
+          _logger.LogError("Validation error while importing Variable Request '{itemName}': {error}.", item.Name, validationError);
+          continue;
+        }
+        else if (!string.IsNullOrEmpty(validationError)) {
+          _logger.LogWarning("Validation warning while importing Variable Request '{itemName}': {error}.", item.Name, validationError);
+        }
+
         SetSimVarItemTpMetaData(simVar);
         // check unique
         if (ret.FindIndex(s => s.Id == simVar.Id) is int idx && idx > -1) {
