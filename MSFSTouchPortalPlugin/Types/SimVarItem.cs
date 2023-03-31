@@ -21,9 +21,12 @@ and is also available at <http://www.gnu.org/licenses/>.
 
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
-using WASimCommander.CLI.Structs;
+
 using Stopwatch = System.Diagnostics.Stopwatch;
+using Regex = System.Text.RegularExpressions.Regex;
+using RegexOptions = System.Text.RegularExpressions.RegexOptions;
 using SIMCONNECT_DATATYPE = Microsoft.FlightSimulator.SimConnect.SIMCONNECT_DATATYPE;
+using DataRequestRecord = WASimCommander.CLI.Structs.DataRequestRecord;
 
 namespace MSFSTouchPortalPlugin.Types
 {
@@ -252,6 +255,7 @@ namespace MSFSTouchPortalPlugin.Types
     /// </summary>
     public bool UpdateRequired => NeedsScheduledRequest && !CheckPending() && Stopwatch.GetTimestamp() > _valueExpires;
 
+    // Private properties  ---------------------
 
     private object _value;         // the actual Value storage
     private string _unit;          // unit type storage
@@ -268,10 +272,19 @@ namespace MSFSTouchPortalPlugin.Types
     private static Definition _nextDefinionId = Definition.None;
     private static Definition NextId() => ++_nextDefinionId;      // got a warning when trying to increment this directly from c'tor, but not via static member... ?
 
+    // Constructor  --------------------
+
     public SimVarItem() {
       Def = NextId();
       Unit = "number";  // set a default unit
     }
+
+    // Methods  ------------------------
+
+    /// <summary> Convenience static method to check if a variable type requires a Unit specifier or not. </summary>
+    /// <param name="varType">The type of variable ('A', 'L', etc).</param>
+    /// <returns>`true` if the type requires a unit specifier, `false` otherwise.</returns>
+    public static bool RequiresUnitType(char varType) => (varType == 'A' || varType == 'C' || varType == 'E');
 
     public bool ValueEquals(string value) => ValInit && IsStringType && value == Value.ToString();
     public bool ValueEquals(double value) => ValInit && IsRealType && System.Math.Abs((double)Value - value) <= DeltaEpsilon;
@@ -392,6 +405,88 @@ namespace MSFSTouchPortalPlugin.Types
       }
       return true;
     }
+
+    /// <summary>
+    /// Checks that all properties have reasonable values.
+    /// </summary>
+    /// <param name="resultMsg">Any generated error or warning text is returned here.
+    /// If the returned value is not empty but the method returned `true` then the message is considered a warning, not error.</param>
+    /// <returns>`true` if validation passed w/out errors, `false` otherwise.</returns>
+    public bool Validate(out string resultMsg)
+    {
+      static bool returnError(string err, ref string outerr) {
+        outerr = err;
+        return false;
+      }
+
+      resultMsg = string.Empty;
+
+      // Ensure required data is not missing entirely
+      if (string.IsNullOrEmpty(Id))
+        return returnError("ID is empty", ref resultMsg);
+      if (string.IsNullOrEmpty(Name))
+        return returnError("Name is empty", ref resultMsg);
+      if (string.IsNullOrEmpty(SimVarName))
+        return returnError("Variable Name is empty", ref resultMsg);
+
+      // Make sure a category is assigned, except for temporary items
+      if (CategoryId == Groups.None && DefinitionSource != SimVarDefinitionSource.Temporary)
+        return returnError("CategoryId is required", ref resultMsg);
+
+      // Check variable name minimum length, indexed character checks follow
+      if (SimVarName.Length < 4)
+        return returnError("Variable Name is too short to be valid", ref resultMsg);
+      // Make sure variable name doesn't have leading "N:" type specifier
+      if (SimVarName[1] == ':')
+        return returnError($"Variable Name appears to contain variable type prefix ('{SimVarName[0..2]}')", ref resultMsg);
+
+      // Check type-specific attributes
+      switch (VariableType) {
+        case 'Q':
+          if (CalcResultType == WASimCommander.CLI.Enums.CalcResultType.None)
+            return returnError("Calculation result type (CalcResultType) is required for 'Q' type request", ref resultMsg);
+          break;
+
+        case 'A':
+          // SimVar names may have spaces but never underscores; may be followed by ":I" index value.
+          if (!Regex.IsMatch(SimVarName, @"^[a-zA-Z][a-zA-Z0-9 ]+(?::\d{1,3})?$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
+            return returnError($"SimVar Name '{SimVarName}' contains invalid character(s)", ref resultMsg);
+          break;
+
+        case 'E':
+        case 'P':
+          // Environment vars may have spaces in the names, but no underscores.
+          if (!Regex.IsMatch(SimVarName, @"^[a-zA-Z][a-zA-Z0-9 ]+$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
+            return returnError($"Environment Variable Name '{SimVarName}' contains invalid character(s)", ref resultMsg);
+          break;
+
+        case 'C':
+          // "C" type vars require a module name prefix; add a default if one is missing
+          if (SimVarName.IndexOf(':', 2) < 0)
+            SimVarName = "fs9gps:" + SimVarName;
+          // They may have underscores in the name, but not spaces.
+          if (!Regex.IsMatch(SimVarName, @"^\w{2,}:[a-zA-Z][a-zA-Z0-9_]+$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
+            return returnError($"Callback Variable Name '{SimVarName}' contains invalid character(s)", ref resultMsg);
+          break;
+
+        default:
+          // All other variable types may only have alphanumerics and underscores, no spaces.
+          if (!Regex.IsMatch(SimVarName, @"^[a-zA-Z][a-zA-Z0-9_]+$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
+            return returnError($"Variable Name '{SimVarName}' contains invalid character(s)", ref resultMsg);
+          break;
+      }
+
+      // Reset pointless DeltaEpsolin values
+      if (!IsRealType && DeltaEpsilon != (float)DELTA_EPSILON_DEFAULT) {
+        if (IsStringType || IsBooleanType || DeltaEpsilon < 1.0f) {
+          resultMsg = $"Invalid DeltaEpsilon value {DeltaEpsilon} for unit type {Unit}; resetting to default";
+          DeltaEpsilon = (float)DELTA_EPSILON_DEFAULT;
+        }
+      }
+
+      return true;
+    }
+
 
     // Object
 
