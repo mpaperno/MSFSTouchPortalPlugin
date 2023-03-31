@@ -1,5 +1,38 @@
 # MSFS Touch Portal Plugin Change Log
 
+## 1.4.0.0 (pre-release)
+
+* Added ability to request and set Local ("L") type simulator variables without WASM add-on (now a native SimConnect feature since SU12).
+* Added some basic validation of variable request parameters when loading from .INI configuration files.
+* The "Paused", "Unpaused" and "Pause Toggled" Touch Portal Events now work correctly (or at least more logically/consistently) due to a fix in SU12.
+  * Note: the "Pause Toggled" event triggers on any/every "pause mode" change, even if the sim is not actually "unpaused" completely. 
+    The name has been kept for backwards compatibility. See the new event descriptions below for more details on pause modes.
+  * The "Paused" event is also triggered when _any_ pause mode is activated, even if the simulator already had another pause mode active.
+  * "Unpaused" at least behaves as expected and only triggers when _all_ pause modes have been deactivated.
+* Updated SimConnect libraries to latest versions (SDK v0.21.0.0).
+
+### Added or Updated Actions/Connectors
+_MSFS - Simulator System_ category:
+* Added "Pause - Full" - Action, pauses the simulation completely, including any time passing in the simulated world. Same as "Dev Mode Pause" (in developer toolbar "Options" menu).
+* Added "Pause - Simulator" - Action, pauses some aspects of the simulation, but not time. Same as "Menu (ESC) Pause" but w/out the actual menu.
+* Added "Simulation Rate Set" - Action and connector.
+* Renamed "Simulation Rate" to "Simulation Rate Adjust" and added "Select (for +/- adjustment)" option.
+* Renamed "Change Selected Value (+/-)" to "Adjust a Selected Value (+/-)" and added a description/help text.
+
+### Added Events
+Added to _MSFS - Simulator System -> Simulator System Event_ choices:
+* "Full Pause" - Indicates a complete pause including any time passing. Triggered by "Dev Mode Pause" (in developer toolbar "Options"), 
+  the new "Pause - Full" plugin action, or a SimConnect "PAUSE_SET" Event with a value of `1`. (Possibly other ways as well?)
+* "Active Pause" - Simulator has been paused using "active pause" key binding or toolbar button.
+* "Simulator Pause" - The simulator has been paused with the "ESC" key to the menu, or with "Pause - Simulator" action, or "PAUSE_ON" SimConnect Event.
+* "Full Pause (FSX Legacy)" - Not used in FS2020
+
+### Added State
+_MSFS - Simulator System_ category:
+* "Simulator Pause State Flag(s) (OFF|FULL|ACTIVE|SIM)" - Lists any "pause states" which are currently active, separated by commas, or "OFF" if the simulation is not paused in any way.
+  Eg. if "active pause" is enabled and the sim is also paused with the "ESC" key, the value of this state would be "ACTIVE,SIM". See descriptions of new Events for more details on pause modes.
+
+---
 ## 1.3.2.0 (Mar-09-2023)
 Version number: `1030200`
 
