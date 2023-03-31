@@ -650,7 +650,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     void UpdateUnitsForVariableType(PluginActions action, string varType, string instanceId, bool isConnector)
     {
-      if (String.IsNullOrEmpty(varType) || varType[0] == 'A' || varType[0] == 'C' || varType[0] == 'E')
+      if (String.IsNullOrEmpty(varType) || SimVarItem.RequiresUnitType(varType[0]))
         UpdateActionDataList(action, "Unit", _imports.UnitNames(), instanceId, isConnector);
       else
         UpdateActionDataList(action, "Unit", new[] { "N/A" }, instanceId, isConnector);
@@ -932,7 +932,7 @@ namespace MSFSTouchPortalPlugin.Services
         return false;
       }
       string unitName = null;
-      if ((varType == 'A' || varType == 'C') && (!data.TryGetValue("Unit", out unitName) || string.IsNullOrWhiteSpace(unitName))) {
+      if (SimVarItem.RequiresUnitType(varType) && (!data.TryGetValue("Unit", out unitName) || string.IsNullOrWhiteSpace(unitName))) {
         _logger.LogError("Unit type is required in {actId} for SimVar {varName}", actId, varName);
         return false;
       }
@@ -946,6 +946,11 @@ namespace MSFSTouchPortalPlugin.Services
       double dVal = double.NaN;
       bool createLvar = false;
       bool isStringType = unitName?.ToLower() == "string";
+
+      if (!_simConnectService.CanSetVariableType(varType)) {
+        _logger.LogError("Cannot set {varType} type variable {varName} without WASM expansion add-on.", varType, varName);
+        return false;
+      }
 
       // Validate action value
       if (connValue < 0) {
@@ -961,7 +966,7 @@ namespace MSFSTouchPortalPlugin.Services
           createLvar = true;
       }
       else if (isStringType) {
-        _logger.LogError("Cannot String type variable with a Connector value for {varName}", varName);
+        _logger.LogError("Cannot set String type variable with a Connector value for {varName}", varName);
         return false;
       }
       // Validate and convert slider value into range
@@ -985,13 +990,12 @@ namespace MSFSTouchPortalPlugin.Services
         return _simConnectService.SetVariable(varType, varName, dVal, unitName ?? "", createLvar);
       }
 
-      if (varType != 'A' && varType != 'L') {
-        _logger.LogError("Cannot set {varType} type variable {varName} without WASimModule!", varType, varName);
-        return false;
-      }
-
       if (!_simVarCollection.TryGetBySimName(varName, out SimVarItem simVar)) {
         simVar = PluginConfig.CreateDynamicSimVarItem(varType, varName, Groups.None, unitName, 0);
+        if (simVar == null) {
+          _logger.LogError("Could not create a valid variable from name: {varName}", varName);
+          return false;
+        }
         simVar.DefinitionSource = SimVarDefinitionSource.Temporary;
         simVar.UpdatePeriod = UpdatePeriod.Never;
         _simVarCollection.Add(simVar);
@@ -1063,13 +1067,13 @@ namespace MSFSTouchPortalPlugin.Services
           break;
       }
 
-      if (!_simConnectService.WasmAvailable && varType != 'A') {
-        _logger.LogError("Cannot request {varType} type variable {varName} without WASimModule!", varType, varName);
+      if (!_simConnectService.CanRequestVariableType(varType)) {
+        _logger.LogError("Cannot request {varType} type variable {varName} without WASM expansion add-on.", varType, varName);
         return false;
       }
 
       string sUnit = null;
-      if (varType == 'A' || varType == 'C' || varType == 'E') {
+      if (SimVarItem.RequiresUnitType(varType)) {
         if (!data.TryGetValue("Unit", out sUnit)) {
           _logger.LogError("Unit Name is missing or empty for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
           return false;
@@ -1080,6 +1084,10 @@ namespace MSFSTouchPortalPlugin.Services
 
       // create the SimVarItem from collected data
       SimVarItem simVar = PluginConfig.CreateDynamicSimVarItem(varType, varName, catId, sUnit, index, _simVarCollection);
+      if (simVar == null) {
+        _logger.LogError("Failed to add Variable Request due to empty resulting variable name from action data: {data}", ActionDataToKVPairString(data));
+        return false;
+      }
       // check for optional properties
       if (data.TryGetValue("Format", out var sFormat))
         simVar.StringFormat = sFormat.Trim();
@@ -1096,6 +1104,14 @@ namespace MSFSTouchPortalPlugin.Services
       if (varType == 'Q') {
         simVar.SimVarName = sCalcCode;     // replace simvar name with calc code; the Name used in state names/etc isn't changed.
         simVar.CalcResultType = resType;   // this also sets the Unit type and hence the data type (number/integer/string)
+      }
+
+      if (!simVar.Validate(out var validationError)) {
+        _logger.LogError("Variable Request validation error \"{error}\"; for {actId} from data: {data}.", validationError, actId, ActionDataToKVPairString(data));
+        return false;
+      }
+      else if (!string.IsNullOrEmpty(validationError)) {
+        _logger.LogWarning("Variable Request validation warning \"{error}\"; for {actId} from data: {data}.", validationError, actId, ActionDataToKVPairString(data));
       }
 
       if (AddSimVar(simVar) is byte ret && ret > 0)
@@ -1223,8 +1239,8 @@ namespace MSFSTouchPortalPlugin.Services
     // PluginActions.ExecCalcCode
     bool ProcessCalculatorEventFromActionData(PluginActions actId, ActionData data, int connValue = -1)
     {
-      if (!_simConnectService.WasmAvailable) {
-        _logger.LogError("Cannot execute Calculator Code without WASimModule!");
+      if (!_simConnectService.CanSetVariableType('Q')) {
+        _logger.LogError("Cannot execute Calculator Code without WASM expansion add-on.");
         return false;
       }
 
@@ -1580,11 +1596,15 @@ namespace MSFSTouchPortalPlugin.Services
           if (!_simVarCollection.TryGetBySimName(fbVarName, out var simVar)) {
 
             if ((!data.TryGetValue("Unit", out var unitName) || string.IsNullOrWhiteSpace(unitName))) {
-              _logger.LogError("Unit type missing or empty for '{fbVarName}' in Connector '{cId}'", fbVarName, message.ConnectorId);
+              _logger.LogWarning("Unit type missing or empty for '{fbVarName}' in Connector '{cId}'", fbVarName, message.ConnectorId);
               return;
             }
 
             simVar = PluginConfig.CreateDynamicSimVarItem('A', fbVarName, Groups.None, unitName, varIndex);
+            if (simVar == null) {
+              _logger.LogWarning("Could not create valid variable from name '{varName}' in Connector '{cId}'", fbVarName, message.ConnectorId);
+              return;
+            }
             simVar.DefinitionSource = SimVarDefinitionSource.Temporary;
             _simVarCollection.Add(simVar);
             _logger.LogInformation("Added temporary SimVar {simVarId} ({simVarName}) for Connector Feedback.", simVar.Id, simVar.SimVarName);
