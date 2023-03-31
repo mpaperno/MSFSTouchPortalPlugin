@@ -65,6 +65,7 @@ namespace MSFSTouchPortalPlugin.Objects
     )]
     [TouchPortalActionText("1", 0, 50000, AllowDecimals = true)]
     [TouchPortalActionMapping("SIM_RATE_SET")]
+    [TouchPortalConnectorMeta(DefaultMin = 0.0, DefaultMax = 3.0)]
     public static readonly object SimulationRateSet;
 
 
