@@ -407,7 +407,7 @@ namespace MSFSTouchPortalPlugin.Types
     }
 
     /// <summary>
-    /// Checks that all properties have reasonable values.
+    /// Checks that all properties have reasonable values. This assumes the variable will be _requested_, so it must be a readable type.
     /// </summary>
     /// <param name="resultMsg">Any generated error or warning text is returned here.
     /// If the returned value is not empty but the method returned `true` then the message is considered a warning, not error.</param>
@@ -440,24 +440,12 @@ namespace MSFSTouchPortalPlugin.Types
       if (SimVarName[1] == ':')
         return returnError($"Variable Name appears to contain variable type prefix ('{SimVarName[0..2]}')", ref resultMsg);
 
-      // Check type-specific attributes
+      // Check type-specific attributes and also that the type can be requested in the first place.
       switch (VariableType) {
-        case 'Q':
-          if (CalcResultType == WASimCommander.CLI.Enums.CalcResultType.None)
-            return returnError("Calculation result type (CalcResultType) is required for 'Q' type request", ref resultMsg);
-          break;
-
         case 'A':
           // SimVar names may have spaces but never underscores; may be followed by ":I" index value.
           if (!Regex.IsMatch(SimVarName, @"^[a-zA-Z][a-zA-Z0-9 ]+(?::\d{1,3})?$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
             return returnError($"SimVar Name '{SimVarName}' contains invalid character(s)", ref resultMsg);
-          break;
-
-        case 'E':
-        case 'P':
-          // Environment vars may have spaces in the names, but no underscores.
-          if (!Regex.IsMatch(SimVarName, @"^[a-zA-Z][a-zA-Z0-9 ]+$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
-            return returnError($"Environment Variable Name '{SimVarName}' contains invalid character(s)", ref resultMsg);
           break;
 
         case 'C':
@@ -469,11 +457,39 @@ namespace MSFSTouchPortalPlugin.Types
             return returnError($"Callback Variable Name '{SimVarName}' contains invalid character(s)", ref resultMsg);
           break;
 
-        default:
-          // All other variable types may only have alphanumerics and underscores, no spaces.
+        case 'E':
+        case 'P':
+          // Environment vars may have spaces in the names, but no underscores.
+          if (!Regex.IsMatch(SimVarName, @"^[a-zA-Z][a-zA-Z0-9 ]+$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
+            return returnError($"Environment Variable Name '{SimVarName}' contains invalid character(s)", ref resultMsg);
+          break;
+
+        case 'L':
+        case 'T':
+          // Local and Token variable types may only have alphanumerics and underscores, no spaces.
           if (!Regex.IsMatch(SimVarName, @"^[a-zA-Z][a-zA-Z0-9_]+$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
             return returnError($"Variable Name '{SimVarName}' contains invalid character(s)", ref resultMsg);
           break;
+
+        case 'M':
+          // Mouse vars are only PascalCase text.
+          if (!Regex.IsMatch(SimVarName, @"^[A-Z][a-zA-Z]*$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
+            return returnError($"Mouse Variable Name '{SimVarName}' contains invalid character(s)", ref resultMsg);
+          break;
+
+        case 'Q':
+          if (CalcResultType == WASimCommander.CLI.Enums.CalcResultType.None)
+            return returnError("Calculation result type (CalcResultType) is required for 'Q' type request", ref resultMsg);
+          break;
+
+        case 'R':
+          // Resource type vars are: "0:HELPID_EXTR_LOW_VOLT" or "1:@TT_Package.AUDIOPANEL_KNOB_COM_VOLUME_ACTION"
+          if (!Regex.IsMatch(SimVarName, @"^\d:[a-zA-Z@][a-zA-Z0-9_\.]+$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
+            return returnError($"Resource Variable Name '{SimVarName}' has invalid format", ref resultMsg);
+          break;
+
+        default:
+          return returnError($"Variable type '{VariableType}' cannot be requested", ref resultMsg);
       }
 
       // Reset pointless DeltaEpsolin values
