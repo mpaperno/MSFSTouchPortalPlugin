@@ -254,7 +254,7 @@ namespace MSFSTouchPortalPlugin.Configuration
       List<SimVarItem> ret = new();
       filename = GetFullFilePath(filename, isUserConfig);
 
-      _logger.LogDebug("Loading SimVars from file '{filename}'...", filename);
+      _logger.LogInformation("Loading variable requests from file '{filename}'...", filename);
       if (!LoadFromFile(filename, out SharpConfig.Configuration cfg))
         return ret;
 
@@ -298,7 +298,7 @@ namespace MSFSTouchPortalPlugin.Configuration
       string bareName = Path.GetFileName(filename);
       if (!LoadedStateConfigFiles.Contains(bareName))
         LoadedStateConfigFiles.Add(bareName);
-      _logger.LogDebug("Loaded {count} SimVars from '{filename}'", ret.Count, filename);
+      _logger.LogInformation("Loaded {count} variable requests from '{filename}'", ret.Count, filename);
       return ret;
     }
 

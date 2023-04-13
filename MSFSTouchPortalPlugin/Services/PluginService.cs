@@ -418,17 +418,13 @@ namespace MSFSTouchPortalPlugin.Services
     {
       // Load the vars.  PluginConfig tracks which files should be loaded, defaults or custom.
       IReadOnlyCollection<SimVarItem> simVars = _pluginConfig.LoadSimVarStateConfigs();
-
-      string logMsg;
-      if (_pluginConfig.HaveUserStateFiles)
-        logMsg = $"custom state file(s) '{_pluginConfig.UserStateFiles}'";
-      else
-        logMsg = $"default file '{PluginConfig.StatesConfigFile}'";
-      _logger.LogInformation((int)EventIds.PluginInfo, "Loaded {count} Variable Request States from {message}.", simVars.Count, logMsg);
-
       // Now create the SimVars and track them. We're probably not connected to SimConnect at this point so the registration may happen later.
-      foreach (var simVar in simVars)
-        AddSimVar(simVar);
+      int count = 0;
+      foreach (var simVar in simVars) {
+        byte res = AddSimVar(simVar);
+        count += res == 2 ? 1 : res;
+      }
+      _logger.LogInformation((int)EventIds.PluginInfo, "Registered {count} Variable Request States.", count);
 
       UpdateTpStateValue("LoadedStateConfigFiles", string.Join(',', _pluginConfig.LoadedStateConfigFiles));
     }
