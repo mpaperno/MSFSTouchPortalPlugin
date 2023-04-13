@@ -391,9 +391,28 @@ namespace MSFSTouchPortalPlugin.Services
 
     void ConnectWasm()
     {
-      if (_wlib == null || _wlib.connectServer() != HR.OK) {
+      if (_wlib == null) {
+        _logger.LogWarning((int)EventIds.PluginError, "WASM Client not initialized, integration disabled.");
+        return;
+      }
+
+      HR hr;
+      int count = 0;
+      // Retry simulator connection several times in case of initial failure. Unlikely, but observed once during testing.
+      do {
+        hr = _wlib.connectSimulator(2000);
+      }
+      while (hr == HR.TIMEOUT && ++count < 11);
+
+      // Now attempt WASM server connection.
+      if (hr == HR.OK)
+        hr = _wlib.connectServer();
+      else
+        _logger.LogError("WASM Client could not connect to SimConnect for unknown reason. Result: {hr}", hr.ToString());
+
+      if (hr != HR.OK) {
         WasmStatus = WasmModuleStatus.NotFound;
-        _logger.LogWarning((int)EventIds.PluginError, "WASM Module not found or couldn't connect, integration disabled.");
+        _logger.LogWarning((int)EventIds.PluginError, "WASM Server not found or couldn't connect, integration disabled.");
         return;
       }
       WasmStatus = WasmModuleStatus.Connected;
