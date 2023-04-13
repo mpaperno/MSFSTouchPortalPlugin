@@ -5,7 +5,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>MSFSTouchPortalPlugin_Generator</RootNamespace>
     <Platforms>x64</Platforms>
-    <Version>1.3.1</Version>
+    <Version>1.4.0</Version>
     <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath>
     <Configurations>Debug;Release;Publish</Configurations>
     <Copyright>Copyright Tim Lewis, Maxim Paperno, and project contributors; All rights reserved.</Copyright>
@@ -19,6 +19,7 @@
     <ApplicationIcon>..\MSFSTouchPortalPlugin\app-icon.ico</ApplicationIcon>
     <ErrorReport>none</ErrorReport>
     <Company>MSFS Touch Portal Plugin Project</Company>
+    <CheckEolTargetFramework>False</CheckEolTargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -43,7 +44,7 @@
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
