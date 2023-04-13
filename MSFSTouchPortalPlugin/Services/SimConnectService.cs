@@ -69,9 +69,9 @@ namespace MSFSTouchPortalPlugin.Services
     public bool WasmAvailable => WasmStatus != WasmModuleStatus.NotFound;
     public WasmModuleStatus WasmStatus { get; private set; } = WasmModuleStatus.Unknown;
 
-    public SimConnectService(ILogger<SimConnectService> logger, IReflectionService reflectionService, SimVarCollection simVarCollection) {
+    public SimConnectService(ILogger<SimConnectService> logger, SimVarCollection simVarCollection)
+    {
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-      _reflectionService = reflectionService ?? throw new ArgumentNullException(nameof(reflectionService));
       _simVarCollection = simVarCollection ?? throw new ArgumentNullException(nameof(simVarCollection));
 
       _simVarCollection.OnSimVarAdded += RegisterDataRequest;
@@ -87,7 +87,6 @@ namespace MSFSTouchPortalPlugin.Services
     const int WM_USER_SIMCONNECT = 0x0402;      // user event ID for SimConnect
 
     readonly ILogger<SimConnectService> _logger;
-    readonly IReflectionService _reflectionService;
     readonly SimVarCollection _simVarCollection;
 
     bool _connected;
@@ -147,7 +146,7 @@ namespace MSFSTouchPortalPlugin.Services
           StopSimConnect();
       }
       catch (Exception e) {
-        _logger.LogDebug("Connection to SimConnect failed: [{0:X}] {0}", e.HResult, e.Message);
+        _logger.LogDebug("Connection to SimConnect failed: [{hr:X}] {message}", e.HResult, e.Message);
         StopSimConnect();
         unchecked { ret = (uint)e.HResult; }
       }
@@ -374,8 +373,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     void SetupWasm()
     {
-      if (_wlib != null)
-        _wlib.Dispose();
+      _wlib?.Dispose();
       _wlib = new WASMLib(_wasmClientId, Configuration.PluginConfig.AppRootFolder);
       _wlib.OnClientEvent += WASMLib_OnClientEvent;
       _wlib.OnLogRecordReceived += WASMLib_OnLogEntryReceived;
