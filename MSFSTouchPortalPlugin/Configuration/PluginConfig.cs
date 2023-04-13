@@ -249,7 +249,7 @@ namespace MSFSTouchPortalPlugin.Configuration
     }
 
     // Loads an individual sim var states config file, either from user's config folder, the default app config location, or a full file path
-    public IReadOnlyCollection<SimVarItem> LoadSimVarItems(bool isUserConfig = true, string filename = default)
+    public IReadOnlyCollection<SimVarItem> LoadSimVarItems(bool isUserConfig = true, string filename = default, bool validate = true)
     {
       List<SimVarItem> ret = new();
       filename = GetFullFilePath(filename, isUserConfig);
@@ -276,12 +276,14 @@ namespace MSFSTouchPortalPlugin.Configuration
         simVar.Id = item.Name;
         simVar.DefinitionSource = isUserConfig ? SimVarDefinitionSource.UserFile : SimVarDefinitionSource.DefaultFile;
 
-        if (!simVar.Validate(out var validationError)) {
-          _logger.LogError("Validation error while importing Variable Request '{itemName}': {error}.", item.Name, validationError);
-          continue;
-        }
-        else if (!string.IsNullOrEmpty(validationError)) {
-          _logger.LogWarning("Validation warning while importing Variable Request '{itemName}': {error}.", item.Name, validationError);
+        if (validate) {
+          if (!simVar.Validate(out var validationError)) {
+            _logger.LogError("Validation error while importing Variable Request '{itemName}': {error}.", item.Name, validationError);
+            continue;
+          }
+          else if (!string.IsNullOrEmpty(validationError)) {
+            _logger.LogWarning("Validation warning while importing Variable Request '{itemName}': {error}.", item.Name, validationError);
+          }
         }
 
         SetSimVarItemTpMetaData(simVar);
@@ -317,7 +319,7 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     // Loads the definitions of the internal plugin states
     public IReadOnlyCollection<SimVarItem> LoadPluginStates()
-      => LoadSimVarItems(false, PluginStatesConfigFile);
+      => LoadSimVarItems(false, PluginStatesConfigFile, false);
 
     // Save collection to file
     public int SaveSimVarItems(IEnumerable<SimVarItem> items, bool isUserConfig = true, string filename = default)
