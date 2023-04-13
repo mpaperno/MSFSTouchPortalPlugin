@@ -347,7 +347,7 @@ namespace MSFSTouchPortalPlugin.Services
       }
 
       string unitName = simVar.IsStringType ? null : simVar.Unit;
-      string varName = simVar.VariableType != 'A' ? simVar.VariableType + ':' + simVar.SimVarName : simVar.SimVarName;
+      string varName = simVar.VariableType != 'A' ? simVar.VariableType + ":" + simVar.SimVarName : simVar.SimVarName;
       if (!InvokeSimMethod(AddToDataDefinitionDelegate, simVar.Def, varName, unitName, simVar.SimConnectDataType, simVar.DeltaEpsilon, SimConnect.SIMCONNECT_UNUSED))
         return SimVarRegistrationStatus.Error;
 
