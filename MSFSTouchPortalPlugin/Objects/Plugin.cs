@@ -183,8 +183,8 @@ namespace MSFSTouchPortalPlugin.Objects
 
 
     [TouchPortalAction(PluginActions.SetVariable, "Set a Named Variable",
-      "Set a Named Variable.\tSets a value on any named variable of various types.\t\t\t\t\t** All but SimVar types require WASimModule**\n" +
-        "Local (L) variables can also be created. SimVar (A) and GPS (C) types require a Unit. For indexed SimVars, include it in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
+      "Set a Named Variable.\tSets a value on any named variable of various types.\t\t\t\t\t** All but SimVar and Local types require WASimModule **\n" +
+        "Local (L) variables can also be created. SimVar (A) and GPS (C) types require a Unit. For indexed SimVars, include the index in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
       "Variable\nType{0} Variable\nName{1} Value{2} Unit\n(A/C){3} Create\n L Var: {4}",  /* Release\n\t\tAI: {5} */
       holdable: true)]
     [TouchPortalActionChoice(new[] { "A: SimVar", "C: GPS", "H: HTML Event", "K: Key Event", "L: Local", "Z: Custom SimVar" }, Id = "VarType", Label = "Variable Type")]
@@ -286,8 +286,8 @@ namespace MSFSTouchPortalPlugin.Objects
     public static readonly object AddLocalVar;
 
     [TouchPortalAction(PluginActions.AddNamedVariable, "Request a Named Variable",
-      "Request a Named Variable.\t\t\t\t\t** All but SimVar types require WASimModule **\n" +
-        "SimVar, GPS, & Env. types require a Unit type. For indexed SimVars, include it in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
+      "Request a Named Variable.\t\t\t\t\t** All but SimVar and Local types require WASimModule **\n" +
+        "SimVar, GPS, & Env. types require a Unit type. For indexed SimVars, include the index in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
       "Type{0} Name{1} Unit{2} for Plugin\nCategory{3} Format{4} Default\nValue{5} Update\nPeriod{6} Update\nInterval{7} Delta\nEpsilon{8}"
     )]
     [TouchPortalActionChoice(new[] { "A: SimVar", "C: GPS", "E: Env.", "L: Local", "M: Mouse", "R: Rsrc.", "T: Token", "Z: Custom" }, Id = "VarType", Label = "Variable Type")]
