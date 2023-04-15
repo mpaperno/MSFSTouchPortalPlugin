@@ -1,5 +1,11 @@
 # MSFS Touch Portal Plugin Change Log
 
+## 1.4.1.0 (Apr-15-2023)
+Version number: `1040100`
+
+* Fixes WASM client connection issue with plugin release v1.4.0.
+
+---
 ## 1.4.0.0 (Apr-15-2023)
 Version number: `1040000`
 
