@@ -1,6 +1,6 @@
 {
   "sdk": 6,
-  "version": 1030200,
+  "version": 1040000,
   "name": "MSFS Touch Portal Plugin",
   "id": "MSFSTouchPortalPlugin",
   "configuration": {
@@ -349,7 +349,7 @@
           "type": "communicate",
           "tryInline": true,
           "hasHoldFunctionality": true,
-          "description": "Set a Named Variable.\tSets a value on any named variable of various types.\t\t\t\t\t** All but SimVar types require WASimModule**\nLocal (L) variables can also be created. SimVar (A) and GPS (C) types require a Unit. For indexed SimVars, include it in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
+          "description": "Set a Named Variable.\tSets a value on any named variable of various types.\t\t\t\t\t** All but SimVar and Local types require WASimModule **\nLocal (L) variables can also be created. SimVar (A) and GPS (C) types require a Unit. For indexed SimVars, include the index in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
           "format": "Variable\nType{$MSFSTouchPortalPlugin.Plugin.Action.SetVariable.Data.VarType$} Variable\nName{$MSFSTouchPortalPlugin.Plugin.Action.SetVariable.Data.VarName$} Value{$MSFSTouchPortalPlugin.Plugin.Action.SetVariable.Data.Value$} Unit\n(A/C){$MSFSTouchPortalPlugin.Plugin.Action.SetVariable.Data.Unit$} Create\n L Var: {$MSFSTouchPortalPlugin.Plugin.Action.SetVariable.Data.Create$}",
           "data": [
             {
@@ -1339,7 +1339,7 @@
           "type": "communicate",
           "tryInline": true,
           "hasHoldFunctionality": false,
-          "description": "Request a Named Variable.\t\t\t\t\t** All but SimVar types require WASimModule **\nSimVar, GPS, & Env. types require a Unit type. For indexed SimVars, include it in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
+          "description": "Request a Named Variable.\t\t\t\t\t** All but SimVar and Local types require WASimModule **\nSimVar, GPS, & Env. types require a Unit type. For indexed SimVars, include the index in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
           "format": "Type{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.VarType$} Name{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.VarName$} Unit{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.Unit$} for Plugin\nCategory{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.CatId$} Format{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.Format$} Default\nValue{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.DfltVal$} Update\nPeriod{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.UpdPer$} Update\nInterval{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.UpdInt$} Delta\nEpsilon{$MSFSTouchPortalPlugin.Plugin.Action.AddNamedVariable.Data.Epsilon$}",
           "data": [
             {
@@ -6367,12 +6367,12 @@
       "actions": [
         {
           "id": "MSFSTouchPortalPlugin.SimSystem.Action.SelectedParameter",
-          "name": "Change Selected Value (+/-)",
+          "name": "Adjust a Selected Value (+/-)",
           "prefix": "MSFS",
           "type": "communicate",
           "tryInline": true,
           "hasHoldFunctionality": true,
-          "description": "",
+          "description": "This action affects any value previously \"selected\" with some other action (such as AP settings, frequencies, etc).",
           "format": "{$MSFSTouchPortalPlugin.SimSystem.Action.SelectedParameter.Data.0$} Selected Value",
           "data": [
             {
@@ -6388,8 +6388,50 @@
           ]
         },
         {
+          "id": "MSFSTouchPortalPlugin.SimSystem.Action.PauseFullSet",
+          "name": "Pause - Full",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "tryInline": true,
+          "hasHoldFunctionality": false,
+          "description": "A \"full\" pause stops the simulation completely, including any time passing in the simulated world. Same as \"Dev Mode Pause.\"",
+          "format": "Set Full Pause to {$MSFSTouchPortalPlugin.SimSystem.Action.PauseFullSet.Data.0$} (0/1)",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.SimSystem.Action.PauseFullSet.Data.0",
+              "type": "text",
+              "label": "Action",
+              "default": "1",
+              "minValue": 0.0,
+              "maxValue": 1.0
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.SimSystem.Action.PauseSimSet",
+          "name": "Pause - Simulator",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "tryInline": true,
+          "hasHoldFunctionality": false,
+          "description": "A \"simulator\" pause stops some aspects of the simulation, but not time. Same as the \"Menu (ESC) Pause\" but w/out the actual menu.",
+          "format": "{$MSFSTouchPortalPlugin.SimSystem.Action.PauseSimSet.Data.0$} Simulator Pause",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.SimSystem.Action.PauseSimSet.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Enable",
+              "valueChoices": [
+                "Enable",
+                "Disable"
+              ]
+            }
+          ]
+        },
+        {
           "id": "MSFSTouchPortalPlugin.SimSystem.Action.SimulationRate",
-          "name": "Simulation Rate",
+          "name": "Simulation Rate Adjust",
           "prefix": "MSFS",
           "type": "communicate",
           "tryInline": true,
@@ -6404,13 +6446,95 @@
               "default": "Increase",
               "valueChoices": [
                 "Increase",
-                "Decrease"
+                "Decrease",
+                "Select (for +/- adjustment)"
               ]
+            }
+          ]
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.SimSystem.Action.SimulationRateSet",
+          "name": "Simulation Rate Set",
+          "prefix": "MSFS",
+          "type": "communicate",
+          "tryInline": true,
+          "hasHoldFunctionality": true,
+          "description": "",
+          "format": "Set Simulation Rate to {$MSFSTouchPortalPlugin.SimSystem.Action.SimulationRateSet.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.SimSystem.Action.SimulationRateSet.Data.0",
+              "type": "text",
+              "label": "Action",
+              "default": "1",
+              "minValue": 0.0,
+              "maxValue": 50000.0
             }
           ]
         }
       ],
-      "connectors": [],
+      "connectors": [
+        {
+          "id": "MSFSTouchPortalPlugin.SimSystem.Conn.SimulationRateSet",
+          "name": "Simulation Rate Set",
+          "description": "",
+          "format": "Set Simulation Rate\nin Value Range:{$MSFSTouchPortalPlugin.SimSystem.Conn.SimulationRateSet.Data.RangeMin$}-{$MSFSTouchPortalPlugin.SimSystem.Conn.SimulationRateSet.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.SimSystem.Conn.SimulationRateSet.Data.FbCatId$}{$MSFSTouchPortalPlugin.SimSystem.Conn.SimulationRateSet.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.SimSystem.Conn.SimulationRateSet.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.SimSystem.Conn.SimulationRateSet.Data.FbRangeMax$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.SimSystem.Conn.SimulationRateSet.Data.RangeMin",
+              "type": "text",
+              "label": "Value Range Minimum",
+              "default": "0",
+              "minValue": -3.4028234663852886E+38,
+              "maxValue": 3.4028234663852886E+38
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.SimSystem.Conn.SimulationRateSet.Data.RangeMax",
+              "type": "text",
+              "label": "Value Range Maximum",
+              "default": "3",
+              "minValue": -3.4028234663852886E+38,
+              "maxValue": 3.4028234663852886E+38
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.SimSystem.Conn.SimulationRateSet.Data.FbCatId",
+              "type": "choice",
+              "label": "Feedback Category",
+              "default": "",
+              "valueChoices": [
+                "[connect plugin]"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.SimSystem.Conn.SimulationRateSet.Data.FbVarName",
+              "type": "choice",
+              "label": "Feedback Variable",
+              "default": "",
+              "valueChoices": [
+                "[select a category]"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.SimSystem.Conn.SimulationRateSet.Data.FbRangeMin",
+              "type": "text",
+              "label": "Feedback Range Minimum",
+              "default": "",
+              "minValue": -3.4028234663852886E+38,
+              "maxValue": 3.4028234663852886E+38,
+              "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.SimSystem.Conn.SimulationRateSet.Data.FbRangeMax",
+              "type": "text",
+              "label": "Feedback Range Maximum",
+              "default": "",
+              "minValue": -3.4028234663852886E+38,
+              "maxValue": 3.4028234663852886E+38,
+              "allowDecimals": false
+            }
+          ]
+        }
+      ],
       "events": [
         {
           "id": "MSFSTouchPortalPlugin.SimSystem.Event.SimSystemEvent",
@@ -6429,6 +6553,10 @@
             "Paused",
             "Unpaused",
             "Pause Toggled",
+            "Full Pause",
+            "Active Pause",
+            "Simulator Pause",
+            "Full Pause (FSX Legacy)",
             "Flight Started",
             "Flight Stopped",
             "Flight Toggled",
@@ -6458,6 +6586,12 @@
           "id": "MSFSTouchPortalPlugin.SimSystem.State.SimSystemEvent",
           "type": "text",
           "desc": "MSFS - Simulator System - Most recent Simulator System Event name.",
+          "default": ""
+        },
+        {
+          "id": "MSFSTouchPortalPlugin.SimSystem.State.SimPauseState",
+          "type": "text",
+          "desc": "MSFS - Simulator System - Simulator Pause State Flag(s) (OFF|FULL|ACTIVE|SIM)",
           "default": ""
         }
       ]

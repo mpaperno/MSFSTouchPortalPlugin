@@ -1,14 +1,19 @@
 # MSFS Touch Portal Plugin Change Log
 
-## 1.4.0.0 (pre-release)
+## 1.4.0.0 (Apr-15-2023)
+Version number: `1040000`
 
 * Added ability to request and set Local ("L") type simulator variables without WASM add-on (now a native SimConnect feature since SU12).
-* Added some basic validation of variable request parameters when loading from .INI configuration files.
+  * Note: SimConnect automatically creates L vars if they are requested before they actually exist in the sim. "Missing" L vars are no longer reported as warnings.
+    This could lead to some confusion, for example if a variable name is misspelled or never used by any model in the first place.
+* Added some basic validation of variable request parameters when loading from .INI configuration files. Invalid requests are rejected. Validation errors and warnings are reported in the plugin's log.
 * The "Paused", "Unpaused" and "Pause Toggled" Touch Portal Events now work correctly (or at least more logically/consistently) due to a fix in SU12.
   * Note: the "Pause Toggled" event triggers on any/every "pause mode" change, even if the sim is not actually "unpaused" completely. 
     The name has been kept for backwards compatibility. See the new event descriptions below for more details on pause modes.
   * The "Paused" event is also triggered when _any_ pause mode is activated, even if the simulator already had another pause mode active.
   * "Unpaused" at least behaves as expected and only triggers when _all_ pause modes have been deactivated.
+* Prevent a rare condition when connecting to MSFS where the main SimConnect connection gets established properly but the WASM client's connection fails unexpectedly.
+* Updated database of Simulator Variables and Event IDs imported from MSFS SDK Web site documentation as of April 12th.
 * Updated SimConnect libraries to latest versions (SDK v0.21.0.0).
 
 ### Added or Updated Actions/Connectors
@@ -21,7 +26,7 @@ _MSFS - Simulator System_ category:
 
 ### Added Events
 Added to _MSFS - Simulator System -> Simulator System Event_ choices:
-* "Full Pause" - Indicates a complete pause including any time passing. Triggered by "Dev Mode Pause" (in developer toolbar "Options"), 
+* "Full Pause" - Indicates a complete pause including any time passing. Triggered when a flight is loading, by "Dev Mode Pause" (in developer toolbar "Options"), 
   the new "Pause - Full" plugin action, or a SimConnect "PAUSE_SET" Event with a value of `1`. (Possibly other ways as well?)
 * "Active Pause" - Simulator has been paused using "active pause" key binding or toolbar button.
 * "Simulator Pause" - The simulator has been paused with the "ESC" key to the menu, or with "Pause - Simulator" action, or "PAUSE_ON" SimConnect Event.

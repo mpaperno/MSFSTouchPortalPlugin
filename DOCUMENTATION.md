@@ -4,7 +4,7 @@ This plugin provides a two-way interface between Touch Portal and Flight Simulat
 
 For further documentation, please see https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki
 
-This documentation generated for plugin v1.3.2.0
+This documentation generated for plugin v1.4.0.0
 
 ---
 
@@ -203,8 +203,8 @@ Category{0} Variable:{1} Index
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Set a Named Variable</td><td>Set a Named Variable.	Sets a value on any named variable of various types.					** All but SimVar types require WASimModule**
-Local (L) variables can also be created. SimVar (A) and GPS (C) types require a Unit. For indexed SimVars, include it in the name after a : (colon), eg. "VARIABLE NAME:1".</td><td>Variable
+<tr valign='top'><td>Set a Named Variable</td><td>Set a Named Variable.	Sets a value on any named variable of various types.					** All but SimVar and Local types require WASimModule **
+Local (L) variables can also be created. SimVar (A) and GPS (C) types require a Unit. For indexed SimVars, include the index in the name after a : (colon), eg. "VARIABLE NAME:1".</td><td>Variable
 Type{0} Variable
 Name{1} Value{2} Unit
 (A/C){3} Create
@@ -423,8 +423,8 @@ Epsilon{6}</td><td><ol start=0>
 <li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 </ol></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Request a Named Variable</td><td>Request a Named Variable.					** All but SimVar types require WASimModule **
-SimVar, GPS, & Env. types require a Unit type. For indexed SimVars, include it in the name after a : (colon), eg. "VARIABLE NAME:1".</td><td>Type{0} Name{1} Unit{2} for Plugin
+<tr valign='top'><td>Request a Named Variable</td><td>Request a Named Variable.					** All but SimVar and Local types require WASimModule **
+SimVar, GPS, & Env. types require a Unit type. For indexed SimVars, include the index in the name after a : (colon), eg. "VARIABLE NAME:1".</td><td>Type{0} Name{1} Unit{2} for Plugin
 Category{3} Format{4} Default
 Value{5} Update
 Period{6} Update
@@ -1674,16 +1674,49 @@ Range:{4}-{5}</td><td><ol start=0>
 
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>Sim Event(s)</th><th>On<br/>Hold</sub></div></th></tr>
-<tr valign='top'><td>Change Selected Value (+/-)</td><td></td><td>{0} Selected Value</td><td><ol start=0>
+<tr valign='top'><td>Adjust a Selected Value (+/-)</td><td>This action affects any value previously "selected" with some other action (such as AP settings, frequencies, etc).</td><td>{0} Selected Value</td><td><ol start=0>
 <li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
 </ol></td>
 <td><dl><dt>Increase</dt><dd>PLUS</dd><dt>Decrease</dt><dd>MINUS</dd></dl></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Simulation Rate</td><td></td><td>{0} Simulation Rate</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Increase</b>, Decrease</li>
+<tr valign='top'><td>Pause - Full</td><td>A "full" pause stops the simulation completely, including any time passing in the simulated world. Same as "Dev Mode Pause."</td><td>Set Full Pause to {0} (0/1)</td><td><ol start=0>
+<li>[text] &nbsp; <b>1</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 1.00&gt;</sub></li>
 </ol></td>
-<td><dl><dt>Increase</dt><dd>SIM_RATE_INCR</dd><dt>Decrease</dt><dd>SIM_RATE_DECR</dd></dl></td>
+<td><dl><dd>PAUSE_SET</dd></dl></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Pause - Simulator</td><td>A "simulator" pause stops some aspects of the simulation, but not time. Same as the "Menu (ESC) Pause" but w/out the actual menu.</td><td>{0} Simulator Pause</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Enable</b>, Disable</li>
+</ol></td>
+<td><dl><dt>Enable</dt><dd>PAUSE_ON</dd><dt>Disable</dt><dd>PAUSE_OFF</dd></dl></td>
+<td align='center'></td></tr>
+<tr valign='top'><td>Simulation Rate Adjust</td><td></td><td>{0} Simulation Rate</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Increase</b>, Decrease, Select (for +/- adjustment)</li>
+</ol></td>
+<td><details><summary><sub>details</sub></summary><dl><dt>Increase</dt><dd>SIM_RATE_INCR</dd><dt>Decrease</dt><dd>SIM_RATE_DECR</dd><dt>Select (for +/- adjustment)</dt><dd>SIM_RATE</dd></dl></details></td>
 <td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Simulation Rate Set</td><td></td><td>Set Simulation Rate to {0}</td><td><ol start=0>
+<li>[text] &nbsp; <b>1</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 50000.00&gt;</sub></li>
+</ol></td>
+<td><dl><dd>SIM_RATE_SET</dd></dl></td>
+<td align='center'>&#9745;</td></tr>
+</table>
+
+
+#### Connectors
+
+<table>
+<tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th></tr>
+<tr valign='top'><td>Simulation Rate Set</td><td></td><td>Set Simulation Rate
+in Value Range:{0}-{1}| Feedback From
+| State (opt):{2}{3}
+Range:{4}-{5}</td><td><ol start=0>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>3</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
 </table>
 
 
@@ -1701,9 +1734,13 @@ Range:{4}-{5}</td><td><ol start=0>
 <li><b>SimConnect Error</b> - When a Simulator (SimConnect) error or warning is detected. Error details (log entry) are sent in the SimSystemEventData state value.</li>
 <li><b>Plugin Error</b> - When a Plugin-specific error or warning is detected (eg. could not parse action data, load a file, etc). Error details (log entry) are sent in the SimSystemEventData state value.</li>
 <li><b>Plugin Information</b> - When a notable plugin informational ("success") action is detected. Information details (log entry) are sent in the SimSystemEventData state value.</li>
-<li><b>Paused</b> - When the flight is paused (but not active pause nor 'esc' pause).</li>
-<li><b>Unpaused</b> - When the flight is un-paused  (but not active pause nor 'esc' pause).</li>
-<li><b>Pause Toggled</b> - When the flight is paused or unpaused (but not active pause nor 'esc' pause).</li>
+<li><b>Paused</b> - When the flight is paused in any mode.</li>
+<li><b>Unpaused</b> - When the flight is unpaused completely (Pause State if OFF).</li>
+<li><b>Pause Toggled</b> - When any pause mode is toggled or sim is unpaused completely (i.e. the Pause State changes).</li>
+<li><b>Full Pause</b> - "full" Pause (sim + traffic + etc...)</li>
+<li><b>Active Pause</b> - Pause was activated using the "Active Pause" Button.</li>
+<li><b>Simulator Pause</b> - Pause the player sim but traffic, multi, etc... will still run.</li>
+<li><b>Full Pause (FSX Legacy)</b> - FSX Legacy Pause (not used in FS2020)</li>
 <li><b>Flight Started</b> - The simulator is running. Typically the user is actively controlling the aircraft on the ground or in the air. However, in some cases additional pairs of SimStart/SimStop events are sent. For example, when a flight is reset the events that are sent are SimStop, SimStart, SimStop, SimStart.</li>
 <li><b>Flight Stopped</b> - The simulator is not running. Typically the user is loading a flight, navigating the shell or in a dialog.</li>
 <li><b>Flight Toggled</b> - When the flight changes between running and not.</li>
@@ -1734,6 +1771,7 @@ Range:{4}-{5}</td><td><ol start=0>
 | AtcFlightNumber | ATC FLIGHT NUMBER | Flight Number used by ATC | string |  |  |
 | AtcModel | ATC MODEL | Model of aircraft used by ATC | string |  |  |
 | SimSystemEvent |  | Most recent Simulator System Event name. | string |  |  |
+| SimPauseState |  | Simulator Pause State Flag(s) (OFF|FULL|ACTIVE|SIM) | flags |  |  |
 | SimulationRate | SIMULATION RATE | The current simulation rate | number |  |  |
 | AtcType | ATC TYPE | Type of aircraft used by ATC | string |  |  |
 
