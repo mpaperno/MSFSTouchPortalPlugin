@@ -398,7 +398,7 @@ namespace MSFSTouchPortalPlugin.Services
       int count = 0;
       // Retry simulator connection several times in case of initial failure. Unlikely, but observed once during testing.
       do {
-        hr = _wlib.connectSimulator(2000);
+        hr = _wlib.connectSimulator(2000U);
       }
       while (hr == HR.TIMEOUT && ++count < 11);
 
