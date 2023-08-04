@@ -542,6 +542,11 @@ namespace MSFSTouchPortalPlugin.Services
       UpdateActionDataList(PluginActions.AddNamedVariable, "Unit", units);
       UpdateActionDataList(PluginActions.SetVariable, "Unit", units);
       UpdateActionDataList(PluginActions.SetVariable, "Unit", units, null, true);
+      // L var unit type is usually "number", except for a few special cases, so put that on top.
+      var lunits = units.Prepend("number");
+      UpdateActionDataList(PluginActions.AddLocalVar, "Unit", lunits);
+      UpdateActionDataList(PluginActions.SetLocalVar, "Unit", lunits);
+      UpdateActionDataList(PluginActions.SetLocalVar, "Unit", lunits, null, true);
     }
 
     // Available plugin's state/action categories
@@ -637,19 +642,24 @@ namespace MSFSTouchPortalPlugin.Services
       UpdateActionDataList(action, "Unit", list, instanceId, isConnector);
     }
 
+    static readonly string[] __strArry_NA = new[] { "N/A" };
+    static readonly string[] __strArry_NoYes = new[] { "No", "Yes" };
+
     void UpdateCreatableVariableType(string varType, string instanceId, bool isConnector) {
       if (!String.IsNullOrEmpty(varType) && varType[0] == 'L')
-        UpdateActionDataList(PluginActions.SetVariable, "Create", new[] { "No", "Yes" }, instanceId, isConnector);
+        UpdateActionDataList(PluginActions.SetVariable, "Create", __strArry_NoYes, instanceId, isConnector);
       else
-        UpdateActionDataList(PluginActions.SetVariable, "Create", new[] { "N/A" }, instanceId, isConnector);
+        UpdateActionDataList(PluginActions.SetVariable, "Create", __strArry_NA, instanceId, isConnector);
     }
 
     void UpdateUnitsForVariableType(PluginActions action, string varType, string instanceId, bool isConnector)
     {
       if (String.IsNullOrEmpty(varType) || SimVarItem.RequiresUnitType(varType[0]))
         UpdateActionDataList(action, "Unit", _imports.UnitNames(), instanceId, isConnector);
+      else if (varType[0] == 'L')
+        UpdateActionDataList(action, "Unit", _imports.UnitNames().Prepend("number"), instanceId, isConnector);
       else
-        UpdateActionDataList(action, "Unit", new[] { "N/A" }, instanceId, isConnector);
+        UpdateActionDataList(action, "Unit", __strArry_NA, instanceId, isConnector);
     }
 
     // Events -------------------------
@@ -927,8 +937,7 @@ namespace MSFSTouchPortalPlugin.Services
         _logger.LogError("Could not parse Name parameter for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
         return false;
       }
-      string unitName = null;
-      if (SimVarItem.RequiresUnitType(varType) && (!data.TryGetValue("Unit", out unitName) || string.IsNullOrWhiteSpace(unitName))) {
+      if ((!data.TryGetValue("Unit", out string unitName) || string.IsNullOrWhiteSpace(unitName)) && SimVarItem.RequiresUnitType(varType)) {
         _logger.LogError("Unit type is required in {actId} for SimVar {varName}", actId, varName);
         return false;
       }
@@ -974,8 +983,9 @@ namespace MSFSTouchPortalPlugin.Services
       //if (data.TryGetValue("RelAi", out var relAi) && new BooleanString(relAi) && !_simConnectService.ReleaseAIControl(simVar.Def))
       //  return false;
 
-      if (_simConnectService.WasmAvailable) {
-        // take the shorter and better route
+      // If WASM is available, take the shorter and better route.
+      // One exception is for L vars which have a custom Unit specified... WASM can't handle that.
+      if (_simConnectService.WasmAvailable && !(varType == 'L' && (string.IsNullOrWhiteSpace(unitName) || unitName == "number"))) {
         if (isStringType) {
           string calcCode = $"'{sVal}' (>{varType}:{varName})";
           _logger.LogDebug("Sending code for String type var: {calcCode}", calcCode);
@@ -1068,15 +1078,12 @@ namespace MSFSTouchPortalPlugin.Services
         return false;
       }
 
-      string sUnit = null;
-      if (SimVarItem.RequiresUnitType(varType)) {
-        if (!data.TryGetValue("Unit", out sUnit)) {
-          _logger.LogError("Unit Name is missing or empty for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
-          return false;
-        }
-        if (data.TryGetValue("VarIndex", out var sIndex) && !string.IsNullOrEmpty(sIndex))
-          _ = uint.TryParse(sIndex, out index);
+      if (!data.TryGetValue("Unit", out string sUnit) && SimVarItem.RequiresUnitType(varType)) {
+        _logger.LogError("Unit Name is missing or empty for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
+        return false;
       }
+      if (data.TryGetValue("VarIndex", out var sIndex) && !string.IsNullOrEmpty(sIndex))
+        _ = uint.TryParse(sIndex, out index);
 
       // create the SimVarItem from collected data
       SimVarItem simVar = PluginConfig.CreateDynamicSimVarItem(varType, varName, catId, sUnit, index, _simVarCollection);

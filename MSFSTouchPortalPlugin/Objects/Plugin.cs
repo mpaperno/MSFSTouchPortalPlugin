@@ -172,12 +172,14 @@ namespace MSFSTouchPortalPlugin.Objects
 
 
     [TouchPortalAction(PluginActions.SetLocalVar, "Set a Selected Airplane Local Variable",
-      "Sets a value on a Local variable from currently loaded aircraft.\t\t\t\t\t** Requires WASimModule **",
-      "Set Variable:{0}To:{1}",
-      "Set Variable:{0} in Value\nRange",
+      "Sets a value on a Local variable from currently loaded aircraft.\n" +
+        "The Unit type is usually \"number\" and will be ignored except in a few specific instances for some 3rd-party models.",
+      "Set Variable:{0} To Value:{1} in Units:\n(opt){2}",
+      "Set Variable:{0} Unit:\n(opt){1} in Value\nRange:",
       holdable: true)]
     [TouchPortalActionChoice("[plugin not connected]", "", Id = "VarName", Label = "Variable Name")]
     [TouchPortalActionText("0", float.MinValue, float.MaxValue, Id = "Value", Label = "Value")]
+    [TouchPortalActionChoice("number", "number", Id = "Unit", Label = "Unit Name")]
     [TouchPortalConnectorMeta()]
     public static readonly object SetLocalVar;
 
@@ -272,11 +274,13 @@ namespace MSFSTouchPortalPlugin.Objects
     public static readonly object AddSimulatorVar;
 
     [TouchPortalAction(PluginActions.AddLocalVar, "Request an Airplane Local Variable",
-      "Request an Airplane Local Variable.\t\t\t\t\t** Requires WASimModule **\n" +
-      "The list of variables is loaded live from Simulator.",
-      "Request\nVariable {0} for Plugin\nCategory{1} Format{2} Default\nValue{3} Update\nPeriod{4} Update\nInterval{5} Delta\nEpsilon{6}"
+      "Request an Airplane Local Variable.\n" +
+      "The list of variables is loaded live from Simulator." +
+        "The Unit type is usually \"number\" and will be ignored except in a few specific instances for some 3rd-party models.",
+      "Request\nVariable {0} Unit\n(opt) {1} for Plugin\nCategory{2} Format{3} Default\nValue{4} Update\nPeriod{5} Update\nInterval{6} Delta\nEpsilon{7}"
     )]
     [TouchPortalActionChoice("[simulator not connected]", "", Id = "VarName", Label = "Simulator Variable Name")]
+    [TouchPortalActionChoice("number", "number", Id = "Unit", Label = "Unit Name")]
     [TouchPortalActionChoice("[plugin not connected]", "", Id = "CatId", Label = "Category")]
     [TouchPortalActionText("F2", Id = "Format", Label = "Formatting String")]
     [TouchPortalActionText("0", Id = "DfltVal", Label = "Default Value")]
