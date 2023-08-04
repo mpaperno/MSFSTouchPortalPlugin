@@ -428,6 +428,8 @@ namespace MSFSTouchPortalPlugin.Types
         return returnError("Name is empty", ref resultMsg);
       if (string.IsNullOrEmpty(SimVarName))
         return returnError("Variable Name is empty", ref resultMsg);
+      if (RequiresUnitType(VariableType) && string.IsNullOrEmpty(Unit))
+        return returnError("Unit type is empty and required", ref resultMsg);
 
       // Make sure a category is assigned, except for temporary items
       if (CategoryId == Groups.None && DefinitionSource != SimVarDefinitionSource.Temporary)
@@ -466,8 +468,8 @@ namespace MSFSTouchPortalPlugin.Types
 
         case 'L':
         case 'T':
-          // Local and Token variable types may only have alphanumerics and underscores, no spaces.
-          if (!Regex.IsMatch(SimVarName, @"^[a-zA-Z][a-zA-Z0-9_]+$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
+          // Local and Token variable types may only have alphanumerics, underscores, and colons; no spaces.
+          if (!Regex.IsMatch(SimVarName, @"^[a-zA-Z][a-zA-Z0-9_:]+$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
             return returnError($"Variable Name '{SimVarName}' contains invalid character(s)", ref resultMsg);
           break;
 
