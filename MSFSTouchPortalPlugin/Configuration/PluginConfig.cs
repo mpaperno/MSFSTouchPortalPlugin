@@ -300,7 +300,7 @@ namespace MSFSTouchPortalPlugin.Configuration
       string bareName = Path.GetFileName(filename);
       if (!LoadedStateConfigFiles.Contains(bareName))
         LoadedStateConfigFiles.Add(bareName);
-      _logger.LogInformation("Loaded {count} variable requests from '{filename}'", ret.Count, filename);
+      _logger.LogInformation((int)EventIds.PluginInfo, "Loaded {count} variable requests from '{filename}'", ret.Count, filename);
       return ret;
     }
 

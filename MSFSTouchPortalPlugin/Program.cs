@@ -76,6 +76,7 @@ namespace MSFSTouchPortalPlugin {
               // Do not change these filters w/out a good reason!
               .AddFilter<PluginLoggerProvider>("", LogLevel.None)
               .AddFilter<PluginLoggerProvider>("MSFSTouchPortalPlugin.Services.PluginService", LogLevel.Information)
+              .AddFilter<PluginLoggerProvider>("MSFSTouchPortalPlugin.Configuration.PluginConfig", LogLevel.Information)
               .AddFilter<PluginLoggerProvider>("MSFSTouchPortalPlugin.Services.SimConnectService", LogLevel.Warning);
           })
           .ConfigureServices((context, services) => {

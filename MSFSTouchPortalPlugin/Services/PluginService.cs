@@ -493,8 +493,7 @@ namespace MSFSTouchPortalPlugin.Services
         _logger.LogError("Did not load any variable requests from file '{file}'", filepath);
       else if (count != simVars.Count)
         _logger.LogWarning((int)EventIds.PluginError, "Loaded only {count} out of {fileCount} variable requests from file '{file}'", count, simVars.Count, filepath);
-      else
-        _logger.LogInformation((int)EventIds.PluginInfo, "Loaded all {count} variable requests from file '{file}'", count, filepath);
+      // Note: PluginConfig logs what it did -- do not duplicate.
     }
 
     void SaveSimVarsToFile(string filepath, bool customOnly = true)
