@@ -1,5 +1,17 @@
 # MSFS Touch Portal Plugin Change Log
 
+## 1.4.2.0 (Aug-5-2023)
+Version number: `1040200`
+
+* Fixes variable name validation issue with some Local ("L") type simulator variables which contained `:` in their names (fixes https://github.com/mpaperno/MSFSTouchPortalPlugin/issues/57).
+* Re-introduce ability to specify Unit types when setting or requesting Local type variables. Note that most L vars will ignore/not use the Unit type -- this seems only to be relevant
+  for a very few 3rd-party models/vars (closes https://github.com/mpaperno/MSFSTouchPortalPlugin/issues/58).
+* Improve logging of variable request actions to the TP "Log Messages" State (eg. the States Editor page shows more verbose details including validation errors).
+* Slightly optimized the Touch Portal client communication library for quicker message output.
+* Updated database of imported Simulator Variables and Event IDs from MSFS SDK online documentation as of August 5th.
+* Updated SimConnect libraries to latest versions (SDK v0.21.1.0).
+
+---
 ## 1.4.1.0 (Apr-15-2023)
 Version number: `1040100`
 
