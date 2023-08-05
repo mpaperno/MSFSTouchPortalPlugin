@@ -1,6 +1,6 @@
 {
   "sdk": 6,
-  "version": 1040000,
+  "version": 1040200,
   "name": "MSFS Touch Portal Plugin",
   "id": "MSFSTouchPortalPlugin",
   "configuration": {
@@ -319,8 +319,8 @@
           "type": "communicate",
           "tryInline": true,
           "hasHoldFunctionality": true,
-          "description": "Sets a value on a Local variable from currently loaded aircraft.\t\t\t\t\t** Requires WASimModule **",
-          "format": "Set Variable:{$MSFSTouchPortalPlugin.Plugin.Action.SetLocalVar.Data.VarName$}To:{$MSFSTouchPortalPlugin.Plugin.Action.SetLocalVar.Data.Value$}",
+          "description": "Sets a value on a Local variable from currently loaded aircraft.\nThe Unit type is usually \"number\" and will be ignored except in a few specific instances for some 3rd-party models.",
+          "format": "Set Variable:{$MSFSTouchPortalPlugin.Plugin.Action.SetLocalVar.Data.VarName$} To Value:{$MSFSTouchPortalPlugin.Plugin.Action.SetLocalVar.Data.Value$} in Units:\n(opt){$MSFSTouchPortalPlugin.Plugin.Action.SetLocalVar.Data.Unit$}",
           "data": [
             {
               "id": "MSFSTouchPortalPlugin.Plugin.Action.SetLocalVar.Data.VarName",
@@ -339,6 +339,15 @@
               "minValue": -3.4028234663852886E+38,
               "maxValue": 3.4028234663852886E+38,
               "allowDecimals": false
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.SetLocalVar.Data.Unit",
+              "type": "choice",
+              "label": "Unit Name",
+              "default": "number",
+              "valueChoices": [
+                "number"
+              ]
             }
           ]
         },
@@ -836,8 +845,8 @@
         {
           "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar",
           "name": "Set a Selected Airplane Local Variable",
-          "description": "Sets a value on a Local variable from currently loaded aircraft.\t\t\t\t\t** Requires WASimModule **",
-          "format": "Set Variable:{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.VarName$} in Value\nRange{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.FbCatId$}{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.FbRangeMax$}",
+          "description": "Sets a value on a Local variable from currently loaded aircraft.\nThe Unit type is usually \"number\" and will be ignored except in a few specific instances for some 3rd-party models.",
+          "format": "Set Variable:{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.VarName$} Unit:\n(opt){$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.Unit$} in Value\nRange:{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.RangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.RangeMax$}| Feedback From\n| State (opt):{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.FbCatId$}{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.FbVarName$}\nRange:{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.FbRangeMin$}-{$MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.FbRangeMax$}",
           "data": [
             {
               "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.VarName",
@@ -846,6 +855,15 @@
               "default": "",
               "valueChoices": [
                 "[plugin not connected]"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Conn.SetLocalVar.Data.Unit",
+              "type": "choice",
+              "label": "Unit Name",
+              "default": "number",
+              "valueChoices": [
+                "number"
               ]
             },
             {
@@ -1268,8 +1286,8 @@
           "type": "communicate",
           "tryInline": true,
           "hasHoldFunctionality": false,
-          "description": "Request an Airplane Local Variable.\t\t\t\t\t** Requires WASimModule **\nThe list of variables is loaded live from Simulator.",
-          "format": "Request\nVariable {$MSFSTouchPortalPlugin.Plugin.Action.AddLocalVar.Data.VarName$} for Plugin\nCategory{$MSFSTouchPortalPlugin.Plugin.Action.AddLocalVar.Data.CatId$} Format{$MSFSTouchPortalPlugin.Plugin.Action.AddLocalVar.Data.Format$} Default\nValue{$MSFSTouchPortalPlugin.Plugin.Action.AddLocalVar.Data.DfltVal$} Update\nPeriod{$MSFSTouchPortalPlugin.Plugin.Action.AddLocalVar.Data.UpdPer$} Update\nInterval{$MSFSTouchPortalPlugin.Plugin.Action.AddLocalVar.Data.UpdInt$} Delta\nEpsilon{$MSFSTouchPortalPlugin.Plugin.Action.AddLocalVar.Data.Epsilon$}",
+          "description": "Request an Airplane Local Variable.\nThe list of variables is loaded live from Simulator.The Unit type is usually \"number\" and will be ignored except in a few specific instances for some 3rd-party models.",
+          "format": "Request\nVariable {$MSFSTouchPortalPlugin.Plugin.Action.AddLocalVar.Data.VarName$} Unit\n(opt) {$MSFSTouchPortalPlugin.Plugin.Action.AddLocalVar.Data.Unit$} for Plugin\nCategory{$MSFSTouchPortalPlugin.Plugin.Action.AddLocalVar.Data.CatId$} Format{$MSFSTouchPortalPlugin.Plugin.Action.AddLocalVar.Data.Format$} Default\nValue{$MSFSTouchPortalPlugin.Plugin.Action.AddLocalVar.Data.DfltVal$} Update\nPeriod{$MSFSTouchPortalPlugin.Plugin.Action.AddLocalVar.Data.UpdPer$} Update\nInterval{$MSFSTouchPortalPlugin.Plugin.Action.AddLocalVar.Data.UpdInt$} Delta\nEpsilon{$MSFSTouchPortalPlugin.Plugin.Action.AddLocalVar.Data.Epsilon$}",
           "data": [
             {
               "id": "MSFSTouchPortalPlugin.Plugin.Action.AddLocalVar.Data.VarName",
@@ -1278,6 +1296,15 @@
               "default": "",
               "valueChoices": [
                 "[simulator not connected]"
+              ]
+            },
+            {
+              "id": "MSFSTouchPortalPlugin.Plugin.Action.AddLocalVar.Data.Unit",
+              "type": "choice",
+              "label": "Unit Name",
+              "default": "number",
+              "valueChoices": [
+                "number"
               ]
             },
             {

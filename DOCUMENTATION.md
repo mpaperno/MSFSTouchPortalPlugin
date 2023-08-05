@@ -4,7 +4,7 @@ This plugin provides a two-way interface between Touch Portal and Flight Simulat
 
 For further documentation, please see https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki
 
-This documentation generated for plugin v1.4.0.0
+This documentation generated for plugin v1.4.2.0
 
 ---
 
@@ -198,9 +198,12 @@ Category{0} Variable:{1} Index
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Set a Selected Airplane Local Variable</td><td>Sets a value on a Local variable from currently loaded aircraft.					** Requires WASimModule **</td><td>Set Variable:{0}To:{1}</td><td><ol start=0>
+<tr valign='top'><td>Set a Selected Airplane Local Variable</td><td>Sets a value on a Local variable from currently loaded aircraft.
+The Unit type is usually "number" and will be ignored except in a few specific instances for some 3rd-party models.</td><td>Set Variable:{0} To Value:{1} in Units:
+(opt){2}</td><td><ol start=0>
 <li>[choice] &nbsp; <b></b>[plugin not connected]</li>
 <li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[choice] &nbsp; <b>number</b></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Set a Named Variable</td><td>Set a Named Variable.	Sets a value on any named variable of various types.					** All but SimVar and Local types require WASimModule **
@@ -305,11 +308,14 @@ Range:{4}-{5} | With
 <li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -2147483648&gt;</sub> <sub>&lt;max: 4294967295&gt;</sub></li>
 <li>[switch] &nbsp; <b>False</b></li>
 </ol></td>
-<tr valign='top'><td>Set a Selected Airplane Local Variable</td><td>Sets a value on a Local variable from currently loaded aircraft.					** Requires WASimModule **</td><td>Set Variable:{0} in Value
-Range{1}-{2}| Feedback From
-| State (opt):{3}{4}
-Range:{5}-{6}</td><td><ol start=0>
+<tr valign='top'><td>Set a Selected Airplane Local Variable</td><td>Sets a value on a Local variable from currently loaded aircraft.
+The Unit type is usually "number" and will be ignored except in a few specific instances for some 3rd-party models.</td><td>Set Variable:{0} Unit:
+(opt){1} in Value
+Range:{2}-{3}| Feedback From
+| State (opt):{4}{5}
+Range:{6}-{7}</td><td><ol start=0>
 <li>[choice] &nbsp; <b></b>[plugin not connected]</li>
+<li>[choice] &nbsp; <b>number</b></li>
 <li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 <li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 <li>[choice] &nbsp; <b></b>[connect plugin]</li>
@@ -406,15 +412,17 @@ Epsilon{9}</td><td><ol start=0>
 <li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 </ol></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Request an Airplane Local Variable</td><td>Request an Airplane Local Variable.					** Requires WASimModule **
-The list of variables is loaded live from Simulator.</td><td>Request
-Variable {0} for Plugin
-Category{1} Format{2} Default
-Value{3} Update
-Period{4} Update
-Interval{5} Delta
-Epsilon{6}</td><td><ol start=0>
+<tr valign='top'><td>Request an Airplane Local Variable</td><td>Request an Airplane Local Variable.
+The list of variables is loaded live from Simulator.The Unit type is usually "number" and will be ignored except in a few specific instances for some 3rd-party models.</td><td>Request
+Variable {0} Unit
+(opt) {1} for Plugin
+Category{2} Format{3} Default
+Value{4} Update
+Period{5} Update
+Interval{6} Delta
+Epsilon{7}</td><td><ol start=0>
 <li>[choice] &nbsp; <b></b>[simulator not connected]</li>
+<li>[choice] &nbsp; <b>number</b></li>
 <li>[choice] &nbsp; <b></b>[plugin not connected]</li>
 <li>[text] &nbsp; <b>F2</b></li>
 <li>[text] &nbsp; <b>0</b></li>
