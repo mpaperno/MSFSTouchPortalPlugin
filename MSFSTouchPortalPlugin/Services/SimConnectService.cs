@@ -305,6 +305,12 @@ namespace MSFSTouchPortalPlugin.Services
         return;
       }
       if ((simVar.NeedsScheduledRequest && WasmInitialized) || (simVar.VariableType != 'A' && simVar.VariableType != 'L')) {
+      bool scSupported = (simVar.VariableType == 'A' || simVar.VariableType == 'L');
+      if (!scSupported && !WasmInitialized) {
+        _logger.LogError((int)EventIds.PluginError, "Can not request {type} simulator variable without WASM integration.", simVar.VariableType);
+        return;
+      }
+      if (!scSupported || (simVar.NeedsScheduledRequest && WasmInitialized)) {
         simVar.DataProvider = SimVarDataProvider.WASimClient;
         simVar.RegistrationStatus = RegisterToWasm(simVar);
       }
@@ -353,7 +359,7 @@ namespace MSFSTouchPortalPlugin.Services
       if (!InvokeSimMethod(registerDataDelegate, simVar.Def))
         return SimVarRegistrationStatus.Error;
 
-      if (simVar.NeedsScheduledRequest || simVar.UpdatePeriod == SimConUpdPeriod.Never || RequestDataOnSimObject(simVar))
+      if (simVar.UpdatePeriod == SimConUpdPeriod.Never || simVar.UpdatePeriod == SimConUpdPeriod.Millisecond || RequestDataOnSimObject(simVar))
         return SimVarRegistrationStatus.Registered;
       return SimVarRegistrationStatus.Error;
     }

@@ -245,7 +245,7 @@ namespace MSFSTouchPortalPlugin.Types
     /// <summary> The SimConnect data type for registering this var. </summary>
     public SIMCONNECT_DATATYPE SimConnectDataType { get; private set; }
     /// <summary> Indicates that this state needs a scheduled update request (UpdatePeriod == Millisecond). </summary>
-    public bool NeedsScheduledRequest => DataProvider != SimVarDataProvider.WASimClient && UpdatePeriod == UpdatePeriod.Millisecond && VariableType == 'A';
+    public bool NeedsScheduledRequest => DataProvider != SimVarDataProvider.WASimClient && UpdatePeriod == UpdatePeriod.Millisecond;
     /// <summary> For serializing the "raw" formatting string w/out "{0}" parts </summary>
     public string FormattingString => _formatString;
 
