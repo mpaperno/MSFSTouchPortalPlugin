@@ -72,9 +72,11 @@ namespace MSFSTouchPortalPlugin.Services
 
     private Dictionary<string, ActionEventType> actionsDictionary = new();
     private Dictionary<string, PluginSetting> pluginSettingsDictionary = new();
-    private IReadOnlyDictionary<int, string> _localVariablesList = null;
     private readonly ConcurrentDictionary<string, Timer> _repeatingActionTimers = new();  // storage for temporary repeating (held) action timers, index by action ID
     private readonly ConcurrentQueue<string> _logMessages = new();  // stores the last MAX_LOG_MSGS_FOR_STATE log messages for the LogMessages state value, used in PluginLogger callback
+#if WASIM
+    private IReadOnlyDictionary<int, string> _localVariablesList = null;
+#endif
 
     private static readonly System.Data.DataTable _expressionEvaluator = new();  // used to evaluate basic math in action data
 
@@ -178,7 +180,9 @@ namespace MSFSTouchPortalPlugin.Services
       _simConnectService.OnDisconnect += SimConnectEvent_OnDisconnect;
       _simConnectService.OnException += SimConnectEvent_OnException;
       _simConnectService.OnEventReceived += SimConnectEvent_OnEventReceived;
+#if WASIM
       _simConnectService.OnLVarsListUpdated += SimConnect_OnLVarsListUpdated;
+#endif
 
       return true;
     }
@@ -407,10 +411,12 @@ namespace MSFSTouchPortalPlugin.Services
       _logger.LogWarning((int)EventIds.SimError, "SimConnect Request Error: {error}", data.ToString());
     }
 
+#if WASIM
     void SimConnect_OnLVarsListUpdated(IReadOnlyDictionary<int, string> list) {
       _localVariablesList = list;
       UpdateLocalVarsLists();
     }
+#endif
 
     #endregion SimConnect Events
 
@@ -530,6 +536,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     // Variables, setters and requesters  ----------------------------
 
+#if WASIM
     // List of Local vars for all instances
     private void UpdateLocalVarsLists()
     {
@@ -537,6 +544,7 @@ namespace MSFSTouchPortalPlugin.Services
       UpdateLocalVarsList(PluginActions.SetLocalVar, null, true);
       UpdateLocalVarsList(PluginActions.AddLocalVar, null, false);
     }
+#endif
 
     // Unit lists
     void UpdateUnitsLists()
@@ -596,6 +604,7 @@ namespace MSFSTouchPortalPlugin.Services
         UpdateActionDataList(categoryId, actId, isConnector ? "FbVarName" : "VarName", _simVarCollection.GetSimVarSelectorList(catId), instanceId, isConnector);
     }
 
+#if WASIM
     // List of Local vars per action instance
     private void UpdateLocalVarsList(PluginActions action, string instanceId, bool isConnector) {
       if (_localVariablesList == null || !_localVariablesList.Any())
@@ -605,6 +614,7 @@ namespace MSFSTouchPortalPlugin.Services
       else
         UpdateActionDataList(action, "VarName", _localVariablesList.Values, instanceId, isConnector);
     }
+#endif
 
     // Update list of settable SimVariables based on selected imported category; for PluginActions.SetSimulatorVar
     void UpdateRegisteredSimVarsList(string categoryName, string instanceId, bool isConnector)
@@ -621,10 +631,12 @@ namespace MSFSTouchPortalPlugin.Services
       if (action == PluginActions.AddKnownSimVar) {  // deprecated
         if (categoryName.StartsWith("---"))  // divider
             return;
+#if WASIM
         if (categoryName.StartsWith("L:")) {
           UpdateLocalVarsList(action, instanceId, false);
           return;
         }
+#endif
       }
       // select variable names in category and mark if already used
       UpdateActionDataList(action, "VarName", _imports.SimVarNamesForSelector(categoryName, null, _simVarCollection.SimVarNames), instanceId);
@@ -838,9 +850,10 @@ namespace MSFSTouchPortalPlugin.Services
           UpdateHubHopData();
           break;
 
+#if WASIM
         case PluginActions.UpdateLocalVarsList:
           return _simConnectService.RequestLookupList(WASimCommander.CLI.Enums.LookupItemType.LocalVariable);
-
+#endif
         case PluginActions.ReRegisterLocalVars:
           _simConnectService.RetryRegisterLocalVars();
           break;
@@ -1045,8 +1058,10 @@ namespace MSFSTouchPortalPlugin.Services
 
       uint index = 0;
       char varType = 'A';
+#if WASIM
       string sCalcCode = null;
       var resType = WASimCommander.CLI.Enums.CalcResultType.None;
+#endif
       switch (actId) {
         case PluginActions.AddLocalVar:
           varType = 'L';
@@ -1058,6 +1073,7 @@ namespace MSFSTouchPortalPlugin.Services
           }
           varType = sVarType[0];
           break;
+#if WASIM
         case PluginActions.AddCalculatedValue:
           if (!data.TryGetValue("CalcCode", out sCalcCode) || string.IsNullOrWhiteSpace(sCalcCode)) {
             _logger.LogError("Could not get valid CalcCode parameter for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
@@ -1069,6 +1085,7 @@ namespace MSFSTouchPortalPlugin.Services
           }
           varType = 'Q';
           break;
+#endif
         // legacy for < v1.3; replaced with AddLocalVar
         case PluginActions.AddKnownSimVar:  // deprecated
           if (data.TryGetValue("SimCatName", out var simCatName) && simCatName.Length > 1 && simCatName[0..2] == "L:")
@@ -1106,11 +1123,13 @@ namespace MSFSTouchPortalPlugin.Services
       if (data.TryGetValue("Epsilon", out var sEpsilon) && float.TryParse(sEpsilon, out float epsilon))
         simVar.DeltaEpsilon = epsilon;
 
+#if WASIM
       // Calculator result type
       if (varType == 'Q') {
         simVar.SimVarName = sCalcCode;     // replace simvar name with calc code; the Name used in state names/etc isn't changed.
         simVar.CalcResultType = resType;   // this also sets the Unit type and hence the data type (number/integer/string)
       }
+#endif
 
       if (!simVar.Validate(out var validationError)) {
         _logger.LogError("Variable Request validation error \"{error}\"; for {actId} from data: {data}.", validationError, actId, ActionDataToKVPairString(data));
