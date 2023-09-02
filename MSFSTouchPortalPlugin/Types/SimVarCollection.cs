@@ -193,10 +193,8 @@ namespace MSFSTouchPortalPlugin.Types
       _idxBySimName.Remove(item.SimVarName, out _);
       if (_idxByCategory.ContainsKey(item.CategoryId))
         _idxByCategory[item.CategoryId].Remove(item.Def);
-      if (item.NeedsScheduledRequest) {
-        lock (_polledUpdateVars)
-          _polledUpdateVars.Remove(item);
-      }
+      lock (_polledUpdateVars)
+        _polledUpdateVars.Remove(item);
       OnSimVarRemoved?.Invoke(item);
       return ret;
     }
@@ -212,6 +210,11 @@ namespace MSFSTouchPortalPlugin.Types
       _idxByCategory.Clear();
       lock (_polledUpdateVars)
         _polledUpdateVars.Clear();
+    }
+
+    public void RemoveFromPolled(SimVarItem item) {
+      lock (_polledUpdateVars)
+        _polledUpdateVars.Remove(item);
     }
 
     // Utility methods
