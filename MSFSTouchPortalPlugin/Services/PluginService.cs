@@ -809,11 +809,13 @@ namespace MSFSTouchPortalPlugin.Services
       UpdateSimConnectState();
     }
 
+#if !FSX
     void UpdateHubHopData()
     {
       _logger.LogInformation((int)EventIds.PluginInfo, "HubHop Data Update Requested...");
       _presets.UpdateIfNeededAsync(Settings.HubHopUpdateTimeout.IntValue).ConfigureAwait(false);
     }
+#endif
 
     // Handles some basic actions like sim connection and repeat rate, with optional data value(s).
     bool ProcessPluginCommandAction(PluginActions actionId, ActionData data, int connValue)
@@ -845,11 +847,11 @@ namespace MSFSTouchPortalPlugin.Services
         case PluginActions.UpdateConnectorValues:
           UpdateAllRelatedConnectors();
           break;
-
+#if !FSX
         case PluginActions.UpdateHubHopPresets:
           UpdateHubHopData();
           break;
-
+#endif
 #if WASIM
         case PluginActions.UpdateLocalVarsList:
           return _simConnectService.RequestLookupList(WASimCommander.CLI.Enums.LookupItemType.LocalVariable);
@@ -1517,11 +1519,11 @@ namespace MSFSTouchPortalPlugin.Services
       );
 
       ProcessPluginSettings(message.Settings);
-
+#if !FSX
       // Init HubHop database
       if (_presets.OpenDataFile() && Settings.UpdateHubHopOnStartup.BoolValue)
         UpdateHubHopData();
-
+#endif
       // convert the entry.tp version back to the actual decimal value
       if (!uint.TryParse($"{message.PluginVersion}", NumberStyles.HexNumber, null, out uint tpVer))
         tpVer = VersionInfo.GetProductVersionNumber();
