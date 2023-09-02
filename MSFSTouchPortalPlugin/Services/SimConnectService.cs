@@ -116,8 +116,11 @@ namespace MSFSTouchPortalPlugin.Services
     Action<Enum, string>     MapClientEventToSimEventDelegate;
     Action<Enum, string>     SubscribeToSystemEventDelegate;
     Action<Enum, Enum, uint, SIMCONNECT_SIMOBJECT_TYPE>   RequestDataOnSimObjectTypeDelegate;
-    //Action<uint, Enum, uint, Enum, SIMCONNECT_EVENT_FLAG> TransmitClientEventDelegate;
+#if FSX
+    Action<uint, Enum, uint, Enum, SIMCONNECT_EVENT_FLAG> TransmitClientEventDelegate;
+#else
     Action<uint, Enum, Enum, SIMCONNECT_EVENT_FLAG, uint, uint, uint, uint, uint> TransmitClientEventEx1Delegate;
+#endif
     Action<Enum, uint, SIMCONNECT_DATA_SET_FLAG, object>  SetDataOnSimObjectDelegate;
     Action<Enum, string, string, SIMCONNECT_DATATYPE, float, uint> AddToDataDefinitionDelegate;
     Action<Enum, Enum, uint, SIMCONNECT_PERIOD, SIMCONNECT_DATA_REQUEST_FLAG, uint, uint, uint> RequestDataOnSimObjectDelegate;
@@ -182,8 +185,11 @@ namespace MSFSTouchPortalPlugin.Services
 
       // Method delegates
       MapClientEventToSimEventDelegate          = _simConnect.MapClientEventToSimEvent;
-      //TransmitClientEventDelegate               = _simConnect.TransmitClientEvent;
+#if FSX
+      TransmitClientEventDelegate               = _simConnect.TransmitClientEvent;
+#else
       TransmitClientEventEx1Delegate            = _simConnect.TransmitClientEvent_EX1;
+#endif
       ClearDataDefinitionDelegate               = _simConnect.ClearDataDefinition;
       AddToDataDefinitionDelegate               = _simConnect.AddToDataDefinition;
       RequestDataOnSimObjectDelegate            = _simConnect.RequestDataOnSimObject;
@@ -198,6 +204,9 @@ namespace MSFSTouchPortalPlugin.Services
       _registerDataDelegates.Add(typeof(long),      _simConnect.RegisterDataDefineStruct<long>);
       _registerDataDelegates.Add(typeof(StringVal), _simConnect.RegisterDataDefineStruct<StringVal>);
 
+#if FSX
+      SetupRequestTracking();
+#endif
 #if WASIM
       ConnectWasm();
 #endif
@@ -315,7 +324,11 @@ namespace MSFSTouchPortalPlugin.Services
         simVar.RegistrationStatus = SimVarRegistrationStatus.Unregistered;
         return;
       }
+#if FSX
+      bool scSupported = simVar.VariableType == 'A';
+#else
       bool scSupported = (simVar.VariableType == 'A' || simVar.VariableType == 'L');
+#endif
 #if WASIM
       if (!scSupported && !WasmInitialized) {
         _logger.LogError((int)EventIds.PluginError, "Can not request {type} simulator variable without WASM integration.", simVar.VariableType);
@@ -554,9 +567,13 @@ namespace MSFSTouchPortalPlugin.Services
       EventIds evId = (EventIds)eventId;
       if (evId <= EventIds.InternalEventsLast)
         return false;
+#if FSX
+      return InvokeSimMethod(TransmitClientEventDelegate, SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, data, (Groups)SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+#else
       if (!WasmConnected || evId >= EventIds.DynamicEventInit)
         return InvokeSimMethod(TransmitClientEventEx1Delegate, SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, (Groups)SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY, data, d2, d3, d4, d5);
       return _wlib.sendKeyEvent((uint)evId, data, d2, d3, d4, d5) == HR.OK;
+#endif
     }
 
     public bool TransmitClientEvent(EventMappingRecord eventRecord, uint data, uint d2 = 0, uint d3 = 0, uint d4 = 0, uint d5 = 0)
@@ -744,11 +761,46 @@ namespace MSFSTouchPortalPlugin.Services
 
     #region SimConnect Request Tracking
 
+#if FSX
+    #region DLL Imports
+    // Set up tracking requests by their SendID for diagnostic purposes with Simconnect_OnRecvException()
+    // https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Debug/SimConnect_GetLastSentPacketID.htm
+    IntPtr _hSimConnect = IntPtr.Zero;  // native SimConnect handle pointer
+    // Import methods from the actual SimConnect client which aren't available in the C# wrapper.
+    [DllImport("SimConnect.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+    static extern int /* HRESULT */ SimConnect_GetLastSentPacketID(IntPtr hSimConnect, out uint /* DWORD */ dwSendID);
+    // Get a FieldInfo object on the SimConnect.hSimConnect private field variable so that we can query its value to get the handle to the actual SimConnect client.
+    static readonly FieldInfo _fiSimConnect = typeof(SimConnect).GetField("hSimConnect", BindingFlags.NonPublic | BindingFlags.Instance);
+    #endregion DLL Imports
+
+    private void SetupRequestTracking()
+    {
+      // Get direct access to the SimConnect handle, to use functions otherwise not supported.
+      try {
+        _hSimConnect = (IntPtr)_fiSimConnect.GetValue(_simConnect);
+        _reqTrackIndex = 0;
+      }
+      catch (Exception e) {
+        _hSimConnect = IntPtr.Zero;
+        _logger.LogError((int)EventIds.Ignore, e, "Exception trying to get handle to SimConnect:");
+      }
+    }
+#endif
+
     private void AddRequestRecord(MethodInfo info, params object[] args) {
       if (_simConnect == null)
         return;
       try {
+#if FSX
+        if (_hSimConnect == IntPtr.Zero)
+          return;
+        if (SimConnect_GetLastSentPacketID(_hSimConnect, out uint dwSendID) != S_OK) {
+          _logger.LogWarning((int)EventIds.Ignore, "SimConnect_GetLastSentPacketID returned E_FAIL");
+          return;
+        }
+#else
         uint dwSendID = _simConnect.GetLastSentPacketID();
+#endif
         if (dwSendID > 0) {
           _requestTracking[_reqTrackIndex] = new RequestTrackingData(dwSendID, info.Name, info.GetParameters(), args);
           _reqTrackIndex = (_reqTrackIndex + 1) % MAX_STORED_REQUEST_RECORDS;
@@ -756,6 +808,9 @@ namespace MSFSTouchPortalPlugin.Services
       }
       catch (Exception e) {
         _logger.LogWarning((int)EventIds.Ignore, "SimConnect.GetLastSentPacketID returned [{result:X}] {message}", e.HResult, e.Message);
+#if FSX
+        _hSimConnect = IntPtr.Zero;
+#endif
       }
     }
 
