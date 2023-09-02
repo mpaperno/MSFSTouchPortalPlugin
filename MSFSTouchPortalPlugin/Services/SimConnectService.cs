@@ -304,7 +304,6 @@ namespace MSFSTouchPortalPlugin.Services
         simVar.RegistrationStatus = SimVarRegistrationStatus.Unregistered;
         return;
       }
-      if ((simVar.NeedsScheduledRequest && WasmInitialized) || (simVar.VariableType != 'A' && simVar.VariableType != 'L')) {
       bool scSupported = (simVar.VariableType == 'A' || simVar.VariableType == 'L');
       if (!scSupported && !WasmInitialized) {
         _logger.LogError((int)EventIds.PluginError, "Can not request {type} simulator variable without WASM integration.", simVar.VariableType);
