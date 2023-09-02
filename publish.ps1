@@ -3,6 +3,7 @@
 Param(
   [string]$ProjectName = "MSFSTouchPortalPlugin",
   [string]$DistroName = "MSFS-TouchPortal-Plugin",
+  [string]$BinName = $ProjectName,
   [string]$Configuration = "Publish",
   [string]$Platform = "x64",
   [String]$VersionSuffix = "",
@@ -10,8 +11,6 @@ Param(
   [switch]$NoClean = $false,
   [switch]$BuildAgent = $false
 )
-
-$BinName = $ProjectName
 
 if ($FSX) {
   $Platform = "FSX"
@@ -41,8 +40,8 @@ if ($LastExitCode -ne 0) { throw ("Error " + $LastExitCode) }
 
 # Run Documentation
 Write-Output "`nGenerating entry.tp JSON and Documentation...`n"
-#dotnet run --project "$ProjectName-Generator" -c $Configuration -a $Platform -- -o "$PluginFilesPath"
-& "$BinFilesPath\$ProjectName-Generator.exe" -o "$PluginFilesPath"
+#dotnet run --project "$ProjectName-Generator" -c $Configuration -- -o "$PluginFilesPath"  # can't use -p:Platform='
+& "$BinFilesPath\$BinName-Generator.exe" -o "$PluginFilesPath"
 if ($LastExitCode -ne 0) { throw ("Error " + $LastExitCode) }
 
 # Copy Readme, CHANGELOG, image(s) to publish folder
@@ -60,14 +59,14 @@ if (Test-Path $TppFile) {
   Remove-Item $TppFile -Force
 }
 Write-Output "`nGenerating archive '$TppFile'..."
-& "C:\Program Files\7-Zip\7z.exe" a "$TppFile" "$DistFolderPath\*" -tzip `-xr!*.tpp
+& "C:\Program Files\7-Zip\7z.exe" a "$TppFile" "$PluginFilesPath*" -tzip `-xr!*.tpp `-xr!*.zip
 if ($LastExitCode -ne 0) { throw ("Error " + $LastExitCode) }
 
 if (-not $NoClean) {
   Write-Output "`nCleaning '$ProjectName-Generator' component....`n"
-  dotnet clean "$ProjectName-Generator" --configuration $Configuration -p:Platform=$Platform -r "win-$Platform" /p:ValidateExecutableReferencesMatchSelfContained=false
+  dotnet clean "$ProjectName-Generator" --configuration $Configuration -p:Platform=$Platform /p:ValidateExecutableReferencesMatchSelfContained=false
   Write-Output "`nCleaning '$ProjectName' component....`n"
-  dotnet clean "$ProjectName" --configuration $Configuration -p:Platform=$Platform -r "win-$Platform"
+  dotnet clean "$ProjectName" --configuration $Configuration -p:Platform=$Platform
 }
 
 if ($BuildAgent) {
