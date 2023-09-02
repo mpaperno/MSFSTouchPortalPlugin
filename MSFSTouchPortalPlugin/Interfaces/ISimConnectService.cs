@@ -45,7 +45,9 @@ namespace MSFSTouchPortalPlugin.Interfaces
     event ConnectEventHandler OnConnect;
     event DisconnectEventHandler OnDisconnect;
     event ExceptionEventHandler OnException;
+#if WASIM
     event LocalVarsListUpdatedHandler OnLVarsListUpdated;
+#endif
 
     bool IsConnected { get; }
     bool WasmAvailable { get; }
