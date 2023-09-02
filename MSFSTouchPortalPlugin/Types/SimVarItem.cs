@@ -26,7 +26,9 @@ using Stopwatch = System.Diagnostics.Stopwatch;
 using Regex = System.Text.RegularExpressions.Regex;
 using RegexOptions = System.Text.RegularExpressions.RegexOptions;
 using SIMCONNECT_DATATYPE = Microsoft.FlightSimulator.SimConnect.SIMCONNECT_DATATYPE;
+#if WASIM
 using DataRequestRecord = WASimCommander.CLI.Structs.DataRequestRecord;
+#endif
 
 namespace MSFSTouchPortalPlugin.Types
 {
@@ -115,6 +117,8 @@ namespace MSFSTouchPortalPlugin.Types
     /// Returns the set calculation result type, for 'Q' type variables. Setting this value will also set the corresponding Unit type
     /// to either "number," (for Double result) "integer," or "String" and hence also the corresponding data type/size.
     /// </summary>
+#if WASIM
+    private WASimCommander.CLI.Enums.CalcResultType _calcResultType;
     public WASimCommander.CLI.Enums.CalcResultType CalcResultType
     {
       get => _calcResultType;
@@ -130,6 +134,9 @@ namespace MSFSTouchPortalPlugin.Types
           Unit = "string";
       }
     }
+#else
+    public uint CalcResultType = 0;
+#endif
 
     /// <summary>
     /// This returns a full formatting string, as in "{0}" or "{0:FormattingString}" as needed.
@@ -208,25 +215,27 @@ namespace MSFSTouchPortalPlugin.Types
       }
     }
 
-    /// <summary> Returns a SimConnect dwSizeOrType value. </summary>
+    /// <summary> Returns a SimConnect dwSizeOrType value.  SIMCONNECT_CLIENTDATATYPE_* constants (not present in managed version).
+    /// https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_AddToClientDataDefinition.htm#parameters
+    /// </summary>
     public uint DataSize
     {
       get {
         if (StorageDataType == typeof(double))
-          return WASimCommander.CLI.ValueTypes.DATA_TYPE_DOUBLE;
+          return unchecked((uint)-6);   // SIMCONNECT_CLIENTDATATYPE_FLOAT64
         if (StorageDataType == typeof(long))
-          return WASimCommander.CLI.ValueTypes.DATA_TYPE_INT64;
+          return unchecked((uint)-4);   // SIMCONNECT_CLIENTDATATYPE_INT64
         if (StorageDataType == typeof(uint) || StorageDataType == typeof(int))
-          return WASimCommander.CLI.ValueTypes.DATA_TYPE_INT32;
+          return unchecked((uint)-3);   // SIMCONNECT_CLIENTDATATYPE_INT32
         if (StorageDataType == typeof(StringVal))
           return StringVal.MAX_SIZE;   // return actual byte size for strings
         // we don't use the types below but just in case we do later.
         if (StorageDataType == typeof(float))
-          return WASimCommander.CLI.ValueTypes.DATA_TYPE_FLOAT;
+          return unchecked((uint)-5);   // SIMCONNECT_CLIENTDATATYPE_FLOAT32
         if (StorageDataType == typeof(byte))
-          return WASimCommander.CLI.ValueTypes.DATA_TYPE_INT8;
+          return unchecked((uint)-1);   // SIMCONNECT_CLIENTDATATYPE_INT8
         if (StorageDataType == typeof(short) || StorageDataType == typeof(char))
-          return WASimCommander.CLI.ValueTypes.DATA_TYPE_INT16;
+          return unchecked((uint)-2);   // SIMCONNECT_CLIENTDATATYPE_INT16
         return 0;
       }
     }
@@ -263,7 +272,6 @@ namespace MSFSTouchPortalPlugin.Types
     private long _lastUpdate = 0;  // value update timestamp in Stopwatch ticks
     private long _valueExpires;    // value expiry timestamp in Stopwatch ticks, if a timed UpdatePeriod type, zero otherwise
     private long _requestTimeout;  // for tracking last data request time to avoid race conditions, next pending timeout ticks count or zero if not pending
-    private WASimCommander.CLI.Enums.CalcResultType _calcResultType;
     private const short REQ_TIMEOUT_SEC = 30;  // pending value timeout period in seconds
 
     private bool ValInit => _lastUpdate > 0;  // has value been set at least once
@@ -290,6 +298,7 @@ namespace MSFSTouchPortalPlugin.Types
     public bool ValueEquals(double value) => ValInit && IsRealType && System.Math.Abs((double)Value - value) <= DeltaEpsilon;
     public bool ValueEquals(long value)   => ValInit && IsIntegralType && System.Math.Abs((long)Value - value) <= (long)DeltaEpsilon;
     public bool ValueEquals(uint value)   => ValInit && IsBooleanType && System.Math.Abs((uint)Value - value) <= (uint)DeltaEpsilon;
+#if WASIM
     public bool ValueEquals(DataRequestRecord dr) => ValInit && Value switch {
       StringVal or string => ValueEquals((string)dr),
       uint => ValueEquals((uint)dr),
@@ -297,6 +306,7 @@ namespace MSFSTouchPortalPlugin.Types
       long => ValueEquals((long)dr),
       _ => false,
     };
+#endif
 
     /// <summary>
     /// Compare this instance's value to the given object's value. For numeric types, it takes the DeltaEpsilon property into account.
@@ -308,7 +318,9 @@ namespace MSFSTouchPortalPlugin.Types
           double v => ValueEquals(v),
           uint v => ValueEquals(v),
           long v => ValueEquals(v),
+#if WASIM
           DataRequestRecord dr => ValueEquals(dr),
+#endif
           _ => ValueEquals(value.ToString()),
         };
       }
@@ -356,6 +368,7 @@ namespace MSFSTouchPortalPlugin.Types
       };
     }
 
+#if WASIM
     internal bool SetValue(DataRequestRecord dr) {
       return Value switch {
         StringVal or string => SetValue((string)dr),
@@ -366,6 +379,7 @@ namespace MSFSTouchPortalPlugin.Types
       };
       //return SetValue(System.Convert.ChangeType(dr, StorageDataType));
     }
+#endif
 
     /// <summary>
     /// Prefer using this method, or one of the type-specific SetValue() overloads to
@@ -379,7 +393,9 @@ namespace MSFSTouchPortalPlugin.Types
           uint v => SetValue(v),
           long v => SetValue(v),
           StringVal v => SetValue(v),
+#if WASIM
           DataRequestRecord dr => SetValue(dr),
+#endif
           _ => SetValue(value.ToString())
         };
       }
@@ -478,12 +494,12 @@ namespace MSFSTouchPortalPlugin.Types
           if (!Regex.IsMatch(SimVarName, @"^[A-Z][a-zA-Z]*$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
             return returnError($"Mouse Variable Name '{SimVarName}' contains invalid character(s)", ref resultMsg);
           break;
-
+#if WASIM
         case 'Q':
           if (CalcResultType == WASimCommander.CLI.Enums.CalcResultType.None)
             return returnError("Calculation result type (CalcResultType) is required for 'Q' type request", ref resultMsg);
           break;
-
+#endif
         case 'R':
           // Resource type vars are: "0:HELPID_EXTR_LOW_VOLT" or "1:@TT_Package.AUDIOPANEL_KNOB_COM_VOLUME_ACTION"
           if (!Regex.IsMatch(SimVarName, @"^\d:[a-zA-Z@][a-zA-Z0-9_\.]+$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
