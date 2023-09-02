@@ -58,7 +58,11 @@ namespace MSFSTouchPortalPlugin.Configuration
         "The default configuration index is zero, which (in the included default SimConnect.cfg) is suitable for MSFS (2020). Use the index 1 for compatibility with FSX (or perhaps other sims).\n\n" +
         "See here for more info about the file format: https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_CFG_Definition.htm  \n\n" +
         "For more information on using Touch Portal remotely see [Multiple Touch Portal Device Setup](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Multiple-Touch-Portal-Device-Setup)",
+#if !FSX
       Default = "0",
+#else
+      Default = "1",
+#endif
       MinValue = 0,
       MaxValue = 20
     };
@@ -79,6 +83,7 @@ namespace MSFSTouchPortalPlugin.Configuration
       Default = "1",
     };
 
+#if !FSX
     public static readonly PluginSetting UpdateHubHopOnStartup = new PluginSetting("UpdateHubHopOnStartup", DataType.Switch) {
       Name = "Update HubHop Data on Startup (0/1)",
       Description = "Set to 1 to automatically load latest HubHop data when plugin starts. Set to 0 to disable. Updates can always be triggered manually via the Action *MSFS - Plugin -> Connect & Update*. " +
@@ -93,12 +98,14 @@ namespace MSFSTouchPortalPlugin.Configuration
       MinValue = 0,
       MaxValue = 600
     };
-
+#endif
+#if WASIM
     public static readonly PluginSetting SortLVarsAlpha = new PluginSetting("SortLVarsAlpha", DataType.Switch) {
       Name = "Sort Local Variables Alphabetically (0/1)",
       Description = "Set to `1` to have all Local ('L') simulator variables sorted in alphabetical order within selection lists. Setting to `0` will keep them in the original order they're loaded in on the simulator (by ascending ID).",
       Default = "1",
     };
+#endif
 
     // Internally tracked settings, not used via Touch Portal UI.
 
