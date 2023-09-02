@@ -152,7 +152,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("TOGGLE_MASTER_STARTER_SWITCH", "Master Switch")]
     public static readonly object STARTERS;
 
-    [TouchPortalAction("StartersSet", "Starters Set", "Starter {0} {1} to {2} (0/1)")]
+    [TouchPortalAction("StartersSet", "Starters Set", "Starter {0} {1} to {2} (0/1)", true)]
     [TouchPortalActionChoice()]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("STARTER_SET",  new[] { "All", "Set" })]
