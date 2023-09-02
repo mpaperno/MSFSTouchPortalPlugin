@@ -39,9 +39,13 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping(PluginActions.ReloadStates, "Reload State Files")]
     [TouchPortalActionMapping(PluginActions.ResendStates, "Re-Send All State Values")]
     [TouchPortalActionMapping(PluginActions.UpdateConnectorValues, "Re-Send All Connector Feedback Values")]
+#if WASIM
     [TouchPortalActionMapping(PluginActions.UpdateLocalVarsList, "Update Airplane Local Vars List")]
     [TouchPortalActionMapping(PluginActions.ReRegisterLocalVars, "Re-Submit Airplane Local Var Requests")]
+#endif
+#if !FSX
     [TouchPortalActionMapping(PluginActions.UpdateHubHopPresets, "Update HubHop Data")]
+#endif
     // deprecated mappings
     [TouchPortalActionMapping(PluginActions.ToggleConnection, "Toggle", Deprecated = true)]
     [TouchPortalActionMapping(PluginActions.Connect, "On", Deprecated = true)]
@@ -71,28 +75,40 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalAction(PluginActions.SetKnownSimEvent, "Activate a Selected Simulator Event",
       "Activate a Selected Simulator Event. Parameter values are optional and event-specific. The list is imported from MSFS SDK Event IDs Docs (may contain errors or omissions).\n" +
         "The value(s), if any, should evaluate to numeric or remain blank if the value is unused by the event. Using basic math operators and dynamic states in values is possible.",
+#if !FSX
       "System /\nCategory {0} Event\nName{1} with\nValue(s) 0:{2} \n1:{3} \n2:{4}",
+#else
+      "System / Category {0} Event Name {1} with Value {2} (optional)",
+#endif
       holdable: true)]
     [TouchPortalActionChoice("[plugin not connected]", "", Id = "SimCatName", Label = "Category")]
     [TouchPortalActionChoice("[select a category]", "", Id = "EvtId", Label = "Event ID")]
     [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value", Label = "Value 1")]
+#if !FSX
     [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value2", Label = "Value 2")]
     [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value3", Label = "Value 3")]
+#endif
     public static readonly object SetKnownSimEvent;
 
     [TouchPortalConnector(PluginActions.SetKnownSimEvent, "Activate a Selected Simulator Event",
       "Activate a Selected Simulator Event, setting one parameter value with a slider, with optional extra parameter value(s). The list is imported from MSFS SDK Event IDs Docs.\n" +
         "The extra value(s), if any, should evaluate to numeric or remain blank if the value is unused by the event. Using basic math operators and dynamic states in the extra values is possible.",
+#if !FSX
       "System /\nCategory {0} Event\nName {1} in Value\nRange {2}-{3} | With Other\n| Values (opt) {4} {5} Connector\nValue Index {6}"
+#else
+      "System / Category {0} Event Name {1} in Value Range {2}-{3}"
+#endif
     )]
     [TouchPortalActionChoice("[plugin not connected]", "", Id = "SimCatName", Label = "Category")]
     [TouchPortalActionChoice("[select a category]", "", Id = "EvtId", Label = "Event ID")]
     [TouchPortalActionText("-16384", int.MinValue, uint.MaxValue, Id = "RangeMin", Label = "Value Range Minimum")]
     [TouchPortalActionText("16384", int.MinValue, uint.MaxValue, Id = "RangeMax", Label = "Value Range Maximum")]
+#if !FSX
     [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value", Label = "Value 1")]
     [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value2", Label = "Value 2")]
     //[TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value3", Label = "Value 3")]
     [TouchPortalActionChoice(new[] { "0-first", "1-mid", "2-last", /*"3-last"*/ }, Id = "ConnValIdx", Label = "Conn. Value Index")]
+#endif
     [TouchPortalConnectorMeta(InsertValueRange = false)]
     public static readonly object SetKnownSimEventConn;
 
@@ -100,32 +116,45 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalAction(PluginActions.SetCustomSimEvent, "Activate a Named Simulator Event",
       "Trigger any Simulator Event by name with optional parameter value(s). See MSFS SDK Documentation 'Event IDs' for reference.\n" +
         "The value(s), if any, should evaluate to numeric or remain blank if the value is unused by the event. Using basic math operators and dynamic state values is possible.",
+#if !FSX
       "Activate Event {0} with\nValue(s) 0:{1} \n1:{2} \n2:{3} \n3:{4} \n4:{5}",  // non-breaking narrow space U+202F (TP ignores "no-break space" U+00AD)
+#else
+      "Activate Event {0} with Value {1} (optional)",
+#endif
       holdable: true)]
     [TouchPortalActionText("SIMULATOR_EVENT_NAME", Id = "EvtId", Label = "Event ID")]
     [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value", Label = "Value 1")]
+#if !FSX
     [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value2", Label = "Value 2")]
     [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value3", Label = "Value 3")]
     [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value4", Label = "Value 4")]
     [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value5", Label = "Value 5")]
+#endif
     public static readonly object SetCustomSimEvent;
 
     [TouchPortalConnector(PluginActions.SetCustomSimEvent, "Activate a Named Simulator Event",
       "Trigger any Simulator Event by name setting one parameter value with a slider, with optional extra parameter value(s). See MSFS SDK Documentation 'Event IDs' for reference.\n" +
         "The extra value(s), if any, should evaluate to numeric or remain blank if the value is unused by the event. Using basic math operators and dynamic state the extra values is possible.",
+#if !FSX
       "Set Event:{0} in Value\nRange {1}-{2} | With Other\n| Values (opt) {3} {4} Connector\nValue Index {5}"
+#else
+      "Set Event:{0} in Value\nRange {1}-{2}"
+#endif
     )]
     [TouchPortalActionText("SIMULATOR_EVENT_NAME", Id = "EvtId", Label = "Event ID")]
     [TouchPortalActionText("-16384", int.MinValue, uint.MaxValue, Id = "RangeMin", Label = "Value Range Minimum")]
     [TouchPortalActionText("16384", int.MinValue, uint.MaxValue, Id = "RangeMax", Label = "Value Range Maximum")]
+#if !FSX
     [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value", Label = "Value 1")]
     [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value2", Label = "Value 2")]
     //[TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value3", Label = "Value 3")]
     [TouchPortalActionChoice(new[] { "0-first", "1-mid", "2-last", /*"3-last"*/ }, Id = "ConnValIdx", Label = "Conn. Value Index")]
+#endif
     [TouchPortalConnectorMeta(InsertValueRange = false)]
     public static readonly object SetCustomSimEventConn;
 
 
+#if WASIM
     [TouchPortalAction(PluginActions.SetHubHopEvent, "Activate an Input Event From HubHop",
       "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t** Requires WASimModule or MobiFlight. **\n" +
         "Trigger a Simulator Event from loaded HubHop data.\t\t\t\t\t" +
@@ -139,6 +168,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionText("", int.MinValue, uint.MaxValue, Id = "Value", Label = "Value")]
     [TouchPortalConnectorMeta()]
     public static readonly object SetHubHopEvent;
+#endif
 
     // Set Variables
 
@@ -171,6 +201,7 @@ namespace MSFSTouchPortalPlugin.Objects
     public static readonly object SetSimulatorVarConn;
 
 
+#if !FSX
     [TouchPortalAction(PluginActions.SetLocalVar, "Set a Selected Airplane Local Variable",
       "Sets a value on a Local variable from currently loaded aircraft.\n" +
         "The Unit type is usually \"number\" and will be ignored except in a few specific instances for some 3rd-party models.",
@@ -182,6 +213,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionChoice("number", "number", Id = "Unit", Label = "Unit Name")]
     [TouchPortalConnectorMeta()]
     public static readonly object SetLocalVar;
+#endif
 
 
     [TouchPortalAction(PluginActions.SetVariable, "Set a Named Variable",
@@ -189,7 +221,13 @@ namespace MSFSTouchPortalPlugin.Objects
         "Local (L) variables can also be created. SimVar (A) and GPS (C) types require a Unit. For indexed SimVars, include the index in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
       "Variable\nType{0} Variable\nName{1} Value{2} Unit\n(A/C){3} Create\n L Var: {4}",  /* Release\n\t\tAI: {5} */
       holdable: true)]
+#if WASIM
     [TouchPortalActionChoice(new[] { "A: SimVar", "C: GPS", "H: HTML Event", "K: Key Event", "L: Local", "Z: Custom SimVar" }, Id = "VarType", Label = "Variable Type")]
+#elif FSX
+    [TouchPortalActionChoice(new[] { "A: SimVar" }, Id = "VarType", Label = "Variable Type")]
+#else
+    [TouchPortalActionChoice(new[] { "A: SimVar", "L: Local" }, Id = "VarType", Label = "Variable Type")]
+#endif
     [TouchPortalActionText("", Id = "VarName", Label = "Variable Name")]
     [TouchPortalActionText("0", float.MinValue, float.MaxValue, Id = "Value", Label = "Value")]
     [TouchPortalActionChoice("[plugin not connected]", "", Id = "Unit", Label = "Unit Name")]
@@ -202,7 +240,13 @@ namespace MSFSTouchPortalPlugin.Objects
         "SimVar (A) and GPS (C) types require a Unit. For indexed SimVars, include it in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
       "Variable\nType{0} Variable\nName{1} Unit\n(SimVar){2} Value\nRange:"
     )]
+#if WASIM
     [TouchPortalActionChoice(new[] { "A: SimVar", "C: GPS", "H: HTML Event", "K: Key Event", "L: Local", "Z: Custom SimVar" }, Id = "VarType", Label = "Variable Type")]
+#elif FSX
+    [TouchPortalActionChoice(new[] { "A: SimVar" }, Id = "VarType", Label = "Variable Type")]
+#else
+    [TouchPortalActionChoice(new[] { "A: SimVar", "L: Local" }, Id = "VarType", Label = "Variable Type")]
+#endif
     [TouchPortalActionText("", Id = "VarName", Label = "Variable Name")]
     [TouchPortalActionChoice("[plugin not connected]", "", Id = "Unit", Label = "Unit Name")]
     [TouchPortalConnectorMeta()]
@@ -210,6 +254,7 @@ namespace MSFSTouchPortalPlugin.Objects
 
     // Exec Calc Code
 
+#if WASIM
     [TouchPortalAction(PluginActions.ExecCalcCode, "Execute Calculator Code",
       "Execute Calculator Code.\t\t\t\t\t** Requires WASimModule **\n" +
       "Runs any entered string of RPN code through the 'execute_calculator_code' Gauge API function. You may use TP state value macros to insert dynamic data.",
@@ -225,6 +270,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionText("@ 1 (>K:2:PANEL_LIGHTS_POWER_SETTING_SET)", Id = "Code", Label = "Code")]
     [TouchPortalConnectorMeta()]
     public static readonly object ExecCalcCodeConn;
+#endif
 
     // Visual Feedback
 
@@ -273,6 +319,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionNumeric(SimVarItem.DELTA_EPSILON_DEFAULT, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
     public static readonly object AddSimulatorVar;
 
+#if !FSX
     [TouchPortalAction(PluginActions.AddLocalVar, "Request an Airplane Local Variable",
       "Request an Airplane Local Variable.\n" +
       "The list of variables is loaded live from Simulator." +
@@ -288,13 +335,20 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionNumeric(0, 0, int.MaxValue, false, Id = "UpdInt", Label = "Interval")]
     [TouchPortalActionNumeric(SimVarItem.DELTA_EPSILON_DEFAULT, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
     public static readonly object AddLocalVar;
+#endif
 
     [TouchPortalAction(PluginActions.AddNamedVariable, "Request a Named Variable",
       "Request a Named Variable.\t\t\t\t\t** All but SimVar and Local types require WASimModule **\n" +
         "SimVar, GPS, & Env. types require a Unit type. For indexed SimVars, include the index in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
       "Type{0} Name{1} Unit{2} for Plugin\nCategory{3} Format{4} Default\nValue{5} Update\nPeriod{6} Update\nInterval{7} Delta\nEpsilon{8}"
     )]
+#if WASIM
     [TouchPortalActionChoice(new[] { "A: SimVar", "C: GPS", "E: Env.", "L: Local", "M: Mouse", "R: Rsrc.", "T: Token", "Z: Custom" }, Id = "VarType", Label = "Variable Type")]
+#elif FSX
+    [TouchPortalActionChoice(new[] { "A: SimVar" }, Id = "VarType", Label = "Variable Type")]
+#else
+    [TouchPortalActionChoice(new[] { "A: SimVar", "L: Local" }, Id = "VarType", Label = "Variable Type")]
+#endif
     [TouchPortalActionText("FULL VARIABLE NAME", Id = "VarName", Label = "Variable Name")]
     [TouchPortalActionChoice("[plugin not connected]", "number", Id = "Unit", Label = "Unit Name")]
     [TouchPortalActionChoice("[plugin not connected]", "", Id = "CatId", Label = "Category")]
@@ -305,6 +359,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionNumeric(SimVarItem.DELTA_EPSILON_DEFAULT, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
     public static readonly object AddNamedVariable;
 
+#if WASIM
     [TouchPortalAction(PluginActions.AddCalculatedValue, "Request a Calculated Value",
       "Request a Calculated Value.\t\t\t\t\t** Requires WASimModule **",
       "Calculator\nCode{0} Result\nType{1} State\nName{2} for Plugin\nCategory{3} Format{4} Default\nValue{5} Update\nPeriod{6} Update\nInterval{7} Delta\nEpsilon{8}")]
@@ -318,6 +373,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionNumeric(0, 0, int.MaxValue, false, Id = "UpdInt", Label = "Interval")]
     [TouchPortalActionNumeric(SimVarItem.DELTA_EPSILON_DEFAULT, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon")]
     public static readonly object AddCalculatedValue;
+#endif
 
     [TouchPortalAction(PluginActions.UpdateVarValue, "Update a Variable Value",
       "Request a value update for an added variable. This is especially useful for variables with a \"Once\" type Update Period.",
