@@ -30,6 +30,7 @@ namespace MSFSTouchPortalPlugin.Objects
     #region Avionics
 
     [TouchPortalAction("AvionicsMasterSwitchAdj", "Avionics Master Switch", "Avionics {0}")]
+    [TouchPortalActionChoice()]
     [TouchPortalActionMapping("TOGGLE_AVIONICS_MASTER", "Master Toggle")]
     [TouchPortalActionMapping("AVIONICS_MASTER_1_OFF", "Master 1 Off")]
     [TouchPortalActionMapping("AVIONICS_MASTER_1_ON",  "Master 1 On")]
