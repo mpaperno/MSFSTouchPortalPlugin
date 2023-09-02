@@ -260,9 +260,14 @@ namespace MSFSTouchPortalPlugin.Services
       var vars = _simVarCollection.PolledUpdateVars;
       foreach (var simVar in vars) {
         // Check if a value update is required based on the SimVar's internal tracking mechanism.
-        if (simVar.DataProvider == SimVarDataProvider.SimConnect && simVar.UpdateRequired) {
-          simVar.SetPending(true);
-          _simConnectService.RequestDataOnSimObjectType(simVar);
+        if (simVar.NeedsScheduledRequest) {
+          if (simVar.UpdateRequired) {
+            simVar.SetPending(true);
+            _simConnectService.RequestDataOnSimObjectType(simVar);
+          }
+        }
+        else {
+          _simVarCollection.RemoveFromPolled(simVar);
         }
       }
     }
@@ -1142,10 +1147,10 @@ namespace MSFSTouchPortalPlugin.Services
         _logger.LogError("Could not find valid Variable ID in action data: {data}", ActionDataToKVPairString(data));
         return false;
       }
-      if (_simVarCollection.TryGet(varId, out var simVar) is bool ret && ret)
+      if (_simVarCollection.TryGet(varId, out var simVar) is bool ret && ret && simVar.RegistrationStatus == SimVarRegistrationStatus.Registered)
         _simConnectService.RequestVariableValueUpdate(simVar);
       else
-        _logger.LogWarning("Variable with ID '{varId}' not found.", varId);
+        _logger.LogWarning("Variable with ID '{varId}' not found or not registered yet.", varId);
       return ret;
     }
 
