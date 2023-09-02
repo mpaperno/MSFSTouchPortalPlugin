@@ -47,8 +47,7 @@ namespace MSFSTouchPortalPlugin.Constants
 {
   internal static class Categories
   {
-
-    internal static string CategoryPrefix { get; set; } = "MSFS";
+    internal static string CategoryPrefix { get; set; } = Configuration.PluginConfig.PLUGIN_NAME_PREFIX;
     internal static string NameSeparator { get; set; } = " - ";
     internal static string CategoryDefaultImage { get; set; } = "airplane_takeoff24.png";
 

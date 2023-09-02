@@ -37,6 +37,7 @@ using System.Threading.Tasks;
 using TouchPortalSDK.Configuration;
 
 [assembly: InternalsVisibleTo("MSFSTouchPortalPlugin-Generator")]
+[assembly: InternalsVisibleTo("FSXTouchPortalPlugin-Generator")]
 
 namespace MSFSTouchPortalPlugin {
   public static class Program {
@@ -57,7 +58,7 @@ namespace MSFSTouchPortalPlugin {
           .Build();
 
       // Ensure only one running instance
-      const string mutextName = "MSFSTouchPortalPlugin";
+      const string mutextName = PluginConfig.PLUGIN_ID;
       _ = new Mutex(true, mutextName, out var createdNew);
 
       if (!createdNew) {

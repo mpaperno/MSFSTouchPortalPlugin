@@ -63,7 +63,7 @@ namespace MSFSTouchPortalPlugin.Attributes
 
   public class TouchPortalActionAttribute : TouchPortalActionBaseAttribute
   {
-    public string Prefix { get; set; } = "MSFS";
+    public string Prefix { get; set; } = Configuration.PluginConfig.PLUGIN_NAME_PREFIX;
     public string Type { get; set; } = "communicate";
     public bool HasHoldFunctionality { get; set; }
 

@@ -20,6 +20,7 @@ and is also available at <http://www.gnu.org/licenses/>.
 */
 
 using CommandLine;
+using MSFSTouchPortalPlugin.Configuration;
 
 namespace MSFSTouchPortalPlugin_Generator.Configuration
 {
@@ -42,27 +43,43 @@ namespace MSFSTouchPortalPlugin_Generator.Configuration
       "Note that the Default states file (if used) is always read from the 'Configuration' subfolder of this utility.")]
     public string StateFilesPath { get; set; }
 
-    [Option("ColorLight", Default = "0090ff", MetaValue = "<HEX_COLOR>", Required = false,
+    [Option("ColorLight",
+#if FSX
+      Default = "996c00",
+#else
+      Default = "0090ff",
+#endif
+      MetaValue = "<HEX_COLOR>", Required = false,
       HelpText = "\nColor for the background of action labels and descriptions. Hex color string without the leading '#' sign.")]
     public string ColorLight { get; set; }
 
-    [Option("ColorDark", Default = "212121", MetaValue = "<HEX_COLOR>", Required = false,
+    [Option("ColorDark",
+      Default = "212121",
+      MetaValue = "<HEX_COLOR>", Required = false,
       HelpText = "\nColor for the background of editable fields and selection lists. Hex color string without the leading '#' sign.")]
     public string ColorDark { get; set; }
 
-    [Option('i', "PluginId", Default = "MSFSTouchPortalPlugin", MetaValue = "<STRING>", Required = false,
+    [Option('i', "PluginId",
+      Default = PluginConfig.PLUGIN_ID,
+      MetaValue = "<STRING>", Required = false,
       HelpText = "\nThe Plugin ID string which will be used for all the entry definitions.")]
     public string PluginId { get; set; }
 
-    [Option('n', "PluginName", Default = "MSFS Touch Portal Plugin", MetaValue = "<STRING>", Required = false,
+    [Option('n', "PluginName",
+      Default = PluginConfig.PLUGIN_NAME_PREFIX + " Touch Portal Plugin",
+      MetaValue = "<STRING>", Required = false,
       HelpText = "\nThe Plugin Name for TP entry.tp base name attribute.")]
     public string PluginName { get; set; }
 
-    [Option('f', "PluginFolder", Default = "MSFS-TouchPortal-Plugin", MetaValue = "<STRING>", Required = false,
+    [Option('f', "PluginFolder",
+      Default = PluginConfig.PLUGIN_NAME_PREFIX + "-TouchPortal-Plugin",
+      MetaValue = "<STRING>", Required = false,
       HelpText = "\nName of the plugin's folder once installed to TP.")]
     public string PluginFolder { get; set; }
 
-    [Option('u', "DocsUrl", Default = "https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki", MetaValue = "<URL>", Required = false,
+    [Option('u', "DocsUrl",
+      Default = "https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki",
+      MetaValue = "<URL>", Required = false,
       HelpText = "\nURL to full project documentation, if any.")]
     public string DocumentationUrl { get; set; }
 

@@ -32,6 +32,13 @@ namespace MSFSTouchPortalPlugin.Configuration
 {
   internal class PluginConfig
   {
+#if FSX
+    public const string PLUGIN_NAME_PREFIX = "FSX";
+#else
+    public const string PLUGIN_NAME_PREFIX = "MSFS";
+#endif
+    public const string PLUGIN_ID = PLUGIN_NAME_PREFIX + "TouchPortalPlugin";
+
     /// <summary> RootName is used as the basis for the user folder name and TP State ID generation. </summary>
     public static string RootName { get; set; } = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
 

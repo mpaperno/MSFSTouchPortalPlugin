@@ -46,8 +46,7 @@ namespace MSFSTouchPortalPlugin.Services
   /// <inheritdoc cref="IPluginService" />
   internal class PluginService : IPluginService, ITouchPortalEventHandler
   {
-    const string PLUGIN_ID = "MSFSTouchPortalPlugin";
-    public string PluginId => PLUGIN_ID;  // for ITouchPortalEventHandler
+    public string PluginId => PluginConfig.PLUGIN_ID;  // for ITouchPortalEventHandler
 
     const int SIM_RECONNECT_DELAY_SEC = 30;   // SimConnect connection attempts delay on failure
     const int MAX_LOG_MSGS_FOR_STATE  = 12;   // maximum number of log lines to send in the LogMessages state
@@ -118,7 +117,7 @@ namespace MSFSTouchPortalPlugin.Services
     public Task StartAsync(CancellationToken cancellationToken) {
       _cancellationToken = cancellationToken;
 
-      _logger.LogInformation("======= " + PLUGIN_ID + " Starting =======");
+      _logger.LogInformation("======= {pluginId} Starting =======", PluginConfig.PLUGIN_ID);
 
       // register ctrl-c exit handler
       Console.CancelKeyPress += (_, _) => {
@@ -156,7 +155,7 @@ namespace MSFSTouchPortalPlugin.Services
       _simAutoConnectDisable?.Dispose();
       _presets?.Dispose();
 
-      _logger.LogInformation("======= " + PLUGIN_ID + " Stopped =======");
+      _logger.LogInformation("======= {pluginId} Stopped =======", PluginConfig.PLUGIN_ID);
       return Task.CompletedTask;
     }
 
@@ -526,7 +525,7 @@ namespace MSFSTouchPortalPlugin.Services
     }
     private void UpdateActionDataList(Groups categoryId, string actionId, string dataId, IEnumerable<string> data, string instanceId = null, bool isConnector = false) {
       if (data != null)
-        _client.ChoiceUpdate(PLUGIN_ID + $".{categoryId}.{(isConnector ? "Conn" : "Action")}.{actionId}.Data.{dataId}", data.ToArray(), instanceId);
+        _client.ChoiceUpdate(PluginConfig.PLUGIN_ID + $".{categoryId}.{(isConnector ? "Conn" : "Action")}.{actionId}.Data.{dataId}", data.ToArray(), instanceId);
     }
 
     // Variables, setters and requesters  ----------------------------
@@ -724,7 +723,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     // common handler for state updates
     void UpdateTpStateValue(string stateId, string value, Groups catId = Groups.Plugin) {
-      _client.StateUpdate(PLUGIN_ID + "." + catId.ToString() + ".State." + stateId, value);
+      _client.StateUpdate(PluginConfig.PLUGIN_ID + "." + catId.ToString() + ".State." + stateId, value);
     }
 
     // update SimSystemEvent and (maybe) SimSystemEventData states in SimSystem group
