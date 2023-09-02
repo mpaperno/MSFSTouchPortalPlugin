@@ -328,15 +328,15 @@ namespace MSFSTouchPortalPlugin.Services
         return;
       if (simVar.DataProvider == SimVarDataProvider.SimConnect) {
         // We need to first suspend updates for this variable before removing it, otherwise it seems SimConnect will sometimes crash
-        var oldPeriod = simVar.UpdatePeriod;
-        if (simVar.UpdatePeriod != SimConUpdPeriod.Never) {
+        if (simVar.UpdatePeriod != SimConUpdPeriod.Never && simVar.UpdatePeriod != SimConUpdPeriod.Millisecond) {
+          var oldPeriod = simVar.UpdatePeriod;
           simVar.UpdatePeriod = SimConUpdPeriod.Never;
           RequestDataOnSimObject(simVar);
+          // Now set it back to original value (in case it is not actually being deleted).
+          simVar.UpdatePeriod = oldPeriod;
         }
         // Now we can remove it.
         InvokeSimMethod(ClearDataDefinitionDelegate, simVar.Def);
-        // Now set it back to original value (in case it is not actually being deleted).
-        simVar.UpdatePeriod = oldPeriod;
       }
       else {
         _wlib?.removeDataRequest((uint)simVar.Def);
@@ -638,7 +638,9 @@ namespace MSFSTouchPortalPlugin.Services
     {
       if (simVar.DataProvider == SimVarDataProvider.WASimClient)
         return _wlib.updateDataRequest((uint)simVar.Def) == HR.OK;
-      return RequestDataOnSimObject(simVar);
+      if (simVar.DataProvider == SimVarDataProvider.SimConnect)
+        return RequestDataOnSimObject(simVar);
+      return false;
     }
 
     public void RetryRegisterLocalVars()
