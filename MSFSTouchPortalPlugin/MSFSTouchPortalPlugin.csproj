@@ -4,10 +4,11 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>MSFSTouchPortalPlugin</RootNamespace>
-    <Version>1.4.2.0</Version>
-    <FileVersion>1.4.2.0</FileVersion>
-    <Platforms>x64</Platforms>
+    <Version>1.4.3.0</Version>
+    <FileVersion>1.4.3.0</FileVersion>
+    <Platforms>x64;FSX</Platforms>
     <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>..\build\obj\$(MSBuildProjectName)\$(Platform)-$(Configuration)\</IntermediateOutputPath>
     <AnalysisLevel>6.0</AnalysisLevel>
     <Configurations>Debug;Release;Publish</Configurations>
     <Copyright>Copyright Tim Lewis, Maxim Paperno, and project contributors; All rights reserved.</Copyright>
@@ -18,20 +19,32 @@
     <PackageLicenseExpression>GPLv3</PackageLicenseExpression>
     <Description>A plugin which provides a two-way interface between Touch Portal clients and Flight Simulators which use SimConnect.</Description>
     <Authors>Tim Lewis, Maxim Paperno, and project contributors</Authors>
-    <ApplicationIcon>app-icon.ico</ApplicationIcon>
     <ErrorReport>none</ErrorReport>
     <Company>MSFS Touch Portal Plugin Project</Company>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <CheckEolTargetFramework>False</CheckEolTargetFramework>
+    <ApplicationIcon>app-icon.ico</ApplicationIcon>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <PropertyGroup Condition="'$(Platform)'=='x64'">
     <PlatformTarget>x64</PlatformTarget>
-    <DefineConstants>DEBUG;TRACE;DEBUG_REQUESTS</DefineConstants>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <DefineConstants>WASIM;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Publish') And '$(Platform)'=='x64'">
-    <PlatformTarget>x64</PlatformTarget>
+  <PropertyGroup Condition="'$(Platform)'=='FSX'">
+    <PlatformTarget>x86</PlatformTarget>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <AssemblyName>FSXTouchPortalPlugin</AssemblyName>
+    <DefineConstants>FSX;$(DefineConstants)</DefineConstants>
+    <NoWin32Manifest>true</NoWin32Manifest>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>DEBUG;TRACE;DEBUG_REQUESTS;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Publish')">
     <NoWarn>1701;1702</NoWarn>
     <AllowedReferenceRelatedFileExtensions>
       <!-- Prevent .pdb, .xml, etc from being copied to output folder -->
@@ -39,14 +52,12 @@
     </AllowedReferenceRelatedFileExtensions>
     <DebugType>embedded</DebugType>
     <DebugSymbols>false</DebugSymbols>
-    <DefineConstants />
     <Optimize>True</Optimize>
     <PathMap>$(MSBuildProjectDirectory)=$(MSBuildProjectName)</PathMap>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
-    <DefineConstants>PUBLISH_BUILD</DefineConstants>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  <PropertyGroup Condition="'$(Configuration)'=='Publish'">
+    <DefineConstants>PUBLISH_BUILD;$(DefineConstants)</DefineConstants>
     <SelfContained>true</SelfContained>
     <PublishTrimmed>True</PublishTrimmed>
     <TrimMode>copyused</TrimMode>
@@ -95,12 +106,20 @@
 
   <!-- SimConnect libs -->
   <ItemGroup>
-    <Reference Include="Microsoft.FlightSimulator.SimConnect">
-      <HintPath>.\lib\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
+    <Reference Include=".\lib\Microsoft.FlightSimulator.SimConnect.dll" Condition="'$(Platform)'=='x64'">
       <EmbedInteropTypes>false</EmbedInteropTypes>
       <Private>true</Private>
     </Reference>
-    <ContentWithTargetPath Include=".\lib\SimConnect.dll">
+    <Reference Include=".\lib\x86\Microsoft.FlightSimulator.SimConnect.dll" Condition="'$(Platform)'=='FSX'">
+      <EmbedInteropTypes>false</EmbedInteropTypes>
+      <Private>true</Private>
+    </Reference>
+
+    <ContentWithTargetPath Include=".\lib\SimConnect.dll" Condition="'$(Platform)'=='x64'">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SimConnect.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include=".\lib\x86\SimConnect.dll" Condition="'$(Platform)'=='FSX'">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>SimConnect.dll</TargetPath>
     </ContentWithTargetPath>
@@ -120,11 +139,14 @@
 
   <!-- Custom SharpConfig lib -->
   <ItemGroup>
-    <Reference Include="SharpConfig, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>.\lib\SharpConfig\SharpConfig.dll</HintPath>
+    <Reference Include=".\lib\SharpConfig\SharpConfig.dll" Condition="'$(Platform)'=='x64'">
       <Private>true</Private>
       <EmbedInteropTypes>false</EmbedInteropTypes>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Reference>
+    <Reference Include=".\lib\x86\SharpConfig\SharpConfig.dll" Condition="'$(Platform)'=='FSX'">
+      <Private>true</Private>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
     </Reference>
     <!--<PackageReference Include="SharpConfig" Version="3.2.9.1" />-->
   </ItemGroup>
@@ -132,8 +154,7 @@
   <!-- WASimCommander Client -->
   <ItemGroup>
     <!--Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Publish') And '$(Platform)'=='x64'"-->
-    <Reference Include="WASimCommander.WASimClient, Culture=neutral, processorArchitecture=MSIL" Version="1.1.0">
-      <HintPath>.\lib\WASimCommander\WASimCommander.WASimClient.dll</HintPath>
+    <Reference Include=".\lib\WASimCommander\WASimCommander.WASimClient.dll" Condition="'$(Platform)'=='x64'">
       <Private>true</Private>
       <EmbedInteropTypes>false</EmbedInteropTypes>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
@@ -149,7 +170,7 @@
   </ItemGroup>
   -->
   <ItemGroup>
-    <ContentWithTargetPath Include=".\lib\WASimCommander\Ijwhost.dll">
+    <ContentWithTargetPath Include=".\lib\WASimCommander\Ijwhost.dll" Condition="'$(Platform)'=='x64'">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>Ijwhost.dll</TargetPath>
     </ContentWithTargetPath>

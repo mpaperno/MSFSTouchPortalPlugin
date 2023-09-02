@@ -4,9 +4,10 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>MSFSTouchPortalPlugin_Generator</RootNamespace>
-    <Platforms>x64</Platforms>
+    <Platforms>x64;FSX</Platforms>
     <Version>1.4.0</Version>
     <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>..\build\obj\$(MSBuildProjectName)\$(Platform)-$(Configuration)\</IntermediateOutputPath>
     <Configurations>Debug;Release;Publish</Configurations>
     <Copyright>Copyright Tim Lewis, Maxim Paperno, and project contributors; All rights reserved.</Copyright>
     <PackageProjectUrl>https://github.com/mpaperno/MSFSTouchPortalPlugin</PackageProjectUrl>
@@ -20,40 +21,41 @@
     <ErrorReport>none</ErrorReport>
     <Company>MSFS Touch Portal Plugin Project</Company>
     <CheckEolTargetFramework>False</CheckEolTargetFramework>
+    <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
+    <NoWarn>1701;1702</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <PropertyGroup Condition="'$(Platform)'=='x64'">
     <PlatformTarget>x64</PlatformTarget>
-    <NoWarn>1701;1702</NoWarn>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <DefineConstants>WASIM;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Publish') And '$(Platform)'=='x64'">
-    <PlatformTarget>x64</PlatformTarget>
+  <PropertyGroup Condition="'$(Platform)'=='FSX'">
+    <PlatformTarget>x86</PlatformTarget>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <AssemblyName>FSXTouchPortalPlugin-Generator</AssemblyName>
+    <DefineConstants>FSX;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>DEBUG;TRACE;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Publish')">
     <NoWarn>1701;1702</NoWarn>
-    <DefineConstants />
-    <DebugType>none</DebugType>
-    <DebugSymbols>false</DebugSymbols>
-    <Optimize>True</Optimize>
     <AllowedReferenceRelatedFileExtensions>
       <!-- Prevent .pdb, .xml, etc from being copied to output folder -->
       .dll
     </AllowedReferenceRelatedFileExtensions>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>True</Optimize>
+    <SelfContained>true</SelfContained>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\MSFSTouchPortalPlugin\MSFSTouchPortalPlugin.csproj" />
-  </ItemGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <SelfContained>true</SelfContained>
+  <PropertyGroup Condition="'$(Configuration)'=='Publish'">
+    <DefineConstants>PUBLISH_BUILD;$(DefineConstants)</DefineConstants>
     <PublishTrimmed>True</PublishTrimmed>
     <TrimMode>copyused</TrimMode>
     <PublishSingleFile>False</PublishSingleFile>
@@ -66,10 +68,23 @@
     <TrimmerRootAssembly Include="netstandard" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MSFSTouchPortalPlugin\MSFSTouchPortalPlugin.csproj" />
+  </ItemGroup>
+
   <!-- somehow this is required for trimming to work properly, otherwise we get an exception during build -->
   <ItemGroup Condition="'$(Configuration)'=='Publish'">
-    <Reference Include="Microsoft.FlightSimulator.SimConnect">
-      <HintPath>..\MSFSTouchPortalPlugin\lib\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
+    <Reference Include="..\MSFSTouchPortalPlugin\lib\Microsoft.FlightSimulator.SimConnect.dll" Condition="'$(Platform)'=='x64'">
+      <EmbedInteropTypes>false</EmbedInteropTypes>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="..\MSFSTouchPortalPlugin\lib\x86\Microsoft.FlightSimulator.SimConnect.dll" Condition="'$(Platform)'=='FSX'">
       <EmbedInteropTypes>false</EmbedInteropTypes>
       <Private>true</Private>
     </Reference>

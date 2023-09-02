@@ -6,9 +6,20 @@ Param(
   [string]$Configuration = "Publish",
   [string]$Platform = "x64",
   [String]$VersionSuffix = "",
+  [switch]$FSX = $false,
   [switch]$NoClean = $false,
   [switch]$BuildAgent = $false
 )
+
+$BinName = $ProjectName
+
+if ($FSX) {
+  $Platform = "FSX"
+  $DistroName = "FSX-TouchPortal-Plugin"
+  $BinName = "FSXTouchPortalPlugin"
+}
+
+$ErrorActionPreference = "Stop"
 
 $CurrentDir = [System.IO.Path]::GetDirectoryName($myInvocation.MyCommand.Path)
 $DistFolderPath = "$CurrentDir\packages-dist"
@@ -22,14 +33,17 @@ if (Test-Path $PluginFilesPath) {
 
 Write-Output "`nPublishing '$ProjectName' component to '$BinFilesPath' ...`n"
 dotnet publish "$ProjectName" --output "$BinFilesPath" --configuration $Configuration -p:Platform=$Platform
+if ($LastExitCode -ne 0) { throw ("Error " + $LastExitCode) }
 
 Write-Output "`nPublishing '$ProjectName-Generator' component...`n"
 dotnet publish "$ProjectName-Generator" --output "$BinFilesPath" --configuration $Configuration -p:Platform=$Platform
+if ($LastExitCode -ne 0) { throw ("Error " + $LastExitCode) }
 
 # Run Documentation
 Write-Output "`nGenerating entry.tp JSON and Documentation...`n"
-#dotnet run -p "$ProjectName-Generator" -o "$PluginFilesPath"
+#dotnet run --project "$ProjectName-Generator" -c $Configuration -a $Platform -- -o "$PluginFilesPath"
 & "$BinFilesPath\$ProjectName-Generator.exe" -o "$PluginFilesPath"
+if ($LastExitCode -ne 0) { throw ("Error " + $LastExitCode) }
 
 # Copy Readme, CHANGELOG, image(s) to publish folder
 copy "README.md" "$PluginFilesPath"
@@ -38,7 +52,7 @@ copy "LICENSE" "$PluginFilesPath"
 copy "$ProjectName\airplane_takeoff24.png" "$PluginFilesPath"
 
 # Get version
-$FileVersion = (Get-Command $BinFilesPath\$ProjectName.dll).FileVersionInfo.ProductVersion
+$FileVersion = (Get-Command $BinFilesPath\$BinName.dll).FileVersionInfo.ProductVersion
 
 # Create TPP File
 $TppFile = "$DistFolderPath\$DistroName-$FileVersion$VersionSuffix.tpp"
@@ -47,6 +61,7 @@ if (Test-Path $TppFile) {
 }
 Write-Output "`nGenerating archive '$TppFile'..."
 & "C:\Program Files\7-Zip\7z.exe" a "$TppFile" "$DistFolderPath\*" -tzip `-xr!*.tpp
+if ($LastExitCode -ne 0) { throw ("Error " + $LastExitCode) }
 
 if (-not $NoClean) {
   Write-Output "`nCleaning '$ProjectName-Generator' component....`n"
