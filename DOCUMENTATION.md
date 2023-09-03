@@ -4,7 +4,7 @@ This plugin provides a two-way interface between Touch Portal and Flight Simulat
 
 For further documentation, please see https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki
 
-This documentation generated for plugin v1.4.2.0
+This documentation generated for plugin v1.4.3.3
 
 ---
 
@@ -879,6 +879,7 @@ Range:{6}-{7}</td><td><ol start=0>
 <td><details><summary><sub>details</sub></summary><dl><dt>Master</dt><dd>TOGGLE_MASTER_ALTERNATOR</dd><dt>1</dt><dd>TOGGLE_ALTERNATOR1</dd><dt>2</dt><dd>TOGGLE_ALTERNATOR2</dd><dt>3</dt><dd>TOGGLE_ALTERNATOR3</dd><dt>4</dt><dd>TOGGLE_ALTERNATOR4</dd></dl></details></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Avionics Master Switch</td><td></td><td>Avionics {0}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Master Toggle</b>, Master 1 Off, Master 1 On, Master 2 Off, Master 2 On</li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>Master Toggle</dt><dd>TOGGLE_AVIONICS_MASTER</dd><dt>Master 1 Off</dt><dd>AVIONICS_MASTER_1_OFF</dd><dt>Master 1 On</dt><dd>AVIONICS_MASTER_1_ON</dd><dt>Master 2 Off</dt><dd>AVIONICS_MASTER_2_OFF</dd><dt>Master 2 On</dt><dd>AVIONICS_MASTER_2_ON</dd></dl></details></td>
 <td align='center'></td></tr>
@@ -1066,7 +1067,7 @@ Range:{5}-{6}</td><td><ol start=0>
 <li>[number] &nbsp; <b>1</b> &nbsp; <sub>&lt;min: 0&gt;</sub> <sub>&lt;max: 1&gt;</sub></li>
 </ol></td>
 <td><details><summary><sub>details</sub></summary><dl><dt>All+Set</dt><dd>STARTER_SET</dd><dt>1+Set</dt><dd>STARTER1_SET</dd><dt>2+Set</dt><dd>STARTER2_SET</dd><dt>3+Set</dt><dd>STARTER3_SET</dd><dt>4+Set</dt><dd>STARTER4_SET</dd><dt>All+Set Held</dt><dd>SET_STARTER_ALL_HELD</dd><dt>1+Set Held</dt><dd>SET_STARTER1__HELD</dd><dt>2+Set Held</dt><dd>SET_STARTER2__HELD</dd><dt>3+Set Held</dt><dd>SET_STARTER3__HELD</dd><dt>4+Set Held</dt><dd>SET_STARTER4__HELD</dd></dl></details></td>
-<td align='center'></td></tr>
+<td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Starters Toggle</td><td></td><td>Toggle Starter - {0}</td><td><ol start=0>
 <li>[choice] &nbsp; <b>All</b>, 1, 2, 3, 4, Master Switch</li>
 </ol></td>

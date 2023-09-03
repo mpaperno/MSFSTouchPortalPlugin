@@ -1,5 +1,33 @@
-# MSFS Touch Portal Plugin Change Log
+# MSFS/FSX Touch Portal Plugin Change Log
 
+## 1.4.3.3 (Sept-3-2023)
+Version number: `1040303`
+
+* Fixed simulator event actions not working after a re-connection to the sim when WASM integration is unavailable (eg. FSX edition).
+* Fixed "Avionics Master Switch" action missing choices list of what to actually do.
+* Fixed that "Starters Set" action was not available in On Hold tab.
+* Added better handling of Sim Var request errors based on SimConnect responses -- invalid requests should now be automatically removed or suspended (with details logged).
+* Added ability to specify a required simulator version for particular Sim Var request definitions (eg. only MSFS/v11).
+
+---
+## 1.4.3.2 (Sept-2-2023 @ flightsim.to)
+Version number: `1040301`
+
+* Allow running the FSX plugin concurrently with MSFS plugin.
+
+---
+## 1.4.3.1 (Sept-2-2023 @ flightsim.to)
+Version number: `1040301`
+
+* Initial release of "FSX" version of the plugin for older sims (FSX Deluxe SP2 or newer).
+
+---
+## 1.4.3.0 (Sept-1-2023 - limited test)
+Version number: `1040300`
+
+* Fixed requests for local ('L') variables with 'Millisecond' type update period not working when WASM integration is used.
+
+---
 ## 1.4.2.0 (Aug-5-2023)
 Version number: `1040200`
 

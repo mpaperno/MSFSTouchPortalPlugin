@@ -36,6 +36,7 @@ This project is a continuation of the original [MSFSTouchPortalPlugin by Tim Lew
   accessible via SimConnect alone.
 * Categorized lists of all SimConnect Event IDs and Simulator Variables to choose from, custom imported from MSFS online documentation (exclusive feature!).
 * Integrates live HubHop data for activating thousands of available Input Events provided by the community (requires WASM integration).
+* Separate plugins available for MSFS 2020 and older sims supporting FS-X versions of SimConnect.
 
 
 ## Documentation
@@ -46,12 +47,22 @@ See the [Wiki](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/) for guid
 Auto-generated documentation on all actions, connectors, events, settings, and default included states can be found in [DOCUMENTATION.md](DOCUMENTATION.md).
 
 
+## Editions
+
+There are two separate plugins available here, one for MSFS 2020 (and eventually 2024), and another for "legacy" sims like FSX,
+which should work with any sim which supports the older SimConnect SDK.
+* The "MSFS" edition is recommended for use with MSFS 2020 since it provides features specific to this version (like setting 'L' vars and WASM integration).
+* The "FSX" edition will connect to FSX Deluxe SP2 or newer simulators (including Steam and Acceleration editions).
+  This also includes MSFS 2020, but will not support certain features like WASM and HubHop integration or setting multiple SimConnect Event values.
+* The two plugin editions are completely separate and can be installed and run in Touch Portal at the same time.
+* Pages and buttons made for one edition will not work in the other (because they're separate plugins as far as TP is concerned).
+
 ## Installation
 
 Note: As with all plugins, this requires the Touch Portal Pro (paid) version to function. Use the latest available Touch Portal version for best results.
 
-1. Get the latest release of this plugin from the  [Releases](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases) page.
-2. The plugin is distributed and installed as a standard Touch Portal `.tpp` plugin file. If you know how to import a plugin, just do that and skip to step 4.
+1. Get the latest release of this plugin(s) you want to install from the  [Releases](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases) page.
+2. The plugins are distributed and installed as a standard Touch Portal `.tpp` plugin files. If you know how to import a plugin, just do that and skip to step 4.
 3. Import the plugin:
     1. Start/open _Touch Portal_.
     2. Click the Settings "gear" icon at the top-right and select "Import plugin..." from the menu.
@@ -67,11 +78,10 @@ Note: As with all plugins, this requires the Touch Portal Pro (paid) version to 
     then navigate to _Settings -> Plugins -> "MSFS Touch Portal Plugin"_. Set the
     "Connect To Flight Sim on Startup" setting to a value of `1` (one) and save the settings.
     The plugin will keep attempting to connect to the simulator every 30 seconds.
-5. **For use with FS-X** (and compatible sims): Change the "SimConnect.cfg Index" plugin setting to `1` (one).
 
 ### Optional WASM Module (only for MSFS 2020 on PC)
 
-6. The optional `WASimModule` MSFS component is **highly recommended** as a companion to this plugin. It it not required to use most
+5. The optional `WASimModule` MSFS component is **highly recommended** as a companion to this plugin. It it not required to use most
 of the basic plugin features, but it will provide a more advanced feature set (such as access to local "L" variables and HubHop Input Events)
 and further optimizations.
     1. Download the `WASimModule` .zip file from the same published Release as the plugin.

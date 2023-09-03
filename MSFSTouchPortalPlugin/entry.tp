@@ -1,6 +1,6 @@
 {
   "sdk": 6,
-  "version": 1040200,
+  "version": 1040303,
   "name": "MSFS Touch Portal Plugin",
   "id": "MSFSTouchPortalPlugin",
   "configuration": {
@@ -3253,8 +3253,22 @@
           "tryInline": true,
           "hasHoldFunctionality": false,
           "description": "",
-          "format": "Avionics {0}",
-          "data": []
+          "format": "Avionics {$MSFSTouchPortalPlugin.Electrical.Action.AvionicsMasterSwitchAdj.Data.0$}",
+          "data": [
+            {
+              "id": "MSFSTouchPortalPlugin.Electrical.Action.AvionicsMasterSwitchAdj.Data.0",
+              "type": "choice",
+              "label": "Action",
+              "default": "Master Toggle",
+              "valueChoices": [
+                "Master Toggle",
+                "Master 1 Off",
+                "Master 1 On",
+                "Master 2 Off",
+                "Master 2 On"
+              ]
+            }
+          ]
         },
         {
           "id": "MSFSTouchPortalPlugin.Electrical.Action.ExternalPower",
@@ -4076,7 +4090,7 @@
           "prefix": "MSFS",
           "type": "communicate",
           "tryInline": true,
-          "hasHoldFunctionality": false,
+          "hasHoldFunctionality": true,
           "description": "",
           "format": "Starter {$MSFSTouchPortalPlugin.Engine.Action.StartersSet.Data.0$} {$MSFSTouchPortalPlugin.Engine.Action.StartersSet.Data.1$} to {$MSFSTouchPortalPlugin.Engine.Action.StartersSet.Data.2$} (0/1)",
           "data": [
