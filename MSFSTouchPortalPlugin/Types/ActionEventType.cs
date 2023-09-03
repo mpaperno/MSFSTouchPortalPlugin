@@ -17,7 +17,6 @@ A copy of the GNU GPL is included with this project
 and is also available at <http://www.gnu.org/licenses/>.
 */
 
-using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Enums;
 using System;
 using System.Collections.Generic;
@@ -124,6 +123,15 @@ namespace MSFSTouchPortalPlugin.Types
     public EventMappingRecord GetEventMapping()
     {
       return TpActionToEventMap.Any() ? TpActionToEventMap.Values.First() : null;
+    }
+
+    public void ClearMappedEventIds(bool autoAssignedOnly = true)
+    {
+      if (!InternalEvent) {
+        foreach (var m in TpActionToEventMap.Values)
+          if (!autoAssignedOnly || (EventIds)m.EventId >= EventIds.DynamicEventInit)
+            m.EventId = EventIds.None;
+      }
     }
 
     // Helper to format an array of action data values into a unique key

@@ -354,6 +354,7 @@ namespace MSFSTouchPortalPlugin.Services
         catch { /* ignore in case it hung */ }
       }
       ClearRepeatingActions();
+      ResetMappedEventIds();
 
       _pluginEventsTask = null;
       _simTasksCTS?.Dispose();
@@ -794,6 +795,11 @@ namespace MSFSTouchPortalPlugin.Services
           tim.Dispose();
         }
       }
+    }
+
+    void ResetMappedEventIds() {
+      foreach (var ev in actionsDictionary.Values)
+        ev.ClearMappedEventIds(autoAssignedOnly: true);
     }
 
     void UpdateRelatedConnectors(string varName, double value)
