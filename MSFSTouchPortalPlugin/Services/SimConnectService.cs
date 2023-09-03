@@ -102,6 +102,7 @@ namespace MSFSTouchPortalPlugin.Services
     bool _simConnectHasQuit = false;  // flag to prevent trying to invoke SimConnect in certain situations, eg. after a Quit or crash.
     int _reqTrackIndex = 0;  // current write slot index in _requestTracking array
     uint _wasmClientId = 0xFF700C49;
+    SimulatorInfo _simInfo;
     Task _messageWaitTask;
     SimConnect _simConnect = null;
 #if WASIM
@@ -173,7 +174,8 @@ namespace MSFSTouchPortalPlugin.Services
     void OnConnected(SIMCONNECT_RECV_OPEN data)
     {
       _connected = true;
-      _logger.LogInformation("SimConnect Connected.");
+      _simInfo = new SimulatorInfo(data);
+      _logger.LogInformation((int)EventIds.PluginInfo, "Connected to {info}", _simInfo.ToString());
 
       // System Events
       _simConnect.OnRecvQuit      += new SimConnect.RecvQuitEventHandler(Simconnect_OnRecvQuit);
@@ -216,7 +218,7 @@ namespace MSFSTouchPortalPlugin.Services
 #endif
       RegisterRequests();
       SubscribeSystemEvents();
-      OnConnect?.Invoke(new SimulatorInfo(data));
+      OnConnect?.Invoke(_simInfo);
     }
 
     void StopSimConnect()

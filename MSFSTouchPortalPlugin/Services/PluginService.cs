@@ -310,9 +310,9 @@ namespace MSFSTouchPortalPlugin.Services
 
     #region SimConnect Events   /////////////////////////////////////
 
-    void SimConnectEvent_OnConnect(SimulatorInfo info)
+    void SimConnectEvent_OnConnect(SimulatorInfo _)
     {
-      _logger.LogInformation((int)EventIds.PluginInfo, "Connected to {info}", info.ToString());
+      _logger.LogDebug("SimConnectService connected, starting events task...");
 
       _simConnectionRequest.Reset();
       _simTasksCTS = new CancellationTokenSource();
