@@ -71,7 +71,11 @@ namespace MSFSTouchPortalPlugin.Services
 
     public bool IsConnected => _connected;
     public bool WasmAvailable => WasmStatus != WasmModuleStatus.NotFound;
+#if WASIM
     public WasmModuleStatus WasmStatus { get; private set; } = WasmModuleStatus.Unknown;
+#else
+    public WasmModuleStatus WasmStatus => WasmModuleStatus.NotFound;
+#endif
 
     public SimConnectService(ILogger<SimConnectService> logger, SimVarCollection simVarCollection)
     {
@@ -592,12 +596,16 @@ namespace MSFSTouchPortalPlugin.Services
             _logger.LogWarning((int)EventIds.SimError, "Could not find Key Event ID for event name {evName}, will try with SimConnect.", eventRecord.EventName);
           // fall back to SimConnect if lookup fails
         }
-#endif
         if ((EventIds)eventRecord.EventId == EventIds.None) {
           eventRecord.EventId = ActionEventType.NextId();
           if (!MapClientEventToSimEvent(eventRecord.EventId, eventRecord.EventName))
             return false;
         }
+#else
+        eventRecord.EventId = ActionEventType.NextId();
+        if (!MapClientEventToSimEvent(eventRecord.EventId, eventRecord.EventName))
+          return false;
+#endif
       }
       return TransmitClientEvent(eventRecord.EventId, data, d2, d3, d4, d5);
     }
