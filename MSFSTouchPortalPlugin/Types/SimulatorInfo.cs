@@ -38,6 +38,8 @@ namespace MSFSTouchPortalPlugin.Types
     public uint SimConnectBuildMaj;
     public uint SimConnectBuildMin;
     public uint SimConnectServerVersion;
+    public string AppVersionString;
+    public string SimConnectVersionString;
 
     public SimulatorInfo(Microsoft.FlightSimulator.SimConnect.SIMCONNECT_RECV_OPEN data) {
       ApplicationName = data.szApplicationName;
@@ -50,13 +52,13 @@ namespace MSFSTouchPortalPlugin.Types
       SimConnectBuildMaj = data.dwSimConnectBuildMajor;
       SimConnectBuildMin = data.dwSimConnectBuildMinor;
       SimConnectServerVersion = data.dwVersion;
+      AppVersionString = $"{AppVersionMaj}.{AppVersionMin}.{AppBuildMaj}.{AppBuildMin}";
+      SimConnectVersionString = $"{SimConnectVersionMaj}.{SimConnectVersionMin}.{SimConnectBuildMaj}.{SimConnectBuildMin}";
     }
 
     public override string ToString() {
-      return "Simulator " +
-        $"\"{ApplicationName}\" v{AppVersionMaj}.{AppVersionMin}.{AppBuildMaj}.{AppBuildMin}" +
-        ", with SimConnect v" + $"{SimConnectVersionMaj}.{SimConnectVersionMin}.{SimConnectBuildMaj}.{SimConnectBuildMin}" +
-        $" (Server v{SimConnectServerVersion})";
+      return
+        $"Simulator \"{ApplicationName}\" v{AppVersionString}, with SimConnect v{SimConnectVersionString} (Server v{SimConnectServerVersion})";
     }
   }
 }
