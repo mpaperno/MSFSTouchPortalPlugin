@@ -32,12 +32,20 @@ namespace MSFSTouchPortalPlugin.Interfaces
     Unknown, NotFound, Found, Connected
   }
 
+  public enum SimVarErrorType
+  {
+    None, VarType, Registration, SimVersion, SimConnectError
+  }
+
   internal delegate void DataUpdateEventHandler(Definition def, Definition req, object data);
   internal delegate void RecvEventEventHandler(EventIds evenId, Groups categoryId, object data);
   internal delegate void ConnectEventHandler(SimulatorInfo info);
   internal delegate void DisconnectEventHandler();
   internal delegate void ExceptionEventHandler(RequestTrackingData data);
   internal delegate void LocalVarsListUpdatedHandler(System.Collections.Generic.IReadOnlyDictionary<int, string> list);
+#nullable enable
+  internal delegate void SimVarErrorEventHandler(Definition def, SimVarErrorType errType, object? data = null);
+#nullable restore
 
   internal interface ISimConnectService : IDisposable {
     event DataUpdateEventHandler OnDataUpdateEvent;
@@ -45,6 +53,7 @@ namespace MSFSTouchPortalPlugin.Interfaces
     event ConnectEventHandler OnConnect;
     event DisconnectEventHandler OnDisconnect;
     event ExceptionEventHandler OnException;
+    event SimVarErrorEventHandler OnSimVarError;
 #if WASIM
     event LocalVarsListUpdatedHandler OnLVarsListUpdated;
 #endif

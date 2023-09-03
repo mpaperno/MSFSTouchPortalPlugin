@@ -55,6 +55,7 @@ namespace MSFSTouchPortalPlugin.Services
     public event ConnectEventHandler OnConnect;
     public event DisconnectEventHandler OnDisconnect;
     public event ExceptionEventHandler OnException;
+    public event SimVarErrorEventHandler OnSimVarError;
 #if WASIM
     public event LocalVarsListUpdatedHandler OnLVarsListUpdated;
 #endif
@@ -330,6 +331,11 @@ namespace MSFSTouchPortalPlugin.Services
         simVar.RegistrationStatus = SimVarRegistrationStatus.Unregistered;
         return;
       }
+      if (!string.IsNullOrEmpty(simVar.SimVersion) && !_simInfo.AppVersionString.StartsWith(simVar.SimVersion, StringComparison.Ordinal)) {
+        OnSimVarError?.Invoke(simVar.Def, SimVarErrorType.SimVersion, _simInfo.AppVersionString);
+        return;
+      }
+
 #if FSX
       bool scSupported = simVar.VariableType == 'A';
 #else
@@ -337,7 +343,7 @@ namespace MSFSTouchPortalPlugin.Services
 #endif
 #if WASIM
       if (!scSupported && !WasmInitialized) {
-        _logger.LogError((int)EventIds.PluginError, "Can not request {type} simulator variable without WASM integration.", simVar.VariableType);
+        OnSimVarError?.Invoke(simVar.Def, SimVarErrorType.VarType, $"Can not request '{simVar.VariableType}' type variable without WASM integration.");
         return;
       }
       if (!scSupported || (simVar.NeedsScheduledRequest && WasmInitialized)) {
@@ -350,14 +356,14 @@ namespace MSFSTouchPortalPlugin.Services
       }
 #else
       if (!scSupported) {
-        _logger.LogError((int)EventIds.PluginError, "Can not request {type} simulator variable.", simVar.VariableType);
+        OnSimVarError?.Invoke(simVar.Def, SimVarErrorType.VarType, "invalid type for this Simulator version");
         return;
       }
       simVar.DataProvider = SimVarDataProvider.SimConnect;
       simVar.RegistrationStatus = RegisterToSimConnect(simVar);
 #endif
       if (simVar.RegistrationStatus == SimVarRegistrationStatus.Error)
-        _logger.LogError("Could not complete simulator variable request, check previous log messages.");
+        OnSimVarError?.Invoke(simVar.Def, SimVarErrorType.Registration);
     }
 
     void DeregisterDataRequest(SimVarItem simVar)
@@ -387,7 +393,7 @@ namespace MSFSTouchPortalPlugin.Services
     SimVarRegistrationStatus RegisterToSimConnect(SimVarItem simVar)
     {
       if (!_registerDataDelegates.TryGetValue(simVar.StorageDataType, out var registerDataDelegate)) {
-        _logger.LogError((int)EventIds.SimError, "Unable to register storage type for '{type}'", simVar.StorageDataType.ToString());
+        OnSimVarError?.Invoke(simVar.Def, SimVarErrorType.Registration, $"Unable to register storage type for '{simVar.StorageDataType}'");
         return SimVarRegistrationStatus.Error;
       }
 
@@ -467,16 +473,15 @@ namespace MSFSTouchPortalPlugin.Services
     SimVarRegistrationStatus RegisterToWasm(SimVarItem simVar)
     {
       if (!WasmInitialized) {
-        _logger.LogError((int)EventIds.SimError, "Cannot request '{varType}' type variable w/out WASM module.", simVar.VariableType);
+        OnSimVarError?.Invoke(simVar.Def, SimVarErrorType.VarType, $"Can not request '{simVar.VariableType}' type variable without WASM integration.");
         return SimVarRegistrationStatus.Error;
       }
 
-      HR hr;
       byte simVarIdx = 0;
       var simVarName = simVar.SimVarName.AsSpan();
       if (simVar.VariableType == 'L') {
         // Check if L var exists yet
-        hr = _wlib.lookup(LookupItemType.LocalVariable, simVar.SimVarName, out int varId);
+        HR hr = _wlib.lookup(LookupItemType.LocalVariable, simVar.SimVarName, out int varId);
         _logger.LogDebug("Got ID lookup for '{varName}' with ID {id} and HResult {hr}", simVar.SimVarName, varId, hr);
         if (hr != HR.OK || varId < 0) {
           _logger.LogWarning((int)EventIds.SimError, "Local variable '{varName}' not found at simulator. Retry later.", simVar.SimVarName);
@@ -510,11 +515,9 @@ namespace MSFSTouchPortalPlugin.Services
         unitName = new(simVar.Unit),
         simVarIndex = simVarIdx,
       };
-      if ((hr = _wlib.saveDataRequest(dr)) != HR.OK) {
-        _logger.LogError((int)EventIds.SimError, "Could not complete request due to WASimClient error '{hr}', check log messages.", hr.ToString());
-        return SimVarRegistrationStatus.Error;
-      }
-      return SimVarRegistrationStatus.Registered;
+      if (_wlib.saveDataRequest(dr) == HR.OK)
+        return SimVarRegistrationStatus.Registered;
+      return SimVarRegistrationStatus.Error;
     }
 
     void UpdateLocalVars()
@@ -747,6 +750,10 @@ namespace MSFSTouchPortalPlugin.Services
       RequestTrackingData record = GetRequestRecord(data.dwSendID, (SIMCONNECT_EXCEPTION)data.dwException, data.dwIndex);
       _logger.LogWarning((int)EventIds.SimError, "SimConnect Request Error: {error}", record.ToString());
       OnException?.Invoke(record);
+
+      if (record.aArguments.Length > 0 && record.aArguments[0] is Definition defId) {
+        OnSimVarError?.Invoke(defId, SimVarErrorType.SimConnectError, record);
+      }
     }
 
     private void Simconnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data) {
