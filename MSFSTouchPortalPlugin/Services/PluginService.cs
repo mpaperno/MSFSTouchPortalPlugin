@@ -247,8 +247,7 @@ namespace MSFSTouchPortalPlugin.Services
           IReadOnlyCollection<Timer> timers = _repeatingActionTimers.Values.ToArray();
           foreach (Timer tim in timers)
             tim.Tick();
-          if (!_simConnectService.WasmAvailable)
-            CheckPendingRequests();
+          CheckPendingRequests();
           await Task.Delay(25, _simTasksCancelToken);
         }
       }
@@ -265,15 +264,10 @@ namespace MSFSTouchPortalPlugin.Services
       var vars = _simVarCollection.PolledUpdateVars;
       foreach (var simVar in vars) {
         // Check if a value update is required based on the SimVar's internal tracking mechanism.
-        if (simVar.NeedsScheduledRequest) {
-          if (simVar.UpdateRequired) {
-            simVar.SetPending(true);
-            _simConnectService.RequestDataOnSimObjectType(simVar);
-          }
-        }
-        else {
+        if (simVar.UpdateRequired)
+          simVar.SetPending(_simConnectService.RequestDataOnSimObjectType(simVar));
+        else if (!simVar.NeedsScheduledRequest)
           _simVarCollection.RemoveFromPolled(simVar);
-        }
       }
     }
 
