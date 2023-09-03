@@ -79,6 +79,8 @@ namespace MSFSTouchPortalPlugin.Types
     /// <summary> Only report change if it is greater than the value of this parameter (not greater than or equal to).
     /// Default is 0.009f limits changes to 2 decimal places which is suitable for most unit types (except perhaps MHz and "percent over 100"). </summary>
     public float DeltaEpsilon { get; set; } = (float)DELTA_EPSILON_DEFAULT;
+    /// <summary> Simulator version match required for this variable. Eg. "11" or "11.0.23112" </summary>
+    public string SimVersion { get; set; }
     /// <summary> Could also be "choice" but we don't use that (yet?) </summary>
     public string TouchPortalValueType { get; set; } = "text";
     /// <summary> This could/should be populated by whatever is creating the SimVarItem instance </summary>
