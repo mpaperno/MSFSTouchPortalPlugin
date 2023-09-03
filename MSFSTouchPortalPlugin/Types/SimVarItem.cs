@@ -91,6 +91,7 @@ namespace MSFSTouchPortalPlugin.Types
     public SimVarDataProvider DataProvider { get; set; } = SimVarDataProvider.None;
     /// <summary> Status of this request registration with the data provider. </summary>
     public SimVarRegistrationStatus RegistrationStatus { get; set; } = SimVarRegistrationStatus.Unregistered;
+    public bool IsRegistered => RegistrationStatus == SimVarRegistrationStatus.Registered;
 
     /// <summary>
     /// SimConnect unit name. Changing this property will clear any current value!
@@ -262,7 +263,7 @@ namespace MSFSTouchPortalPlugin.Types
     /// Indicates that the value has "expired" based on the UpdatePeriod and UpdateInterval since the last time the value was set.
     /// This always returns false if UpdatePeriod != UpdatePeriod.Millisecond. Also returns false if a request for this value is pending and hasn't yet timed out.
     /// </summary>
-    public bool UpdateRequired => NeedsScheduledRequest && !CheckPending() && Stopwatch.GetTimestamp() > _valueExpires;
+    public bool UpdateRequired => IsRegistered && NeedsScheduledRequest && !CheckPending() && Stopwatch.GetTimestamp() > _valueExpires;
 
     // Private properties  ---------------------
 
