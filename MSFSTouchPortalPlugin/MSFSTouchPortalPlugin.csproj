@@ -4,8 +4,8 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>MSFSTouchPortalPlugin</RootNamespace>
-    <Version>1.4.3.0</Version>
-    <FileVersion>1.4.3.0</FileVersion>
+    <Version>1.4.3.3</Version>
+    <FileVersion>1.4.3.3</FileVersion>
     <Platforms>x64;FSX</Platforms>
     <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath>
     <IntermediateOutputPath>..\build\obj\$(MSBuildProjectName)\$(Platform)-$(Configuration)\</IntermediateOutputPath>
@@ -33,9 +33,9 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Platform)'=='FSX'">
+    <AssemblyName>FSXTouchPortalPlugin</AssemblyName>
     <PlatformTarget>x86</PlatformTarget>
     <RuntimeIdentifier>win-x86</RuntimeIdentifier>
-    <AssemblyName>FSXTouchPortalPlugin</AssemblyName>
     <DefineConstants>FSX;$(DefineConstants)</DefineConstants>
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
