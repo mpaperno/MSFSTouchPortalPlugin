@@ -531,7 +531,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     void WASMLib_OnClientEvent(ClientEvent ev)
     {
-      _logger.LogInformation("WASimClient Event: {ev}", ev);
+      _logger.LogDebug("WASimClient Event: {ev}", ev);
     }
 
     void WASMLib_OnListResults(ListResult lr)
@@ -554,7 +554,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     void WASMLib_OnLogEntryReceived(LogRecord log, LogSource src)
     {
-      _logger.Log(WasmLogLevelToLoggerLevel(log.level), (int)EventIds.Ignore, "[WASM] {src} - {log}", src, log);
+      _logger.Log(WasmLogLevelToLoggerLevel(log.level), (int)EventIds.Ignore, "[WASM] {src} - {log}", src, log.message);
     }
 
 #endif  // WASIM
