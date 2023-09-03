@@ -40,6 +40,7 @@ using TouchPortalSDK.Interfaces;
 using TouchPortalSDK.Messages.Events;
 using TouchPortalSDK.Messages.Models;
 using Timer = MSFSTouchPortalPlugin.Helpers.UnthreadedTimer;
+using SIMCONNECT_EXCEPTION = Microsoft.FlightSimulator.SimConnect.SIMCONNECT_EXCEPTION;
 
 namespace MSFSTouchPortalPlugin.Services
 {
@@ -179,6 +180,7 @@ namespace MSFSTouchPortalPlugin.Services
       _simConnectService.OnConnect += SimConnectEvent_OnConnect;
       _simConnectService.OnDisconnect += SimConnectEvent_OnDisconnect;
       //_simConnectService.OnException += SimConnectEvent_OnException;
+      _simConnectService.OnSimVarError += SimConnectEvent_OnSimVarError;
       _simConnectService.OnEventReceived += SimConnectEvent_OnEventReceived;
 #if WASIM
       _simConnectService.OnLVarsListUpdated += SimConnect_OnLVarsListUpdated;
@@ -407,6 +409,44 @@ namespace MSFSTouchPortalPlugin.Services
       }
     }
 
+#nullable enable
+    private void SimConnectEvent_OnSimVarError(Definition def, SimVarErrorType errType, object? data = null)
+    {
+      if (_simVarCollection.TryGet(def, out var simVar) && simVar.RegistrationStatus == SimVarRegistrationStatus.Registered) {
+
+        string? reason = null;
+        switch (errType) {
+          case SimVarErrorType.SimVersion:
+            reason = $"required Sim version does not match (SimVar.SimVersion: '{simVar.SimVersion}', Sim: '{data}')";
+            break;
+
+          case SimVarErrorType.VarType:
+          case SimVarErrorType.Registration:
+            reason = data?.ToString();
+            break;
+
+          case SimVarErrorType.SimConnectError:
+            if ((data as RequestTrackingData is var rtd) && rtd != null) {
+              reason = rtd.eException switch {
+                SIMCONNECT_EXCEPTION.NAME_UNRECOGNIZED => $"SimConnect says variable '{rtd.aArguments[1]}' is unknown",
+                _ => $"SimConnect error {rtd.eException}",
+              };
+            }
+            break;
+        }
+
+        reason ??= "Unknown reason";
+        bool remove = simVar.DefinitionSource != SimVarDefinitionSource.Temporary;
+
+        _logger.LogWarning((int)EventIds.SimError,
+          "{action} variable request '{id}' due to: {reason}.", (remove ? "Removing" : "Suspending"), simVar.Id, reason);
+
+        simVar.RegistrationStatus = SimVarRegistrationStatus.Error;
+        if (remove)
+          RemoveSimVar(simVar);
+      }
+    }
+#nullable restore
 
 #if WASIM
     void SimConnect_OnLVarsListUpdated(IReadOnlyDictionary<int, string> list) {
@@ -1022,6 +1062,10 @@ namespace MSFSTouchPortalPlugin.Services
         _simVarCollection.Add(simVar);
         _logger.LogDebug("Added temporary SimVar {simVarId} for {simVarName}", simVar.Id, simVar.SimVarName);
       }
+      else if (simVar.RegistrationStatus == SimVarRegistrationStatus.Error) {
+        _logger.LogWarning("Variable '{simVarName}' from name '{varName}' in action '{actId}' is invalid due to previous registration error.", simVar.SimVarName, varName, actId);
+        return false;
+      }
       if (simVar.IsStringType) {
         if (!simVar.SetValue(new StringVal(sVal))) {
           _logger.LogError("Could not set string value '{value}' for SimVar Id: '{varId}' Name: '{varName}'", sVal, simVar.Id, varName);
@@ -1632,6 +1676,10 @@ namespace MSFSTouchPortalPlugin.Services
             simVar.DefinitionSource = SimVarDefinitionSource.Temporary;
             _simVarCollection.Add(simVar);
             _logger.LogInformation("Added temporary SimVar {simVarId} ({simVarName}) for Connector Feedback.", simVar.Id, simVar.SimVarName);
+          }
+          else if (simVar.RegistrationStatus == SimVarRegistrationStatus.Error) {
+            _logger.LogWarning("Variable from name '{varName}' in Connector '{cId}' is invalid due to registration error.", fbVarName, message.ConnectorId);
+            return;
           }
           varName = simVar.Id;
         }
