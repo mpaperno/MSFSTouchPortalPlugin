@@ -407,8 +407,7 @@ namespace MSFSTouchPortalPlugin.Services
 #nullable enable
     private void SimConnectEvent_OnSimVarError(Definition def, SimVarErrorType errType, object? data = null)
     {
-      if (_simVarCollection.TryGet(def, out var simVar) && simVar.RegistrationStatus == SimVarRegistrationStatus.Registered) {
-
+      if (_simVarCollection.TryGet(def, out var simVar)) {
         string? reason = null;
         switch (errType) {
           case SimVarErrorType.SimVersion:
@@ -432,8 +431,9 @@ namespace MSFSTouchPortalPlugin.Services
 
         reason ??= "Unknown reason";
         bool remove = simVar.DefinitionSource != SimVarDefinitionSource.Temporary;
+        LogLevel level = simVar.RegistrationStatus == SimVarRegistrationStatus.Registered ? LogLevel.Warning : LogLevel.Information;
 
-        _logger.LogWarning((int)EventIds.SimError,
+        _logger.Log(level, (int)EventIds.SimError,
           "{action} variable request '{id}' due to: {reason}.", (remove ? "Removing" : "Suspending"), simVar.Id, reason);
 
         simVar.RegistrationStatus = SimVarRegistrationStatus.Error;
