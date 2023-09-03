@@ -77,9 +77,10 @@ namespace MSFSTouchPortalPlugin.Enums
 
     //[Display(Description = "Upon every visual frame while simulator is not paused.")]
     //Frame,      // not used for now since it's a lot of data for no particular reason...
-
+#if !FSX
     [Display(Name = "Pause State Changed", Description = "When the flight is paused or unpaused, with more detail than the regular Pause system event.")]
     Pause_EX1,      // this one is actually multiple events, (see "virtual" Pause* events below) and is currently not presented to the user as a choice.
+#endif
 
     [Display(Name = "Pause Toggled", Description = "When any pause mode is toggled or sim is unpaused completely (i.e. the Pause State changes).")]
     Pause,
@@ -120,6 +121,7 @@ namespace MSFSTouchPortalPlugin.Enums
     [Display(Name = "View External", Description = "When the view changes to an external view.")]
     ViewExternal,      // View event if dwData == 0
 
+#if !FSX
     // Expanded pause states from Pause_EX1 values
 
     // PAUSE_STATE_FLAG_PAUSE
@@ -137,6 +139,7 @@ namespace MSFSTouchPortalPlugin.Enums
     // PAUSE_STATE_FLAG_SIM_PAUSE
     [Display(Name = "Simulator Pause", Description = "Pause the player sim but traffic, multi, etc... will still run.")]
     PauseSimulator,
+#endif
 
     InternalEventsLast,  // marker
 

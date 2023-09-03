@@ -75,16 +75,15 @@ namespace MSFSTouchPortalPlugin.Services
     private Dictionary<string, PluginSetting> pluginSettingsDictionary = new();
     private readonly ConcurrentDictionary<string, Timer> _repeatingActionTimers = new();  // storage for temporary repeating (held) action timers, index by action ID
     private readonly ConcurrentQueue<string> _logMessages = new();  // stores the last MAX_LOG_MSGS_FOR_STATE log messages for the LogMessages state value, used in PluginLogger callback
+    private static readonly System.Data.DataTable _expressionEvaluator = new();  // used to evaluate basic math in action data
+    private CultureInfo _cultureInfo = CultureInfo.CurrentCulture;
+    private readonly string _defaultCultureId = CultureInfo.CurrentCulture.Name;
 #if WASIM
     private IReadOnlyDictionary<int, string> _localVariablesList = null;
 #endif
-
-    private static readonly System.Data.DataTable _expressionEvaluator = new();  // used to evaluate basic math in action data
-
-    private CultureInfo _cultureInfo = CultureInfo.CurrentCulture;
-    private readonly string _defaultCultureId = CultureInfo.CurrentCulture.Name;
-
+#if !FSX
     SimPauseStates _simPauseState = SimPauseStates.OFF;  // Tracks pause state reported from last Pause_EX1 sim event.
+#endif
 
     public PluginService(IHostApplicationLifetime hostApplicationLifetime, ILogger<PluginService> logger,
       ITouchPortalClientFactory clientFactory, ISimConnectService simConnectService, IReflectionService reflectionService,
@@ -371,6 +370,7 @@ namespace MSFSTouchPortalPlugin.Services
         if (eventId == EventIds.View) {
           eventId = (uint)data == SimConnectService.VIEW_EVENT_DATA_COCKPIT_3D ? EventIds.ViewCockpit : EventIds.ViewExternal;
         }
+#if !FSX
         else if (eventId == EventIds.Pause_EX1) {
           SimPauseStates lastState = _simPauseState;
           _simPauseState = (SimPauseStates)Convert.ToByte(data);
@@ -400,6 +400,7 @@ namespace MSFSTouchPortalPlugin.Services
             }
           }
         }
+#endif
         UpdateSimSystemEventState(eventId, data);
       }
     }

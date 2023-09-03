@@ -83,10 +83,12 @@ namespace MSFSTouchPortalPlugin.Objects
        EventIds.Paused,
        EventIds.Unpaused,
        EventIds.Pause,
+#if !FSX
        EventIds.PauseFull,
        EventIds.PauseActive,
        EventIds.PauseSimulator,
        EventIds.PauseFullWithSound,
+#endif
        EventIds.SimStart,
        EventIds.SimStop,
        EventIds.Sim,
