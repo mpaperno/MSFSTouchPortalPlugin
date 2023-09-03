@@ -150,6 +150,7 @@ namespace MSFSTouchPortalPlugin.Services
 
         // Set up minimum handlers to receive connection notification
         _simConnect.OnRecvOpen += new SimConnect.RecvOpenEventHandler(Simconnect_OnRecvOpen);
+        _simConnect.OnRecvException += new SimConnect.RecvExceptionEventHandler(Simconnect_OnRecvException);
         _scQuit.Reset();
         _messageWaitTask = Task.Run(ReceiveMessages);
 
@@ -180,7 +181,6 @@ namespace MSFSTouchPortalPlugin.Services
 
       // System Events
       _simConnect.OnRecvQuit      += new SimConnect.RecvQuitEventHandler(Simconnect_OnRecvQuit);
-      _simConnect.OnRecvException += new SimConnect.RecvExceptionEventHandler(Simconnect_OnRecvException);
 
       // Sim mapped events
       _simConnect.OnRecvEvent         += Simconnect_OnRecvEvent;
