@@ -178,7 +178,7 @@ namespace MSFSTouchPortalPlugin.Services
       _simConnectService.OnDataUpdateEvent += SimConnectEvent_OnDataUpdateEvent;
       _simConnectService.OnConnect += SimConnectEvent_OnConnect;
       _simConnectService.OnDisconnect += SimConnectEvent_OnDisconnect;
-      _simConnectService.OnException += SimConnectEvent_OnException;
+      //_simConnectService.OnException += SimConnectEvent_OnException;
       _simConnectService.OnEventReceived += SimConnectEvent_OnEventReceived;
 #if WASIM
       _simConnectService.OnLVarsListUpdated += SimConnect_OnLVarsListUpdated;
@@ -407,9 +407,6 @@ namespace MSFSTouchPortalPlugin.Services
       }
     }
 
-    void SimConnectEvent_OnException(RequestTrackingData data) {
-      _logger.LogWarning((int)EventIds.SimError, "SimConnect Request Error: {error}", data.ToString());
-    }
 
 #if WASIM
     void SimConnect_OnLVarsListUpdated(IReadOnlyDictionary<int, string> list) {

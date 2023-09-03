@@ -45,7 +45,12 @@ namespace MSFSTouchPortalPlugin.Types
     }
 
     // constructs a "null" instance with a valid request ID but no tracking data
-    public RequestTrackingData(uint sendId) : this(sendId, null, null) { }
+    public RequestTrackingData(uint sendId, SIMCONNECT_EXCEPTION err = SIMCONNECT_EXCEPTION.NONE, uint errIdx = 0) :
+      this(sendId, null, null)
+    {
+      eException = err;
+      dwExceptionIndex = errIdx;
+    }
 
     /// <summary> Returns formated information about the method invocation which triggered the request, and the SimConnect error, if any. </summary>
     public override string ToString() {

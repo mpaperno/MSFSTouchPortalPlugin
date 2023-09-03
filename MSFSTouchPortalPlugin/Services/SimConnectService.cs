@@ -740,10 +740,10 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     private void Simconnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data) {
-      RequestTrackingData record = GetRequestRecord(data.dwSendID);
-      record.eException = (SIMCONNECT_EXCEPTION)data.dwException;
-      record.dwExceptionIndex = data.dwIndex;
-      _logger.LogDebug("SimConnect Error: {e}; SendID: {sendID}; Index: {index};", record.eException, data.dwSendID, data.dwIndex);
+      if (data.dwException == 0)  // SIMCONNECT_EXCEPTION.NONE
+        return;
+      RequestTrackingData record = GetRequestRecord(data.dwSendID, (SIMCONNECT_EXCEPTION)data.dwException, data.dwIndex);
+      _logger.LogWarning((int)EventIds.SimError, "SimConnect Request Error: {error}", record.ToString());
       OnException?.Invoke(record);
     }
 
@@ -822,7 +822,7 @@ namespace MSFSTouchPortalPlugin.Services
       }
     }
 
-    private RequestTrackingData GetRequestRecord(uint sendId) {
+    private RequestTrackingData GetRequestRecord(uint sendId, SIMCONNECT_EXCEPTION err, uint errIdx) {
       /* Benchmark of 500 item array with worst-case scenario of scanning them all (while MSFS was running :).
       |         Method |     Mean |     Error |    StdDev |  Gen 0 | Allocated |
       |--------------- |---------:|----------:|----------:|-------:|----------:|
@@ -832,11 +832,13 @@ namespace MSFSTouchPortalPlugin.Services
       // start at 10 records back from current index since it is more likely that the sendId error relates to a recent request than an old one
       int i = (MAX_STORED_REQUEST_RECORDS + _reqTrackIndex - 10) % MAX_STORED_REQUEST_RECORDS, e = i;
       for (bool first = true; i != e || first; i = (i + 1) % MAX_STORED_REQUEST_RECORDS, first = false) {
-        if (_requestTracking[i]?.dwSendId == sendId)
-          return _requestTracking[i];
+        if ((_requestTracking[i] is var rtd) && rtd?.dwSendId == sendId) {
+          rtd.eException = err;
+          rtd.dwExceptionIndex = errIdx;
+          return rtd;
+        }
       }
-      return new RequestTrackingData(sendId);
-      //return _requestTracking.FirstOrDefault(r => r.dwSendId == sendId) ?? new RequestTrackingData(sendId);
+      return new RequestTrackingData(sendId, err, errIdx);
     }
 
     #endregion SimConnect Request Tracking
