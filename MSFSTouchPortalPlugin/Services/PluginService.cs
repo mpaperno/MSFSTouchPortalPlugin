@@ -270,6 +270,21 @@ namespace MSFSTouchPortalPlugin.Services
       }
     }
 
+    // Cancels any currently repeating actions, eg. when disconnected from sim.
+    void ClearRepeatingActions() {
+      foreach (var act in _repeatingActionTimers) {
+        if (_repeatingActionTimers.TryRemove(act.Key, out var tim)) {
+          tim.Dispose();
+        }
+      }
+    }
+
+    // Used when disconnecting from SimConnect to clear mapped Key Event IDs which will not be valid in future sessions.
+    void ResetMappedEventIds() {
+      foreach (var ev in actionsDictionary.Values)
+        ev.ClearMappedEventIds(autoAssignedOnly: true);
+    }
+
     // PluginLogger callback
     private void OnPluginLoggerMessage(string message, LogLevel logLevel = LogLevel.Information, EventId eventId = default) {
       //_logger.LogDebug($"Got message from our logger! {logLevel}: {message}");
@@ -492,7 +507,7 @@ namespace MSFSTouchPortalPlugin.Services
       if (simVar.RegistrationStatus == SimVarRegistrationStatus.Error)
         ret = 0;
 
-      _logger.LogTrace("{action} Request: {simVar}", (ret == 1 ? "Added" : "Replaced"), simVar.ToDebugString());
+      _logger.LogTrace("{action} Request: {simVar}", (ret == 1 ? "Added" : ret == 2 ? "Replaced" : "Error"), simVar.ToDebugString());
       return ret;
     }
 
@@ -558,24 +573,41 @@ namespace MSFSTouchPortalPlugin.Services
 
     // Action data list updaters
 
+    [Flags]
+    enum DataListUpdtType { None = 0, Action = 0x01, Connector = 0x02, All = Action | Connector }
+
     // common handler for other action list updaters
-    private void UpdateActionDataList(PluginActions actionId, string dataId, IEnumerable<string> data, string instanceId = null, bool isConnector = false) {
-      UpdateActionDataList(Groups.Plugin, actionId.ToString(), dataId, data, instanceId, isConnector);
+    void UpdateActionDataList(PluginActions actionId, string dataId, IEnumerable<string> data, string instanceId, bool isConnector) {
+      UpdateActionDataList(actionId, dataId, data, instanceId, (isConnector ? DataListUpdtType.Connector : DataListUpdtType.Action));
     }
-    private void UpdateActionDataList(Groups categoryId, string actionId, string dataId, IEnumerable<string> data, string instanceId = null, bool isConnector = false) {
-      if (data != null)
-        _client.ChoiceUpdate(PluginConfig.PLUGIN_ID + $".{categoryId}.{(isConnector ? "Conn" : "Action")}.{actionId}.Data.{dataId}", data.ToArray(), instanceId);
+
+    void UpdateActionDataList(PluginActions actionId, string dataId, IEnumerable<string> data, string instanceId = null, DataListUpdtType type = DataListUpdtType.Action) {
+      UpdateActionDataList(Groups.Plugin, actionId.ToString(), dataId, data, instanceId, type);
+    }
+
+    void UpdateActionDataList(PluginActions actionId, string dataId, IEnumerable<string> data, DataListUpdtType type) {
+      UpdateActionDataList(Groups.Plugin, actionId.ToString(), dataId, data, null, type);
+    }
+
+    void UpdateActionDataList(Groups categoryId, string actionId, string dataId, IEnumerable<string> data, string instanceId = null, DataListUpdtType type = DataListUpdtType.Action)
+    {
+      if (data == null)
+        return;
+      var dataArry = data.ToArray();
+      if (type.HasFlag(DataListUpdtType.Action))
+        _client.ChoiceUpdate($"{PluginConfig.PLUGIN_ID}.{categoryId}.Action.{actionId}.Data.{dataId}", dataArry, instanceId);
+      if (type.HasFlag(DataListUpdtType.Connector))
+        _client.ChoiceUpdate($"{PluginConfig.PLUGIN_ID}.{categoryId}.Conn.{actionId}.Data.{dataId}", dataArry, instanceId);
     }
 
     // Variables, setters and requesters  ----------------------------
 
 #if WASIM
     // List of Local vars for all instances
-    private void UpdateLocalVarsLists()
+    void UpdateLocalVarsLists()
     {
-      UpdateLocalVarsList(PluginActions.SetLocalVar, null, false);
-      UpdateLocalVarsList(PluginActions.SetLocalVar, null, true);
-      UpdateLocalVarsList(PluginActions.AddLocalVar, null, false);
+      UpdateLocalVarsList(PluginActions.SetLocalVar, null, DataListUpdtType.All);
+      UpdateLocalVarsList(PluginActions.AddLocalVar, null, DataListUpdtType.Action);
     }
 #endif
 
@@ -584,13 +616,11 @@ namespace MSFSTouchPortalPlugin.Services
     {
       var units = _imports.UnitNames();
       UpdateActionDataList(PluginActions.AddNamedVariable, "Unit", units);
-      UpdateActionDataList(PluginActions.SetVariable, "Unit", units);
-      UpdateActionDataList(PluginActions.SetVariable, "Unit", units, null, true);
+      UpdateActionDataList(PluginActions.SetVariable, "Unit", units, DataListUpdtType.All);
       // L var unit type is usually "number", except for a few special cases, so put that on top.
       var lunits = units.Prepend("number");
       UpdateActionDataList(PluginActions.AddLocalVar, "Unit", lunits);
-      UpdateActionDataList(PluginActions.SetLocalVar, "Unit", lunits);
-      UpdateActionDataList(PluginActions.SetLocalVar, "Unit", lunits, null, true);
+      UpdateActionDataList(PluginActions.SetLocalVar, "Unit", lunits, DataListUpdtType.All);
     }
 
     // Available plugin's state/action categories
@@ -603,7 +633,7 @@ namespace MSFSTouchPortalPlugin.Services
       UpdateActionDataList(PluginActions.RemoveSimVar, "CatId", Categories.ListUsable);
       foreach (var cat in _reflectionService.GetCategoryAttributes())
         foreach (var conn in cat.Connectors)
-          UpdateActionDataList(cat.Id, conn.Id, "FbCatId", Categories.ListUsable, null, true);
+          UpdateActionDataList(cat.Id, conn.Id, "FbCatId", Categories.ListUsable, null, DataListUpdtType.Connector);
     }
 
     // List of imported SimVariable categories
@@ -611,8 +641,7 @@ namespace MSFSTouchPortalPlugin.Services
     {
       // settable
       var cats = _imports.SimVarSystemCategories(true);
-      UpdateActionDataList(PluginActions.SetSimulatorVar, "CatId", cats);
-      UpdateActionDataList(PluginActions.SetSimulatorVar, "CatId", cats, null, true);
+      UpdateActionDataList(PluginActions.SetSimulatorVar, "CatId", cats, DataListUpdtType.All);
       // all
       UpdateActionDataList(PluginActions.AddSimulatorVar, "SimCatName", _imports.SimVarSystemCategories());
     }
@@ -625,27 +654,29 @@ namespace MSFSTouchPortalPlugin.Services
       UpdateActionDataList(PluginActions.AddKnownSimVar, "CatId", list);
       UpdateActionDataList(PluginActions.AddKnownSimVar, "SimCatName", list);
       UpdateActionDataList(PluginActions.AddKnownSimVar, "VarName", list);
-      UpdateActionDataList(PluginActions.SetSimVar, "CatId", list);
-      UpdateActionDataList(PluginActions.SetSimVar, "CatId", list, null, true);
-      UpdateActionDataList(PluginActions.SetSimVar, "VarName", list);
-      UpdateActionDataList(PluginActions.SetSimVar, "VarName", list, null, true);
+      UpdateActionDataList(PluginActions.SetSimVar, "CatId", list, DataListUpdtType.All);
+      UpdateActionDataList(PluginActions.SetSimVar, "VarName", list, DataListUpdtType.All);
     }
+
+
+    // Action instance-specific updaters
+    //
 
     // List of all current variables per category
     private void UpdateVariablesListPerCategory(Groups categoryId, string actId, string category, string instanceId, bool isConnector) {
       if (Categories.TryGetCategoryId(category, out Groups catId))
-        UpdateActionDataList(categoryId, actId, isConnector ? "FbVarName" : "VarName", _simVarCollection.GetSimVarSelectorList(catId), instanceId, isConnector);
+        UpdateActionDataList(categoryId, actId, isConnector ? "FbVarName" : "VarName", _simVarCollection.GetSimVarSelectorList(catId), instanceId, isConnector ? DataListUpdtType.Connector : DataListUpdtType.Action);
     }
 
 #if WASIM
     // List of Local vars per action instance
-    private void UpdateLocalVarsList(PluginActions action, string instanceId, bool isConnector) {
+    private void UpdateLocalVarsList(PluginActions action, string instanceId, DataListUpdtType type) {
       if (_localVariablesList == null || !_localVariablesList.Any())
-        UpdateActionDataList(action, "VarName", new[] { "<local variables list not available>" }, instanceId, isConnector);
+        UpdateActionDataList(action, "VarName", new[] { "<local variables list not available>" }, instanceId, type);
       else if (Settings.SortLVarsAlpha.BoolValue)
-        UpdateActionDataList(action, "VarName", _localVariablesList.Values.OrderBy(m => m), instanceId, isConnector);
+        UpdateActionDataList(action, "VarName", _localVariablesList.Values.OrderBy(m => m), instanceId, type);
       else
-        UpdateActionDataList(action, "VarName", _localVariablesList.Values, instanceId, isConnector);
+        UpdateActionDataList(action, "VarName", _localVariablesList.Values, instanceId, type);
     }
 #endif
 
@@ -666,7 +697,7 @@ namespace MSFSTouchPortalPlugin.Services
             return;
 #if WASIM
         if (categoryName.StartsWith("L:")) {
-          UpdateLocalVarsList(action, instanceId, false);
+          UpdateLocalVarsList(action, instanceId, DataListUpdtType.Action);
           return;
         }
 #endif
@@ -710,7 +741,7 @@ namespace MSFSTouchPortalPlugin.Services
         UpdateActionDataList(action, "Unit", __strArry_NA, instanceId, isConnector);
     }
 
-    // Events -------------------------
+    // HubHop Event action updaters -------------------------
 
     // these are to cache the last user selections for HubHop presets; works since user can only edit one action at a time in TP
     string _lastSelectedVendor = string.Empty;
@@ -720,7 +751,7 @@ namespace MSFSTouchPortalPlugin.Services
     // List of HubHop events vendor - aircraft
     void UpdateSimEventAircraft() {
       UpdateActionDataList(PluginActions.SetHubHopEvent, "VendorAircraft", _presets.VendorAircraft(HubHopType.AllInputs));
-      UpdateActionDataList(PluginActions.SetHubHopEvent, "VendorAircraft", _presets.VendorAircraft(HubHopType.InputPotentiometer), null, true);
+      UpdateActionDataList(PluginActions.SetHubHopEvent, "VendorAircraft", _presets.VendorAircraft(HubHopType.InputPotentiometer), DataListUpdtType.Connector);
     }
 
     // List of HubHop event Systems per vendor - aircraft
@@ -746,11 +777,11 @@ namespace MSFSTouchPortalPlugin.Services
       UpdateActionDataList(PluginActions.SetHubHopEvent, "EvtId", _presets.Names(presetType, _lastSelectedAircraft, system, _lastSelectedVendor), instanceId, isConnector);
     }
 
+    // Sim Event action updaters -------------------------
+
     // List of imported Sim Event IDs categories; for PluginActions.SetKnownSimEvent
     void UpdateSimEventCategories() {
-      var cats = _imports.EventSystemCategories();
-      UpdateActionDataList(PluginActions.SetKnownSimEvent, "SimCatName", cats);
-      UpdateActionDataList(PluginActions.SetKnownSimEvent, "SimCatName", cats, null, true);
+      UpdateActionDataList(PluginActions.SetKnownSimEvent, "SimCatName", _imports.EventSystemCategories(), DataListUpdtType.All);
     }
 
     // List of imported SimEvents per imported category; for PluginActions.SetKnownSimEvent
@@ -788,19 +819,6 @@ namespace MSFSTouchPortalPlugin.Services
         evtId = _simConnectionRequest.IsSet ? EventIds.SimConnecting : EventIds.SimDisconnected;
       UpdateTpStateValue("Connected", evtId switch { EventIds.SimConnected => "true", EventIds.SimDisconnected => "false", _ => "connecting" });
       UpdateSimSystemEventState(evtId);
-    }
-
-    private void ClearRepeatingActions() {
-      foreach (var act in _repeatingActionTimers) {
-        if (_repeatingActionTimers.TryRemove(act.Key, out var tim)) {
-          tim.Dispose();
-        }
-      }
-    }
-
-    void ResetMappedEventIds() {
-      foreach (var ev in actionsDictionary.Values)
-        ev.ClearMappedEventIds(autoAssignedOnly: true);
     }
 
     void UpdateRelatedConnectors(string varName, double value)
