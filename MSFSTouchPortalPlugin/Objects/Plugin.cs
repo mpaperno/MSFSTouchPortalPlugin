@@ -41,7 +41,6 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping(PluginActions.UpdateConnectorValues, "Re-Send All Connector Feedback Values")]
 #if WASIM
     [TouchPortalActionMapping(PluginActions.UpdateLocalVarsList, "Update Airplane Local Vars List")]
-    [TouchPortalActionMapping(PluginActions.ReRegisterLocalVars, "Re-Submit Airplane Local Var Requests")]
 #endif
 #if !FSX
     [TouchPortalActionMapping(PluginActions.UpdateHubHopPresets, "Update HubHop Data")]
@@ -51,7 +50,6 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping(PluginActions.Connect, "On", Deprecated = true)]
     [TouchPortalActionMapping(PluginActions.Disconnect, "Off", Deprecated = true)]
     [TouchPortalActionMapping(PluginActions.UpdateLocalVarsList, "Update Local Var. List", Deprecated = true)]
-    [TouchPortalActionMapping(PluginActions.ReRegisterLocalVars, "Re-Submit Local Var. Requests", Deprecated = true)]
     public static readonly object Connection;
 
     [TouchPortalAction(PluginActions.ActionRepeatInterval, "Action Repeat Interval",

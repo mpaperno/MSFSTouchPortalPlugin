@@ -21,6 +21,7 @@ and is also available at <http://www.gnu.org/licenses/>.
 
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
+using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Types;
@@ -93,32 +94,29 @@ namespace MSFSTouchPortalPlugin.Services
     const int MSG_RCV_WAIT_TIME_MS    = 5000;   // SimConnect.ReceiveMessage() wait time
     // maximum stored requests for error tracking (adding is fast but search is 0(n)), should be large enough to handle flood of requests at initial connection
     const int MAX_STORED_REQUEST_RECORDS = 500;
-    const int WM_USER_SIMCONNECT = 0x0402;      // user event ID for SimConnect
-
-    readonly ILogger<SimConnectService> _logger;
-    readonly SimVarCollection _simVarCollection;
+    const uint WASM_CLIENT_ID = 0xFF700C49;   // ID to use for connecting with WASimClient; the high byte is replaced at Init() time.
 
     bool _connected;
     bool _connecting;
     bool _simConnectHasQuit = false;  // flag to prevent trying to invoke SimConnect in certain situations, eg. after a Quit or crash.
+    bool WasmConnected => WasmStatus == WasmModuleStatus.Connected;
+    bool WasmInitialized => WasmStatus > WasmModuleStatus.NotFound;
     int _reqTrackIndex = 0;  // current write slot index in _requestTracking array
-    uint _wasmClientId = 0xFF700C49;
     SimulatorInfo _simInfo;
     Task _messageWaitTask;
     SimConnect _simConnect = null;
 #if WASIM
     WASMLib _wlib = null;
-    bool _wasmInitialUpdate = true;
-    bool WasmConnected => WasmStatus == WasmModuleStatus.Connected;
-    bool WasmInitialized => WasmStatus > WasmModuleStatus.NotFound;
 #endif
+
+    readonly ILogger<SimConnectService> _logger;
+    readonly SimVarCollection _simVarCollection;
     readonly EventWaitHandle _scReady = new EventWaitHandle(false, EventResetMode.AutoReset);
     readonly AutoResetEvent _scQuit = new(false);
     readonly RequestTrackingData[] _requestTracking = new RequestTrackingData[MAX_STORED_REQUEST_RECORDS];  // rolling buffer array for request tracking
 
     // SimConnect method delegates, for centralized interaction in InvokeSimMethod()
     Action<Enum>             ClearDataDefinitionDelegate;
-    Action<uint, Enum>       AIReleaseControlDelegate;
     Action<Enum, string>     MapClientEventToSimEventDelegate;
     Action<Enum, string>     SubscribeToSystemEventDelegate;
     Action<Enum, Enum, uint, SIMCONNECT_SIMOBJECT_TYPE>   RequestDataOnSimObjectTypeDelegate;
@@ -130,6 +128,7 @@ namespace MSFSTouchPortalPlugin.Services
     Action<Enum, uint, SIMCONNECT_DATA_SET_FLAG, object>  SetDataOnSimObjectDelegate;
     Action<Enum, string, string, SIMCONNECT_DATATYPE, float, uint> AddToDataDefinitionDelegate;
     Action<Enum, Enum, uint, SIMCONNECT_PERIOD, SIMCONNECT_DATA_REQUEST_FLAG, uint, uint, uint> RequestDataOnSimObjectDelegate;
+
     readonly Dictionary<Type, Action<Enum> > _registerDataDelegates = new();
 
     uint StartSimConnect(uint configIndex)
@@ -146,7 +145,7 @@ namespace MSFSTouchPortalPlugin.Services
 #endif
 
       try {
-        _simConnect = new SimConnect(Configuration.PluginConfig.PLUGIN_ID, IntPtr.Zero, WM_USER_SIMCONNECT, _scReady, configIndex);
+        _simConnect = new SimConnect(PluginConfig.PLUGIN_ID, IntPtr.Zero, 0, _scReady, configIndex);
 
         // Set up minimum handlers to receive connection notification
         _simConnect.OnRecvOpen += new SimConnect.RecvOpenEventHandler(Simconnect_OnRecvOpen);
@@ -180,15 +179,15 @@ namespace MSFSTouchPortalPlugin.Services
       _logger.LogInformation((int)EventIds.PluginInfo, "Connected to {info}", _simInfo.ToString());
 
       // System Events
-      _simConnect.OnRecvQuit      += new SimConnect.RecvQuitEventHandler(Simconnect_OnRecvQuit);
+      _simConnect.OnRecvQuit      += Simconnect_OnRecvQuit;
 
       // Sim mapped events
       _simConnect.OnRecvEvent         += Simconnect_OnRecvEvent;
       _simConnect.OnRecvEventFilename += Simconnect_OnRecvFilename;
 
       // Sim Data
-      _simConnect.OnRecvSimobjectData       += new SimConnect.RecvSimobjectDataEventHandler(Simconnect_OnRecvSimObjectData);
-      _simConnect.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(Simconnect_OnRecvSimobjectDataBytype);
+      _simConnect.OnRecvSimobjectData       += Simconnect_OnRecvSimObjectData;
+      _simConnect.OnRecvSimobjectDataBytype += Simconnect_OnRecvSimobjectDataBytype;
 
       // Method delegates
       MapClientEventToSimEventDelegate          = _simConnect.MapClientEventToSimEvent;
@@ -202,7 +201,6 @@ namespace MSFSTouchPortalPlugin.Services
       RequestDataOnSimObjectDelegate            = _simConnect.RequestDataOnSimObject;
       RequestDataOnSimObjectTypeDelegate        = _simConnect.RequestDataOnSimObjectType;
       SetDataOnSimObjectDelegate                = _simConnect.SetDataOnSimObject;
-      AIReleaseControlDelegate                  = _simConnect.AIReleaseControl;
       SubscribeToSystemEventDelegate            = _simConnect.SubscribeToSystemEvent;
 
       _registerDataDelegates.Clear();
@@ -220,6 +218,9 @@ namespace MSFSTouchPortalPlugin.Services
       RegisterRequests();
       SubscribeSystemEvents();
       OnConnect?.Invoke(_simInfo);
+#if WASIM
+      RequestLocalVariablesList();
+#endif
     }
 
     void StopSimConnect()
@@ -238,7 +239,6 @@ namespace MSFSTouchPortalPlugin.Services
       if (WasmConnected) {
         _wlib?.disconnectSimulator();
         WasmStatus = WasmModuleStatus.Found;
-        _wasmInitialUpdate = true;  // reset the update flag here for next connection
       }
 #endif
 
@@ -306,23 +306,26 @@ namespace MSFSTouchPortalPlugin.Services
       return false;
     }
 
-    void RegisterRequests(bool localOnly = false)
+    void RegisterRequests(char[] types = null)
     {
       if (!_connected)
         return;
       foreach (var simVar in _simVarCollection) {
-        if (simVar.RegistrationStatus != SimVarRegistrationStatus.Registered && (!localOnly || (simVar.VariableType == 'L')))
+        if (simVar.RegistrationStatus != SimVarRegistrationStatus.Registered && (types == null || Array.IndexOf(types, simVar.VariableType) > -1))
           RegisterDataRequest(simVar);
       }
     }
 
-    void DeregisterRequests(bool simConnectOnly = true)
+    void DeregisterRequests(bool simConnectOnly = true, char[] types = null)
     {
-      if (_connected)
-        foreach (var simVar in _simVarCollection)
-          if (!simConnectOnly || simVar.DataProvider == SimVarDataProvider.SimConnect)
-            //simVar.RegistrationStatus = SimVarRegistrationStatus.Unregistered;
+      foreach (var simVar in _simVarCollection) {
+        if ((!simConnectOnly || simVar.DataProvider == SimVarDataProvider.SimConnect) && (types == null || Array.IndexOf(types, simVar.VariableType) > -1)) {
+          if (_connected)
             DeregisterDataRequest(simVar);
+          else
+            simVar.RegistrationStatus = SimVarRegistrationStatus.Unregistered;
+        }
+      }
     }
 
     void RegisterDataRequest(SimVarItem simVar)
@@ -336,14 +339,10 @@ namespace MSFSTouchPortalPlugin.Services
         return;
       }
 
-#if FSX
-      bool scSupported = simVar.VariableType == 'A';
-#else
-      bool scSupported = (simVar.VariableType == 'A' || simVar.VariableType == 'L');
-#endif
+      bool scSupported = SimVarItem.SimConnectSupported(simVar.VariableType);
 #if WASIM
       if (!scSupported && !WasmInitialized) {
-        OnSimVarError?.Invoke(simVar.Def, SimVarErrorType.VarType, $"Can not request '{simVar.VariableType}' type variable without WASM integration.");
+        OnSimVarError?.Invoke(simVar.Def, SimVarErrorType.VarType, $"can not request '{simVar.VariableType}' type variable without WASM integration");
         return;
       }
       if (!scSupported || (simVar.NeedsScheduledRequest && WasmInitialized)) {
@@ -364,6 +363,7 @@ namespace MSFSTouchPortalPlugin.Services
 #endif
       if (simVar.RegistrationStatus == SimVarRegistrationStatus.Error)
         OnSimVarError?.Invoke(simVar.Def, SimVarErrorType.Registration);
+      _logger.LogTrace("Registered? request for {var}", simVar.ToDebugString());
     }
 
     void DeregisterDataRequest(SimVarItem simVar)
@@ -388,12 +388,16 @@ namespace MSFSTouchPortalPlugin.Services
       }
 #endif
       simVar.RegistrationStatus = SimVarRegistrationStatus.Unregistered;
+      _logger.LogTrace("Removed data request for {var}", simVar.ToDebugString());
     }
+
+    // SimConnect
+    //
 
     SimVarRegistrationStatus RegisterToSimConnect(SimVarItem simVar)
     {
       if (!_registerDataDelegates.TryGetValue(simVar.StorageDataType, out var registerDataDelegate)) {
-        OnSimVarError?.Invoke(simVar.Def, SimVarErrorType.Registration, $"Unable to register storage type for '{simVar.StorageDataType}'");
+        _logger.LogError("Unable to register data storage for type '{type}'.", simVar.StorageDataType);
         return SimVarRegistrationStatus.Error;
       }
 
@@ -421,13 +425,47 @@ namespace MSFSTouchPortalPlugin.Services
       return InvokeSimMethod(MapClientEventToSimEventDelegate, eventId, eventName);
     }
 
+    bool TransmitClientEvent(Enum eventId, uint[] data)
+    {
+      EventIds evId = (EventIds)eventId;
+      if (evId <= EventIds.InternalEventsLast || data.Length < 5)
+        return false;
+#if FSX
+      return InvokeSimMethod(TransmitClientEventDelegate, SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, data[0], (Groups)SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+#elif WASIM
+      if (WasmConnected && evId < EventIds.DynamicEventInit)
+        return _wlib.sendKeyEvent((uint)evId, data[0], data[1], data[2], data[3], data[4]) == HR.OK;
+#endif
+      return InvokeSimMethod(TransmitClientEventEx1Delegate, SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, (Groups)SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY, data[0], data[1], data[2], data[3], data[4]);
+    }
+
+    bool RequestDataOnSimObjectType(SimVarItem simVar, SIMCONNECT_SIMOBJECT_TYPE objectType = SIMCONNECT_SIMOBJECT_TYPE.USER)
+    {
+      return InvokeSimMethod(RequestDataOnSimObjectTypeDelegate, simVar.Def, simVar.Def, 0U, objectType);
+    }
+
+    bool RequestDataOnSimObject(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER)
+    {
+      return InvokeSimMethod(
+        RequestDataOnSimObjectDelegate,
+        simVar.Def, simVar.Def, objectId, (SIMCONNECT_PERIOD)simVar.UpdatePeriod, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0U, simVar.UpdateInterval, 0U
+      );
+    }
+
+    bool SetDataOnSimObject(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER) {
+      return InvokeSimMethod(SetDataOnSimObjectDelegate, simVar.Def, objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, simVar.Value);
+    }
+
     //  WASM
+    //
 
 #if WASIM
     void SetupWasm()
     {
       _wlib?.Dispose();
-      _wlib = new WASMLib(_wasmClientId, Configuration.PluginConfig.AppRootFolder);
+      var clientId = (WASM_CLIENT_ID & 0x00FFFFFFU) | ((uint)Settings.WasimClientIdHighByte.ByteValue << 24);
+      _logger.LogDebug("Creating WASimClient with ID '{id:X08}'.", clientId);
+      _wlib = new WASMLib(clientId, PluginConfig.AppRootFolder);
       _wlib.OnClientEvent += WASMLib_OnClientEvent;
       _wlib.OnLogRecordReceived += WASMLib_OnLogEntryReceived;
       _wlib.OnDataReceived += WASMLib_OnValueChanged;
@@ -435,9 +473,6 @@ namespace MSFSTouchPortalPlugin.Services
       _wlib.setLogLevel(GetWasimLogLevel(_logger), LogFacility.Remote, LogSource.Client);
       _wlib.setLogLevel(WasimLogLevel.None, LogFacility.Console, LogSource.Client);
       _wlib.setLogLevel(WasimLogLevel.Warning, LogFacility.Remote, LogSource.Server);
-
-      // subscribe to ATC MODEL changes to get notified of possible changes to available L vars.
-      _wlib.saveDataRequest(new DataRequest(0, CalcResultType.String, "(A:ATC MODEL,String)", 36, WasmUptPeriod.Millisecond, 30000, 0.0f));
     }
 
     void ConnectWasm()
@@ -520,13 +555,12 @@ namespace MSFSTouchPortalPlugin.Services
       return SimVarRegistrationStatus.Error;
     }
 
-    void UpdateLocalVars()
+    bool ExecuteCalculatorCode(string code)
     {
-      if (!_wasmInitialUpdate)
-        RetryRegisterLocalVars();  // retry any local vars which may have not existed previously
-      else
-        _wasmInitialUpdate = false;
-      RequestLookupList(LookupItemType.LocalVariable);  // request local vars list
+      if (!WasmConnected || string.IsNullOrWhiteSpace(code))
+        return false;
+      _logger.LogDebug("Sending calculator string: '{code}'", code);
+      return _wlib.executeCalculatorCode(code) == HR.OK;
     }
 
     void WASMLib_OnClientEvent(ClientEvent ev)
@@ -543,12 +577,6 @@ namespace MSFSTouchPortalPlugin.Services
     void WASMLib_OnValueChanged(DataRequestRecord dr)
     {
       _logger.LogTrace("Got WASM data for Request: {dr}", dr.ToString());
-      if (dr.requestId == 0) {
-        // Handle possible local variable changes when the "ATC MODEL" changes.
-        _logger.LogDebug("WASMLib_OnValueChanged: ATC MODEL changed: {dr}", (string)dr);
-        Task.Run(UpdateLocalVars);
-        return;
-      }
       OnDataUpdateEvent?.Invoke((Definition)dr.requestId, (Definition)dr.requestId, dr);
     }
 
@@ -557,9 +585,17 @@ namespace MSFSTouchPortalPlugin.Services
       _logger.Log(WasmLogLevelToLoggerLevel(log.level), (int)EventIds.Ignore, "[WASM] {src} - {log}", src, log.message);
     }
 
+#else
+    void SetupWasm() {}
 #endif  // WASIM
 
+    // --------------------------------------
     #region Public Interface Methods
+    // --------------------------------------
+
+    public void Init() {
+      SetupWasm();
+    }
 
     public uint Connect(uint configIndex = 0) {
       return StartSimConnect(configIndex);
@@ -571,21 +607,7 @@ namespace MSFSTouchPortalPlugin.Services
       OnDisconnect?.Invoke();
     }
 
-    public bool TransmitClientEvent(Enum eventId, uint data, uint d2 = 0, uint d3 = 0, uint d4 = 0, uint d5 = 0)
-    {
-      EventIds evId = (EventIds)eventId;
-      if (evId <= EventIds.InternalEventsLast)
-        return false;
-#if FSX
-      return InvokeSimMethod(TransmitClientEventDelegate, SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, data, (Groups)SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
-#else
-      if (!WasmConnected || evId >= EventIds.DynamicEventInit)
-        return InvokeSimMethod(TransmitClientEventEx1Delegate, SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, (Groups)SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY, data, d2, d3, d4, d5);
-      return _wlib.sendKeyEvent((uint)evId, data, d2, d3, d4, d5) == HR.OK;
-#endif
-    }
-
-    public bool TransmitClientEvent(EventMappingRecord eventRecord, uint data, uint d2 = 0, uint d3 = 0, uint d4 = 0, uint d5 = 0)
+    public bool TransmitClientEvent(EventMappingRecord eventRecord, uint[] data)
     {
       if (eventRecord == null)
         return false;
@@ -612,112 +634,91 @@ namespace MSFSTouchPortalPlugin.Services
           return false;
 #endif
       }
-      return TransmitClientEvent(eventRecord.EventId, data, d2, d3, d4, d5);
+      return TransmitClientEvent(eventRecord.EventId, data);
     }
 
-    public bool TransmitClientEvent(EventMappingRecord eventRecord, uint[] data)
+    public bool CanRequestVariableType(char varType) => (WasmAvailable || SimVarItem.SimConnectSupported(varType));
+    public bool CanSetVariableType(char varType) => (WasmConnected || SimVarItem.SimConnectSupported(varType));
+
+    public bool SetVariable(char varType, string varName, object value, string unit = "", bool createLocal = false)
     {
-      if (data.Length < 5)
+      if (!IsConnected)
         return false;
-      return TransmitClientEvent(eventRecord, data[0], data[1], data[2], data[3], data[4]);
-    }
 
-    public bool CanRequestVariableType(char varType) => (WasmAvailable || varType == 'A' || varType == 'L');
-    public bool CanSetVariableType(char varType) => CanRequestVariableType(varType);
+      if (!CanSetVariableType(varType)) {
+        _logger.LogError("Cannot set '{varType}' type variable '{varName}' without active WASM module connection.", varType, varName);
+        return false;
+      }
 
-    public bool RequestDataOnSimObjectType(SimVarItem simVar, SIMCONNECT_SIMOBJECT_TYPE objectType = SIMCONNECT_SIMOBJECT_TYPE.USER) {
-      return InvokeSimMethod(RequestDataOnSimObjectTypeDelegate, simVar.Def, simVar.Def, 0U, objectType);
-    }
 
-    public bool RequestDataOnSimObject(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER) {
-      return InvokeSimMethod(
-        RequestDataOnSimObjectDelegate,
-        simVar.Def, simVar.Def, objectId, (SIMCONNECT_PERIOD)simVar.UpdatePeriod, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0U, simVar.UpdateInterval, 0U
-      );
-    }
-
-    /// <summary>
-    /// Set the value associated with a SimVar
-    /// </summary>
-    public bool SetDataOnSimObject(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER) {
-      return InvokeSimMethod(SetDataOnSimObjectDelegate, simVar.Def, objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, simVar.Value);
-    }
-
-    /// <summary>
-    /// Clear the AI control of a simulated object, typically an aircraft, in order for it to be controlled by a SimConnect client.
-    /// </summary>
-    /// <param name="def">The previously-registered data definition ID of the variable to release.</param>
-    /// <returns>True on request success, false otherwise (this is the status of transmitting the command, not whether control was actually released).</returns>
-    public bool ReleaseAIControl(Definition def, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER) {
-      return InvokeSimMethod(AIReleaseControlDelegate, objectId, def);
-    }
-
-    public bool SubscribeToSystemEvent(Enum eventId, string eventName) {
-      return InvokeSimMethod(SubscribeToSystemEventDelegate, eventId, eventName);
-    }
-
-    // WASM
-    public void UpdateWasmClientId(byte highByte)
-    {
-      _wasmClientId = (_wasmClientId & 0x00FFFFFFU) | ((uint)highByte << 24);
-      _logger.LogDebug("Updated WASimClient ID to {id:X08}, creating WASimClient now.", _wasmClientId);
 #if WASIM
-      SetupWasm();
+      // If WASM is available, take the shorter and better route.
+      // One exception is for L vars which have a custom Unit specified... WASM can't handle that.
+      if (WasmConnected && !(varType == 'L' && (string.IsNullOrWhiteSpace(unit) || unit == "number"))) {
+        if (varType == 'L') {
+          _logger.LogDebug("Setting L variable {varName} to {val}", varName, (double)value);
+          if (createLocal)
+            return _wlib.setOrCreateLocalVariable(varName, (double)value) == HR.OK;
+          return _wlib.setLocalVariable(varName, (double)value) == HR.OK;
+        }
+
+        string calcCode;
+        if (varType == 'Q')
+          calcCode = value.ToString();
+        else if (unit == "string")
+          calcCode = $"'{value}' (>{varType}:{varName})";
+        else if (!string.IsNullOrEmpty(unit))
+          calcCode = $"{value} (>{varType}:{varName}, {unit})";
+        else
+          calcCode = $"{value} (>{varType}:{varName})";
+        return ExecuteCalculatorCode(calcCode);
+      }
 #endif
+
+      if (!_simVarCollection.TryGetBySimName(varName, out SimVarItem simVar)) {
+        simVar = PluginConfig.CreateDynamicSimVarItem(varType, varName, Groups.None, unit, 0);
+        if (simVar == null) {
+          _logger.LogError("Could not create a valid variable from name: {varName}", varName);
+          return false;
+        }
+        simVar.DefinitionSource = SimVarDefinitionSource.Temporary;
+        simVar.UpdatePeriod = SimConUpdPeriod.Never;
+        _simVarCollection.Add(simVar);
+        _logger.LogDebug("Added temporary SimVar {simVarId} for {simVarName}", simVar.Id, simVar.SimVarName);
+      }
+      else if (simVar.RegistrationStatus == SimVarRegistrationStatus.Error) {
+        _logger.LogWarning("Variable '{simVarName}' from name '{varName}' is invalid due to previous registration error.", simVar.SimVarName, varName);
+        return false;
+      }
+      if (!simVar.SetValue(value)) {
+        _logger.LogError("Could not set value '{value}' for SimVar: '{varId}' From Name: '{varName}'", value.ToString(), simVar.Id, varName);
+        return false;
+      }
+
+      _logger.LogDebug("Sending {simVar} with value {value}", simVar.ToString(), simVar.Value);
+      return SetDataOnSimObject(simVar);
     }
 
-    public bool ExecuteCalculatorCode(string code)
-    {
+    public bool RequestLocalVariablesList() {
 #if WASIM
-      if (!WasmConnected || string.IsNullOrWhiteSpace(code))
-        return false;
-      _logger.LogDebug("Sending calculator string: '{code}'", code);
-      return _wlib.executeCalculatorCode(code) == HR.OK;
+      return WasmConnected && _wlib.list(LookupItemType.LocalVariable) == HR.OK;
 #else
       return false;
 #endif
     }
 
-    public bool SetVariable(char varType, string varName, double value, string unit = "", bool createLocal = false)
-    {
-#if WASIM
-      if (!WasmConnected || string.IsNullOrWhiteSpace(varName))
-        return false;
-      _logger.LogDebug("Settings variable {varType} {varName} to {value}", varType, varName, value.ToString());
-      if (createLocal && varType == 'L')
-        return _wlib.setOrCreateLocalVariable(varName, value) == HR.OK;
-      return _wlib.setVariable(new VariableRequest(varType, varName, unit), value) == HR.OK;
-#else
-      return false;
-#endif
-    }
-
-    public bool RequestLookupList(Enum listType)
-    {
-#if WASIM
-      if (listType.GetType() != typeof(LookupItemType) || !WasmConnected)
-        return false;
-      _wlib.list((LookupItemType)listType);
-      return true;
-#else
-      return false;
-#endif
-    }
-
-    public bool RequestVariableValueUpdate(SimVarItem simVar)
-    {
+    public bool RequestVariableValueUpdate(SimVarItem simVar) {
 #if WASIM
       if (simVar.DataProvider == SimVarDataProvider.WASimClient)
         return _wlib.updateDataRequest((uint)simVar.Def) == HR.OK;
 #endif
       if (simVar.DataProvider == SimVarDataProvider.SimConnect)
-        return RequestDataOnSimObject(simVar);
+        return RequestDataOnSimObjectType(simVar);
       return false;
     }
 
-    public void RetryRegisterLocalVars()
-    {
-      RegisterRequests(true);
+    public void RetryRegisterVarRequests(char varType) {
+      RegisterRequests(new[] { varType });
     }
 
     #endregion Public Interface Methods
@@ -763,14 +764,19 @@ namespace MSFSTouchPortalPlugin.Services
       OnEventReceived?.Invoke(evId, gId, data.dwData);
     }
 
+    string _lastLoadedAircraft = "";
+
     private void Simconnect_OnRecvFilename(SimConnect sender, SIMCONNECT_RECV_EVENT_FILENAME data) {
       EventIds evId = (EventIds)data.uEventID;
       Groups gId = (Groups)data.uGroupID;
       _logger.LogDebug("Simconnect_OnRecvFilename Received: Group: {gId}; Event: {evId}; Data: {fileName}", gId, evId, data.szFileName);
       OnEventReceived?.Invoke(evId, gId, data.szFileName);
-#if WASIM
-      if (evId == EventIds.FlightLoaded && !data.szFileName.EndsWith("MainMenu.FLT", StringComparison.InvariantCultureIgnoreCase))
-        UpdateLocalVars();
+#if !FSX
+      if (evId == EventIds.AircraftLoaded && data.szFileName != _lastLoadedAircraft) {
+          _lastLoadedAircraft = data.szFileName;
+          if (WasmAvailable)
+            Task.Run(RequestLocalVariablesList);
+      }
 #endif
     }
 
@@ -802,7 +808,7 @@ namespace MSFSTouchPortalPlugin.Services
         _logger.LogError((int)EventIds.Ignore, e, "Exception trying to get handle to SimConnect:");
       }
     }
-#endif
+#endif // FSX
 
     private void AddRequestRecord(MethodInfo info, params object[] args) {
       if (_simConnect == null)

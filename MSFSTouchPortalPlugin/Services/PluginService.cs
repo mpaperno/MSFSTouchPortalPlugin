@@ -172,9 +172,8 @@ namespace MSFSTouchPortalPlugin.Services
         return false;
       }
 
-      // Set ID of WASIM integration client.
-      _simConnectService.UpdateWasmClientId(Settings.WasimClientIdHighByte.ByteValue);
-      // Setup SimConnect Events
+      // Set up Sim connection service and events
+      _simConnectService.Init();
       _simConnectService.OnDataUpdateEvent += SimConnectEvent_OnDataUpdateEvent;
       _simConnectService.OnConnect += SimConnectEvent_OnConnect;
       _simConnectService.OnDisconnect += SimConnectEvent_OnDisconnect;
@@ -264,7 +263,7 @@ namespace MSFSTouchPortalPlugin.Services
       foreach (var simVar in vars) {
         // Check if a value update is required based on the SimVar's internal tracking mechanism.
         if (simVar.UpdateRequired)
-          simVar.SetPending(_simConnectService.RequestDataOnSimObjectType(simVar));
+          simVar.SetPending(_simConnectService.RequestVariableValueUpdate(simVar));
         else if (!simVar.NeedsScheduledRequest)
           _simVarCollection.RemoveFromPolled(simVar);
       }
@@ -907,15 +906,11 @@ namespace MSFSTouchPortalPlugin.Services
         case PluginActions.UpdateHubHopPresets:
           UpdateHubHopData();
           break;
-#endif
-#if WASIM
-        case PluginActions.UpdateLocalVarsList:
-          return _simConnectService.RequestLookupList(WASimCommander.CLI.Enums.LookupItemType.LocalVariable);
-#endif
-        case PluginActions.ReRegisterLocalVars:
-          _simConnectService.RetryRegisterLocalVars();
-          break;
 
+        case PluginActions.UpdateLocalVarsList:
+          return _simConnectService.RequestLocalVariablesList();
+
+#endif
         case PluginActions.ActionRepeatIntervalInc:
         case PluginActions.ActionRepeatIntervalDec:
         case PluginActions.ActionRepeatIntervalSet: {
@@ -964,14 +959,20 @@ namespace MSFSTouchPortalPlugin.Services
     // Variable Setters
     //
 
+    bool TryGetVarName(PluginActions actId, ActionData data, out string varName)
+    {
+      if (data.TryGetValue("VarName", out varName) && !string.IsNullOrWhiteSpace(varName))
+        return true;
+      _logger.LogError("Could not parse Variable Name parameter for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
+      return false;
+    }
+
     // PluginActions.SetSimulatorVar
     // PluginActions.SetSimVar  // deprecated
     bool SetSimVarValueFromActionData(PluginActions action, ActionData data, int connValue = -1)
     {
-      if (!data.TryGetValue("VarName", out string varName) || string.IsNullOrWhiteSpace(varName)) {
-        _logger.LogError("Variable Name is missing or empty for Set SimVar from data: {data}", ActionDataToKVPairString(data));
+      if (!_simConnectService.IsConnected || !TryGetVarName(action, data, out string varName))
         return false;
-      }
 
       // v1.3 no longer requires the SimVar to have been requested first.
       bool newVersion = action == PluginActions.SetSimulatorVar;
@@ -1007,10 +1008,8 @@ namespace MSFSTouchPortalPlugin.Services
     // PluginActions.SetVariable
     bool SetNamedVariableFromActionData(PluginActions actId, char varType, ActionData data, int connValue)
     {
-      if (!data.TryGetValue("VarName", out string varName) || string.IsNullOrWhiteSpace(varName)) {
-        _logger.LogError("Could not parse Name parameter for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
+      if (!_simConnectService.IsConnected || !TryGetVarName(actId, data, out string varName))
         return false;
-      }
       if ((!data.TryGetValue("Unit", out string unitName) || string.IsNullOrWhiteSpace(unitName)) && SimVarItem.RequiresUnitType(varType)) {
         _logger.LogError("Unit type is required in {actId} for SimVar {varName}", actId, varName);
         return false;
@@ -1025,11 +1024,6 @@ namespace MSFSTouchPortalPlugin.Services
       double dVal = double.NaN;
       bool createLvar = false;
       bool isStringType = unitName?.ToLower() == "string";
-
-      if (!_simConnectService.CanSetVariableType(varType)) {
-        _logger.LogError("Cannot set {varType} type variable {varName} without WASM expansion add-on.", varType, varName);
-        return false;
-      }
 
       // Validate action value
       if (connValue < 0) {
@@ -1053,51 +1047,7 @@ namespace MSFSTouchPortalPlugin.Services
         return false;
       }
 
-      // Still needed?
-      //if (data.TryGetValue("RelAi", out var relAi) && new BooleanString(relAi) && !_simConnectService.ReleaseAIControl(simVar.Def))
-      //  return false;
-
-      // If WASM is available, take the shorter and better route.
-      // One exception is for L vars which have a custom Unit specified... WASM can't handle that.
-      if (_simConnectService.WasmAvailable && !(varType == 'L' && (string.IsNullOrWhiteSpace(unitName) || unitName == "number"))) {
-        if (isStringType) {
-          string calcCode = $"'{sVal}' (>{varType}:{varName})";
-          _logger.LogDebug("Sending code for String type var: {calcCode}", calcCode);
-          return _simConnectService.ExecuteCalculatorCode(calcCode);
-        }
-
-        _logger.LogDebug("Setting {type} variable {varName} to {val}", varType, varName, dVal);
-        return _simConnectService.SetVariable(varType, varName, dVal, unitName ?? "", createLvar);
-      }
-
-      if (!_simVarCollection.TryGetBySimName(varName, out SimVarItem simVar)) {
-        simVar = PluginConfig.CreateDynamicSimVarItem(varType, varName, Groups.None, unitName, 0);
-        if (simVar == null) {
-          _logger.LogError("Could not create a valid variable from name: {varName}", varName);
-          return false;
-        }
-        simVar.DefinitionSource = SimVarDefinitionSource.Temporary;
-        simVar.UpdatePeriod = UpdatePeriod.Never;
-        _simVarCollection.Add(simVar);
-        _logger.LogDebug("Added temporary SimVar {simVarId} for {simVarName}", simVar.Id, simVar.SimVarName);
-      }
-      else if (simVar.RegistrationStatus == SimVarRegistrationStatus.Error) {
-        _logger.LogWarning("Variable '{simVarName}' from name '{varName}' in action '{actId}' is invalid due to previous registration error.", simVar.SimVarName, varName, actId);
-        return false;
-      }
-      if (simVar.IsStringType) {
-        if (!simVar.SetValue(new StringVal(sVal))) {
-          _logger.LogError("Could not set string value '{value}' for SimVar Id: '{varId}' Name: '{varName}'", sVal, simVar.Id, varName);
-          return false;
-        }
-      }
-      else if (!simVar.SetValue(dVal)) {
-        _logger.LogError("Could not set numeric value '{dVal}' for SimVar: '{varId}' Name: '{varName}'", dVal, simVar.Id, varName);
-        return false;
-      }
-
-      _logger.LogDebug("Sending {simVar} with value {value}", simVar.ToString(), simVar.Value);
-      return _simConnectService.SetDataOnSimObject(simVar);
+      return _simConnectService.SetVariable(varType, varName, isStringType ? sVal : dVal, unitName ?? "", createLvar);
     }
 
     // Variable Requests
@@ -1297,10 +1247,11 @@ namespace MSFSTouchPortalPlugin.Services
         }
         // Handle the preset action; first try use WASM module to execute the code directly.
         // MAYBE: save as registered event? Should be handled in SimConnectService probably.
-        if (_simConnectService.WasmAvailable) {
+        if (_simConnectService.CanSetVariableType('Q')) {
           // HubHop actions have "@" placeholder where a value would go
           string eventCode = p.PresetType == HubHopType.InputPotentiometer ? p.Code.Replace("@", ((int)values[0]).ToString(CultureInfo.InvariantCulture)) : p.Code;
-          return _simConnectService.ExecuteCalculatorCode(eventCode);
+          //return _simConnectService.ExecuteCalculatorCode(eventCode);
+          return _simConnectService.SetVariable('Q', "HubHopEvent_Code", eventCode);
         }
 
         // No WASM module... try to use a named MobiFlight event... I guess. Then fall through and treat it as any other custom named action event.
@@ -1326,30 +1277,33 @@ namespace MSFSTouchPortalPlugin.Services
     // PluginActions.ExecCalcCode
     bool ProcessCalculatorEventFromActionData(PluginActions actId, ActionData data, int connValue = -1)
     {
-      if (!_simConnectService.CanSetVariableType('Q')) {
-        _logger.LogError("Cannot execute Calculator Code without WASM expansion add-on.");
+      if (!_simConnectService.IsConnected)
         return false;
-      }
 
       if (!data.TryGetValue("Code", out var calcCode) || string.IsNullOrWhiteSpace(calcCode)) {
         _logger.LogError("Calculator Code parameter missing or empty for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
         return false;
       }
-      double dVal = double.NaN;
-      // Validate action value
-      if (connValue < 0) {
-        if (data.TryGetValue("Value", out var sValue) && !TryEvaluateValue(sValue, out dVal, out var errMsg)) {
-          _logger.LogError("Data conversion for string '{sValue}' failed for {actId} on with Error: {errMsg}.", sValue, actId, errMsg);
+
+      // Calc code may contain an "@" placeholder to be replaced with a connector or action value.
+      if (calcCode.Contains('@', StringComparison.InvariantCulture)) {
+        double dVal = double.NaN;
+        // Validate action value
+        if (connValue < 0) {
+          if (data.TryGetValue("Value", out var sValue) && !TryEvaluateValue(sValue, out dVal, out var errMsg)) {
+            _logger.LogError("Data conversion for string '{sValue}' failed for {actId} on with Error: {errMsg}.", sValue, actId, errMsg);
+            return false;
+          }
+        }
+        // Validate and convert slider value into range
+        else if (!ConvertSliderValueRange(connValue, data, out dVal)) {
           return false;
         }
+        if (!double.IsNaN(dVal))
+          calcCode = calcCode.Replace("@", dVal.ToString("F6"));
       }
-      // Validate and convert slider value into range
-      else if (!ConvertSliderValueRange(connValue, data, out dVal)) {
-        return false;
-      }
-      if (!double.IsNaN(dVal))
-        calcCode = calcCode.Replace("@", dVal.ToString("F6"));
-      return _simConnectService.ExecuteCalculatorCode(calcCode);
+      //return _simConnectService.ExecuteCalculatorCode(calcCode);
+      return _simConnectService.SetVariable('Q', "Calculator_Code", calcCode);
     }
 
 

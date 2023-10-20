@@ -296,6 +296,14 @@ namespace MSFSTouchPortalPlugin.Types
     /// <param name="varType">The type of variable ('A', 'L', etc).</param>
     /// <returns>`true` if the type requires a unit specifier, `false` otherwise.</returns>
     public static bool RequiresUnitType(char varType) => (varType == 'A' || varType == 'C' || varType == 'E');
+    /// <summary> Convenience static method to check if a variable type is supported by SimConnect or requires WASM integration. </summary>
+    /// <param name="varType">The type of variable ('A', 'L', etc).</param>
+    /// <returns>`true` if the type is supported by SimConnect, `false` otherwise.</returns>
+#if FSX
+    public static bool SimConnectSupported(char varType) => varType == 'A';
+#else
+    public static bool SimConnectSupported(char varType) => (varType == 'A' || varType == 'L');
+#endif
 
     public bool ValueEquals(string value) => ValInit && IsStringType && value == Value.ToString();
     public bool ValueEquals(double value) => ValInit && IsRealType && System.Math.Abs((double)Value - value) <= DeltaEpsilon;

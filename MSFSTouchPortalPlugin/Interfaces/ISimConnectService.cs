@@ -19,7 +19,6 @@ A copy of the GNU GPL is included with this project
 and is also available at <http://www.gnu.org/licenses/>.
 */
 
-using Microsoft.FlightSimulator.SimConnect;
 using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Types;
 using System;
@@ -62,23 +61,15 @@ namespace MSFSTouchPortalPlugin.Interfaces
     bool WasmAvailable { get; }
     WasmModuleStatus WasmStatus { get; }
 
+    void Init();
     uint Connect(uint configIndex = 0);
     void Disconnect();
-    bool TransmitClientEvent(Enum eventId, uint data, uint d2 = 0, uint d3 = 0, uint d4 = 0, uint d5 = 0);
-    bool TransmitClientEvent(EventMappingRecord eventRecord, uint data, uint d2 = 0, uint d3 = 0, uint d4 = 0, uint d5 = 0);
     bool TransmitClientEvent(EventMappingRecord eventRecord, uint[] data);
     bool CanRequestVariableType(char varType);
     bool CanSetVariableType(char varType);
-    bool RequestDataOnSimObject(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER);
-    bool RequestDataOnSimObjectType(SimVarItem simVar, SIMCONNECT_SIMOBJECT_TYPE objectType = SIMCONNECT_SIMOBJECT_TYPE.USER);
-    bool SetDataOnSimObject(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER);
-    bool ReleaseAIControl(Definition def, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER);
-    bool SubscribeToSystemEvent(Enum eventId, string eventName);
-    void UpdateWasmClientId(byte highByte);
-    bool ExecuteCalculatorCode(string code);
-    bool SetVariable(char varType, string varName, double value, string unit = "", bool createLocal = false);
-    bool RequestLookupList(Enum listType);
+    bool SetVariable(char varType, string varName, object value, string unit = "", bool createLocal = false);
     bool RequestVariableValueUpdate(SimVarItem simVar);
-    void RetryRegisterLocalVars();
+    bool RequestLocalVariablesList();
+    void RetryRegisterVarRequests(char varType);
   }
 }
