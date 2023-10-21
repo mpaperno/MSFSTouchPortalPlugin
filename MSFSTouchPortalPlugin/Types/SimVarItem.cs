@@ -28,6 +28,7 @@ using RegexOptions = System.Text.RegularExpressions.RegexOptions;
 using SIMCONNECT_DATATYPE = Microsoft.FlightSimulator.SimConnect.SIMCONNECT_DATATYPE;
 #if WASIM
 using DataRequestRecord = WASimCommander.CLI.Structs.DataRequestRecord;
+using CalcResultType = WASimCommander.CLI.Enums.CalcResultType;
 #endif
 
 namespace MSFSTouchPortalPlugin.Types
@@ -77,7 +78,7 @@ namespace MSFSTouchPortalPlugin.Types
     /// Note that when UpdatePeriod = Millisecond, there is an effective minimum of ~25ms. </summary>
     public uint UpdateInterval { get; set; } = 0;
     /// <summary> Only report change if it is greater than the value of this parameter (not greater than or equal to).
-    /// Default is 0.009f limits changes to 2 decimal places which is suitable for most unit types (except perhaps MHz and "percent over 100"). </summary>
+    /// Eg. value of 0.009f limits changes to 2 decimal places which is suitable for most decimal unit types (except perhaps MHz and "percent over 100"). </summary>
     public float DeltaEpsilon { get; set; } = (float)DELTA_EPSILON_DEFAULT;
     /// <summary> Simulator version match required for this variable. Eg. "11" or "11.0.23112" </summary>
     public string SimVersion { get; set; }
@@ -116,27 +117,27 @@ namespace MSFSTouchPortalPlugin.Types
       }
     }
 
+#if WASIM
     /// <summary>
     /// Returns the set calculation result type, for 'Q' type variables. Setting this value will also set the corresponding Unit type
     /// to either "number," (for Double result) "integer," or "String" and hence also the corresponding data type/size.
     /// </summary>
-#if WASIM
-    private WASimCommander.CLI.Enums.CalcResultType _calcResultType;
-    public WASimCommander.CLI.Enums.CalcResultType CalcResultType
+    public CalcResultType CalcResultType
     {
       get => _calcResultType;
       set {
         if (value == _calcResultType)
           return;
         _calcResultType = value;
-        if (value == WASimCommander.CLI.Enums.CalcResultType.Double)
+        if (value == CalcResultType.Double)
           Unit = "number";
-        else if (value == WASimCommander.CLI.Enums.CalcResultType.Integer)
+        else if (value == CalcResultType.Integer)
           Unit = "integer";
         else
           Unit = "string";
       }
     }
+    private CalcResultType _calcResultType;
 #else
     public uint CalcResultType = 0;
 #endif
@@ -539,7 +540,9 @@ namespace MSFSTouchPortalPlugin.Types
     public override string ToString() => SimVarName;
 
     public string ToDebugString() {
-      return $"{GetType().Name}: {{{Id}; Def: {Def}; Type: {VariableType}; VarName: {SimVarName}; Unit: {Unit}; ResType: {CalcResultType}; Cat: {CategoryId}; Name: {Name}; Per: {UpdatePeriod}; Itvl: {UpdateInterval}; DE: {DeltaEpsilon:F6};}}";
+      return $"{GetType().Name}: {{{Id}; Def: {Def}; Type: {VariableType}; VarName: {SimVarName}; Unit: {Unit}; " +
+        $"ResType: {CalcResultType}; Cat: {CategoryId}; Name: {Name}; Per: {UpdatePeriod}; Itvl: {UpdateInterval}; DE: {DeltaEpsilon:F6}; " +
+        $"Stat: {RegistrationStatus}; Prov: {DataProvider}; Src: {DefinitionSource};}} = '{FormattedValue}'";
     }
 
     // IComparable
