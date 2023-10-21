@@ -284,28 +284,6 @@ namespace MSFSTouchPortalPlugin.Services
       _logger.LogDebug("ReceiveMessages task stopped.");
     }
 
-    // Centralized SimConnect method handler
-    bool InvokeSimMethod(Delegate method, params object[] args)
-    {
-      if (method == null || !_connected || _simConnectHasQuit)
-        return false;
-      try {
-        _logger.LogTrace("Invoking: {methodName}({args})", method.Method.Name, string.Join(", ", args));
-        lock(_simConnect) {
-          method.DynamicInvoke(args);
-          AddRequestRecord(method.Method, args);
-        }
-        return true;
-      }
-      catch (COMException e) {
-        _logger.LogWarning((int)EventIds.Ignore, "SimConnect returned an error: [{hResult:X}] {message} <site: '{targetSite}'; source: '{source}'", e.HResult, e.Message, e.TargetSite, e.Source);
-      }
-      catch (Exception e) {
-        _logger.LogError((int)EventIds.Ignore, e, "Method invocation failed with system exception: [{hResult:X}] {message}", e.HResult, e.Message);
-      }
-      return false;
-    }
-
     void RegisterRequests(char[] types = null)
     {
       if (!_connected)
@@ -318,14 +296,9 @@ namespace MSFSTouchPortalPlugin.Services
 
     void DeregisterRequests(bool simConnectOnly = true, char[] types = null)
     {
-      foreach (var simVar in _simVarCollection) {
-        if ((!simConnectOnly || simVar.DataProvider == SimVarDataProvider.SimConnect) && (types == null || Array.IndexOf(types, simVar.VariableType) > -1)) {
-          if (_connected)
-            DeregisterDataRequest(simVar);
-          else
-            simVar.RegistrationStatus = SimVarRegistrationStatus.Unregistered;
-        }
-      }
+      foreach (var simVar in _simVarCollection)
+        if ((!simConnectOnly || simVar.DataProvider == SimVarDataProvider.SimConnect) && (types == null || Array.IndexOf(types, simVar.VariableType) > -1))
+          DeregisterDataRequest(simVar);
     }
 
     void RegisterDataRequest(SimVarItem simVar)
@@ -370,22 +343,16 @@ namespace MSFSTouchPortalPlugin.Services
     {
       if (simVar.RegistrationStatus != SimVarRegistrationStatus.Registered)
         return;
-      if (simVar.DataProvider == SimVarDataProvider.SimConnect) {
-        // We need to first suspend updates for this variable before removing it, otherwise it seems SimConnect will sometimes crash
-        if (simVar.UpdatePeriod != SimConUpdPeriod.Never && simVar.UpdatePeriod != SimConUpdPeriod.Millisecond) {
-          var oldPeriod = simVar.UpdatePeriod;
-          simVar.UpdatePeriod = SimConUpdPeriod.Never;
-          RequestDataOnSimObject(simVar);
-          // Now set it back to original value (in case it is not actually being deleted).
-          simVar.UpdatePeriod = oldPeriod;
-        }
-        // Now we can remove it.
-        InvokeSimMethod(ClearDataDefinitionDelegate, simVar.Def);
+      if (!_connected) {
+        simVar.RegistrationStatus = SimVarRegistrationStatus.Unregistered;
+        return;
       }
+
+      if (simVar.DataProvider == SimVarDataProvider.SimConnect)
+        DeregisterFromSimConnect(simVar);
 #if WASIM
-      else {
+      else if (simVar.DataProvider == SimVarDataProvider.WASimClient)
         _wlib?.removeDataRequest((uint)simVar.Def);
-      }
 #endif
       simVar.RegistrationStatus = SimVarRegistrationStatus.Unregistered;
       _logger.LogTrace("Removed data request for {var}", simVar.ToDebugString());
@@ -393,6 +360,30 @@ namespace MSFSTouchPortalPlugin.Services
 
     // SimConnect
     //
+
+    // Centralized SimConnect method handler
+    bool InvokeSimMethod(Delegate method, params object[] args)
+    {
+      if (method == null || !_connected || _simConnectHasQuit)
+        return false;
+      try {
+        _logger.LogTrace("Invoking: {methodName}({args})", method.Method.Name, string.Join(", ", args));
+        lock (_simConnect) {
+          method.DynamicInvoke(args);
+          AddRequestRecord(method.Method, args);
+        }
+        return true;
+      }
+      catch (COMException e) {
+        _logger.LogWarning((int)EventIds.Ignore, "SimConnect returned an error: [{hResult:X}] {message} <site: '{targetSite}'; source: '{source}'", e.HResult, e.Message, e.TargetSite, e.Source);
+      }
+      catch (Exception e) {
+        _logger.LogError((int)EventIds.Ignore, e, "Method invocation failed with system exception: [{hResult:X}] {message}", e.HResult, e.Message);
+      }
+      return false;
+    }
+
+    // Data (variable) request management
 
     SimVarRegistrationStatus RegisterToSimConnect(SimVarItem simVar)
     {
@@ -414,11 +405,50 @@ namespace MSFSTouchPortalPlugin.Services
       return SimVarRegistrationStatus.Error;
     }
 
-    void SubscribeSystemEvents()
+    bool DeregisterFromSimConnect(SimVarItem simVar)
     {
+      // We need to first suspend updates for this variable before removing it, otherwise it seems SimConnect will sometimes crash
+      if (simVar.UpdatePeriod != SimConUpdPeriod.Never && simVar.UpdatePeriod != SimConUpdPeriod.Millisecond) {
+        var oldPeriod = simVar.UpdatePeriod;
+        simVar.UpdatePeriod = SimConUpdPeriod.Never;
+        RequestDataOnSimObject(simVar);
+        // Now set it back to original value (in case it is not actually being deleted).
+        simVar.UpdatePeriod = oldPeriod;
+      }
+      // Now we can remove it from SimConnect data definitions (allocation).
+      return InvokeSimMethod(ClearDataDefinitionDelegate, simVar.Def);
+    }
+
+    // Send request for recurring subscribed data updates for a value already added to data definitions.
+    bool RequestDataOnSimObject(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER) {
+      return InvokeSimMethod(
+        RequestDataOnSimObjectDelegate,
+        simVar.Def, simVar.Def, objectId, (SIMCONNECT_PERIOD)simVar.UpdatePeriod, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0U, simVar.UpdateInterval, 0U
+      );
+    }
+
+    // Send request for one-time value update for a value already added to data definitions..
+    bool RequestDataOnSimObjectType(SimVarItem simVar, SIMCONNECT_SIMOBJECT_TYPE objectType = SIMCONNECT_SIMOBJECT_TYPE.USER) {
+      return InvokeSimMethod(RequestDataOnSimObjectTypeDelegate, simVar.Def, simVar.Def, 0U, objectType);
+    }
+
+    // Set a variable which has previously been added to a data definition. The value to set is taken from the current value of the `simVar` itself.
+    bool SetDataOnSimObject(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER) {
+      return InvokeSimMethod(SetDataOnSimObjectDelegate, simVar.Def, objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, simVar.Value);
+    }
+
+    // Incoming Sim System events subscription (Sim status, file loading, etc)
+
+    bool SubscribeToSystemEvent(Enum eventId, string eventName) {
+      return InvokeSimMethod(SubscribeToSystemEventDelegate, eventId, eventName);
+    }
+
+    void SubscribeSystemEvents() {
       for (EventIds eventId = EventIds.SimEventNone + 1; eventId < EventIds.SimEventLast; ++eventId)
         SubscribeToSystemEvent(eventId, eventId.ToString());
     }
+
+    // Key Events (outgoing)
 
     bool MapClientEventToSimEvent(Enum eventId, string eventName)
     {
@@ -439,23 +469,10 @@ namespace MSFSTouchPortalPlugin.Services
       return InvokeSimMethod(TransmitClientEventEx1Delegate, SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, (Groups)SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY, data[0], data[1], data[2], data[3], data[4]);
     }
 
-    bool RequestDataOnSimObjectType(SimVarItem simVar, SIMCONNECT_SIMOBJECT_TYPE objectType = SIMCONNECT_SIMOBJECT_TYPE.USER)
-    {
-      return InvokeSimMethod(RequestDataOnSimObjectTypeDelegate, simVar.Def, simVar.Def, 0U, objectType);
-    }
 
-    bool RequestDataOnSimObject(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER)
-    {
-      return InvokeSimMethod(
-        RequestDataOnSimObjectDelegate,
-        simVar.Def, simVar.Def, objectId, (SIMCONNECT_PERIOD)simVar.UpdatePeriod, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0U, simVar.UpdateInterval, 0U
-      );
-    }
 
-    bool SetDataOnSimObject(SimVarItem simVar, uint objectId = (uint)SIMCONNECT_SIMOBJECT_TYPE.USER) {
-      return InvokeSimMethod(SetDataOnSimObjectDelegate, simVar.Def, objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, simVar.Value);
-    }
 
+    //
     //  WASM
     //
 
