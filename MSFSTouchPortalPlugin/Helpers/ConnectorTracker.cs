@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -40,6 +40,7 @@ namespace MSFSTouchPortalPlugin.Helpers
     public long nextTimeout = 0;
     public float fbRangeMin = 0;
     public float fbRangeMax = 0;
+    public int lastUpdateValue = int.MinValue;
     //public string fbVariable;
     //public string mappingId;
 

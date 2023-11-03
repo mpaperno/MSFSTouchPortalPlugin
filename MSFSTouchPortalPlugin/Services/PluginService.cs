@@ -824,12 +824,15 @@ namespace MSFSTouchPortalPlugin.Services
     {
       if (_connectorTracker.GetInstancesForStateId(varName) is var list && list != null) {
         foreach (var instance in list) {
-          //_logger.LogDebug("{connId} - {shortId} - {isDn}", instance.connectorId, instance.shortId, instance.IsStillDown);
-          if (string.IsNullOrEmpty(instance.shortId) || instance.fbRangeMin == instance.fbRangeMax || instance.IsStillDown)
+          //_logger.LogDebug("{conntId} - {isDn} - v: '{value}'", instance.connectorId, instance.IsStillDown, value);
+          if (instance.IsStillDown || string.IsNullOrEmpty(instance.shortId) || instance.fbRangeMin == instance.fbRangeMax)
             continue;
           int iValue = RangeValueToPercent(value, instance.fbRangeMin, instance.fbRangeMax);
-          _logger.LogTrace("Sending connector update to {shortId} value {value}", instance.shortId, iValue);
-          _client.ConnectorUpdateShort(instance.shortId, iValue);
+          if (iValue != instance.lastUpdateValue) {
+            instance.lastUpdateValue = iValue;
+            _logger.LogTrace("Sending connector update to {shortId} value {value}", instance.shortId, iValue);
+            _client.ConnectorUpdateShort(instance.shortId, iValue);
+          }
         }
       }
     }
