@@ -536,8 +536,8 @@ namespace MSFSTouchPortalPlugin.Services
         HR hr = _wlib.lookup(LookupItemType.LocalVariable, simVar.SimVarName, out int varId);
         _logger.LogDebug("Got ID lookup for '{varName}' with ID {id} and HResult {hr}", simVar.SimVarName, varId, hr);
         if (hr != HR.OK || varId < 0) {
-          _logger.LogWarning((int)EventIds.SimError, "Local variable '{varName}' not found at simulator. Retry later.", simVar.SimVarName);
-          return SimVarRegistrationStatus.Error;
+          _logger.LogWarning("Local variable '{varName}' not found at simulator. Creating it now.", simVar.SimVarName);
+          _wlib.setOrCreateLocalVariable(simVar.SimVarName, simVar.Unit, (double)simVar.Value);
         }
       }
       else if (simVar.VariableType == 'A') {
@@ -670,13 +670,12 @@ namespace MSFSTouchPortalPlugin.Services
 
 #if WASIM
       // If WASM is available, take the shorter and better route.
-      // One exception is for L vars which have a custom Unit specified... WASM can't handle that.
-      if (WasmConnected && !(varType == 'L' && (string.IsNullOrWhiteSpace(unit) || unit == "number"))) {
+      if (WasmConnected) {
         if (varType == 'L') {
-          _logger.LogDebug("Setting L variable {varName} to {val}", varName, (double)value);
-          if (createLocal)
+          _logger.LogTrace("Setting L variable {varName} to {val}", varName, (double)value);
+          if (string.IsNullOrEmpty(unit) || unit == "number")
             return _wlib.setOrCreateLocalVariable(varName, (double)value) == HR.OK;
-          return _wlib.setLocalVariable(varName, (double)value) == HR.OK;
+          return _wlib.setOrCreateLocalVariable(varName, unit, (double)value) == HR.OK;
         }
 
         string calcCode;
@@ -688,6 +687,7 @@ namespace MSFSTouchPortalPlugin.Services
           calcCode = $"{value} (>{varType}:{varName}, {unit})";
         else
           calcCode = $"{value} (>{varType}:{varName})";
+        _logger.LogTrace("Executing calculator code: '{code}'", calcCode);
         return ExecuteCalculatorCode(calcCode);
       }
 #endif
