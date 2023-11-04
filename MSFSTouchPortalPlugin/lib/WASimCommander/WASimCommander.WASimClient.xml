@@ -4,28 +4,106 @@
         "WASimClient_CLI"
     </assembly>
     <members>
+        <member name="F:WASimCommander.CLI.Client.WASimClient.m_client">
+\}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.setLogLevel(&lt;unknown type&gt;,&lt;unknown type&gt;,&lt;unknown type&gt;)">
+See \refwccc{setLogLevel()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.logLevel(&lt;unknown type&gt;,&lt;unknown type&gt;)">
+\}
+\name  Logging settings
+\{
+See \refwccc{logLevel()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.sendCommandWithResponse(WASimCommander.CLI.Structs.Command,WASimCommander.CLI.Structs.Command@,System.Nullable`1{System.UInt32})">
+See \refwccc{sendCommandWithResponse()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.sendCommand(WASimCommander.CLI.Structs.Command)">
+\}
+\name Low level API
+\{
+See \refwccc{sendCommand()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.lookup(&lt;unknown type&gt;,System.String,System.Int32@)">
+See \refwccc{lookup()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.list(&lt;unknown type&gt;)">
+See \refwccc{list()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.sendKeyEvent(System.UInt32,System.Nullable`1{System.UInt32},System.Nullable`1{System.UInt32},System.Nullable`1{System.UInt32},System.Nullable`1{System.UInt32},System.Nullable`1{System.UInt32})">
+See \refwccc{sendKeyEvent(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t) const}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.setOrCreateLocalVariable(System.String,System.String,System.Double!System.Runtime.CompilerServices.IsConst)">
+See \refwccc{setOrCreateLocalVariable()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.setOrCreateLocalVariable(System.String,System.Double!System.Runtime.CompilerServices.IsConst)">
+See \refwccc{setOrCreateLocalVariable()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.setLocalVariable(System.String,System.Double!System.Runtime.CompilerServices.IsConst)">
+See \refwccc{setLocalVariable()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.setVariable(WASimCommander.CLI.Structs.VariableRequest,System.Double!System.Runtime.CompilerServices.IsConst)">
+See \refwccc{setVariable()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.getOrCreateLocalVariable(System.String,System.String,System.Double,System.Double@)">
+\sa \refwccc{getOrCreateLocalVariable()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.getOrCreateLocalVariable(System.String,System.Double,System.Double@)">
+\sa \refwccc{getOrCreateLocalVariable()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.getLocalVariable(System.String,System.String,System.Double@)">
+See \refwccc{getLocalVariable()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.getLocalVariable(System.String,System.Double@)">
+See \refwccc{getLocalVariable()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.getVariable(WASimCommander.CLI.Structs.VariableRequest,System.Double@,System.String@)">
+            <summary> Get the value of a variable with _either_ a numeric or string result based on the unit type of the requested variable. </summary>
+The request is executed as calculator code since that is the only way to get string results. Unlike `executeCalculatorCode()`, this method will not return a string representation of a numeric value.
+Note that only some 'A', 'C', and 'T' type variables can have a string value type in the first place. \sa \refwccc{getVariable()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.getVariable(WASimCommander.CLI.Structs.VariableRequest,System.String@)">
+            <summary> Get the value of a variable with a string result type. The request is executed as calculator code since that is the only way to get string results. </summary>
+Note that only some 'A', 'C', and 'T' type variables can have a string value type in the first place. \sa \refwccc{getVariable()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.getVariable(WASimCommander.CLI.Structs.VariableRequest,System.Double@)">
+            <summary> Get the value of a variable with a numeric result type. This is the most typical use case since most variable types are numeric. </summary> \sa \refwccc{getVariable()}
+</member>
         <member name="M:WASimCommander.CLI.Client.WASimClient.executeCalculatorCode(System.String,&lt;unknown type&gt;,System.Double@,System.String@)">
-            <summary> Execute calculator code with both numeric and string results. </summary> \private
+            <summary> Execute calculator code with both numeric and string results. </summary>  \sa \refwccc{executeCalculatorCode()}
 </member>
         <member name="M:WASimCommander.CLI.Client.WASimClient.executeCalculatorCode(System.String,&lt;unknown type&gt;,System.String@)">
-            <summary> Execute calculator code with a string result type. </summary> \private
+            <summary> Execute calculator code with a string result type. </summary> \sa \refwccc{executeCalculatorCode()}
 </member>
         <member name="M:WASimCommander.CLI.Client.WASimClient.executeCalculatorCode(System.String,&lt;unknown type&gt;,System.Double@)">
-            <summary> Execute calculator code with a numeric result type. </summary> \private
+            <summary> Execute calculator code with a numeric result type. </summary>  \sa \refwccc{executeCalculatorCode()}
 </member>
         <member name="M:WASimCommander.CLI.Client.WASimClient.executeCalculatorCode(System.String)">
-            <summary> Execute calculator code without result </summary>
-        </member>
+\}
+\name High level API
+\{
+<summary> Execute calculator code without result </summary> \sa \refwccc{executeCalculatorCode()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.connectServer(System.Nullable`1{System.UInt32})">
+See \refwccc{connectServer()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.pingServer(System.Nullable`1{System.UInt32})">
+See \refwccc{pingServer()}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.disconnectSimulator">
+See \refwccc{disconnectSimulator()}
+</member>
         <member name="M:WASimCommander.CLI.Client.WASimClient.connectSimulator(System.Int32,System.Nullable`1{System.UInt32})">
             <summary> Connect to the Simulator engine using a specific network configuration ID from a SimConnect.cfg file. The file must be in the same folder as the executable running the Client. </summary>
             <paramref name="networkConfigId"> network configuration ID from a SimConnect.cfg file. The file must be in the same folder as the executable running the Client. </paramref>\n
 <paramref name="timeout"> (optional) Maximum time to wait for response, in milliseconds. Zero (default) means to use the `defaultTimeout()` value. </paramref>
-\return See \refwcc{connectSimulator(int,uint32_t)}
+\return See \refwccc{connectSimulator(int,uint32_t)}
 </member>
         <member name="M:WASimCommander.CLI.Client.WASimClient.connectSimulator(System.Nullable`1{System.UInt32})">
             <summary> Connect to the Simulator engine on a local connection. </summary>
             <paramref name="timeout"> (optional) Maximum time to wait for response, in milliseconds. Zero (default) means to use the `defaultTimeout()` value. </paramref>
-\return See \refwcc{connectSimulator(uint32_t)}
+\return See \refwccc{connectSimulator(uint32_t)}
 </member>
         <member name="M:WASimCommander.CLI.Client.WASimClient.serverVersion">
             <summary> Returns version number of the WASimModule server, if known. The version is populated after a successful Ping command or server connection. </summary>
@@ -39,17 +117,17 @@
         <member name="M:WASimCommander.CLI.Client.WASimClient.isInitialized">
             <summary> Returns true if connected to the Simulator (SimConnect). </summary>
         </member>
-        <member name="M:WASimCommander.CLI.Client.WASimClient.Dispose">
-            <summary> This class implements a Disposable type object and should be disposed-of appropriately.
-Any open network connections are automatically closed upon destruction, though it is better to close them yourself before deleting the client. </summary>
-        </member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.status">
+\name Network actions, status, and settings
+\{
+<summary> Get current connection status of this client. \sa WASimCommander::Client::ClientStatus </summary></member>
         <member name="M:WASimCommander.CLI.Client.WASimClient.#ctor(System.UInt32,System.String)">
             <summary> Construct a new client with the given ID and with initial settings read from the file specified in `configFile` (.ini format, see default file for example). </summary>
-The client ID must be unique among any other possible clients and cannot be zero. See \refwcc{WASimClient::WASimClient()} for more details.
+The client ID must be unique among any other possible clients and cannot be zero. See \refwccc{WASimClient()} for more details.
 </member>
         <member name="M:WASimCommander.CLI.Client.WASimClient.#ctor(System.UInt32)">
             <summary> Construct a new client with the given ID. The ID must be unique among any other possible clients and cannot be zero. </summary>
-See \refwcc{WASimClient::WASimClient()} for more details.
+See \refwccc{WASimClient()} for more details.
 </member>
         <member name="E:WASimCommander.CLI.Client.WASimClient.OnResponseReceived">
             <summary>This event is triggered whenever _any_ Command is received from the server. This is typically `Ack` or `Nak` responses but may also include things list results, pings, or disconnection notices.</summary>
@@ -67,8 +145,12 @@ See \refwcc{WASimClient::WASimClient()} for more details.
             <summary> Delivers list results after a successful `WASimClient.list()` command. </summary>
         </member>
         <member name="E:WASimCommander.CLI.Client.WASimClient.OnClientEvent">
-            <summary> WASimClient events like connection and disconnection. </summary>
-        </member>
+\}
+<summary> WASimClient events like connection and disconnection. </summary></member>
+        <member name="T:WASimCommander.CLI.Client.WASimClient.ClientEventDelegate">
+\name Event handler delegate types
+\{
+</member>
         <member name="T:WASimCommander.CLI.Client.WASimClient">
 C+/CLI wrapper implementation of `WASimCommander::Client::WASimClient`.
 See documentation for the C++ class for most of the details. Only implementation differences are documented here.
@@ -78,6 +160,10 @@ and using the CLI versions of relevant data structures and enum types.
 
 The main difference is that callbacks from the C++ version are delivered here as managed Events, with defined delegate types to handle them.
 And unlike the callback system, the events can have multiple subscribers if needed.
+
+\note Events are delivered asyncronously from a separtely running thread. The event handlers should be reentrant since they could be callled at any time. \n
+Typically, interactions with GUI components will not be possible directly from inside the event handlers -- use a `Dispatcher` to marshal GUI interactions
+back to the main thread.
 </member>
         <member name="T:WASimCommander.CLI.ValueTypes">
             <summary> Predefined value types </summary>
@@ -86,6 +172,14 @@ Using these constants for the `WASimCommander::CLI::Structs::DataRequest::valueS
         <member name="M:WASimCommander.CLI.Structs.VariableRequest.#ctor(System.Int32)">
             <summary> Construct a variable request a Local variable ('L') with the specified numeric ID. </summary>
         </member>
+        <member name="M:WASimCommander.CLI.Structs.VariableRequest.#ctor(System.String,System.Boolean,System.String)">
+            <summary> Construct a variable request for a Local ('L') variable with the specified name. </summary>
+`createVariable` will create the L var on the simulator if it doesn't exist yet (for "Get" as well as "Set" commands). An unit name can also be provided with this overload.
+</member>
+        <member name="M:WASimCommander.CLI.Structs.VariableRequest.#ctor(System.String,System.Boolean)">
+            <summary> Construct a variable request for a Local ('L') variable with the specified name. </summary>
+`createVariable` will create the L var on the simulator if it doesn't exist yet (for "Get" as well as "Set" commands). An optional unit name can also be provided.
+</member>
         <member name="M:WASimCommander.CLI.Structs.VariableRequest.#ctor(System.String)">
             <summary> Construct a variable request a Local variable ('L') with the specified name. </summary>
         </member>
@@ -125,15 +219,24 @@ For full documentation of each field see `WASimCommander::Client::ListResult`.
             <summary> Client Event data, delivered via callback. </summary>
 For full documentation of each field see `WASimCommander::Client::ClientEvent`.
 </member>
+        <member name="M:WASimCommander.CLI.Structs.DataRequestRecord.ToString">
+\}
+<summary>Serializes this `DataRequestRecord` to string for debugging purposes.</summary>
+To return the request's _value_ as a string, see `tryConvert()` or the `String ^()` operator. \sa DataRequest::ToString()
+</member>
+        <member name="M:WASimCommander.CLI.Structs.DataRequestRecord.op_Implicit(WASimCommander.CLI.Structs.DataRequestRecord)~System.Double">
+\name Implicit conversion operators for various types.
+\{
+</member>
         <member name="M:WASimCommander.CLI.Structs.DataRequestRecord.tryConvert(System.String@)">
             <summary> Overload for String type results. This will simply load whatever bytes are in the `data` array into a String, and only
 returns `false` (and an empty String) if the data array is empty or starts with a null character byte (`0x00`). </summary>
         </member>
         <member name="M:WASimCommander.CLI.Structs.DataRequestRecord.tryConvert``1(``0@)">
-            <summary> Tries to populate a value reference of the desired type and returns true or false
+            <summary> Tries to populate a value reference of the desired type `T` and returns true or false
 depending on if the conversion was valid (meaning the size of requested type matches the data size). </summary>
 If the conversion fails, result is default-initialized.
-The requested type must be a `value` type (not reference) and be default-constructible, (eg. numerics, chars), or fixed-size arrays of such types.
+The requested type (`T`) must be a `value` type (not reference) and be default-constructible, (eg. numerics, chars), or fixed-size arrays of such types.
 </member>
         <member name="T:WASimCommander.CLI.Structs.DataRequestRecord">
             <summary> `DataRequestRecord` inherits and extends `WASimCommander::CLI::Structs::DataRequest` with data pertinent for use by a data consumer/Client.
@@ -157,6 +260,15 @@ typically zero or an empty string.
 Also note that the size of the data array may or _may not_ be the same as the inherited `DataRequest::valueSize` member, since that may contain
 special values for preset types. Always check the actual data array size (`data.Length`) if you need to know the storage requirements.
 </member>
+        <member name="M:WASimCommander.CLI.Structs.DataRequest.ToString">
+            <summary>Serializes this `DataRequest` to a string for debugging purposes.</summary>
+        </member>
+        <member name="M:WASimCommander.CLI.Structs.DataRequest.setUnitName(System.String)">
+            <summary>Set the `unitName` member using a `string` type value. </summary>
+        </member>
+        <member name="M:WASimCommander.CLI.Structs.DataRequest.setNameOrCode(System.String)">
+            <summary>Set the `nameOrCode` member using a `string` type value. </summary>
+        </member>
         <member name="M:WASimCommander.CLI.Structs.DataRequest.#ctor(System.UInt32,&lt;unknown type&gt;,System.String,System.UInt32,&lt;unknown type&gt;,System.UInt32,System.Single)">
             <summary> Constructs a calculator code request (`requestType = RequestType::Calculated`) with given update period, interval, and epsilon values.. </summary>
         </member>
@@ -292,7 +404,10 @@ If the server is not currently connected, the event registration will be queued 
         <member name="M:WASimCommander.Client.WASimClient.setDataRequestsPaused(System.Boolean)">
 Enables or disables all data request subscription updates at the same time. Use this to temporarily suspend value update checks when they are not needed, but may be again in the future.
 This is a lot more efficient than disconnecting and re-connecting to the server, since all the data requests need to be re-created upon every new connection (similar to SimConnect itself).
-\return `S_OK` on success, `E_NOT_CONNECTED` if not connected to server.
+\since{v1.2}
+This method can be called while not connected to the server. In this case the setting is saved and sent to the server upon next connection, before sending any data request subscriptions.
+This way updates could be suspended upon initial connection, then re-enabled when the data is actually needed.
+\return `S_OK` on success; If currently connected to the server, may also return `E_TIMEOUT` on general server communication failure.
 </member>
         <member name="M:WASimCommander.Client.WASimClient.dataRequestIdsList">
 Returns a list of all `DataRequest::requestId`s which have been added to the Client so far.
@@ -320,27 +435,35 @@ Using this method is effectively the same as calling `dataRequest()` with a `Dat
 To resume updates change the period again.
 \sa \refwc{DataRequest}, \refwce{CommandId::Subscribe}, saveDataRequest(), updateDataRequest()
 </member>
-        <member name="M:WASimCommander.Client.WASimClient.saveDataRequest(WASimCommander.DataRequest!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)">
+        <member name="M:WASimCommander.Client.WASimClient.saveDataRequest(WASimCommander.DataRequest!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Boolean)">
 Add a new `WASimCommander::DataRequest` or update an existing one with the same `DataRequest::requestId`. If the client is not currently connected to the server, the request is queued until the next connection is established.
 \param request The `WASimCommander::DataRequest` structure to process. See `WASimCommander::DataRequest` documentation for details of the structure members.
-\return `S_OK` on success, `E_INVALIDARG` if there is a problem with the `DataRequest` contents; If currently connected to the server, may also return `E_FAIL` if the server returned `Nak` response, or `E_TIMEOUT` on general server communication failure.
-\note If currently connected to the server, this method will block until either the Server responds or the timeout has expired (see `defaultTimeout()`).
+\param async `true` to wait for a response from the server before returning, or `false` (default) to wait for an `Ack`/`Nak` response. See return values and the Note below for more details.
+\return `S_OK` on success, `E_INVALIDARG` if there is a problem with the `DataRequest` contents. \n
+If currently connected to the server and `async` is `false`, may also return `E_FAIL` if the server returned `Nak` response, or `E_TIMEOUT` on general server communication failure.
+\note If currently connected to the server and the `async` param is `false`, this method will block until either the Server responds or the timeout has expired (see `defaultTimeout()`).
+\par Tracking async calls
+To track the status of an async request, set a callback function with `setCommandResultCallback()`. The server should respond with an \refwce{CommandId::Ack} or \refwce{CommandId::Nak}
+\refwc{Command} where the `uData` value is \refwce{CommandId::Subscribe} and the \refwc{Command::token} will be the `requestId` value from the given `request` struct.
 \sa  \refwc{DataRequest} \refwce{CommandId::Subscribe}, removeDataRequest(), updateDataRequest()
 </member>
-        <member name="M:WASimCommander.Client.WASimClient.setOrCreateLocalVariable(std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Double!System.Runtime.CompilerServices.IsConst)">
+        <member name="M:WASimCommander.Client.WASimClient.setOrCreateLocalVariable(std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Double!System.Runtime.CompilerServices.IsConst,std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.Compil">
 Set a Local Variable value by variable name, creating it first if it does not already exist. This first calls the `register_named_variable()` _Gauge API_ function to get the ID from the name,
-which creates the variable if it doesn't exist. The returned ID (new or existing) is then used to set the value. Unit type cannot be specified when creating/using custom local variables in this fashion.
-Use the `lookup()` method to check for the existence of a variable name.
+which creates the variable if it doesn't exist. The returned ID (new or existing) is then used to set the value. Use the `lookup()` method to check for the existence of a variable name.
+Equivalent to `setVariable(VariableRequest(variableName, true, unitName), value)`. See `setVariable()` and `VariableRequest` for details.
 \param variableName Name of the local variable.
 \param value The value to set. Becomes the intial value if the variable is created.
+\param unitName Optional unit specifier to use. Most Local vars do not specify a unit and default to a generic "number" type.
 \return `S_OK` on success, `E_INVALIDARG` on parameter validation errors, `E_NOT_CONNECTED` if not connected to server, or `E_FAIL` on general failure (unlikely).
-\sa \refwcc{VariableRequest}, \refwce{CommandId::SetCreate}
+\sa \refwce{CommandId::SetCreate}
 </member>
-        <member name="M:WASimCommander.Client.WASimClient.setLocalVariable(std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Double!System.Runtime.CompilerServices.IsConst)">
-A convenience version of `setVariable(VariableRequest('L', variableName), value)`. See `setVariable()` for details.
+        <member name="M:WASimCommander.Client.WASimClient.setLocalVariable(std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Double!System.Runtime.CompilerServices.IsConst,std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServic">
+A convenience version of `setVariable()` for Local variable types. Equivalent to `setVariable(VariableRequest(variableName, false, unitName), value)`. See `setVariable()` and `VariableRequest` for details.
 \param variableName Name of the local variable.
 \param value The value to set.
+\param unitName Optional unit specifier to use. Most Local vars do not specify a unit and default to a generic "number" type.
 \return `S_OK` on success, `E_INVALIDARG` on parameter validation errors, `E_NOT_CONNECTED` if not connected to server, or `E_FAIL` on general failure (unlikely).
+\sa \refwce{CommandId::Set}
 </member>
         <member name="M:WASimCommander.Client.WASimClient.setVariable(WASimCommander.Client.VariableRequest!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Double!System.Runtime.CompilerServices.IsConst)">
 Set a Variable value by name, with optional named unit type. Although any settable variable type can set this way, it is primarily useful for local (`L`) variables which can be set via dedicated _Gauge API_ functions
@@ -351,19 +474,32 @@ evaluated via the _Gauge API_ `execute_calculator_code()`. Using `WASimClient::e
 \return `S_OK` on success, `E_INVALIDARG` on parameter validation errors, `E_NOT_CONNECTED` if not connected to server, or `E_FAIL` on general failure (unlikely).
 \sa \refwce{CommandId::Set}
 </member>
-        <member name="M:WASimCommander.Client.WASimClient.getLocalVariable(std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Double*)">
-A convenience version of <tt>getVariable(VariableRequest('L', variableName), pfResult)</tt>. See `getVariable()` for details.
+        <member name="M:WASimCommander.Client.WASimClient.getOrCreateLocalVariable(std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Double*,System.Double,std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDe">
+Gets the value of a local variable just like `getLocalVariable()` but will also create the variable on the simulator if it doesn't already exist.
 \param variableName Name of the local variable.
 \param pfResult Pointer to a double precision variable to hold the result.
+\param defaultValue The L var will be created on the simulator if it doesn't exist yet using this initial value (and this same value will be returned in `pfResult`).
+\param unitName Optional unit specifier to use. Most Local vars do not specify a unit and default to a generic "number" type.
 \return `S_OK` on success, `E_INVALIDARG` on parameter validation errors, `E_NOT_CONNECTED` if not connected to server, `E_TIMEOUT` on server communication failure, or `E_FAIL` if server returns a Nak response.
-\note This method blocks until either the Server responds or the timeout has expired. \sa defaultTimeout(), setDefaultTimeout()
+\note This method blocks until either the Server responds or the timeout has expired. \sa \refwce{CommandId::GetCreate}, defaultTimeout(), setDefaultTimeout()
 </member>
-        <member name="M:WASimCommander.Client.WASimClient.getVariable(WASimCommander.Client.VariableRequest!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Double*)">
-Get a Variable value by name, with optional named unit type. This is primarily useful for local ('L') variables, SimVars ('A') and token variables ('T') which can be read via dedicated _Gauge API_ functions
-(`get_named_variable_value()`/`get_named_variable_typed_value()`, `aircraft_varget()`,  and `lookup_var()` respectively). Other variables types can also be set this way ('B', 'E', 'M', etc) but such requests are simply converted to a calculator string and
-evaluated via the _Gauge API_ `execute_calculator_code()`. Using `WASimClient::executeCalculatorCode()` directly may be more efficient.
-\param variable See `VariableRequest` documentation for descriptions of the individual fields.
+        <member name="M:WASimCommander.Client.WASimClient.getLocalVariable(std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Double*,std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)">
+A convenience version of `getVariable(VariableRequest(variableName, false, unitName), pfResult)`. See `getVariable()` and `VariableRequest` for details.
+\param variableName Name of the local variable.
 \param pfResult Pointer to a double precision variable to hold the result.
+\param unitName Optional unit specifier to use. Most Local vars do not specify a unit and default to a generic "number" type.
+\return `S_OK` on success, `E_INVALIDARG` on parameter validation errors, `E_NOT_CONNECTED` if not connected to server, `E_TIMEOUT` on server communication failure, or `E_FAIL` if server returns a Nak response.
+\note This method blocks until either the Server responds or the timeout has expired. \sa \refwce{CommandId::Get},  defaultTimeout(), setDefaultTimeout()
+</member>
+        <member name="M:WASimCommander.Client.WASimClient.getVariable(WASimCommander.Client.VariableRequest!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Double*,std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;*)">
+Get a Variable value by name, with optional named unit type. This is primarily useful for local ('L') variables, SimVars ('A') and token variables ('T') which can be read via dedicated _Gauge API_ functions
+(`get_named_variable_value()`/`get_named_variable_typed_value()`, `aircraft_varget()`,  and `lookup_var()` respectively). \n
+Other variables types can also be set this way ('C', 'E', 'M', etc) but such requests are simply **converted to a calculator string** and evaluated via the _Gauge API_ `execute_calculator_code()`. \n
+Likewise, requesting string-type variables using this method also ends up running a calculator expression on the server side. \n
+In both cases, using `WASimClient::executeCalculatorCode()` directly may be more efficient. Also, unlike `executeCalculatorCode()`, this method will not return a string representation of a numeric value.
+\param variable See `VariableRequest` documentation for descriptions of the individual fields.
+\param pfResult Pointer to a double precision variable to hold the numeric result.
+\param psResult Pointer to a string type variable to hold a string-type result. See notes above regarding string types.
 \return `S_OK` on success, `E_INVALIDARG` on parameter validation errors, `E_NOT_CONNECTED` if not connected to server, `E_TIMEOUT` on server communication failure, or `E_FAIL` if server returns a Nak response.
 \note This method blocks until either the Server responds or the timeout has expired.
 \sa \refwcc{VariableRequest}, \refwce{CommandId::Get},  defaultTimeout(), setDefaultTimeout()
@@ -380,8 +516,10 @@ Run a string of MSFS _Gauge API_ calculator code in RPN format, possibly with so
                   if a numeric result is requested, the string result will also be populated).
 \param pfResult A pointer to an initialized variable of `double` to store the result into if `resultType` is `Enums::CalcResultType::Double` or `Enums::CalcResultType::Integer`.
 \param psResult A string pointer to store the string result into. The string version is typically populated even for numeric type requests, but definitely for `Enums::CalcResultType::String` or `Enums::CalcResultType::Formatted` type requests.
-\return `S_OK` on success, `E_FAIL` if the server returned Nak response, `E_NOT_CONNECTED` if not connected to server, or `E_TIMEOUT` on general server communication failure.
-\note This method blocks until either the Server responds or the timeout has expired.
+\return `S_OK` on success, `E_NOT_CONNECTED` if not connected to server; \n
+If a result is expected, may also return `E_FAIL` if the server returned Nak response, or `E_TIMEOUT` on general server communication failure.
+\note _If_ a result is expected (`resultType` != `Enums::CalcResultType::None`) then this method blocks until either the Server responds or the timeout has expired (see `defaultTimeout()`).
+To request calculated results in a non-blocking fashion, use a data request instead.
 
 If you need to execute the same code multiple times, it would be more efficient to save the code as either a data request (for code returning values) or a registered event (for code not returning values).
 The advantage is that in those cases the calculator string is pre-compiled to byte code and saved once, then each invocation of the _Gauge API_ calculator functions uses the more efficient byte code version.
@@ -480,8 +618,9 @@ requests are available for reference using `WASimClient::registeredEvent()` and 
         <member name="M:WASimCommander.Client.VariableRequest.#ctor(System.Int32)">
 Construct a variable request for a Local variable ('L') with the given numeric ID.
 </member>
-        <member name="M:WASimCommander.Client.VariableRequest.#ctor(std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)">
-Construct a variable request for a Local variable ('L') with the given name.
+        <member name="M:WASimCommander.Client.VariableRequest.#ctor(std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Boolean,std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)">
+Construct a variable request for a Local variable ('L') with the given name. `createVariable` will create the L var on the simulator if it doesn't exist yet
+(for "Get" as well as "Set" commands). An optional unit name can also be provided.
 </member>
         <member name="M:WASimCommander.Client.VariableRequest.#ctor(System.Int32,System.Int32,System.Byte)">
 Construct a variable request for a Simulator Variable ('A') using numeric variable and unit IDs, with optional index parameter.
@@ -493,7 +632,7 @@ Construct a variable request for a Simulator Variable (SimVar) with given name, 
 Construct a variable request using numeric variable and (optionally) unit IDs, and optional SimVar index.
 </member>
         <member name="M:WASimCommander.Client.VariableRequest.#ctor(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.Compiler">
-Default constructor, with optional parameters for variable type, name, unit name and SimVar index.
+Default constructor, with optional parameters for variable type, name, unit name, SimVar index and `createLVar` flag.
 </member>
         <member name="F:WASimCommander.Client.VariableRequest.variableId">
  Otherwise, for 'L' vars the default units are used (_Gauge API_ `(get | set)_named_variable_value()`) and for getting SimVars the behavior is undefined (-1 is passed to `aircraft_varget()` as the unit ID).
@@ -557,7 +696,7 @@ Constructs a request for a named Simulator Variable (`requestType = RequestType:
         <member name="M:WASimCommander.DataRequest.#ctor(System.UInt32,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.UInt32,&lt;unknown type&gt;,System.UInt32,System.Single)">
 Constructs a request for a named variable (`requestType = RequestType::Named`) with optional update period, interval, and epsilon values.
 </member>
-        <member name="M:WASimCommander.DataRequest.#ctor(System.UInt32,System.UInt32,&lt;unknown type&gt;,&lt;unknown type&gt;,&lt;unknown type&gt;,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*)">
+        <member name="M:WASimCommander.DataRequest.#ctor(System.UInt32,System.UInt32,&lt;unknown type&gt;,&lt;unknown type&gt;,&lt;unknown type&gt;,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,System.Single,System.Byte,System.Byte)">
 Constructor with required request ID, all other parameters optional. See member documentation for explanation of the homonymous parameters.
 </member>
         <member name="F:WASimCommander.DataRequest.period">
@@ -631,13 +770,18 @@ The fields `uData`, `sData` and `fData` referenced below refer to \refwc{Command
  In case of failure a `Nak` is returned with possible error message in `sData`. Note however that the _Gauge API_ functions often happily return a "success" status even when the actual thing you're trying to do fails. The only feedback
  in this case appears to be the MSFS Console window available from "Dev Tools," which will (usually) log any actual errors.
 </member>
+        <member name="F:Exec">
+ **Creating variables only works with `L` (local) types.** Since v1.2, for all other types this command will be handled the same as `Get`. Previous versions would return a `Nak`.
+</member>
         <member name="F:SetCreate">
  `sData` is the variable name or numeric ID (for local vars only), optionally followed by comma (`,`) and unit name (or numeric unit ID for local vars) (**no spaces**). The value to set is passed in `fData` member.\n
  For example, a SimVar: ```uData = 'A'; sData = "PROP RPM:2,rpm"; fData = 2200;```\n
  Other variables types can also be set this way ('A', 'H", 'K', etc) but such requests are simply converted to a calculator string and processed as an `Exec` type command (using an `Exec` command directly may be slightly more efficient).
 </member>
         <member name="F:Set">
- **This only works with `L` (local) type variables.**
+ \n **Since v1.2:** If a variable is created, the value provided in `fData` will be used as the initial value of the variable, and will be returned as the result
+(essentially providing a default value in this case). Previous versions would _not_ set a value (or unit type) on the variable after creating it and would return the default of `0.0`. \n
+ **Creating variables only works with `L` (local) types.** Since v1.2, for all other types this command will be handled the same as `Get`. Previous versions would return a `Nak`.
 </member>
         <member name="F:GetCreate">
  `sData` is the variable name or numeric ID, optionally followed by comma (`,`) and unit name or numeric ID (**no spaces**). For indexed SimVars, include the index after the variable name, separated by a colon (`:`).\n
@@ -661,5 +805,6 @@ The fields `uData`, `sData` and `fData` referenced below refer to \refwc{Command
         <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.Client.WASimClient.setLogCallback(std.function<(WASimCommander.LogRecord!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,<unknown type>)(WASimCommander.LogRecord!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced&,<unknown type>)>)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.Client.WASimClient.setCommandResultCallback(std.function<(WASimCommander.Command!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)(WASimCommander.Command!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced&)>)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.Client.WASimClient.setResponseCallback(std.function<(WASimCommander.Command!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)(WASimCommander.Command!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced&)>)'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.CLI.Client.WASimClient.sendKeyEvent(System.String,System.Nullable`1{System.UInt32},System.Nullable`1{System.UInt32},System.Nullable`1{System.UInt32},System.Nullable`1{System.UInt32},System.Nullable`1{System.UInt32})'. -->
     </members>
 </doc>
