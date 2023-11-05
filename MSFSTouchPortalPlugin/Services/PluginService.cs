@@ -243,8 +243,7 @@ namespace MSFSTouchPortalPlugin.Services
       _logger.LogDebug("PluginEventsTask task started.");
       try {
         while (_simConnectService.IsConnected && !_simTasksCancelToken.IsCancellationRequested) {
-          IReadOnlyCollection<Timer> timers = _repeatingActionTimers.Values.ToArray();
-          foreach (Timer tim in timers)
+          foreach (Timer tim in (IReadOnlyCollection<Timer>)_repeatingActionTimers.Values)
             tim.Tick();
           CheckPendingRequests();
           await Task.Delay(25, _simTasksCancelToken);
@@ -349,6 +348,7 @@ namespace MSFSTouchPortalPlugin.Services
       }
       // SimVarItem.SetValue() takes care of setting the correct value type and resets any expiry timers. Returns false if value is of the wrong type.
       if (simVar.SetValue(data)) {
+        _logger.LogTrace("Got value '{data}' for Sim Var {var} and set to '{value}' (formatted: '{format}')", data, simVar.ToDebugString(), simVar.Value, simVar.FormattedValue);
         if (simVar.CategoryId != Groups.None)  // assumes anything for an actual category will have a State ID
           _client.StateUpdate(simVar.TouchPortalStateId, simVar.FormattedValue);
         // Check for any Connectors (sliders) which use this state as feedback mechanism.
@@ -432,7 +432,7 @@ namespace MSFSTouchPortalPlugin.Services
 
           case SimVarErrorType.VarType:
           case SimVarErrorType.Registration:
-            reason = data?.ToString();
+            reason = data?.ToString() ?? "Could not register variable due to Simulator issue, see previous messages for details";
             break;
 
           case SimVarErrorType.SimConnectError:
@@ -1663,7 +1663,7 @@ namespace MSFSTouchPortalPlugin.Services
     public void OnConnecterChangeEvent(ConnectorChangeEvent message)
     {
       // check connector status up/down (sort of like actions but harder to track); UpdateConnectorValue() returns false if connector is no longer moving.
-      if (_connectorTracker.UpdateConnectorValue(message))
+      if (!string.IsNullOrEmpty(message.ConnectorId) && _connectorTracker.UpdateConnectorValue(message))
         ProcessEvent(message);
     }
 
