@@ -43,6 +43,8 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping(PluginActions.UpdateLocalVarsList, "Update Airplane Local Vars List")]
 #endif
 #if !FSX
+    [TouchPortalActionMapping(PluginActions.UpdateInputEventsList, "Update Airplane Input Events List")]
+    [TouchPortalActionMapping(PluginActions.ReRegisterInputEventVars, "Re-Submit Input Event Value Requests")]
     [TouchPortalActionMapping(PluginActions.UpdateHubHopPresets, "Update HubHop Data")]
 #endif
     // deprecated mappings
@@ -198,7 +200,6 @@ namespace MSFSTouchPortalPlugin.Objects
     //[TouchPortalActionSwitch(false, Id = "RelAI", Label = "Release AI")]
     public static readonly object SetSimulatorVarConn;
 
-
 #if !FSX
     [TouchPortalAction(PluginActions.SetLocalVar, "Set a Selected Airplane Local Variable",
       "Sets a value on a Local variable from currently loaded aircraft.\n" +
@@ -211,47 +212,41 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionChoice("number", "number", Id = "Unit", Label = "Unit Name")]
     [TouchPortalConnectorMeta()]
     public static readonly object SetLocalVar;
-#endif
 
+    [TouchPortalAction(PluginActions.SetInputEvent, "Set a Selected Airplane Input Event Value",
+      "Sets a value on an Input Event from currently loaded aircraft. These are sometimes also referred to as 'B' type variables and are always model-specific.\n" +
+        "The value meaning and type (numeric/string) depends entirely on the specific event. A list of Input Events can be found in the MSFS Dev Mode 'Behaviors' window.",
+      "Set Input Event: {0} To Value: {1}",
+      "Set Input Event: {0} in Value\nRange:",
+      holdable: true)]
+    [TouchPortalActionChoice("[plugin not connected]", "", Id = "VarName", Label = "Input Event Name")]
+    [TouchPortalActionText("0", float.MinValue, float.MaxValue, Id = "Value", Label = "Value")]
+    [TouchPortalConnectorMeta()]
+    public static readonly object SetInputEvent;
+#endif
 
     [TouchPortalAction(PluginActions.SetVariable, "Set a Named Variable",
-      "Set a Named Variable.\tSets a value on any named variable of various types.\t\t\t\t\t** All but SimVar and Local types require WASimModule **\n" +
-        "Local (L) variables can also be created. SimVar (A) and GPS (C) types require a Unit. For indexed SimVars, include the index in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
-      "Variable\nType{0} Variable\nName{1} Value{2} Unit\n(A/C){3} Create\n L Var: {4}",  /* Release\n\t\tAI: {5} */
+      "Set a Named Variable.\tSets a value on any named variable of various types.\t\t\t\t\t** Using 'C', 'H', 'K', and 'Z' types require WASimModule. **\n" +
+        "'L' type variables can also be created. 'A' and 'C' types require a Unit, for 'B' and 'L' it is optional (default is 'number'). " +
+        "For SimVars requiring an index, include it in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
+      "Variable\nType{0} Variable\nName{1} Unit {2} Value {3} ",
+      "Variable\nType{0} Variable\nName{1} Unit {2} Value\nRange:",
       holdable: true)]
 #if WASIM
-    [TouchPortalActionChoice(new[] { "A: SimVar", "C: GPS", "H: HTML Event", "K: Key Event", "L: Local", "Z: Custom SimVar" }, Id = "VarType", Label = "Variable Type")]
+    [TouchPortalActionChoice(new[] { "A: SimVar", "B: Input Event", "C: GPS", "H: HTML Event", "K: Key Event", "L: Local", "Z: Custom SimVar" }, Id = "VarType", Label = "Variable Type")]
 #elif FSX
     [TouchPortalActionChoice(new[] { "A: SimVar" }, Id = "VarType", Label = "Variable Type")]
 #else
-    [TouchPortalActionChoice(new[] { "A: SimVar", "L: Local" }, Id = "VarType", Label = "Variable Type")]
+    [TouchPortalActionChoice(new[] { "A: SimVar", "B: Input Event", "L: Local" }, Id = "VarType", Label = "Variable Type")]
 #endif
     [TouchPortalActionText("", Id = "VarName", Label = "Variable Name")]
-    [TouchPortalActionText("0", float.MinValue, float.MaxValue, Id = "Value", Label = "Value")]
     [TouchPortalActionChoice("[plugin not connected]", "", Id = "Unit", Label = "Unit Name")]
-    [TouchPortalActionChoice(new[] { "N/A", "No", "Yes" }, Id = "Create", Label = "Create Local Var")]
-    //[TouchPortalActionSwitch(false, Id = "RelAI", Label = "Release AI")]
+    [TouchPortalActionText("0", float.MinValue, float.MaxValue, Id = "Value", Label = "Value")]
+    [TouchPortalConnectorMeta()]
     public static readonly object SetVariable;
 
-    [TouchPortalConnector(PluginActions.SetVariable, "Set a Named Variable",
-      "Set a Named Variable.\tSets a value on any named variable of various types.\t\t\t\t\t** All but SimVar types require WASimModule **\n" +
-        "SimVar (A) and GPS (C) types require a Unit. For indexed SimVars, include it in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
-      "Variable\nType{0} Variable\nName{1} Unit\n(SimVar){2} Value\nRange:"
-    )]
-#if WASIM
-    [TouchPortalActionChoice(new[] { "A: SimVar", "C: GPS", "H: HTML Event", "K: Key Event", "L: Local", "Z: Custom SimVar" }, Id = "VarType", Label = "Variable Type")]
-#elif FSX
-    [TouchPortalActionChoice(new[] { "A: SimVar" }, Id = "VarType", Label = "Variable Type")]
-#else
-    [TouchPortalActionChoice(new[] { "A: SimVar", "L: Local" }, Id = "VarType", Label = "Variable Type")]
-#endif
-    [TouchPortalActionText("", Id = "VarName", Label = "Variable Name")]
-    [TouchPortalActionChoice("[plugin not connected]", "", Id = "Unit", Label = "Unit Name")]
-    [TouchPortalConnectorMeta()]
-    public static readonly object SetVariableConn;
 
     // Exec Calc Code
-
 #if WASIM
     [TouchPortalAction(PluginActions.ExecCalcCode, "Execute Calculator Code",
       "Execute Calculator Code.\t\t\t\t\t** Requires WASimModule **\n" +
@@ -336,16 +331,17 @@ namespace MSFSTouchPortalPlugin.Objects
 #endif
 
     [TouchPortalAction(PluginActions.AddNamedVariable, "Request a Named Variable",
-      "Request a Named Variable.\t\t\t\t\t** All but SimVar and Local types require WASimModule **\n" +
-        "SimVar, GPS, & Env. types require a Unit type. For indexed SimVars, include the index in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
+      "Request a Named Variable.\t\t\t\t\t** Using types other than 'A', 'B', or 'L' requires WASimModule. **\n" +
+        "'A', 'C', & 'E' types require a Unit type, for 'B' and 'L' it is optional (default is 'number'). " +
+        "For SimVars requiring an index, include it in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
       "Type{0} Name{1} Unit{2} for Plugin\nCategory{3} Format{4} Default\nValue{5} Update\nPeriod{6} Update\nInterval{7} Delta\nEpsilon{8}"
     )]
 #if WASIM
-    [TouchPortalActionChoice(new[] { "A: SimVar", "C: GPS", "E: Env.", "L: Local", "M: Mouse", "R: Rsrc.", "T: Token", "Z: Custom" }, Id = "VarType", Label = "Variable Type")]
+    [TouchPortalActionChoice(new[] { "A: SimVar", "B: Input Event", "C: GPS", "E: Env.", "L: Local", "M: Mouse", "R: Rsrc.", "T: Token", "Z: Custom" }, Id = "VarType", Label = "Variable Type")]
 #elif FSX
     [TouchPortalActionChoice(new[] { "A: SimVar" }, Id = "VarType", Label = "Variable Type")]
 #else
-    [TouchPortalActionChoice(new[] { "A: SimVar", "L: Local" }, Id = "VarType", Label = "Variable Type")]
+    [TouchPortalActionChoice(new[] { "A: SimVar", "B: Input Event", "L: Local" }, Id = "VarType", Label = "Variable Type")]
 #endif
     [TouchPortalActionText("FULL VARIABLE NAME", Id = "VarName", Label = "Variable Name")]
     [TouchPortalActionChoice("[plugin not connected]", "number", Id = "Unit", Label = "Unit Name")]

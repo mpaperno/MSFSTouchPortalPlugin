@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -47,7 +47,7 @@ namespace MSFSTouchPortalPlugin.Types
 
   public enum SimVarRegistrationStatus : byte
   {
-    Unregistered, Registered, Error
+    Unregistered, Registered, Error, TemporaryError
   };
 
   /// <summary>
@@ -257,6 +257,8 @@ namespace MSFSTouchPortalPlugin.Types
     public Definition Def { get; private set; }
     /// <summary> The SimConnect data type for registering this var. </summary>
     public SIMCONNECT_DATATYPE SimConnectDataType { get; private set; }
+    /// <summary> The SimConnect "hash" ID for Input Event ('B') type variables. </summary>
+    public ulong InputEventHash { get; set; } = 0;
     /// <summary> Indicates that this state needs a scheduled update request (UpdatePeriod == Millisecond). </summary>
     public bool NeedsScheduledRequest => DataProvider != SimVarDataProvider.WASimClient && UpdatePeriod == UpdatePeriod.Millisecond;
     /// <summary> For serializing the "raw" formatting string w/out "{0}" parts </summary>
@@ -303,7 +305,7 @@ namespace MSFSTouchPortalPlugin.Types
 #if FSX
     public static bool SimConnectSupported(char varType) => varType == 'A';
 #else
-    public static bool SimConnectSupported(char varType) => (varType == 'A' || varType == 'L');
+    public static bool SimConnectSupported(char varType) => (varType == 'A' || varType == 'B' || varType == 'L');
 #endif
 
     public bool ValueEquals(string value) => ValInit && IsStringType && value == Value.ToString();
@@ -494,9 +496,10 @@ namespace MSFSTouchPortalPlugin.Types
             return returnError($"Environment Variable Name '{SimVarName}' contains invalid character(s)", ref resultMsg);
           break;
 
+        case 'B':
         case 'L':
         case 'T':
-          // Local and Token variable types may only have alphanumerics, underscores, and colons; no spaces.
+          // Local, Token, and Input Event variable types may only have alphanumerics, underscores, and colons; no spaces.
           if (!Regex.IsMatch(SimVarName, @"^[a-zA-Z][a-zA-Z0-9_:]+$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
             return returnError($"Variable Name '{SimVarName}' contains invalid character(s)", ref resultMsg);
           break;

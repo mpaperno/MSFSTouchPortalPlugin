@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -180,6 +180,7 @@ namespace MSFSTouchPortalPlugin.Services
       //_simConnectService.OnException += SimConnectEvent_OnException;
       _simConnectService.OnSimVarError += SimConnectEvent_OnSimVarError;
       _simConnectService.OnEventReceived += SimConnectEvent_OnEventReceived;
+      _simConnectService.OnInputEventsUpdated += SimConnect_OnInputEventsListUpdated;
 #if WASIM
       _simConnectService.OnLVarsListUpdated += SimConnect_OnLVarsListUpdated;
 #endif
@@ -457,6 +458,15 @@ namespace MSFSTouchPortalPlugin.Services
       }
     }
 #nullable restore
+
+    void SimConnect_OnInputEventsListUpdated()
+    {
+      // Send TP selector choice update.
+      UpdateSimInputEvents();
+      // Try re-registering any InputEvent requests that may have failed previously due to non-existence.
+      if (_simConnectService.SimInputEvents.Any())
+        _simConnectService.RetryRegisterVarRequests('B');
+    }
 
 #if WASIM
     void SimConnect_OnLVarsListUpdated(IReadOnlyDictionary<int, string> list) {
@@ -736,6 +746,8 @@ namespace MSFSTouchPortalPlugin.Services
         UpdateActionDataList(action, "Unit", _imports.UnitNames(), instanceId, isConnector);
       else if (varType[0] == 'L')
         UpdateActionDataList(action, "Unit", _imports.UnitNames().Prepend("number"), instanceId, isConnector);
+      else if (varType[0] == 'B')
+        UpdateActionDataList(action, "Unit", new [] { "number", "string" }, instanceId, isConnector);
       else
         UpdateActionDataList(action, "Unit", __strArry_NA, instanceId, isConnector);
     }
@@ -786,6 +798,18 @@ namespace MSFSTouchPortalPlugin.Services
     // List of imported SimEvents per imported category; for PluginActions.SetKnownSimEvent
     void UpdateKnownSimEventsForCategory(string categoryName, string instanceId, bool isConnector) {
       UpdateActionDataList(PluginActions.SetKnownSimEvent, "EvtId", _imports.EventNamesForSelector(categoryName), instanceId, isConnector);
+    }
+
+    // Input Events action updaters -------------------------
+
+    // List of input events
+    void UpdateSimInputEvents()
+    {
+      if (!_simConnectService.SimInputEvents.Any()) {
+        UpdateActionDataList(PluginActions.SetInputEvent, "VarName", new[] { "<no input events loaded>" }, DataListUpdtType.All);
+        return;
+      }
+      UpdateActionDataList(PluginActions.SetInputEvent, "VarName", _simConnectService.SimInputEvents.Keys.OrderBy(n => n), DataListUpdtType.All);
     }
 
     // Misc. data update/clear  -------------------------------
@@ -913,6 +937,12 @@ namespace MSFSTouchPortalPlugin.Services
         case PluginActions.UpdateLocalVarsList:
           return _simConnectService.RequestLocalVariablesList();
 
+        case PluginActions.UpdateInputEventsList:
+          return _simConnectService.UpdateInputEventsList();
+
+        case PluginActions.ReRegisterInputEventVars:
+          _simConnectService.RetryRegisterVarRequests('B');
+          break;
 #endif
         case PluginActions.ActionRepeatIntervalInc:
         case PluginActions.ActionRepeatIntervalDec:
@@ -1019,6 +1049,24 @@ namespace MSFSTouchPortalPlugin.Services
       }
       return SetNamedVariable(actId, varType, varName, unitName, data, connValue);
     }
+
+#if !FSX
+    // PluginActions.SetInputEvent
+    bool SetInputEventFromActionData(PluginActions actId, ActionData data, int connValue)
+    {
+      if (!_simConnectService.IsConnected || !TryGetVarName(actId, data, out string varName))
+        return false;
+      if (!_simConnectService.SimInputEvents.TryGetValue(varName, out var simEvent)) {
+        _logger.LogError("Cannot find Simulator Input Event named {varName} for {action}.", varName, actId);
+        return false;
+      }
+      var unitName = simEvent.Type switch {
+        Microsoft.FlightSimulator.SimConnect.SIMCONNECT_INPUT_EVENT_TYPE.STRING => "string",
+        _ => "number"
+      };
+      return SetNamedVariable(actId, 'B', varName, unitName, data, connValue);
+    }
+#endif
 
     // Shared method to set value of any variable type. Uses WASM if available, falls back to SimConnect for A vars otherwise.
     bool SetNamedVariable(PluginActions actId, char varType, string varName, string unitName, ActionData data, int connValue)
@@ -1361,6 +1409,11 @@ namespace MSFSTouchPortalPlugin.Services
           _logger.LogError("Could not parse Variable Type parameter for SetVariable from data: {data}", ActionDataToKVPairString(data));
           return false;
         }
+
+#if !FSX
+        case PluginActions.SetInputEvent:
+          return SetInputEventFromActionData(PluginActions.SetInputEvent, data, connValue);
+#endif
 
         case PluginActions.SetCustomSimEvent:
         case PluginActions.SetKnownSimEvent:

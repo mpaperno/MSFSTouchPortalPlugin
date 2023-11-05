@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -42,6 +42,7 @@ namespace MSFSTouchPortalPlugin.Interfaces
   internal delegate void DisconnectEventHandler();
   internal delegate void ExceptionEventHandler(RequestTrackingData data);
   internal delegate void LocalVarsListUpdatedHandler(System.Collections.Generic.IReadOnlyDictionary<int, string> list);
+  internal delegate void InputEventsListUpdatedHandler();
 #nullable enable
   internal delegate void SimVarErrorEventHandler(Definition def, SimVarErrorType errType, object? data = null);
 #nullable restore
@@ -53,6 +54,7 @@ namespace MSFSTouchPortalPlugin.Interfaces
     event DisconnectEventHandler OnDisconnect;
     event ExceptionEventHandler OnException;
     event SimVarErrorEventHandler OnSimVarError;
+    event InputEventsListUpdatedHandler OnInputEventsUpdated;
 #if WASIM
     event LocalVarsListUpdatedHandler OnLVarsListUpdated;
 #endif
@@ -60,6 +62,7 @@ namespace MSFSTouchPortalPlugin.Interfaces
     bool IsConnected { get; }
     bool WasmAvailable { get; }
     WasmModuleStatus WasmStatus { get; }
+    SimInputEventCollection SimInputEvents { get; }
 
     void Init();
     uint Connect(uint configIndex = 0);
@@ -71,5 +74,6 @@ namespace MSFSTouchPortalPlugin.Interfaces
     bool RequestVariableValueUpdate(SimVarItem simVar);
     bool RequestLocalVariablesList();
     void RetryRegisterVarRequests(char varType);
+    bool UpdateInputEventsList();
   }
 }

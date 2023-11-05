@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -57,6 +57,7 @@ namespace MSFSTouchPortalPlugin.Services
     public event DisconnectEventHandler OnDisconnect;
     public event ExceptionEventHandler OnException;
     public event SimVarErrorEventHandler OnSimVarError;
+    public event InputEventsListUpdatedHandler OnInputEventsUpdated;
 #if WASIM
     public event LocalVarsListUpdatedHandler OnLVarsListUpdated;
 #endif
@@ -78,6 +79,7 @@ namespace MSFSTouchPortalPlugin.Services
 #else
     public WasmModuleStatus WasmStatus => WasmModuleStatus.NotFound;
 #endif
+    public SimInputEventCollection SimInputEvents => _simInputEvents;
 
     public SimConnectService(ILogger<SimConnectService> logger, SimVarCollection simVarCollection)
     {
@@ -89,6 +91,8 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     #endregion Public
+
+    enum StaticIDs: uint { INPUT_EVENTS_REQ_ID = 0 };
 
     const int SIM_CONNECT_TIMEOUT_MS  = 5000;   // SimConnect "Open" event timeout after successfully creating SimConnect() instance (should really be almost instant if everything is OK)
     const int MSG_RCV_WAIT_TIME_MS    = 5000;   // SimConnect.ReceiveMessage() wait time
@@ -102,6 +106,7 @@ namespace MSFSTouchPortalPlugin.Services
     bool WasmConnected => WasmStatus == WasmModuleStatus.Connected;
     bool WasmInitialized => WasmStatus > WasmModuleStatus.NotFound;
     int _reqTrackIndex = 0;  // current write slot index in _requestTracking array
+    string _lastLoadedAircraft = "";  // for tracking when user's currently loaded model has changed, to reload aircraft-specific variables/events
     SimulatorInfo _simInfo;
     Task _messageWaitTask;
     SimConnect _simConnect = null;
@@ -111,6 +116,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     readonly ILogger<SimConnectService> _logger;
     readonly SimVarCollection _simVarCollection;
+    readonly SimInputEventCollection _simInputEvents = new();
     readonly EventWaitHandle _scReady = new EventWaitHandle(false, EventResetMode.AutoReset);
     readonly AutoResetEvent _scQuit = new(false);
     readonly RequestTrackingData[] _requestTracking = new RequestTrackingData[MAX_STORED_REQUEST_RECORDS];  // rolling buffer array for request tracking
@@ -128,6 +134,12 @@ namespace MSFSTouchPortalPlugin.Services
     Action<Enum, uint, SIMCONNECT_DATA_SET_FLAG, object>  SetDataOnSimObjectDelegate;
     Action<Enum, string, string, SIMCONNECT_DATATYPE, float, uint> AddToDataDefinitionDelegate;
     Action<Enum, Enum, uint, SIMCONNECT_PERIOD, SIMCONNECT_DATA_REQUEST_FLAG, uint, uint, uint> RequestDataOnSimObjectDelegate;
+    Action<Enum> EnumerateInputEventsDelegate;
+    //Action<ulong> EnumerateInputEventParamsDelegate;
+    Action<ulong, object> SetInputEventDelegate;
+    Action<Enum, ulong> GetInputEventDelegate;
+    Action<ulong> SubscribeInputEventDelegate;
+    Action<ulong> UnsubscribeInputEventDelegate;
 
     readonly Dictionary<Type, Action<Enum> > _registerDataDelegates = new();
 
@@ -191,11 +203,6 @@ namespace MSFSTouchPortalPlugin.Services
 
       // Method delegates
       MapClientEventToSimEventDelegate          = _simConnect.MapClientEventToSimEvent;
-#if FSX
-      TransmitClientEventDelegate               = _simConnect.TransmitClientEvent;
-#else
-      TransmitClientEventEx1Delegate            = _simConnect.TransmitClientEvent_EX1;
-#endif
       ClearDataDefinitionDelegate               = _simConnect.ClearDataDefinition;
       AddToDataDefinitionDelegate               = _simConnect.AddToDataDefinition;
       RequestDataOnSimObjectDelegate            = _simConnect.RequestDataOnSimObject;
@@ -210,17 +217,35 @@ namespace MSFSTouchPortalPlugin.Services
       _registerDataDelegates.Add(typeof(StringVal), _simConnect.RegisterDataDefineStruct<StringVal>);
 
 #if FSX
-      SetupRequestTracking();
+      TransmitClientEventDelegate               = _simConnect.TransmitClientEvent;
+#else
+      TransmitClientEventEx1Delegate            = _simConnect.TransmitClientEvent_EX1;
+      // Input events
+      _simConnect.OnRecvEnumerateInputEvents      += SimConnect_OnRecvEnumInputEvents;
+      _simConnect.OnRecvEnumerateInputEventParams += SimConnect_OnRecvEnumInputEventParams;
+      _simConnect.OnRecvSubscribeInputEvent       += SimConnect_OnRecvSubscribeInputEvent;
+      _simConnect.OnRecvGetInputEvent             += SimConnect_OnRecvGetInputEvent;
+
+      EnumerateInputEventsDelegate              = _simConnect.EnumerateInputEvents;
+      //EnumerateInputEventParamsDelegate         = _simConnect.EnumerateInputEventParams;
+      SetInputEventDelegate                     = _simConnect.SetInputEvent;
+      GetInputEventDelegate                     = _simConnect.GetInputEvent;
+      SubscribeInputEventDelegate               = _simConnect.SubscribeInputEvent;
+      UnsubscribeInputEventDelegate             = _simConnect.UnsubscribeInputEvent;
 #endif
+
+#if FSX
+      SetupRequestTracking();
+#else
+      UpdateInputEventsList();
 #if WASIM
       ConnectWasm();
+      RequestLocalVariablesList();
+#endif
 #endif
       RegisterRequests();
       SubscribeSystemEvents();
       OnConnect?.Invoke(_simInfo);
-#if WASIM
-      RequestLocalVariablesList();
-#endif
     }
 
     void StopSimConnect()
@@ -387,6 +412,9 @@ namespace MSFSTouchPortalPlugin.Services
 
     SimVarRegistrationStatus RegisterToSimConnect(SimVarItem simVar)
     {
+      if (simVar.VariableType == 'B')
+        return SubscribeInputEvent(simVar);
+
       if (!_registerDataDelegates.TryGetValue(simVar.StorageDataType, out var registerDataDelegate)) {
         _logger.LogError("Unable to register data storage for type '{type}'.", simVar.StorageDataType);
         return SimVarRegistrationStatus.Error;
@@ -407,6 +435,9 @@ namespace MSFSTouchPortalPlugin.Services
 
     bool DeregisterFromSimConnect(SimVarItem simVar)
     {
+      if (simVar.VariableType == 'B')
+        return InvokeSimMethod(UnsubscribeInputEventDelegate, simVar.InputEventHash);
+
       // We need to first suspend updates for this variable before removing it, otherwise it seems SimConnect will sometimes crash
       if (simVar.UpdatePeriod != SimConUpdPeriod.Never && simVar.UpdatePeriod != SimConUpdPeriod.Millisecond) {
         var oldPeriod = simVar.UpdatePeriod;
@@ -469,8 +500,45 @@ namespace MSFSTouchPortalPlugin.Services
       return InvokeSimMethod(TransmitClientEventEx1Delegate, SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, (Groups)SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY, data[0], data[1], data[2], data[3], data[4]);
     }
 
+    // Input Events
 
+    bool SetInputEvent(ulong hash, object value) {
+      return InvokeSimMethod(SetInputEventDelegate, hash, value);
+    }
 
+    bool GetInputEvent(SimVarItem simVar) {
+      return InvokeSimMethod(GetInputEventDelegate, simVar.Def, simVar.InputEventHash);
+    }
+
+    SimVarRegistrationStatus SubscribeInputEvent(SimVarItem simVar)
+    {
+      if (simVar.InputEventHash == 0) {
+        if (!_simInputEvents.TryGetValue(simVar.SimVarName, out var simEvent)) {
+          _logger.LogWarning("Cannot find Simulator Input Event named {varName}, retry later.", simVar.SimVarName);
+          return SimVarRegistrationStatus.TemporaryError;
+        }
+        simVar.InputEventHash = simEvent.Hash;
+        simEvent.SimVarDef = simVar.Def;
+        simVar.Unit = simEvent.Type == SIMCONNECT_INPUT_EVENT_TYPE.STRING ? "string" : "number";
+      }
+      if (InvokeSimMethod(SubscribeInputEventDelegate, simVar.InputEventHash)) {
+        // also send an immediate request since subscription won't be received until value changes.
+        GetInputEvent(simVar);
+        return SimVarRegistrationStatus.Registered;
+      }
+      return SimVarRegistrationStatus.Error;
+    }
+
+    Timer _inputListUpdateDelayTimer = null;
+
+    void UpdateInputEventsListDelayed(int delayMs = 10_000)
+    {
+      _inputListUpdateDelayTimer ??= new Timer(t => {
+        ((Timer)t).Change(Timeout.Infinite, Timeout.Infinite);
+        UpdateInputEventsList();
+      });
+      _inputListUpdateDelayTimer.Change(delayMs, Timeout.Infinite);
+    }
 
     //
     //  WASM
@@ -667,6 +735,8 @@ namespace MSFSTouchPortalPlugin.Services
         return false;
       }
 
+      if (varType == 'B')
+        return _simInputEvents.TryGetValue(varName, out var ev) && SetInputEvent(ev.Hash, value);
 
 #if WASIM
       // If WASM is available, take the shorter and better route.
@@ -724,13 +794,20 @@ namespace MSFSTouchPortalPlugin.Services
 #endif
     }
 
+    public bool UpdateInputEventsList() {
+      return InvokeSimMethod(EnumerateInputEventsDelegate, StaticIDs.INPUT_EVENTS_REQ_ID);
+    }
+
     public bool RequestVariableValueUpdate(SimVarItem simVar) {
 #if WASIM
       if (simVar.DataProvider == SimVarDataProvider.WASimClient)
         return _wlib.updateDataRequest((uint)simVar.Def) == HR.OK;
 #endif
-      if (simVar.DataProvider == SimVarDataProvider.SimConnect)
+      if (simVar.DataProvider == SimVarDataProvider.SimConnect) {
+        if (simVar.VariableType == 'B')
+          return GetInputEvent(simVar);
         return RequestDataOnSimObjectType(simVar);
+      }
       return false;
     }
 
@@ -769,8 +846,15 @@ namespace MSFSTouchPortalPlugin.Services
       _logger.LogWarning((int)EventIds.SimError, "SimConnect Request Error: {error}", record.ToString());
       OnException?.Invoke(record);
 
+      // check for type of error based on method arguments or name.
       if (record.aArguments.Length > 0 && record.aArguments[0] is Definition defId) {
+        // SimVar request error, invoke plugin's listener.
         OnSimVarError?.Invoke(defId, SimVarErrorType.SimConnectError, record);
+      }
+      else if (record.sMethod == "EnumerateInputEvents") {
+        // EnumerateInputEvents() will keep returning an ERROR exception until an aircraft if fully loaded, which can take various amounts of time;
+        // Re-submit the list request again in a few seconds.
+        UpdateInputEventsListDelayed();
       }
     }
 
@@ -781,8 +865,6 @@ namespace MSFSTouchPortalPlugin.Services
       OnEventReceived?.Invoke(evId, gId, data.dwData);
     }
 
-    string _lastLoadedAircraft = "";
-
     private void Simconnect_OnRecvFilename(SimConnect sender, SIMCONNECT_RECV_EVENT_FILENAME data) {
       EventIds evId = (EventIds)data.uEventID;
       Groups gId = (Groups)data.uGroupID;
@@ -790,12 +872,79 @@ namespace MSFSTouchPortalPlugin.Services
       OnEventReceived?.Invoke(evId, gId, data.szFileName);
 #if !FSX
       if (evId == EventIds.AircraftLoaded && data.szFileName != _lastLoadedAircraft) {
-          _lastLoadedAircraft = data.szFileName;
-          if (WasmAvailable)
-            Task.Run(RequestLocalVariablesList);
+        _lastLoadedAircraft = data.szFileName;
+        if (WasmAvailable)
+          Task.Run(RequestLocalVariablesList);
+        UpdateInputEventsListDelayed();
       }
 #endif
     }
+
+    // Input events ("B" vars)
+
+#if !FSX
+    void SimConnect_OnRecvEnumInputEvents(SimConnect sender, SIMCONNECT_RECV_ENUMERATE_INPUT_EVENTS data)
+    {
+      if (data.dwRequestID != (uint)StaticIDs.INPUT_EVENTS_REQ_ID)
+        return;
+      if (data.dwEntryNumber == 0)
+        _simInputEvents.Clear();
+      foreach (var ed in data.rgData) {
+        var ied = (SIMCONNECT_INPUT_EVENT_DESCRIPTOR)ed;
+        _logger.LogDebug("Got Sim Input Event Name: {name}; Type: {type}; Hash: {hash};", ied.Name, ied.eType, ied.Hash);
+        _simInputEvents[ied.Name] = new SimInputEvent(ied);
+        //InvokeSimMethod(EnumerateInputEventParamsDelegate, ied.Hash);  // unused for now, not clear what params are for
+      }
+      if (data.dwEntryNumber == data.dwOutOf - 1)
+        OnInputEventsUpdated?.Invoke();
+    }
+
+    // currently unused... not clear what these are for yet.
+    void SimConnect_OnRecvEnumInputEventParams(SimConnect sender, SIMCONNECT_RECV_ENUMERATE_INPUT_EVENT_PARAMS data) {
+      if (_simInputEvents.TryGetValue(data.Hash, out var ev)) {
+        ev.Params = data.Value;
+        _logger.LogDebug("Input Event Param for {name} ({hash}): '{value}'", ev.Name, data.Hash, data.Value);
+      }
+    }
+
+    // The two event handlers below are _almost_ the same but subtly different due to the contents of the event data structs.
+    // The first one uses a key value of a request ID which we assigned, whereas the 2nd uses the Hash ID of the event, which we have to look up.
+    // https://devsupport.flightsimulator.com/t/simconnect-api-inconsistency-between-getinputevent-and-subscribeinputevent/6670
+
+    void SimConnect_OnRecvGetInputEvent(SimConnect sender, SIMCONNECT_RECV_GET_INPUT_EVENT data)
+    {
+      if (_simVarCollection.TryGet((Definition)data.dwRequestID, out var simVar)) {
+        if ((data.eType == SIMCONNECT_INPUT_EVENT_TYPE.STRING) == simVar.IsStringType) {
+          object val = data.eType == SIMCONNECT_INPUT_EVENT_TYPE.STRING ? ((SimConnect.InputEventString)data.Value[0]).value.ToString() : (double)data.Value[0];
+          _logger.LogTrace("Got Input Event Value '{value}' for {item}", val, simVar.SimVarName);
+          OnDataUpdateEvent?.Invoke(simVar.Def, simVar.Def, val);
+        }
+        else {
+          OnSimVarError?.Invoke(simVar.Def, SimVarErrorType.Registration, $"Got incorrect data type for Input Event '{simVar.SimVarName}'");
+        }
+      }
+      else {
+        _logger.LogDebug("Got Input Event value for unknown variable with request ID {reqId}", data.dwRequestID);
+      }
+    }
+
+    void SimConnect_OnRecvSubscribeInputEvent(SimConnect sender, SIMCONNECT_RECV_SUBSCRIBE_INPUT_EVENT data)
+    {
+      if (_simInputEvents.TryGetValue(data.Hash, out var ev)) {
+        if (data.eType == ev.Type) {
+          object val = data.eType == SIMCONNECT_INPUT_EVENT_TYPE.STRING ? ((SimConnect.InputEventString)data.Value[0]).value.ToString() : (double)data.Value[0];
+          _logger.LogTrace("Got Subscribed Input Event Value '{value}' for '{name}", val, ev.Name);
+          OnDataUpdateEvent?.Invoke(ev.SimVarDef, (Definition)data.Hash, val);
+        }
+        else {
+          OnSimVarError?.Invoke(ev.SimVarDef, SimVarErrorType.Registration, $"Got incorrect data type for Subscribed Input Event '{ev.Name}'");
+        }
+      }
+      else {
+        _logger.LogDebug("Got Subscribed Input Event for unknown variable with hash ID {hash}", data.Hash);
+      }
+    }
+#endif  // !FSX
 
     #endregion SimConnect Event Handlers
 

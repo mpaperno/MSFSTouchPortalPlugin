@@ -33,6 +33,7 @@ namespace MSFSTouchPortalPlugin.Enums
     SetHubHopEvent,
     SetSimulatorVar,
     SetLocalVar,
+    SetInputEvent,
     SetVariable,
     ExecCalcCode,
     SetConnectorValue,
@@ -59,6 +60,8 @@ namespace MSFSTouchPortalPlugin.Enums
     UpdateConnectorValues,
     UpdateHubHopPresets,
     UpdateLocalVarsList,
+    UpdateInputEventsList,
+    ReRegisterInputEventVars,
 
     ActionRepeatIntervalInc,
     ActionRepeatIntervalDec,
