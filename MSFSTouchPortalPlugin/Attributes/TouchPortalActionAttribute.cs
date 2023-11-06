@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -171,6 +171,8 @@ namespace MSFSTouchPortalPlugin.Attributes
     public virtual double MinValue { get; set; } = double.NaN;
     public virtual double MaxValue { get; set; } = double.NaN;
     public virtual string[] ChoiceValues { get; set; }
+    public bool UsedInMapping { get; set; } = true;  // for Choice type meta data creation
+
 
     protected dynamic _defaultValue;
 

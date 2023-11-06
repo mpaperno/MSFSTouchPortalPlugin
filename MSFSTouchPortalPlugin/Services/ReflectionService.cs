@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -187,7 +187,7 @@ namespace MSFSTouchPortalPlugin.Services
         // for Choice types, we combine them to create a unique lookup key which maps to a particular event.
         if (actAttr.Mappings.Any()) {
           List<string> fmtStrList = new();
-          for (int i=0, e = actAttr.Data.Count(d => d.ValueType == DataType.Choice); i < e; ++i)
+          for (int i=0, e = actAttr.Data.Count(d => d.ValueType == DataType.Choice && d.UsedInMapping); i < e; ++i)
             fmtStrList.Add($"{{{i}}}");
           act.KeyFormatStr = string.Join(",", fmtStrList);
           foreach (var ma in actAttr.Mappings) {
