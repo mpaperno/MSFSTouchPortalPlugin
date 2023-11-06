@@ -75,6 +75,12 @@ namespace MSFSTouchPortalPlugin.Types
     // List of all SimVar (A) types that have a category
     public IEnumerable<string> SimVarNames =>
       (from SimVarItem s in _idxByDef.Values where (s.VariableType == 'A' && s.CategoryId != Groups.None) select s.SimVarName);
+    // List of all variables loaded from a particular file.
+    public IEnumerable<SimVarItem> VariablesFromFile(string file) =>
+      (from SimVarItem s in _idxByDef.Values where (s.DefinitionSourceFile == file) select s);
+    // List of all variables by type, excluding temporary vars..
+    public IEnumerable<SimVarItem> VariablesOfType(char type) =>
+      (from SimVarItem s in _idxByDef.Values where (s.VariableType == type && s.DefinitionSource != SimVarDefinitionSource.Temporary) select s);
 
     const int MAX_CONCURRENCY = 6;
     const int INITIAL_CAPACITY = 500;

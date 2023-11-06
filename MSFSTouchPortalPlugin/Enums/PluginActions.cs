@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -71,5 +71,7 @@ namespace MSFSTouchPortalPlugin.Enums
     SaveAllSimVars,
     ClearCustomSimVars,
     ClearAllSimVars,
+    ClearSimVarsFromFile,
+    ClearSimVarsOfType,
   }
 }

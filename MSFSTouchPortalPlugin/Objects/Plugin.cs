@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -21,7 +21,6 @@ and is also available at <http://www.gnu.org/licenses/>.
 
 using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Enums;
-using System.Collections.Generic;
 using SimVarItem = MSFSTouchPortalPlugin.Types.SimVarItem;
 
 namespace MSFSTouchPortalPlugin.Objects
@@ -385,10 +384,13 @@ namespace MSFSTouchPortalPlugin.Objects
 
     [TouchPortalAction(PluginActions.ClearSimVars, "Clear Variable Definitions",
       "Removes either all or only custom-added variable state definitions.",
-      "Clear {0} states")]
+      "Clear Variables: {0} Select File/Type: {1}")]
     [TouchPortalActionChoice(Id = "VarsSet", Label = "Variables Set")]
     [TouchPortalActionMapping(PluginActions.ClearCustomSimVars, "Custom")]
     [TouchPortalActionMapping(PluginActions.ClearAllSimVars, "All")]
+    [TouchPortalActionMapping(PluginActions.ClearSimVarsFromFile, "Loaded From Selected File")]
+    [TouchPortalActionMapping(PluginActions.ClearSimVarsOfType, "Of Selected Type")]
+    [TouchPortalActionChoice("N/A", "", Id = "VarsSpec", Label = "Variable File/Type", UsedInMapping = false)]
     public static readonly object ClearSimVars;
 
     [TouchPortalAction(PluginActions.LoadSimVars, "Load Variable Definitions From File",

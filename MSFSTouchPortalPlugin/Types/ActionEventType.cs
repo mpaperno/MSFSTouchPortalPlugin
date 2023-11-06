@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -43,6 +43,10 @@ namespace MSFSTouchPortalPlugin.Types
       Values = values;
     }
     public EventMappingRecord(string eventName, uint[] values) : this(eventName, null, values) { }
+
+    public override string ToString() {
+      return $"EventMappingRecord{{{EventName}, {EventId}, {Values}}}";
+    }
   }
 
   internal class ActionEventType
@@ -61,7 +65,7 @@ namespace MSFSTouchPortalPlugin.Types
     //public IReadOnlyList<TouchPortalActionDataAttribute> DataAttributes;  // list of all data type attributes
 
     // Mapping of TP actions to SimConnect or "Native" events.
-    readonly Dictionary<string, EventMappingRecord> TpActionToEventMap = new();
+    public readonly Dictionary<string, EventMappingRecord> TpActionToEventMap = new();
 
     // this is how we generate unique SimConnect client Event IDs.
     private static EventIds _nextEventId = EventIds.DynamicEventInit;

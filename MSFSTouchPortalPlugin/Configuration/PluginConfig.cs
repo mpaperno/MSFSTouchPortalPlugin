@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -260,6 +260,7 @@ namespace MSFSTouchPortalPlugin.Configuration
     {
       List<SimVarItem> ret = new();
       filename = GetFullFilePath(filename, isUserConfig);
+      string bareFileName = Path.GetFileName(filename);
 
       _logger.LogInformation("Loading variable requests from file '{filename}'...", filename);
       if (!LoadFromFile(filename, out SharpConfig.Configuration cfg))
@@ -282,6 +283,7 @@ namespace MSFSTouchPortalPlugin.Configuration
         }
         simVar.Id = item.Name;
         simVar.DefinitionSource = isUserConfig ? SimVarDefinitionSource.UserFile : SimVarDefinitionSource.DefaultFile;
+        simVar.DefinitionSourceFile = bareFileName;
 
         if (validate) {
           if (!simVar.Validate(out var validationError)) {
@@ -304,9 +306,8 @@ namespace MSFSTouchPortalPlugin.Configuration
         }
       }
 
-      string bareName = Path.GetFileName(filename);
-      if (!LoadedStateConfigFiles.Contains(bareName))
-        LoadedStateConfigFiles.Add(bareName);
+      if (!LoadedStateConfigFiles.Contains(bareFileName))
+        LoadedStateConfigFiles.Add(bareFileName);
       _logger.LogInformation((int)EventIds.PluginInfo, "Loaded {count} variable requests from '{filename}'", ret.Count, filename);
       return ret;
     }

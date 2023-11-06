@@ -56,6 +56,16 @@ namespace MSFSTouchPortalPlugin.Types
   public class SimVarItem : System.IComparable<SimVarItem>, System.IComparable
   {
     public const double DELTA_EPSILON_DEFAULT = 0.0;
+#if WASIM
+    public static readonly string[] ReadableVariableTypes = { "A: SimVar", "B: Input Event", "C: GPS", "E: Env.", "L: Local", "M: Mouse", "R: Rsrc.", "T: Token", "Z: Custom" };
+    public static readonly string[] SettableVariableTypes = { "A: SimVar", "B: Input Event", "C: GPS", "H: HTML Event", "K: Key Event", "L: Local", "Z: Custom" };
+#elif FSX
+    public static readonly string[] ReadableVariableTypes = { "A: SimVar" };
+    public static readonly string[] SettableVariableTypes = ReadableVariableTypes;
+#else
+    public static readonly string[] ReadableVariableTypes = { "A: SimVar", "B: Input Event", "L: Local" };
+    public static readonly string[] SettableVariableTypes = ReadableVariableTypes;
+#endif
 
     /// <summary> Unique ID string, used to generate TouchPortal state ID (and possibly other uses). </summary>
     public string Id { get; set; }
@@ -90,6 +100,8 @@ namespace MSFSTouchPortalPlugin.Types
     public string TouchPortalSelector { get; set; }
     /// <summary> Tracks the origin of this item for later reference. </summary>
     public SimVarDefinitionSource DefinitionSource { get; set; }
+    /// <summary> Tracks which file this item was loaded from, if any, for later reference. </summary>
+    public string DefinitionSourceFile { get; set; }
     /// <summary> Tracks the source of the value data for this variable request. </summary>
     public SimVarDataProvider DataProvider { get; set; } = SimVarDataProvider.None;
     /// <summary> Status of this request registration with the data provider. </summary>

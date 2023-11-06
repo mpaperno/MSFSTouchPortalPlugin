@@ -493,7 +493,7 @@ namespace MSFSTouchPortalPlugin.Services
       }
       _logger.LogInformation((int)EventIds.PluginInfo, "Registered {count} Variable Request States.", count);
 
-      UpdateTpStateValue("LoadedStateConfigFiles", string.Join(',', _pluginConfig.LoadedStateConfigFiles));
+      UpdateLoadedStateFilesList();
     }
 
     // Returns: 0 = failed; 1 = added; 2 = replaced
@@ -531,17 +531,43 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     // Removes all, or just custom-added, variable definitions
-    void RemoveSimVars(bool customOnly)
+    void RemoveSimVars(PluginActions action, string spec)
     {
-      var list = customOnly ? _simVarCollection.CustomVariables : _simVarCollection.RequestedVariables;
-      foreach (SimVarItem simVar in list)
-        RemoveSimVar(simVar);
-      bool usingDefaultConfig = _pluginConfig.LoadedStateConfigFiles.Contains(PluginConfig.StatesConfigFile);
-      _pluginConfig.LoadedStateConfigFiles.Clear();
-      if (customOnly && usingDefaultConfig)
-        _pluginConfig.LoadedStateConfigFiles.Add(PluginConfig.StatesConfigFile);
-      UpdateTpStateValue("LoadedStateConfigFiles", string.Join(',', _pluginConfig.LoadedStateConfigFiles));
-      _logger.LogInformation((int)EventIds.PluginInfo, "Removed {count}{type} variable requests.", list.Count(), (customOnly ? " Custom" : ""));
+      var list = action switch {
+        PluginActions.ClearCustomSimVars => _simVarCollection.CustomVariables,
+        PluginActions.ClearAllSimVars => _simVarCollection.RequestedVariables,
+        PluginActions.ClearSimVarsFromFile => _simVarCollection.VariablesFromFile(spec),
+        PluginActions.ClearSimVarsOfType => _simVarCollection.VariablesOfType(spec[0]),
+        _ => Array.Empty<SimVarItem>()
+      };
+      if (list.Any()) {
+        foreach (SimVarItem simVar in list)
+          RemoveSimVar(simVar);
+        _logger.LogInformation((int)EventIds.PluginInfo, "Removed {count} variable requests for action {action} with data (if any) '{spec}'.", list.Count(), action.ToString(), spec);
+      }
+      else {
+        _logger.LogInformation("Did not find any variables to remove for {action} with data (if any) '{spec}'.", action.ToString(), spec);
+      }
+      // Adjust files list even if no variables were removed (perhaps they were all removed individually or by type).
+      switch (action) {
+        case PluginActions.ClearAllSimVars:
+          _pluginConfig.LoadedStateConfigFiles.Clear();
+          break;
+
+        case PluginActions.ClearSimVarsFromFile:
+          _pluginConfig.LoadedStateConfigFiles.Remove(spec);
+          break;
+
+        case PluginActions.ClearCustomSimVars:
+          foreach (var file in _pluginConfig.LoadedStateConfigFiles.ToArray())
+            if (file != PluginConfig.StatesConfigFile)
+              _pluginConfig.LoadedStateConfigFiles.Remove(file);
+          break;
+
+        default:
+          return;
+      }
+      UpdateLoadedStateFilesList();
     }
 
     void LoadCustomSimVarsFromFile(string filepath)
@@ -553,7 +579,7 @@ namespace MSFSTouchPortalPlugin.Services
           byte res = AddSimVar(simVar);
           count += res == 2 ? 1 : res;
         }
-        UpdateTpStateValue("LoadedStateConfigFiles", string.Join(',', _pluginConfig.LoadedStateConfigFiles));
+        UpdateLoadedStateFilesList();
       }
 
       if (count == 0)
@@ -752,6 +778,16 @@ namespace MSFSTouchPortalPlugin.Services
         UpdateActionDataList(action, "Unit", __strArry_NA, instanceId, isConnector);
     }
 
+    void UpdateClearSimVarsSpecSelector(string varsSet, string instanceId)
+    {
+      if (varsSet.EndsWith("File"))
+        UpdateActionDataList(PluginActions.ClearSimVars, "VarsSpec", _pluginConfig.LoadedStateConfigFiles, instanceId);
+      else if (varsSet.EndsWith("Type"))
+        UpdateActionDataList(PluginActions.ClearSimVars, "VarsSpec", SimVarItem.ReadableVariableTypes, instanceId);
+      else
+        UpdateActionDataList(PluginActions.ClearSimVars, "VarsSpec", __strArry_NA, instanceId);
+    }
+
     // HubHop Event action updaters -------------------------
 
     // these are to cache the last user selections for HubHop presets; works since user can only edit one action at a time in TP
@@ -842,6 +878,10 @@ namespace MSFSTouchPortalPlugin.Services
         evtId = _simConnectionRequest.IsSet ? EventIds.SimConnecting : EventIds.SimDisconnected;
       UpdateTpStateValue("Connected", evtId switch { EventIds.SimConnected => "true", EventIds.SimDisconnected => "false", _ => "connecting" });
       UpdateSimSystemEventState(evtId);
+    }
+
+    void UpdateLoadedStateFilesList() {
+      UpdateTpStateValue("LoadedStateConfigFiles", string.Join(',', _pluginConfig.LoadedStateConfigFiles));
     }
 
     void UpdateRelatedConnectors(string varName, double value)
@@ -1439,9 +1479,12 @@ namespace MSFSTouchPortalPlugin.Services
 
         case PluginActions.ClearSimVars: {
           if (data.TryGetValue("VarsSet", out var varSet) && action.TryGetEventMapping(varSet, out var evRecord)) {
-            RemoveSimVars((PluginActions)evRecord.EventId == PluginActions.ClearCustomSimVars);
+            data.TryGetValue("VarsSpec", out var spec);
+            _logger.LogDebug("Firing Internal Event - action: {actId}; enum: {pluginEventId}; data: {varSet} {spec}", action.ActionId, (PluginActions)evRecord.EventId, varSet, spec);
+            RemoveSimVars((PluginActions)evRecord.EventId, spec);
             return true;
           }
+          _logger.LogDebug("Could not get event mapping from {action}; with key format {format}", action.TpActionToEventMap, action.KeyFormatStr);
           return false;
         }
 
@@ -1775,8 +1818,10 @@ namespace MSFSTouchPortalPlugin.Services
         UpdateVariablesListPerCategory(catId, sActId, message.Value, message.InstanceId, isConnector);
         return;
       }
+
       if (!Enum.TryParse(sActId, true, out PluginActions actId))
-        actId = PluginActions.None;
+        return;
+
       switch (actId) {
         case PluginActions.AddSimulatorVar:
         case PluginActions.AddKnownSimVar:  // deprecated
@@ -1815,6 +1860,10 @@ namespace MSFSTouchPortalPlugin.Services
         case PluginActions.RemoveSimVar:
           if (dataId == "CatId")
             UpdateVariablesListPerCategory(Groups.Plugin, sActId, message.Value, message.InstanceId, isConnector);
+          break;
+        case PluginActions.ClearSimVars:
+          if (dataId == "VarsSet")
+            UpdateClearSimVarsSpecSelector(message.Value, message.InstanceId);
           break;
 
         default:
