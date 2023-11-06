@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -38,6 +38,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Reflection;
 
 namespace MSFSTouchPortalPlugin_Generator
@@ -61,6 +62,7 @@ namespace MSFSTouchPortalPlugin_Generator
 
     bool SerializeActionData(TouchPortalActionBase action, TouchPortalActionDataAttribute[] attribData)
     {
+      action.Data ??= new();
       int i = 0;
       foreach (var attrib in attribData) {
         string dataId = (string.IsNullOrWhiteSpace(attrib.Id) ? i.ToString() : attrib.Id);
@@ -77,11 +79,12 @@ namespace MSFSTouchPortalPlugin_Generator
         ++i;
         action.Data.Add(data);
       }
+      var tmpArry = action.Data.Select(d => $"{{${d.Id}$}}").ToArray();
       try {
-        action.Format = string.Format(action.Format, action.Data.Select(d => $"{{${d.Id}$}}").ToArray());
+        action.Format = string.Format(action.Format, tmpArry);
       }
-      catch {
-        _logger.LogError("Failed to format {0} for {1} with data {2}", action.Format, action.Id, string.Join(',', action.Data.Select(d => $"{{${d.Id}$}}")));
+      catch (Exception e) {
+        _logger.LogError("Failed to format {0} for {1} with data {2}\n{error}", action.Format, action.Id, string.Join(',', tmpArry), e);
         return false;
       }
       return true;
@@ -100,7 +103,7 @@ namespace MSFSTouchPortalPlugin_Generator
 
       // Setup Base Model
       var model = new Base {
-        Sdk = 6,
+        Api = 7,
         Version = vNum,
         Name = _options.PluginName,
         Id = _options.PluginId
@@ -109,6 +112,7 @@ namespace MSFSTouchPortalPlugin_Generator
         model.Plugin_start_cmd = $"\"{basePath}dist/{_options.PluginId}.exe\"";
       model.Configuration.ColorDark = "#" + _options.ColorDark.Trim('#');
       model.Configuration.ColorLight = "#" + _options.ColorLight.Trim('#');
+      model.Configuration.ParentCategory = "games";
 
       var categegoryAttribs = _reflectionSvc.GetCategoryAttributes();
       foreach (var catAttrib in categegoryAttribs) {
@@ -223,7 +227,12 @@ namespace MSFSTouchPortalPlugin_Generator
           Type = s.TouchPortalType,
           DefaultValue = s.Default,
           IsPassword = s.IsPassword,
-          ReadOnly = s.ReadOnly
+          ReadOnly = s.ReadOnly,
+          Tooltip = new TouchPortalTooltip {
+            Title = Regex.Replace(s.Name, @" \(.+\)$", ""),
+            Body = s.Description,
+            DocUrl = (string.IsNullOrEmpty(s.DocsUrl) ? _options.DocumentationUrl : s.DocsUrl )
+          }
         };
         if (s.MaxLength > 0)
           setting.MaxLength = s.MaxLength;

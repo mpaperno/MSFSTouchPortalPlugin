@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -26,8 +26,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MSFSTouchPortalPlugin_Generator.Model {
   class Base {
+    [Required, Range(1, 6)]
+    public int Sdk { get; set; } = 6;
     [Required, Range(1, int.MaxValue)]
-    public int Sdk { get; set; } = 3;
+    public int Api { get; set; } = 7;
     [JsonConverter(typeof(VersionNumberJsonConverter))]
     [Required, Range(1, uint.MaxValue)]
     public uint Version { get; set; }
@@ -50,6 +52,20 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string ColorDark { get; set; }
     [Required, RegularExpression(@"^#[A-Fa-f0-9]{6}$")]
     public string ColorLight { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [DefaultValue("misc")]
+    public string ParentCategory { get; set; } = "misc";
+  }
+
+  class TouchPortalSubCategory
+  {
+    [Required, MinLength(5)]
+    public string Id { get; set; }
+    [Required, MinLength(5)]
+    public string Name { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [DefaultValue("")]
+    public string Imagepath { get; set; } = string.Empty;
   }
 
   class TouchPortalCategory {
@@ -62,6 +78,9 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public List<TouchPortalConnector> Connectors { get; set; } = new();
     public List<TouchPortalEvent> Events { get; set; } = new();
     public List<TouchPortalState> States { get; set; } = new();
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [DefaultValue(null)]
+    public List<TouchPortalSubCategory> SubCategories { get; set; } = null;
   }
 
   class TouchPortalActionBase
@@ -73,10 +92,14 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     [JsonProperty(Order = -2)]
     public string Name { get; set; }
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [DefaultValue("")]
     public string Description { get; set; }
     [Required, MinLength(2)]
     public string Format { get; set; }
-    public List<TouchPortalActionData> Data { get; set; } = new List<TouchPortalActionData>();
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [DefaultValue(null)]
+    public List<TouchPortalActionData> Data { get; set; } = null;
   }
 
   class TouchPortalAction : TouchPortalActionBase
@@ -143,6 +166,17 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public string ValueStateId { get; set; }
   }
 
+  class TouchPortalTooltip
+  {
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public string Title { get; set; } = string.Empty;
+    [Required, MinLength(10)]
+    public string Body { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [DefaultValue("")]
+    public string DocUrl { get; set; } = string.Empty;
+  }
+
   class TouchPortalSetting
   {
     [Required, MinLength(5)]
@@ -161,6 +195,9 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     public double MaxValue { get; set; } = double.NaN;
     public bool IsPassword { get; set; } = false;
     public bool ReadOnly { get; set; } = false;
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [DefaultValue(null)]
+    public TouchPortalTooltip Tooltip { get; set; } = null;
   }
 
   public class ValidateObjectAttribute : ValidationAttribute {

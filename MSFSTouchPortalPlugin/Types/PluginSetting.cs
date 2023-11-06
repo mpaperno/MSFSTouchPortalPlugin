@@ -27,7 +27,8 @@ namespace MSFSTouchPortalPlugin.Types
   {
     public string SettingID { get; set; }
     public string Name { get; set; } = null;
-    public string Description { get; set; }  // for generated docs
+    public string Description { get; set; }  // for generated docs and TP Settings UI tooltip
+    public string DocsUrl { get; set; } = string.Empty;  // for TP Settings UI tooltip
     public string Default { get; set; } = null;
     public int MaxLength { get; set; } = int.MinValue;
     public double MinValue { get; set; } = double.NaN;
