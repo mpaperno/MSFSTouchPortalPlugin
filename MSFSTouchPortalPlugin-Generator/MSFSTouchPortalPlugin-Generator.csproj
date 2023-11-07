@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -56,17 +56,11 @@
 
   <PropertyGroup Condition="'$(Configuration)'=='Publish'">
     <DefineConstants>PUBLISH_BUILD;$(DefineConstants)</DefineConstants>
-    <PublishTrimmed>True</PublishTrimmed>
+    <PublishTrimmed>False</PublishTrimmed>
     <TrimMode>copyused</TrimMode>
     <PublishSingleFile>False</PublishSingleFile>
     <PublishReadyToRun>False</PublishReadyToRun>
   </PropertyGroup>
-
-  <!-- required for trimming otherwise we get missing dependencies at runtime -->
-  <ItemGroup>
-    <TrimmerRootAssembly Include="mscorlib" />
-    <TrimmerRootAssembly Include="netstandard" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
@@ -76,18 +70,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MSFSTouchPortalPlugin\MSFSTouchPortalPlugin.csproj" />
-  </ItemGroup>
-
-  <!-- somehow this is required for trimming to work properly, otherwise we get an exception during build -->
-  <ItemGroup Condition="'$(Configuration)'=='Publish'">
-    <Reference Include="..\MSFSTouchPortalPlugin\lib\Microsoft.FlightSimulator.SimConnect.dll" Condition="'$(Platform)'=='x64'">
-      <EmbedInteropTypes>false</EmbedInteropTypes>
-      <Private>true</Private>
-    </Reference>
-    <Reference Include="..\MSFSTouchPortalPlugin\lib\x86\Microsoft.FlightSimulator.SimConnect.dll" Condition="'$(Platform)'=='FSX'">
-      <EmbedInteropTypes>false</EmbedInteropTypes>
-      <Private>true</Private>
-    </Reference>
   </ItemGroup>
 
 </Project>

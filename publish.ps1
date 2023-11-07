@@ -24,10 +24,14 @@ $CurrentDir = [System.IO.Path]::GetDirectoryName($myInvocation.MyCommand.Path)
 $DistFolderPath = "$CurrentDir\packages-dist"
 $PluginFilesPath = "$DistFolderPath\$DistroName"
 $BinFilesPath = "$PluginFilesPath\dist"
+$GenFilesPath = "$DistFolderPath\Generator"
 
 if (Test-Path $PluginFilesPath) {
   Write-Output "Cleaning '$ProjectName' packages-dist folder '$PluginFilesPath'..."
   Remove-Item $PluginFilesPath -Force -Recurse
+}
+if (Test-Path $GenFilesPath) {
+  Remove-Item $GenFilesPath -Force -Recurse
 }
 
 Write-Output "`nPublishing '$ProjectName' component to '$BinFilesPath' ...`n"
@@ -35,14 +39,19 @@ dotnet publish "$ProjectName" --output "$BinFilesPath" --configuration $Configur
 if ($LastExitCode -ne 0) { throw ("Error " + $LastExitCode) }
 
 Write-Output "`nPublishing '$ProjectName-Generator' component...`n"
-dotnet publish "$ProjectName-Generator" --output "$BinFilesPath" --configuration $Configuration -p:Platform=$Platform
+#dotnet publish "$ProjectName-Generator" --output "$BinFilesPath" --configuration $Configuration -p:Platform=$Platform
+dotnet build "$ProjectName" --output "$GenFilesPath" --configuration Release -p:Platform=$Platform
+dotnet build "$ProjectName-Generator" --output "$GenFilesPath" --configuration Release -p:Platform=$Platform
 if ($LastExitCode -ne 0) { throw ("Error " + $LastExitCode) }
 
 # Run Documentation
 Write-Output "`nGenerating entry.tp JSON and Documentation...`n"
 #dotnet run --project "$ProjectName-Generator" -c $Configuration -- -o "$PluginFilesPath"  # can't use -p:Platform='
-& "$BinFilesPath\$BinName-Generator.exe" -o "$PluginFilesPath"
+& "$GenFilesPath\$BinName-Generator.exe" -o "$PluginFilesPath"
 if ($LastExitCode -ne 0) { throw ("Error " + $LastExitCode) }
+
+Write-Output "Cleaning '$GenFilesPath' ..."
+Remove-Item $GenFilesPath -Force -Recurse
 
 # Copy Readme, CHANGELOG, image(s) to publish folder
 copy "README.md" "$PluginFilesPath"

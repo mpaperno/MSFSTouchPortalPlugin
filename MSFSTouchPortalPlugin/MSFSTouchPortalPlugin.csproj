@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -66,13 +66,6 @@
     <DebugType>none</DebugType>
   </PropertyGroup>
 
-  <!-- attempt at RTR build with .net6; failed.
-  <ItemGroup>
-    <PublishReadyToRunExclude Include="SharpConfig.dll" />
-    <PublishReadyToRunExclude Include="WASimCommander.WASimClient.dll" />
-  </ItemGroup>
-  -->
-
   <!-- required for trimming otherwise we get missing dependencies at runtime -->
   <ItemGroup>
     <TrimmerRootAssembly Include="mscorlib" />
@@ -107,11 +100,9 @@
   <!-- SimConnect libs -->
   <ItemGroup>
     <Reference Include=".\lib\Microsoft.FlightSimulator.SimConnect.dll" Condition="'$(Platform)'=='x64'">
-      <EmbedInteropTypes>false</EmbedInteropTypes>
       <Private>true</Private>
     </Reference>
     <Reference Include=".\lib\x86\Microsoft.FlightSimulator.SimConnect.dll" Condition="'$(Platform)'=='FSX'">
-      <EmbedInteropTypes>false</EmbedInteropTypes>
       <Private>true</Private>
     </Reference>
 
@@ -138,39 +129,26 @@
   </ItemGroup>
 
   <!-- Custom SharpConfig lib -->
-  <ItemGroup>
-    <Reference Include=".\lib\SharpConfig\SharpConfig.dll" Condition="'$(Platform)'=='x64'">
+  <ItemGroup Condition="'$(Platform)'=='x64'">
+    <Reference Include=".\lib\SharpConfig\SharpConfig.dll">
       <Private>true</Private>
-      <EmbedInteropTypes>false</EmbedInteropTypes>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Reference>
-    <Reference Include=".\lib\x86\SharpConfig\SharpConfig.dll" Condition="'$(Platform)'=='FSX'">
+    <PublishReadyToRunExclude Include="SharpConfig.dll" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Platform)'=='FSX'">
+    <Reference Include=".\lib\x86\SharpConfig\SharpConfig.dll">
       <Private>true</Private>
-      <EmbedInteropTypes>false</EmbedInteropTypes>
     </Reference>
-    <!--<PackageReference Include="SharpConfig" Version="3.2.9.1" />-->
+    <PublishReadyToRunExclude Include="SharpConfig.dll" />
   </ItemGroup>
 
   <!-- WASimCommander Client -->
-  <ItemGroup>
-    <!--Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Publish') And '$(Platform)'=='x64'"-->
-    <Reference Include=".\lib\WASimCommander\WASimCommander.WASimClient.dll" Condition="'$(Platform)'=='x64'">
+  <ItemGroup Condition="'$(Platform)'=='x64'">
+    <Reference Include=".\lib\WASimCommander\WASimCommander.WASimClient.dll">
       <Private>true</Private>
-      <EmbedInteropTypes>false</EmbedInteropTypes>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Reference>
-  </ItemGroup>
-  <!--
-  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Reference Include="WASimCommander.WASimClient_d, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>.\lib\WASimCommander\WASimCommander.WASimClient_d.dll</HintPath>
-      <Private>true</Private>
-      <EmbedInteropTypes>false</EmbedInteropTypes>
-    </Reference>
-  </ItemGroup>
-  -->
-  <ItemGroup>
-    <ContentWithTargetPath Include=".\lib\WASimCommander\Ijwhost.dll" Condition="'$(Platform)'=='x64'">
+    <ContentWithTargetPath Include=".\lib\WASimCommander\Ijwhost.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>Ijwhost.dll</TargetPath>
     </ContentWithTargetPath>
@@ -197,11 +175,6 @@
     <None Update="Configuration\MSFS_SDK_Doc_Import.sqlite3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <!--
-    <None Update="Configuration\MSFS_SDK_Doc_Import-flighting.sqlite3">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    -->
   </ItemGroup>
 
 </Project>
