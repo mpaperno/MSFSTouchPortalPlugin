@@ -815,13 +815,25 @@ namespace MSFSTouchPortalPlugin.Services
       }
       // if only one system, also update the list of commands
       if (list.Count == 1)
-        UpdateHubHopEventPresets(list[0], instanceId, isConnector);
+        UpdateHubHopEventPresets(list[0], instanceId, isConnector, new ActionData{ {"VendorAircraft", vendorAircraft} });
     }
 
     // List of HubHop events for vendor/aircraft/system
-    void UpdateHubHopEventPresets(string system, string instanceId, bool isConnector) {
+    void UpdateHubHopEventPresets(string system, string instanceId, bool isConnector, ActionData values = null) {
       HubHopType presetType = isConnector ? HubHopType.InputPotentiometer : HubHopType.AllInputs;
-      UpdateActionDataList(PluginActions.SetHubHopEvent, "EvtId", _presets.Names(presetType, _lastSelectedAircraft, system, _lastSelectedVendor), instanceId, isConnector);
+      string vendor;
+      string craft;
+      if (values != null && values.TryGetValue("VendorAircraft", out string va)) {
+        var vaa = HubHopPresetsCollection.SplitVendorAircraft(va);
+        vendor = vaa.Item1;
+        craft = vaa.Item2;
+        //_logger.LogDebug("Using airplane/vendor from action data {vendor} {craft}", vendor, craft);
+      }
+      else {
+        vendor = _lastSelectedVendor;
+        craft = _lastSelectedAircraft;
+      }
+      UpdateActionDataList(PluginActions.SetHubHopEvent, "EvtId", _presets.Names(presetType, craft, system, vendor), instanceId, isConnector);
     }
 
     // Sim Event action updaters -------------------------
@@ -1842,7 +1854,7 @@ namespace MSFSTouchPortalPlugin.Services
           if (dataId == "VendorAircraft")
             UpdateHubHopEventSystems(message.Value, message.InstanceId, isConnector);
           else if (dataId == "System")
-            UpdateHubHopEventPresets(message.Value, message.InstanceId, isConnector);
+            UpdateHubHopEventPresets(message.Value, message.InstanceId, isConnector /*, message.Values*/);
           break;
         case PluginActions.SetSimulatorVar:
           if (dataId == "CatId")
