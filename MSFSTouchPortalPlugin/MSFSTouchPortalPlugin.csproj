@@ -191,7 +191,7 @@
     <None Update="Configuration\SimConnect.cfg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Configuration\HubHop\hubhop_presets.sqlite3">
+    <None Update="Configuration\HubHop\hubhop_presets.sqlite3" Condition="'$(Platform)'=='x64'">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Configuration\MSFS_SDK_Doc_Import.sqlite3">

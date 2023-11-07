@@ -24,6 +24,15 @@ using System.Collections.Concurrent;
 
 namespace MSFSTouchPortalPlugin.Types
 {
+#if FSX
+  internal enum SIMCONNECT_INPUT_EVENT_TYPE { STRING, FLOAT64 };
+  internal struct SIMCONNECT_INPUT_EVENT_DESCRIPTOR {
+    public string Name;
+    public ulong Hash;
+    public SIMCONNECT_INPUT_EVENT_TYPE eType;
+  }
+#endif
+
   /// <summary>
   /// Represents a `SIMCONNECT_INPUT_EVENT_DESCRIPTOR` type, with params.
   /// https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_INPUT_EVENT_DESCRIPTOR.htm

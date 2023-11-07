@@ -43,6 +43,12 @@ using WasmUptPeriod = WASimCommander.CLI.Enums.UpdatePeriod;
 #endif
 using SimConUpdPeriod = MSFSTouchPortalPlugin.Enums.UpdatePeriod;
 
+#if FSX
+#pragma warning disable CS0067 // Event never used
+#pragma warning disable CS0414 // Value never used
+#pragma warning disable CS0649 // Add readonly modifier
+#endif
+
 namespace MSFSTouchPortalPlugin.Services
 {
   /// <summary>
@@ -126,14 +132,14 @@ namespace MSFSTouchPortalPlugin.Services
     Action<Enum, string>     MapClientEventToSimEventDelegate;
     Action<Enum, string>     SubscribeToSystemEventDelegate;
     Action<Enum, Enum, uint, SIMCONNECT_SIMOBJECT_TYPE>   RequestDataOnSimObjectTypeDelegate;
+    Action<Enum, uint, SIMCONNECT_DATA_SET_FLAG, object>  SetDataOnSimObjectDelegate;
+    Action<Enum, string, string, SIMCONNECT_DATATYPE, float, uint> AddToDataDefinitionDelegate;
+    Action<Enum, Enum, uint, SIMCONNECT_PERIOD, SIMCONNECT_DATA_REQUEST_FLAG, uint, uint, uint> RequestDataOnSimObjectDelegate;
 #if FSX
     Action<uint, Enum, uint, Enum, SIMCONNECT_EVENT_FLAG> TransmitClientEventDelegate;
 #else
     Action<uint, Enum, Enum, SIMCONNECT_EVENT_FLAG, uint, uint, uint, uint, uint> TransmitClientEventEx1Delegate;
 #endif
-    Action<Enum, uint, SIMCONNECT_DATA_SET_FLAG, object>  SetDataOnSimObjectDelegate;
-    Action<Enum, string, string, SIMCONNECT_DATATYPE, float, uint> AddToDataDefinitionDelegate;
-    Action<Enum, Enum, uint, SIMCONNECT_PERIOD, SIMCONNECT_DATA_REQUEST_FLAG, uint, uint, uint> RequestDataOnSimObjectDelegate;
     Action<Enum> EnumerateInputEventsDelegate;
     //Action<ulong> EnumerateInputEventParamsDelegate;
     Action<ulong, object> SetInputEventDelegate;
@@ -493,11 +499,13 @@ namespace MSFSTouchPortalPlugin.Services
         return false;
 #if FSX
       return InvokeSimMethod(TransmitClientEventDelegate, SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, data[0], (Groups)SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
-#elif WASIM
+#else
+#if WASIM
       if (WasmConnected && evId < EventIds.DynamicEventInit)
         return _wlib.sendKeyEvent((uint)evId, data[0], data[1], data[2], data[3], data[4]) == HR.OK;
 #endif
       return InvokeSimMethod(TransmitClientEventEx1Delegate, SimConnect.SIMCONNECT_OBJECT_ID_USER, eventId, (Groups)SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY, data[0], data[1], data[2], data[3], data[4]);
+#endif
     }
 
     // Input Events

@@ -59,7 +59,7 @@ namespace MSFSTouchPortalPlugin.Services
     private readonly IReflectionService _reflectionService;
     private readonly PluginConfig _pluginConfig;
     private readonly SimVarCollection _simVarCollection;
-    private readonly HubHopPresetsCollection _presets = new();
+    private readonly HubHopPresetsCollection _presets = null;
     private readonly DocImportsCollection _imports = new();
     private readonly ConnectorTracker _connectorTracker = new();
 
@@ -98,9 +98,12 @@ namespace MSFSTouchPortalPlugin.Services
       _pluginConfig = pluginConfig ?? throw new ArgumentNullException(nameof(pluginConfig));
       _simVarCollection = simVarCollection ?? throw new ArgumentNullException(nameof(simVarCollection));
 
+#if !FSX
+      _presets = new();
       Configuration.HubHop.Common.Logger = _logger;
       _presets.OnDataUpdateEvent += HubHop_OnDataUpdate;
       _presets.OnDataErrorEvent += Collections_OnDataError;
+#endif
 
       DocImportsCollection.Logger = _logger;
       _imports.OnDataErrorEvent += Collections_OnDataError;
@@ -302,6 +305,7 @@ namespace MSFSTouchPortalPlugin.Services
       }
     }
 
+#if !FSX
     // HubHopPresetsCollection data update callback
     void HubHop_OnDataUpdate(bool updated)
     {
@@ -310,6 +314,7 @@ namespace MSFSTouchPortalPlugin.Services
       string logMsg = updated ? "HubHop Data Updated" : "No HubHop Updates Detected";
       _logger.LogInformation((int)EventIds.PluginInfo, "{logMsg}; Latest entry date: {time:u}", logMsg, _presets.LatestUpdateTime);
     }
+#endif
 
     void Collections_OnDataError(LogLevel severity, string message) {
       _logger.Log(severity, (int)EventIds.PluginError, "{message}", message);
@@ -789,7 +794,7 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     // HubHop Event action updaters -------------------------
-
+#if !FSX
     // these are to cache the last user selections for HubHop presets; works since user can only edit one action at a time in TP
     string _lastSelectedVendor = string.Empty;
     string _lastSelectedAircraft = string.Empty;
@@ -835,6 +840,13 @@ namespace MSFSTouchPortalPlugin.Services
       }
       UpdateActionDataList(PluginActions.SetHubHopEvent, "EvtId", _presets.Names(presetType, craft, system, vendor), instanceId, isConnector);
     }
+
+    void UpdateHubHopData()
+    {
+      _logger.LogInformation((int)EventIds.PluginInfo, "HubHop Data Update Requested...");
+      _presets.UpdateIfNeededAsync(Settings.HubHopUpdateTimeout.IntValue).ConfigureAwait(false);
+    }
+#endif
 
     // Sim Event action updaters -------------------------
 
@@ -942,14 +954,6 @@ namespace MSFSTouchPortalPlugin.Services
         _logger.LogInformation((int)EventIds.PluginInfo, "Connection attempts to Simulator were canceled.");
       UpdateSimConnectState();
     }
-
-#if !FSX
-    void UpdateHubHopData()
-    {
-      _logger.LogInformation((int)EventIds.PluginInfo, "HubHop Data Update Requested...");
-      _presets.UpdateIfNeededAsync(Settings.HubHopUpdateTimeout.IntValue).ConfigureAwait(false);
-    }
-#endif
 
     // Handles some basic actions like sim connection and repeat rate, with optional data value(s).
     bool ProcessPluginCommandAction(PluginActions actionId, ActionData data, int connValue)
@@ -1343,7 +1347,7 @@ namespace MSFSTouchPortalPlugin.Services
           _logger.LogError("Could not find required action parameters for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
           return false;
         }
-        HubHopPreset p = _presets.PresetByName(eventName, HubHopType.AllInputs, sVa, sSystem);
+        HubHopPreset p = _presets?.PresetByName(eventName, HubHopType.AllInputs, sVa, sSystem);
         if (p == null) {
           _logger.LogError("Could not find Preset for action data: {data}", ActionDataToKVPairString(data));
           return false;
@@ -1644,11 +1648,6 @@ namespace MSFSTouchPortalPlugin.Services
       );
 
       ProcessPluginSettings(message.Settings);
-#if !FSX
-      // Init HubHop database
-      if (_presets.OpenDataFile() && Settings.UpdateHubHopOnStartup.BoolValue)
-        UpdateHubHopData();
-#endif
       // convert the entry.tp version back to the actual decimal value
       if (!uint.TryParse($"{message.PluginVersion}", NumberStyles.HexNumber, null, out uint tpVer))
         tpVer = VersionInfo.GetProductVersionNumber();
@@ -1663,9 +1662,16 @@ namespace MSFSTouchPortalPlugin.Services
       UpdateCategoryLists();
       UpdateUnitsLists();
       UpdateSimVarCategories();
-      UpdateSimEventAircraft();
       UpdateSimEventCategories();
       UpdateDeprecatedOptions();
+#if !FSX
+      // Init HubHop database
+      if (_presets.OpenDataFile()) {
+        if (Settings.UpdateHubHopOnStartup.BoolValue)
+          UpdateHubHopData();
+        UpdateSimEventAircraft();
+      }
+#endif
       // schedule update of connector values once TP has reported any of our Connectors with shortConnectorIdNotification events
       Task.Delay(800).ContinueWith(t => UpdateAllRelatedConnectors());
     }
@@ -1850,12 +1856,14 @@ namespace MSFSTouchPortalPlugin.Services
           if (dataId == "SimCatName")
             UpdateKnownSimEventsForCategory(message.Value, message.InstanceId, isConnector);
           break;
+#if !FSX
         case PluginActions.SetHubHopEvent:
           if (dataId == "VendorAircraft")
             UpdateHubHopEventSystems(message.Value, message.InstanceId, isConnector);
           else if (dataId == "System")
             UpdateHubHopEventPresets(message.Value, message.InstanceId, isConnector /*, message.Values*/);
           break;
+#endif
         case PluginActions.SetSimulatorVar:
           if (dataId == "CatId")
             UpdateRegisteredSimVarsList(message.Value, message.InstanceId, isConnector);
