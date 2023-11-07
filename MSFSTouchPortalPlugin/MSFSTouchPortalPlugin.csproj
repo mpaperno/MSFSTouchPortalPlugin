@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>MSFSTouchPortalPlugin</RootNamespace>
     <Version>1.4.3.3</Version>
     <FileVersion>1.4.3.3</FileVersion>
@@ -27,12 +26,14 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Platform)'=='x64'">
+    <TargetFramework>net7.0</TargetFramework>
     <PlatformTarget>x64</PlatformTarget>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <DefineConstants>WASIM;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Platform)'=='FSX'">
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>FSXTouchPortalPlugin</AssemblyName>
     <PlatformTarget>x86</PlatformTarget>
     <RuntimeIdentifier>win-x86</RuntimeIdentifier>
@@ -59,18 +60,15 @@
   <PropertyGroup Condition="'$(Configuration)'=='Publish'">
     <DefineConstants>PUBLISH_BUILD;$(DefineConstants)</DefineConstants>
     <SelfContained>true</SelfContained>
-    <PublishTrimmed>True</PublishTrimmed>
-    <TrimMode>copyused</TrimMode>
+    <PublishTrimmed>False</PublishTrimmed>
+    <TrimMode>partial</TrimMode>
     <PublishSingleFile>False</PublishSingleFile>
-    <PublishReadyToRun>False</PublishReadyToRun>
+    <PublishReadyToRun>True</PublishReadyToRun>
+    <PublishReadyToRunComposite>False</PublishReadyToRunComposite>
     <DebugType>none</DebugType>
+    <PublishRelease>true</PublishRelease>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
-
-  <!-- required for trimming otherwise we get missing dependencies at runtime -->
-  <ItemGroup>
-    <TrimmerRootAssembly Include="mscorlib" />
-    <TrimmerRootAssembly Include="netstandard" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="appsettings.release.json">
@@ -86,13 +84,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="7.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="7.0.1" />
     <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
   </ItemGroup>
