@@ -4,7 +4,7 @@ This plugin provides a two-way interface between Touch Portal and Flight Simulat
 
 For further documentation, please see https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki
 
-This documentation generated for plugin v1.4.3.3
+This documentation generated for plugin v1.5.0.0
 
 ---
 
@@ -49,7 +49,7 @@ This documentation generated for plugin v1.4.3.3
 | --- | --- | --- | --- |
 | boolean (on/off) | 0 | 0 | 1 |
 
-Set to 1 to automatically attempt connection to flight simulator upon Touch Portal startup. Set to 0 to only connect manually via the Action *MSFS - Plugin -> Connect & Update*.
+Set to 1 to automatically attempt connection to flight simulator upon Touch Portal startup. Set to 0 to only connect manually via the Action "MSFS - Plugin -> Connect & Update".
 
 ### Sim Variable State Config File(s) (blank = Default)
 
@@ -59,11 +59,13 @@ Set to 1 to automatically attempt connection to flight simulator upon Touch Port
 
 Here you can specify one or more custom configuration files which define SimConnect variables to request as Touch Portal States. This plugin comes with an extensive default set of states, however since the possibilities between which variables are requested, which units they are displayed in,and how they are formatted are almost endless. This option provides a way to customize the output as desired.
 
-Enter a file name here, with or w/out the suffix (`.ini` is assumed). Separate multiple files with commas (and optional space). To include the default set of variables/states, use the name `Default` as one of the file names (in any position of the list).
+Enter a file name here, with or w/out the suffix (".ini" is assumed). Separate multiple files with commas (and optional space). To include the default set of variables/states, use the name `Default` as one of the file names (in any position of the list).
 
 Files are loaded in the order in which they appear in the list, and in case of conflicting state IDs, the last one found will be used.
 
 The custom file(s) are expected to be in the folder specified in the "User Config Files Path" setting (see below).
+
+See [Using Custom States and Simulator Variables](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Using-Custom-States-and-Simulator-Variables) for more details.
 
 ### SimConnect.cfg Index (0 for MSFS, 1 for FSX, or custom)
 
@@ -71,9 +73,9 @@ The custom file(s) are expected to be in the folder specified in the "User Confi
 | --- | --- | --- | --- |
 | number | 0 | 0 | 20 |
 
-A __SimConnect.cfg__ file can contain a number of connection configurations, identified in sections with the `[SimConnect.N]` title. A default __SimConnect.cfg__ is included with this plugin (in the installation folder). You may also use a custom configuration file stored in the "User Config Files Path" folder (see below). 
+A "SimConnect.cfg" file can contain a number of connection configurations, identified in sections with the `[SimConnect.N]` title. A default "SimConnect.cfg" is included with this plugin (in the installation folder). You may also use a custom configuration file stored in the "User Config Files Path" folder (see below). 
 
-The index number can be specified in this setting. This is useful for 
+The index number can be specified in this setting. This is useful for: 
   1. compatibility with FSX, and/or 
   2. custom configurations over network connections (running Touch Portal on a different computer than the sim). 
 
@@ -89,8 +91,8 @@ For more information on using Touch Portal remotely see [Multiple Touch Portal D
 | --- | --- | --- |
 | text |  | 255 |
 
-The system path where plugin settings are stored, including custom user State configuration files for sate definitions & _SimConnect.cfg_ .
- Keep it blank for default, which is `C:\Users\<UserName>\AppData\Roaming\MSFSTouchPortalPlugin`.
+The system path where plugin settings are stored, including custom user State configuration files for sate definitions & the "SimConnect.cfg" configuration file.
+ Keep it blank for default, which is "C:\Users\<UserName>\AppData\Roaming\MSFSTouchPortalPlugin".
 
 Note that using this plugin's installation folder for custom data storage is not recommended, since anything in there will likely get overwritten during a plugin update/re-install.
 
@@ -100,7 +102,9 @@ Note that using this plugin's installation folder for custom data storage is not
 | --- | --- | --- | --- |
 | boolean (on/off) | 1 | 0 | 1 |
 
-Touch Portal cannot perform math or numeric comparison operations on decimal numbers formatted with comma decimal separator, even in locations where this is the norm. Set this setting to 1/true toalways format numbers in "neutral" format with period decimal separators. **NOTE** that this affects **input** number formatting as well (the plugin will expect all numbers with period decimal separators regardless of your location).
+Touch Portal cannot perform math or numeric comparison operations on decimal numbers formatted with comma decimal separator, even in locations where this is the norm. Set this setting to 1 (one) to always format numbers in "neutral" format with period decimal separators.
+
+**NOTE** that this affects **input** number formatting as well (the plugin will expect all numbers with period decimal separators regardless of your location).
 
 ### Update HubHop Data on Startup (0/1)
 
@@ -108,7 +112,8 @@ Touch Portal cannot perform math or numeric comparison operations on decimal num
 | --- | --- | --- | --- |
 | boolean (on/off) | 0 | 0 | 1 |
 
-Set to 1 to automatically load latest HubHop data when plugin starts. Set to 0 to disable. Updates can always be triggered manually via the Action *MSFS - Plugin -> Connect & Update*. **Updates require a working Internet connection!**
+Set to 1 (one) to automatically load latest HubHop data when plugin starts. Set to 0 (zero) to disable. Updates can always be triggered manually via the Action "MSFS - Plugin -> Connect & Update".
+**Updates require a working Internet connection!**
 
 ### HubHop Data Update Timeout (seconds)
 
@@ -124,7 +129,7 @@ Maximum number of seconds to wait for a HubHop data update check or download via
 | --- | --- | --- | --- |
 | boolean (on/off) | 1 | 0 | 1 |
 
-Set to `1` to have all Local ('L') simulator variables sorted in alphabetical order within selection lists. Setting to `0` will keep them in the original order they're loaded in on the simulator (by ascending ID).
+Set to 1 (one) to have all Local ('L') simulator variables sorted in alphabetical order within selection lists. Setting to 0 (zero) will keep them in the original order they're loaded in on the simulator (by ascending ID).
 
 </details>
 
@@ -140,7 +145,7 @@ Set to `1` to have all Local ('L') simulator variables sorted in alphabetical or
 <table>
 <tr valign='bottom'><th>Name</th><th>Description</th><th>Format</th><th nowrap>Data<br/><div align=left><sub>index. &nbsp; [type] &nbsp; &nbsp; choices/default (in bold)</th><th>On<br/>Hold</sub></div></th></tr>
 <tr valign='top'><td>Connect & Update</td><td>Control connection to the Simulator, or perform various data update tasks.</td><td>Plugin Action: {0}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Toggle Simulator Connection</b>, Connect to Simulator, Disconnect from Simulator, Reload State Files, Re-Send All State Values, Re-Send All Connector Feedback Values, Update Airplane Local Vars List, Re-Submit Airplane Local Var Requests, Update HubHop Data</li>
+<li>[choice] &nbsp; <b>Toggle Simulator Connection</b>, Connect to Simulator, Disconnect from Simulator, Reload State Files, Re-Send All State Values, Re-Send All Connector Feedback Values, Update Airplane Local Vars List, Update Airplane Input Events List, Re-Submit Input Event Value Requests, Update HubHop Data</li>
 </ol></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Action Repeat Interval</td><td>Held Action Repeat Rate (ms)</td><td>Repeat Interval: {0} to/by: {1} ms</td><td><ol start=0>
@@ -206,17 +211,20 @@ The Unit type is usually "number" and will be ignored except in a few specific i
 <li>[choice] &nbsp; <b>number</b></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
-<tr valign='top'><td>Set a Named Variable</td><td>Set a Named Variable.	Sets a value on any named variable of various types.					** All but SimVar and Local types require WASimModule **
-Local (L) variables can also be created. SimVar (A) and GPS (C) types require a Unit. For indexed SimVars, include the index in the name after a : (colon), eg. "VARIABLE NAME:1".</td><td>Variable
-Type{0} Variable
-Name{1} Value{2} Unit
-(A/C){3} Create
- L Var: {4}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>A: SimVar</b>, C: GPS, H: HTML Event, K: Key Event, L: Local, Z: Custom SimVar</li>
-<li>[text] &nbsp; &lt;empty&gt;</li>
-<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<tr valign='top'><td>Set a Selected Airplane Input Event Value</td><td>Sets a value on an Input Event from currently loaded aircraft. These are sometimes also referred to as 'B' type variables and are always model-specific.
+The value meaning and type (numeric/string) depends entirely on the specific event. A list of Input Events can be found in the MSFS Dev Mode 'Behaviors' window.</td><td>Set Input Event: {0} To Value: {1}</td><td><ol start=0>
 <li>[choice] &nbsp; <b></b>[plugin not connected]</li>
-<li>[choice] &nbsp; <b>N/A</b>, No, Yes</li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<td align='center'>&#9745;</td></tr>
+<tr valign='top'><td>Set a Named Variable</td><td>Set a Named Variable.	Sets a value on any named variable of various types.					** Using 'C', 'H', 'K', and 'Z' types require WASimModule. **
+'L' type variables can also be created. 'A' and 'C' types require a Unit, for 'B' and 'L' it is optional (default is 'number'). For SimVars requiring an index, include it in the name after a : (colon), eg. "VARIABLE NAME:1".</td><td>Variable
+Type{0} Variable
+Name{1} Unit {2} Value {3} </td><td><ol start=0>
+<li>[choice] &nbsp; <b>A: SimVar</b>, B: Input Event, C: GPS, H: HTML Event, K: Key Event, L: Local, Z: Custom SimVar</li>
+<li>[text] &nbsp; &lt;empty&gt;</li>
+<li>[choice] &nbsp; <b></b>[plugin not connected]</li>
+<li>[text] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 </ol></td>
 <td align='center'>&#9745;</td></tr>
 <tr valign='top'><td>Execute Calculator Code</td><td>Execute Calculator Code.					** Requires WASimModule **
@@ -323,15 +331,27 @@ Range:{6}-{7}</td><td><ol start=0>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 <li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
 </ol></td>
-<tr valign='top'><td>Set a Named Variable</td><td>Set a Named Variable.	Sets a value on any named variable of various types.					** All but SimVar types require WASimModule **
-SimVar (A) and GPS (C) types require a Unit. For indexed SimVars, include it in the name after a : (colon), eg. "VARIABLE NAME:1".</td><td>Variable
+<tr valign='top'><td>Set a Selected Airplane Input Event Value</td><td>Sets a value on an Input Event from currently loaded aircraft. These are sometimes also referred to as 'B' type variables and are always model-specific.
+The value meaning and type (numeric/string) depends entirely on the specific event. A list of Input Events can be found in the MSFS Dev Mode 'Behaviors' window.</td><td>Set Input Event: {0} in Value
+Range:{1}-{2}| Feedback From
+| State (opt):{3}{4}
+Range:{5}-{6}</td><td><ol start=0>
+<li>[choice] &nbsp; <b></b>[plugin not connected]</li>
+<li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[text] &nbsp; <b>16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
+<li>[choice] &nbsp; <b></b>[connect plugin]</li>
+<li>[choice] &nbsp; <b></b>[select a category]</li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+<li>[text] &nbsp; &lt;empty&gt; &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440&gt;</sub></li>
+</ol></td>
+<tr valign='top'><td>Set a Named Variable</td><td>Set a Named Variable.	Sets a value on any named variable of various types.					** Using 'C', 'H', 'K', and 'Z' types require WASimModule. **
+'L' type variables can also be created. 'A' and 'C' types require a Unit, for 'B' and 'L' it is optional (default is 'number'). For SimVars requiring an index, include it in the name after a : (colon), eg. "VARIABLE NAME:1".</td><td>Variable
 Type{0} Variable
-Name{1} Unit
-(SimVar){2} Value
+Name{1} Unit {2} Value
 Range:{3}-{4}| Feedback From
 | State (opt):{5}{6}
 Range:{7}-{8}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>A: SimVar</b>, C: GPS, H: HTML Event, K: Key Event, L: Local, Z: Custom SimVar</li>
+<li>[choice] &nbsp; <b>A: SimVar</b>, B: Input Event, C: GPS, H: HTML Event, K: Key Event, L: Local, Z: Custom SimVar</li>
 <li>[text] &nbsp; &lt;empty&gt;</li>
 <li>[choice] &nbsp; <b></b>[plugin not connected]</li>
 <li>[text] &nbsp; <b>-16384</b> &nbsp; <sub>&lt;min: -340282346638528859811704183484516925440.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
@@ -431,14 +451,14 @@ Epsilon{7}</td><td><ol start=0>
 <li>[number] &nbsp; <b>0</b> &nbsp; <sub>&lt;min: 0.00&gt;</sub> <sub>&lt;max: 340282346638528859811704183484516925440.00&gt;</sub></li>
 </ol></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Request a Named Variable</td><td>Request a Named Variable.					** All but SimVar and Local types require WASimModule **
-SimVar, GPS, & Env. types require a Unit type. For indexed SimVars, include the index in the name after a : (colon), eg. "VARIABLE NAME:1".</td><td>Type{0} Name{1} Unit{2} for Plugin
+<tr valign='top'><td>Request a Named Variable</td><td>Request a Named Variable.					** Using types other than 'A', 'B', or 'L' requires WASimModule. **
+'A', 'C', & 'E' types require a Unit type, for 'B' and 'L' it is optional (default is 'number'). For SimVars requiring an index, include it in the name after a : (colon), eg. "VARIABLE NAME:1".</td><td>Type{0} Name{1} Unit{2} for Plugin
 Category{3} Format{4} Default
 Value{5} Update
 Period{6} Update
 Interval{7} Delta
 Epsilon{8}</td><td><ol start=0>
-<li>[choice] &nbsp; <b>A: SimVar</b>, C: GPS, E: Env., L: Local, M: Mouse, R: Rsrc., T: Token, Z: Custom</li>
+<li>[choice] &nbsp; <b>A: SimVar</b>, B: Input Event, C: GPS, E: Env., L: Local, M: Mouse, R: Rsrc., T: Token, Z: Custom</li>
 <li>[text] &nbsp; <b>FULL VARIABLE NAME</b></li>
 <li>[choice] &nbsp; [plugin not connected]</li>
 <li>[choice] &nbsp; <b></b>[plugin not connected]</li>
@@ -479,8 +499,9 @@ Epsilon{8}</td><td><ol start=0>
 <li>[choice] &nbsp; <b></b>[select a category]</li>
 </ol></td>
 <td align='center'></td></tr>
-<tr valign='top'><td>Clear Variable Definitions</td><td>Removes either all or only custom-added variable state definitions.</td><td>Clear {0} states</td><td><ol start=0>
-<li>[choice] &nbsp; <b>Custom</b>, All</li>
+<tr valign='top'><td>Clear Variable Definitions</td><td>Removes either all or only custom-added variable state definitions.</td><td>Clear Variables: {0} Select File/Type: {1}</td><td><ol start=0>
+<li>[choice] &nbsp; <b>Custom</b>, All, Loaded From Selected File, Of Selected Type</li>
+<li>[choice] &nbsp; <b></b>N/A</li>
 </ol></td>
 <td align='center'></td></tr>
 <tr valign='top'><td>Load Variable Definitions From File</td><td>Load a set of variable state definitions from a configuration file.</td><td>Load definitions from file {0} (file name only for user config. folder, or full path with file name)</td><td><ol start=0>

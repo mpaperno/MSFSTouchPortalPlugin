@@ -21,7 +21,7 @@ simulated aircraft, component, or system.
 
 This project is a continuation of the original [MSFSTouchPortalPlugin by Tim Lewis](https://github.com/tlewis17/MSFSTouchPortalPlugin).
 
-
+---
 ## Features
 
 * Connects to local or remote simulators with SimConnect.
@@ -31,22 +31,15 @@ This project is a continuation of the original [MSFSTouchPortalPlugin by Tim Lew
   (eg. a throttle slider can both control the sim throttle and show the actual position when the throttle is moved with mouse/joystick/keyboard).
 * Completely configurable to request any variable or trigger any event supported by the connected simulator, including with custom extensions like MobiFlight.
 * Supports simulator system events (such as "flight loaded" or "sim started") as Touch Portal Events.
+* Set and read model-specific "Input Event" values (**new in plugin v1.5** and MSFS SU13).
 * Allows simultaneous usage from multiple networked Touch Portal devices.
-* Optional WASM (Web ASsembly Module) integration allows even greater expansion, with access to many variable types (including "Local" variables) and events/actions not normally
-  accessible via SimConnect alone.
+* Optional WASM (Web ASseMbly) module integration allows even greater expansion, with access to many variable types and events/actions not normally accessible via SimConnect alone.
 * Categorized lists of all SimConnect Event IDs and Simulator Variables to choose from, custom imported from MSFS online documentation (exclusive feature!).
 * Integrates live HubHop data for activating thousands of available Input Events provided by the community (requires WASM integration).
 * Separate plugins available for MSFS 2020 and older sims supporting FS-X versions of SimConnect.
 
 
-## Documentation
-
-See the [Wiki](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/) for guides, tips, and example
-[pages and buttons](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) to get started with
-
-Auto-generated documentation on all actions, connectors, events, settings, and default included states can be found in [DOCUMENTATION.md](DOCUMENTATION.md).
-
-
+---
 ## Editions
 
 There are two separate plugins available here, one for MSFS 2020 (and eventually 2024), and another for "legacy" sims like FSX,
@@ -57,6 +50,8 @@ which should work with any sim which supports the older SimConnect SDK.
 * The two plugin editions are completely separate and can be installed and run in Touch Portal at the same time.
 * Pages and buttons made for one edition will not work in the other (because they're separate plugins as far as TP is concerned).
 
+
+---
 ## Installation
 
 Note: As with all plugins, this requires the Touch Portal Pro (paid) version to function. Use the latest available Touch Portal version for best results.
@@ -88,10 +83,12 @@ and further optimizations.
     2. Extract the contents into your MSFS _Community_ folder (so that the folder _wasimcommander-module_ is directly inside the _Community_ folder).
     3. If already running, MSFS would need to be restarted after adding the module.
 
+
 ### Updates
 
 The plugin can be updated to a new version by following the same installation procedure described above. It is _not_ necessary to remove any previous version first.
 The only thing to be aware of is that any old plugin log files will be removed during the update process.
+
 
 ### Installation Guides
 
@@ -100,12 +97,23 @@ Keep in mind that while guides can be helpful as an overview and to get started,
 * A video tutorial about the whole setup process was published by _OverKill Simulations_ on YouTube: [Microsoft Flight Simulator | MSFS Touch Portal | YOU NEED THIS!](https://www.youtube.com/watch?v=S4Pms-7oHf0)
 * An older installation and usage guide was published on the _Simvol_ Web site: [How to use Touch Portal [with MSFS]](https://www.simvol.org/en/articles/tutorials/use-touch-portal).
 
+
+---
+## Documentation
+
+See the [Wiki](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/) for guides, tips, and example
+[pages and buttons](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) to get started with
+
+Auto-generated documentation on all actions, connectors, events, settings, and default included states can be found in [DOCUMENTATION.md](DOCUMENTATION.md).
+
+
 ---
 ## Pages and Examples
 
 Check out the [Pages, Buttons, & Graphics](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) for examples to get started with.
 
 The list of known pages has also moved to the Wiki: [List of Published Touch Portal Pages for MSFS Plugin](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/List-of-Published-Touch-Portal-Pages-for-MSFS-Plugin)
+
 
 ---
 ## Troubleshooting

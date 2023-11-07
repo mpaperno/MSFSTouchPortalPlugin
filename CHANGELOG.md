@@ -1,5 +1,47 @@
 # MSFS/FSX Touch Portal Plugin Change Log
 
+## 1.5.0.0 (Nov-7-2022)
+Version number: `1050000`
+
+### Additions
+* Added _experimental_ ability to set and read simulator "Input Events" values, which is a new feature in MSFS SU13. This provides access to aircraft-specific controls which may not be available otherwise.
+  These events can be seen in MSFS "developer mode" using the "Behaviors" tool window. 
+  They are also referred-to as "B" type variables, and custom variable requests can be set up for them like for other variable types.
+  * **IMPORTANT NOTES**
+    * **The SU13 implementation of this is BUGGY!!**
+      - First off, it **doesn't work at all unless developer mode is enabled in MSFS.**
+      - **The simulator will crash** if there are any Input Event values being requested/read while switching airplane models. So either don't use that feature for now or make sure to manually
+        remove any requested 'B' type variables before changing models (including in he main menu/World Map). See new feature below for removing all requests of particular variable type.
+    * Both issues are supposedly fixed in SU14 (currently in beta), but I have not tested it personally.
+    * Only the currently loaded model's Input Events exist in the simulator at any given time. 
+      Plugin errors are logged when trying to set or request an input event ('B' var) value which doesn't exist in the current model.
+    * There may be other changes in SU14 which will modify or break how the whole system works... the current system is rather wonky. So, no guarantees (as usual).
+  * Added "Set a Selected Airplane Input Event Value" action with a list of the current model's Input Events.
+  * Added 'B' variable type choice to "Set a Named Variable" and "Request a Named Variable" actions.
+  * Added ""Update Airplane Input Events List" and "Re-Submit Input Event Value Requests" choices in the "Connect & Update" action.
+* Added ability in the "Clear Variable Definitions" action to remove variable requests by the file they were loaded from and by the type of variable.
+  
+### Changes
+* Setting ('L') type variables with a specific Unit type is now (again) handled by WASimModule (when available) for greater efficiency. 
+  * 'L' vars are created on the simulator if they don't already exist, using the specified Unit type (if any), which mimics SimConnect behavior. 
+  * The "Create Local Variable" option has been removed from the "Set a Named Variable" action.
+* For Touch Portal v4:
+  * The plugin will now show up in the "Games" category instead of "Misc."
+  * Descriptions of each setting are now available in TP's "Plug-in Settings" dialog by hovering over the question mark icons.
+* Updated to use .NET 7 runtime environment (.NET 6 for FSX version) and dependencies (up from .NET 5). All required components are included in the distribution as before.
+
+### Fixes
+* Fixed "Plug-in performance issue detected" Touch Portal v4 warning message. ([#63](https://github.com/mpaperno/MSFSTouchPortalPlugin/issues/63))
+* Fixed that very long lists (thousands) of currently loaded Airplane Local variables were sometimes incomplete in the corresponding "Set" and "Request" actions.
+* Fixed a possible plugin crash when list of Local variables was being updated multiple times in quick succession. Also prevents the list from being updated unnecessarily.
+* Fixed possible simulator hang when exiting to desktop while plugin is still connected and using WASimModule (sim had to be terminated from task manager). This seems to have been new behavior since SU13.
+
+### Related
+* The user-interface part of my WASimCommander project, [WASimUI](https://github.com/mpaperno/WASimCommander/tree/next#desktop-gui), now supports importing and exporting custom variable requests in the plugin's format.
+  That includes a new interface for editing plugin-specific information like category, state ID, name, default value, and formatting. 
+  It can be downloaded at that project's [Releases](https://github.com/mpaperno/WASimCommander/releases/tag/1.2.0.0) page.
+
+---
 ## 1.4.3.3 (Sept-3-2023)
 Version number: `1040303`
 
