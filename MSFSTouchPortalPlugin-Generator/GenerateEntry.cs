@@ -94,7 +94,7 @@ namespace MSFSTouchPortalPlugin_Generator
     {
       string basePath = $"%TP_PLUGIN_FOLDER%{_options.PluginFolder}/";
       // Get version number
-      VersionInfo.AssemblyLocation = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _options.PluginId + ".dll");
+      VersionInfo.AssemblyLocation = Path.Combine(Path.GetDirectoryName(AppContext.BaseDirectory), _options.PluginId + ".dll");
       uint vNum = VersionInfo.GetProductVersionNumber();
       // read the internal plugin states config
       IEnumerable<SimVarItem> simVars = _pluginConfig.LoadPluginStates();
