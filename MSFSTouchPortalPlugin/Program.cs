@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -41,6 +41,7 @@ using TouchPortalSDK.Configuration;
 
 namespace MSFSTouchPortalPlugin {
   public static class Program {
+    private static Mutex m;
     private static async Task Main(string[] args)
     {
       //Build configuration:
@@ -58,8 +59,8 @@ namespace MSFSTouchPortalPlugin {
           .Build();
 
       // Ensure only one running instance
-      const string mutextName = PluginConfig.PLUGIN_ID;
-      _ = new Mutex(true, mutextName, out var createdNew);
+      const string mutextName = "Global\\" + PluginConfig.PLUGIN_ID;
+      m = new Mutex(true, mutextName, out var createdNew);
 
       if (!createdNew) {
         Console.WriteLine("{0} is already running. Exiting application.", mutextName);
@@ -93,6 +94,9 @@ namespace MSFSTouchPortalPlugin {
           .RunConsoleAsync();
       } catch (COMException ex) {
         Console.WriteLine("COMException: {0}", ex.Message);
+      }
+      finally {
+        m.ReleaseMutex();
       }
     }
   }
