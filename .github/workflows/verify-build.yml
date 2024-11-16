@@ -5,21 +5,32 @@ on:
     branches: [ main, next, mp/workflow_tests ]
   pull_request:
     branches: [ main, next ]
+  workflow_dispatch:
 
 jobs:
   build:
-
     runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - MSFS
+          - FSX
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v4
+
     - name: Setup .NET
-      uses: actions/setup-dotnet@v2
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: |
+          6.0.x
+          8.0.x
+
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore --configuration Release -p:Platform=${{ matrix.platform }}
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --no-restore --verbosity normal --configuration Release -p:Platform=${{ matrix.platform }}
