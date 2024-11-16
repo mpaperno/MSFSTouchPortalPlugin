@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MSFSTouchPortalPlugin.Configuration;
@@ -71,7 +71,11 @@ namespace MSFSTouchPortalPlugin_Tests.Services {
       var service = new PluginService(mockHostApplicationLifetime.Object, mockILoggerPluginService, mockITouchPortalClientFactory.Object, mockISimConnectService.Object, mockIReflectionService.Object, mockPluginConfig.Object, mockSimVarCollection.Object);
 
       // assert
+#if FSX
+      Assert.Equal("FSXTouchPortalPlugin", service.PluginId);
+#else
       Assert.Equal("MSFSTouchPortalPlugin", service.PluginId);
+#endif
     }
 
     [Fact]
