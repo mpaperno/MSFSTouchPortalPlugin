@@ -44,6 +44,7 @@ namespace MSFSTouchPortalPlugin {
     private static Mutex m;
     private static async Task Main(string[] args)
     {
+      Environment.SetEnvironmentVariable("FSTOUCHPORTALPLUGIN_NAME", PluginConfig.PLUGIN_ID);
       //Build configuration:
       var configurationRoot = new ConfigurationBuilder()
           .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
