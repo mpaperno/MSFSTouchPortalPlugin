@@ -29,10 +29,35 @@ See \refwccc{sendCommand()}
 See \refwccc{lookup()}
 </member>
         <member name="M:WASimCommander.CLI.Client.WASimClient.list(&lt;unknown type&gt;)">
+\}
+\name Metadata retrieval
+\{
 See \refwccc{list()}
 </member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.removeCustomKeyEvent(System.UInt32)">
+See \refwccc{removeCustomKeyEvent(uint32_t)}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.registerCustomKeyEvent(System.String,System.Nullable`1{System.Boolean})">
+See \refwccc{registerCustomKeyEvent()}. This method overload doesn't provide the generated event ID as a return value.
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.registerCustomKeyEvent(System.String,System.UInt32@,System.Nullable`1{System.Boolean})">
+See \refwccc{registerCustomKeyEvent()};
+</member>
         <member name="M:WASimCommander.CLI.Client.WASimClient.sendKeyEvent(System.UInt32,System.Nullable`1{System.UInt32},System.Nullable`1{System.UInt32},System.Nullable`1{System.UInt32},System.Nullable`1{System.UInt32},System.Nullable`1{System.UInt32})">
+\}
+\name Simulator Key Events
+\{
 See \refwccc{sendKeyEvent(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t) const}
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.registerEvent(WASimCommander.CLI.Structs.RegisteredEvent)">
+\}
+\name RPN calculator code execution and reusable events
+\{
+</member>
+        <member name="M:WASimCommander.CLI.Client.WASimClient.saveDataRequest(WASimCommander.CLI.Structs.DataRequest)">
+\}
+\name Data change subscriptions (variables and calculated results)
+\{
 </member>
         <member name="M:WASimCommander.CLI.Client.WASimClient.setOrCreateLocalVariable(System.String,System.String,System.Double!System.Runtime.CompilerServices.IsConst)">
 See \refwccc{setOrCreateLocalVariable()}
@@ -42,9 +67,6 @@ See \refwccc{setOrCreateLocalVariable()}
 </member>
         <member name="M:WASimCommander.CLI.Client.WASimClient.setLocalVariable(System.String,System.Double!System.Runtime.CompilerServices.IsConst)">
 See \refwccc{setLocalVariable()}
-</member>
-        <member name="M:WASimCommander.CLI.Client.WASimClient.setVariable(WASimCommander.CLI.Structs.VariableRequest,System.Double!System.Runtime.CompilerServices.IsConst)">
-See \refwccc{setVariable()}
 </member>
         <member name="M:WASimCommander.CLI.Client.WASimClient.getOrCreateLocalVariable(System.String,System.String,System.Double,System.Double@)">
 \sa \refwccc{getOrCreateLocalVariable()}
@@ -68,7 +90,10 @@ Note that only some 'A', 'C', and 'T' type variables can have a string value typ
 Note that only some 'A', 'C', and 'T' type variables can have a string value type in the first place. \sa \refwccc{getVariable()}
 </member>
         <member name="M:WASimCommander.CLI.Client.WASimClient.getVariable(WASimCommander.CLI.Structs.VariableRequest,System.Double@)">
-            <summary> Get the value of a variable with a numeric result type. This is the most typical use case since most variable types are numeric. </summary> \sa \refwccc{getVariable()}
+\}
+\name Variables accessor methods
+\{
+<summary> Get the value of a variable with a numeric result type. This is the most typical use case since most variable types are numeric. </summary> \sa \refwccc{getVariable()}
 </member>
         <member name="M:WASimCommander.CLI.Client.WASimClient.executeCalculatorCode(System.String,&lt;unknown type&gt;,System.Double@,System.String@)">
             <summary> Execute calculator code with both numeric and string results. </summary>  \sa \refwccc{executeCalculatorCode()}
@@ -81,7 +106,7 @@ Note that only some 'A', 'C', and 'T' type variables can have a string value typ
 </member>
         <member name="M:WASimCommander.CLI.Client.WASimClient.executeCalculatorCode(System.String)">
 \}
-\name High level API
+\name RPN calculator code execution and reusable events
 \{
 <summary> Execute calculator code without result </summary> \sa \refwccc{executeCalculatorCode()}
 </member>
@@ -269,6 +294,20 @@ special values for preset types. Always check the actual data array size (`data.
         <member name="M:WASimCommander.CLI.Structs.DataRequest.setNameOrCode(System.String)">
             <summary>Set the `nameOrCode` member using a `string` type value. </summary>
         </member>
+        <member name="M:WASimCommander.CLI.Structs.DataRequest.#ctor(System.UInt32,&lt;unknown type&gt;,System.String,&lt;unknown type&gt;,System.UInt32,System.Single)">
+            <summary> Constructs a calculator code request (`requestType = RequestType::Calculated`) with given update period, interval, and epsilon values.. </summary>
+This overload, w/out a `valueSize` argument automatically determines the size based on the `resultType` argument:
+- `CalcResultType::Double`  = `WASimCommander::DATA_TYPE_DOUBLE`
+- `CalcResultType::Integer` = `WASimCommander::DATA_TYPE_INT32`
+- `CalcResultType::String`  = 256
+</member>
+        <member name="M:WASimCommander.CLI.Structs.DataRequest.#ctor(System.UInt32,&lt;unknown type&gt;,System.String)">
+            <summary> Constructs a calculator code request (`requestType = RequestType::Calculated`) with default update period on every `UpdatePeriod.Tick`. </summary>
+This overload, w/out a `valueSize` argument automatically determines the size based on the `resultType` argument:
+- `CalcResultType::Double`  = `WASimCommander::DATA_TYPE_DOUBLE`
+- `CalcResultType::Integer` = `WASimCommander::DATA_TYPE_INT32`
+- `CalcResultType::String`  = 256
+</member>
         <member name="M:WASimCommander.CLI.Structs.DataRequest.#ctor(System.UInt32,&lt;unknown type&gt;,System.String,System.UInt32,&lt;unknown type&gt;,System.UInt32,System.Single)">
             <summary> Constructs a calculator code request (`requestType = RequestType::Calculated`) with given update period, interval, and epsilon values.. </summary>
         </member>
@@ -286,6 +325,9 @@ special values for preset types. Always check the actual data array size (`data.
         </member>
         <member name="M:WASimCommander.CLI.Structs.DataRequest.#ctor(System.UInt32,System.Char,System.String,System.UInt32)">
             <summary> Constructs a request for a named variable (`requestType = RequestType::Named`) with default update period on every `UpdatePeriod.Tick`. </summary>
+        </member>
+        <member name="M:WASimCommander.CLI.Structs.DataRequest.#ctor">
+            <summary> Default constructor. Properties must be set to valid values, either later or inline, eg. `new DataRequest() { requestId: 1, requestType: RequestType::Named, ...}`. </summary>
         </member>
         <member name="T:WASimCommander.CLI.Structs.DataRequest">
             <summary> Structure for value update subscription requests. \sa WASimCommander:CommandId::Subscribe command. </summary>
@@ -323,7 +365,7 @@ Get the current minimum logging severity level for the specified `facility` and 
 </member>
         <member name="M:WASimCommander.Client.WASimClient.sendCommandWithResponse(WASimCommander.Command!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,WASimCommander.Command*,System.UInt32)">
 Sends a command, in the form of a `WASimCommander::Command` structure, to the server for processing and waits for a reply (an `Ack/Nak` response `Command`).
- The various command types and the data requirements for each are described in the `WASimCommander::Enums::CommandId` documentation.
+The various command types and the data requirements for each are described in the `WASimCommander::Enums::CommandId` documentation.
 \param command The `Command` struct defining the command and associated data to send.
 \param response Pointer to an initialised `Command` structure for storing the resulting response (a Command with a `commandId` of `Ack` or `Nak`), if any.
 \param timeout The maximum time to wait for a response, in milliseconds. If `0` (default) then the default network timeout value is used (`defaultTimeout()`, `setDefaultTimeout()`).
@@ -346,6 +388,9 @@ Request server-side lookup of an named item to find the corresponding numeric ID
 \note This method blocks until either the Server responds or the timeout has expired. \sa defaultTimeout(), setDefaultTimeout()
 </member>
         <member name="M:WASimCommander.Client.WASimClient.list(&lt;unknown type&gt;)">
+\}
+\name Metadata retrieval
+\{
 Send a request for a list update to the server. The results are delivered using the callback set in `setListResultsCallback()`.
 \param itemsType The type of thing to list. Supported types are local variables (`Enums::LookupItemType::LocalVariable`, default), subscribed Data Requests (`Enums::LookupItemType::DataRequest`), and Registered Events (`Enums::LookupItemType::RegisteredEvent`).
 \return  `S_OK` on success, `E_INVALIDARG` if the item type is not supported, `E_NOT_CONNECTED` if not connected to server.
@@ -353,26 +398,77 @@ Send a request for a list update to the server. The results are delivered using 
 (which may be `S_OK`, `E_FAIL` if server returned `Nak`, or `E_TIMEOUT` if the list request did not complete (results may be empty or partial)).
 \sa \refwce{CommandId::List}
 </member>
+        <member name="M:WASimCommander.Client.WASimClient.removeCustomKeyEvent(std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)">
+Remove a Custom Event previously registered with `registerCustomEvent()` method using the event's name.
+This will prevent the custom event from being mapped _next_ time the client connects to SimConnect.
+\note SimConnect provides no way to remove a registered Custom event. Any active SimConnect mapping will remain in effect until SimConnect is disconnected (and can still be invoked with the corresponding ID, but not by name).
+\param customEventName full name of the previously registered event. Must be the same name as used with `registerCustomKeyEvent()`.
+\return `S_OK` on success, `E_INVALIDARG` if the eventId wasn't found.
+\since v1.3.0
+</member>
+        <member name="M:WASimCommander.Client.WASimClient.registerCustomKeyEvent(std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.UInt32*,System.Boolean)">
+Register a "Custom Simulator [Key] Event" by providing an event name. The method optionally returns the generated event ID, which can later be used with `sendKeyEvent()` method instead of the event name.
+It can also be used to look up a previous registration's ID if the event name has already been registered. \n\n
+Custom event names are mapped to internally-generated unique IDs using a standard SimConnect call to
+[`MapClientEventToSimEvent`](https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_MapClientEventToSimEvent.htm#parameters),
+which briefly describes custom event usage and name syntax in the `EventName` parameter description. This method serves a similar purpose (and in fact eventually calls that same SimConnect function). \n\n
+The mappings must be re-established every time a new connection with SimConnect is made, which WASimClient takes care of automatically. If currently connected to the simulator, the event is immediately mapped,
+otherwise it will be mapped upon the next connection. An event registration can be removed with `removeCustomKeyEvent()` which will prevent any SimConnect mapping from being created upon the _next_ connection. \n\n
+Note that the custom event mapping/triggering feature is actually just a convenience for the WASimClient user and doesn't involve the usual Server interactions (WASimModule) at all. \n
+\param customEventName Name of the Event to register. The event name _must_ contain a "." (period) or start with a "#", otherwise an `E_INVALIDARG` result is returned. \n
+  If an event with the same name has already been registered, the method returns `S_OK` and no further actions are performed (besides setting the optional `puiCustomEventId` pointer value, see below).
+\param puiCustomEventId Optional pointer to 32-bit unsigned integer variable to return the generated event ID. This ID can be used to trigger the event later using `sendKeyEvent()` (which is more efficient than using the event name each time).
+  The ID will always be unique per given event name, and is always equal to or greater than the `Client::CUSTOM_KEY_EVENT_ID_MIN` constant value. \n
+  The pointer's value will be populated even if the event name was already registered (with the result of the previously generated ID).
+\param useLegacyTransmit Optional, default `false`. Boolean value indicating that the deprecated `SimConnect_TransmitClientEvent()` function should be used to trigger the event instead of the newer `SimConnect_TransmitClientEvent_EX1()`.
+  This may be necessary to support models which haven't updated to the newer version of the event handler. Note that the old `TransmitClientEvent()` function only supports sending 1 event value (vs. 5 for the "_EX1" version). \n
+  To re-register the same event name but with a different value for `useLegacyTransmit` parameter, first remove the initial registration with `removeCustomKeyEvent()` and then call this method again.
+\return `S_OK` on success, `E_INVALIDARG` if the event name is invalid.
+\since v1.3.0
+</member>
         <member name="M:WASimCommander.Client.WASimClient.sendKeyEvent(std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.UInt32)">
-Trigger a simulator Key Event by name, with up to 5 optional values which are passed onto the event handler.
-This is equivalent to the MSFS Gauge API function `trigger_key_event_EX1()` and similar to `SimConnect_TransmitClientEvent_EX1()` (MSFS SU10 and above).
+This is an overloaded method. See `sendKeyEvent(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t) const` for main details.
+This version allows triggering Key Events by name instead of an ID. \n\n
+All simulator event names must be resolved, or mapped, to a numeric ID before they can be triggered (used).
+The first time this method is invoked with a particular event name, it tries to associate that name with an ID (based on the event name, as described below).
+If successful, the ID is cached, so subsequent calls to this method, with the same event name, will use the cached ID instead of trying to resolve the name again.
+- For _standard_ Key Events, the name is resolved to an ID using the 'lookup()' method and the resulting ID (if valid) is cached for future uses. There **must** be an active server connection for this to work.
+- For _custom_ events (names that contain a "." (period) or start with a "#"), the event is first registered using `registerCustomKeyEvent()` and the resulting ID is cached if that succeeds.
 
-Note that on first usage the event name is resolved to an ID (using the `lookup()` method) and the resulting ID (if valid) is cached for future uses.
-The cache is kept as a simple `std::unordered_map` type, so if you have a better way to save the event IDs from `lookup()`, use that and call the `sendKeyEvent(uint32_t keyEventId, ...)` overload directly.
-\param keyEventName Name of the Event to trigger. These are typically the same names found in MSFS Event IDs reference (and as lited in the header file 'MSFS/Legacy/gauges.h' but w/out the "KEY_" prefix).
-\param v1-v5 Optional values to pass to the event handler. Defaults are all zeros (same as for `trigger_key_event_EX1()`).
-\return `S_OK` on success, `E_INVALIDARG` if event name could not be resolved to an ID, `E_NOT_CONNECTED` if not connected to server, `E_TIMEOUT` on server communication failure, or `E_FAIL` on unexpected SimConnect error.
-\note Server responds asynchronously with an Ack resonse to `CommandId::SendKey` command type.
-\since v1.1.0
+\param keyEventName Name of the Event to trigger.
+\param v1,v2,v3,v4,v5 Optional values to pass to the event handler. Defaults are all zeros.
+\return `S_OK` on success, `E_INVALIDARG` if event name could not be resolved to an ID, `E_NOT_CONNECTED` if not connected (server or sim, depending on event type),
+`E_TIMEOUT` on server communication failure, or `E_FAIL` on unexpected SimConnect error.
+\note The name-to-ID cache is kept as a simple `std::unordered_map` type, so if you have a better way to save the event IDs from `lookup()` or `registerCustomKeyEvent()`,
+use that instead, and call the more efficient `sendKeyEvent(eventId, ...)` overload directly.
+\since v1.3.0 - Added ability to trigger custom named events.
 </member>
         <member name="M:WASimCommander.Client.WASimClient.sendKeyEvent(System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.UInt32)">
-Trigger a simulator Key Event by ID, with up to 5 optional values which are passed onto the event handler.
-This is equivalent to the MSFS Gauge API function `trigger_key_event_EX1()` and similar to `SimConnect_TransmitClientEvent_EX1()` (MSFS SU10 and above).
-\param keyEventId Numeric ID of the Event to trigger. These are found in the header file 'MSFS/Legacy/gauges.h'. Event names can be resolved to IDs using the `lookup()` method.
-\param v1-v5 Optional values to pass to the event handler. Defaults are all zeros (same as for `trigger_key_event_EX1()`).
-\return `S_OK` on success, `E_NOT_CONNECTED` if not connected to server, `E_TIMEOUT` on server communication failure, or `E_FAIL` on unexpected SimConnect error.
-\note Server responds asynchronously with an Ack/Nak resonse to `CommandId::SendKey` command type; A Nak means the event ID is not valid.
-\since v1.1.0
+\}
+\name Simulator Key Events
+\{
+Can be used to trigger standard Simulator "Key Events" as well as "custom" _Gauge API/SimConnect_ events. Up to 5 optional values can be passed onto the event handler.
+This provides functionality similar to the _Gauge API_ function `trigger_key_event_EX1()` and `SimConnect_TransmitClientEvent[_EX1()]`.  \n\n
+*Standard* Key Event IDs can be found in the SimConnect SDK header file 'MSFS/Legacy/gauges.h' in the form of `KEY_*` macro values, and event names can also be
+resolved to IDs programmatically using the `lookup()` method. No preliminary setup is required to trigger these events, but a full connection to WASimModule ("Server") is needed.
+These are triggered on the simulator side using `trigger_key_event_EX1()` function calls. \n\n
+*Custom Events* for which a numeric ID is already known (typically in the _Gauge API_ `THIRD_PARTY_EVENT_ID_MIN`/`THIRD_PARTY_EVENT_ID_MAX` ID range)
+can also be triggered directly as with standard events. These types of events are also passed directly to `trigger_key_event_EX1()`. \n\n
+*Named Custom Events*, for which an ID is not known or predefined, **must** first be registered with `registerCustomKeyEvent()`, which creates and maps (and optionally returns)
+a unique ID corresponding to the custom event name. An active simulator (SimConnect) connection is required to trigger these types of events.
+They are invoked via `SimConnect_TransmitClientEvent[_EX1()]` method directly from this client (this is actually just a convenience for the WASimClient user to avoid needing a separate SimConnect session).
+Which actual SimConnect function is used depends on how the custom event was registered (default is to use the newer "_EX1" version which allows up to 5 event values). \n
+See docs for `registerCustomKeyEvent()` for further details on using custom simulator events.
+\param keyEventId Numeric ID of the Event to trigger.
+\param v1,v2,v3,v4,v5 Optional values to pass to the event handler. Defaults are all zeros.
+\return `S_OK` on success, `E_NOT_CONNECTED` if not connected (server or sim, see above), `E_TIMEOUT` on server communication failure, or `E_FAIL` on unexpected SimConnect error.
+\note For Key Events triggered via `trigger_key_event_EX1()`, Server responds asynchronously with an Ack/Nak response to \refwce{CommandId::SendKey} command type;
+  A 'Nak' means the event ID is clearly not valid (eg. zero), but otherwise the simulator provides no feedback about event execution
+  (from [their docs](https://docs.flightsimulator.com/html/Programming_Tools/WASM/Gauge_API/trigger_key_event_EX1.htm#return_values): "If the event requested is not appropriate, it will simply not happen."). \n\n
+  For _custom named_ events, triggered via `SimConnect_TransmitClientEvent[_EX1()]`, SimConnect may asynchronously send EXCEPTION type response messages if the ID isn't valid
+  (likely because the event hasn't been successfully registered with `registerCustomKeyEvent()`). These messages are passed through to WASimClient's logging facilities at the `Warning` level.
+  But again there is no actual confirmation that the event is going to do anything.
+\since v1.3.0 - Added ability to trigger custom named events.
 </member>
         <member name="M:WASimCommander.Client.WASimClient.registeredEvents">
 Returns a list of all registered events which have been added to the Client with `registerEvent()`. The list members are created by copy.
@@ -395,7 +491,10 @@ If the server is not currently connected, the removal request will be queued and
 \sa \refwce{CommandId::Register}, registerEvent(), transmitEvent()
 </member>
         <member name="M:WASimCommander.Client.WASimClient.registerEvent(WASimCommander.Client.RegisteredEvent!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)">
-Register a reusable event which executes a pre-set calculator string. The code is pre-compiled and stored on the server for quicker execution.
+\}
+\name RPN calculator code execution and reusable events
+\{
+Register a reusable event which executes a pre-set RPN calculator code string. The code is pre-compiled and stored on the server for quicker execution.
 The event can have an optional custom name for direct use with any SimConnect client. Registered events can also be triggered by using the `transmitEvent()` method.
 If the server is not currently connected, the event registration will be queued and sent next time a connection is established.
 \return `S_OK` on success, `E_INVALIDARG` if the resulting code string is too long or if trying to change the name of an already registered event.
@@ -436,16 +535,27 @@ To resume updates change the period again.
 \sa \refwc{DataRequest}, \refwce{CommandId::Subscribe}, saveDataRequest(), updateDataRequest()
 </member>
         <member name="M:WASimCommander.Client.WASimClient.saveDataRequest(WASimCommander.DataRequest!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Boolean)">
-Add a new `WASimCommander::DataRequest` or update an existing one with the same `DataRequest::requestId`. If the client is not currently connected to the server, the request is queued until the next connection is established.
+\}
+\name Data change subscriptions (variables and calculated results)
+\{
+Add a new `WASimCommander::DataRequest` for a variable or calculated result, or update an existing data request with the same `DataRequest::requestId`.
+Data changes (updates) are delivered asynchronously via the callback function set with `setDataCallback()`, which then passes a `DataRequestRecord` structure as the callback argument
+(this provides both a reference to the original `DataRequest` registered here, as well as result data).
 \param request The `WASimCommander::DataRequest` structure to process. See `WASimCommander::DataRequest` documentation for details of the structure members.
-\param async `true` to wait for a response from the server before returning, or `false` (default) to wait for an `Ack`/`Nak` response. See return values and the Note below for more details.
+\param async Set to `false` (default) to wait for an `Ack`/`Nak` response from the server before returning from this method, or `true` to return without waiting for a response. See return values and the Note below for more details.
 \return `S_OK` on success, `E_INVALIDARG` if there is a problem with the `DataRequest` contents. \n
 If currently connected to the server and `async` is `false`, may also return `E_FAIL` if the server returned `Nak` response, or `E_TIMEOUT` on general server communication failure.
 \note If currently connected to the server and the `async` param is `false`, this method will block until either the Server responds or the timeout has expired (see `defaultTimeout()`).
+If the client is _not_ currently connected to the server, the request is queued until the next connection is established (and this method is non-blocking regardless of `async` argument).
 \par Tracking async calls
 To track the status of an async request, set a callback function with `setCommandResultCallback()`. The server should respond with an \refwce{CommandId::Ack} or \refwce{CommandId::Nak}
 \refwc{Command} where the `uData` value is \refwce{CommandId::Subscribe} and the \refwc{Command::token} will be the `requestId` value from the given `request` struct.
-\sa  \refwc{DataRequest} \refwce{CommandId::Subscribe}, removeDataRequest(), updateDataRequest()
+\sa  \refwc{DataRequest} \refwce{CommandId::Subscribe}, removeDataRequest(), updateDataRequest(), setDataCallback(), DataRequestRecord
+</member>
+        <member name="M:WASimCommander.Client.WASimClient.setSimVarVariable(std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Byte,std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Double">
+Sets a numeric value on an indexed 'A' (aka "SimVar" / "Simulator Variable") type variable. \n
+This is a convenience version of `setVariable()`, equivalent to `setVariable(VariableRequest(variableName, unitName, simVarIndex), value)`. See `setVariable()` and `VariableRequest` for details.
+\since v1.3.0
 </member>
         <member name="M:WASimCommander.Client.WASimClient.setOrCreateLocalVariable(std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Double!System.Runtime.CompilerServices.IsConst,std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.Compil">
 Set a Local Variable value by variable name, creating it first if it does not already exist. This first calls the `register_named_variable()` _Gauge API_ function to get the ID from the name,
@@ -465,12 +575,27 @@ A convenience version of `setVariable()` for Local variable types. Equivalent to
 \return `S_OK` on success, `E_INVALIDARG` on parameter validation errors, `E_NOT_CONNECTED` if not connected to server, or `E_FAIL` on general failure (unlikely).
 \sa \refwce{CommandId::Set}
 </member>
+        <member name="M:WASimCommander.Client.WASimClient.setVariable(WASimCommander.Client.VariableRequest!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)">
+This is an overloaded method. This version allows setting an 'A' type (SimVar) variable to a string value. **Only 'A' type variables can be set this way.** \n
+Since there is actually no direct way to set string-type values from WASM code, this is just a conveneince method and simply invokes SimConnect to do the work.
+On first use with a new variable name it will set up a mapping of the name to an internally-assigned ID (calling `SimConnect_AddToDataDefinition()`) and cache that mapping.
+Then on subsequent invocations on the same variable the mapped ID will be used directly. The mappings are invalidated when disconnecting from the simulator.
+</member>
         <member name="M:WASimCommander.Client.WASimClient.setVariable(WASimCommander.Client.VariableRequest!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Double!System.Runtime.CompilerServices.IsConst)">
-Set a Variable value by name, with optional named unit type. Although any settable variable type can set this way, it is primarily useful for local (`L`) variables which can be set via dedicated _Gauge API_ functions
-(`set_named_variable_value()` and `set_named_variable_typed_value()`). Other variables types can also be set this way ('A', 'H", 'K', etc) but such requests are simply converted to a calculator string and
-evaluated via the _Gauge API_ `execute_calculator_code()`. Using `WASimClient::executeCalculatorCode()` directly may be more efficient.
+Set a Variable value by name, with optional named unit type. Although any settable variable type can set this way, it is primarily useful for local (`L`)
+variables which can be set via dedicated _Gauge API_ functions (`set_named_variable_value()` and `set_named_variable_typed_value()`). \n\n
+Other variables types can also be set this way but such requests are simply converted to a calculator string and
+evaluated via the _Gauge API_ `execute_calculator_code()`. Using `WASimClient::executeCalculatorCode()` directly may be more efficient. \n
+The following conditions must be observed:
+- The variable type in `VariableRequest::variableType` must be "settable" ('A', 'C', 'H', 'K', 'L', or 'Z'), otherwise an `E_INVALIDARG` result is returned.
+- Setting an 'A' type variable this way _requires_ the actual variable name in `VariableRequest::variableName` -- using just an ID returns `E_INVALIDARG`. \n
+  (Other settable variable types don't have any associated ID anyway, so this is not an issue.)
+- For any variable type _other than_ 'L', a Unit can only be specified as a string (in `VariableRequest::unitName`), not an ID.
+  Using only an ID will not cause an error, but the unit will not be included in the generated RPN code. \n
+  For 'L' variable types, if both a name and ID are provided, the numeric ID is used insted of the name (this avoids a lookup on the server side).
+
 \param variable See `VariableRequest` documentation for descriptions of the individual fields.
-\param value The value to set.
+\param value The numeric value to set.
 \return `S_OK` on success, `E_INVALIDARG` on parameter validation errors, `E_NOT_CONNECTED` if not connected to server, or `E_FAIL` on general failure (unlikely).
 \sa \refwce{CommandId::Set}
 </member>
@@ -492,6 +617,9 @@ A convenience version of `getVariable(VariableRequest(variableName, false, unitN
 \note This method blocks until either the Server responds or the timeout has expired. \sa \refwce{CommandId::Get},  defaultTimeout(), setDefaultTimeout()
 </member>
         <member name="M:WASimCommander.Client.WASimClient.getVariable(WASimCommander.Client.VariableRequest!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Double*,std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;*)">
+\}
+\name Variables accessor methods
+\{
 Get a Variable value by name, with optional named unit type. This is primarily useful for local ('L') variables, SimVars ('A') and token variables ('T') which can be read via dedicated _Gauge API_ functions
 (`get_named_variable_value()`/`get_named_variable_typed_value()`, `aircraft_varget()`,  and `lookup_var()` respectively). \n
 Other variables types can also be set this way ('C', 'E', 'M', etc) but such requests are simply **converted to a calculator string** and evaluated via the _Gauge API_ `execute_calculator_code()`. \n
@@ -506,7 +634,7 @@ In both cases, using `WASimClient::executeCalculatorCode()` directly may be more
 </member>
         <member name="M:WASimCommander.Client.WASimClient.executeCalculatorCode(std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,&lt;unknown type&gt;,System.Double*,std.basic_string&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte&gt;&gt;*)">
 \}
-\name High level API
+\name RPN calculator code execution and reusable events
 \{
 Run a string of MSFS _Gauge API_ calculator code in RPN format, possibly with some kind of result expected.
 \param code The text of the code to execute.  See https://docs.flightsimulator.com/html/Additional_Information/Reverse_Polish_Notation.htm
@@ -524,7 +652,7 @@ To request calculated results in a non-blocking fashion, use a data request inst
 If you need to execute the same code multiple times, it would be more efficient to save the code as either a data request (for code returning values) or a registered event (for code not returning values).
 The advantage is that in those cases the calculator string is pre-compiled to byte code and saved once, then each invocation of the _Gauge API_ calculator functions uses the more efficient byte code version.
 (To prevent automatic data updates for data requests, just set the data request period to `Enums::UpdatePeriod::Never` or `Enums::UpdatePeriod::Once` and use the `updateDataRequest()` method to poll for value updates as needed.)
-See `saveDataRequest()` and `registerEvent()` respecitvely for details.
+See `saveDataRequest()` and `registerEvent()` respectively for details.
 \sa \refwce{CommandId::Exec}, defaultTimeout(), setDefaultTimeout()
 </member>
         <member name="M:WASimCommander.Client.WASimClient.setNetworkConfigurationId(System.Int32)">
@@ -574,7 +702,7 @@ Initialize the simulator network link and set up minimum necessary for WASimComm
 \note This method blocks until either the Simulator responds or the timeout has expired. \sa connectSimulator(), defaultTimeout(), setDefaultTimeout()
 </member>
         <member name="M:WASimCommander.Client.WASimClient.connectSimulator(System.UInt32)">
-Initialize the simulator network link and set up minimum necessary for WASimCommander server ping or connection. Uses default newtwork SimConnect configuration ID.
+Initialize the simulator network link and set up minimum necessary for WASimCommander server ping or connection. Uses default network SimConnect configuration ID.
 \param timeout Maximum time to wait for response, in milliseconds. Zero (default) means to use the `defaultTimeout()` value.
 \return `S_OK` (0) - Success;\n
  `E_FAIL` (0x80004005) - General failure (most likely simulator is not running);\n
@@ -649,7 +777,6 @@ Structure for delivering list results, eg. of local variables sent from Server.
 \sa WASimClient::list(), listResultsCallback_t, WASimCommander::LookupItemType, WASimCommander::CommandId::List command.
 </member>
         <member name="T:WASimCommander.Client.ClientEvent">
-\}
 Client Event data, delivered via callback. \sa WASimClient::setClientEventCallback(), ClientEventType, ClientStatus
 </member>
         <member name="T:WASimCommander.Client.LogSource">
@@ -686,6 +813,13 @@ The server will respond with an Ack/Nak for a `SendKey` command, echoing the giv
 </member>
         <member name="M:WASimCommander.DataRequest.op_LeftShift(std.basic_ostream&lt;System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte}&gt;*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,WASimCommander.DataRequest!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)">
 `ostream` operator for logging purposes
+</member>
+        <member name="M:WASimCommander.DataRequest.#ctor(System.UInt32,&lt;unknown type&gt;,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,&lt;unknown type&gt;,System.UInt32,System.Single)">
+Constructs a calculator code request (`requestType = RequestType::Calculated`) with optional update period, interval, and epsilon values. \n
+This overload, w/out a `valueSize` argument automatically determines the size based on the `resultType` argument:
+- `CalcResultType::Double`  = `WASimCommander::DATA_TYPE_DOUBLE`
+- `CalcResultType::Integer` = `WASimCommander::DATA_TYPE_INT32`
+- `CalcResultType::String`  = 256
 </member>
         <member name="M:WASimCommander.DataRequest.#ctor(System.UInt32,&lt;unknown type&gt;,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.UInt32,&lt;unknown type&gt;,System.UInt32,System.Single)">
 Constructs a calculator code request (`requestType = RequestType::Calculated`) with optional update period, interval, and epsilon values.
@@ -754,7 +888,7 @@ The fields `uData`, `sData` and `fData` referenced below refer to \refwc{Command
  Custom event IDs (registered by gauges or other modules) can also be triggered this way. There may be other uses for this command... TBD.
 </member>
         <member name="F:SendKey">
- manner for subscriptions, by writing the new value to the related client data area. Note also that this command will force an upate of the data, without comparing the result to any (potentially) cached value from previous lookup.
+ manner for subscriptions, by writing the new value to the related client data area. Note also that this command will force an update of the data, without comparing the result to any (potentially) cached value from previous lookup.
 </member>
         <member name="F:Update">
  This command ID is also used as an `Ack/Nak` response to new Data Request records being processed. The client must write a `DataRequest` struct to the shared data area and the server should respond with this command to indicate success/failure.
@@ -790,7 +924,7 @@ The fields `uData`, `sData` and `fData` referenced below refer to \refwc{Command
  Result is returned with the `Ack` response in `fData` as a double-precision value. In case of failure a `Nak` is returned with possible error message in `sData`.
 </member>
         <member name="F:Get">
- `Ack` is returned on success with the ID of the variable/unit in the `fData` member (as an `INT32`) and the original requested string name echoed back in `sData`. In case of lookup failure, a `Nak` reponse is returned with possible reason in `sData`.
+ `Ack` is returned on success with the ID of the variable/unit in the `fData` member (as an `INT32`) and the original requested string name echoed back in `sData`. In case of lookup failure, a `Nak` response is returned with possible reason in `sData`.
 </member>
         <member name="F:Lookup">
  List is returned as a series of `List` type response commands with `sData` as var name and `uData` is var ID, followed by an `Ack` at the end. A `Nak` response is returned if the item type cannot be listed for any reason.
@@ -799,12 +933,23 @@ The fields `uData`, `sData` and `fData` referenced below refer to \refwc{Command
         <!-- Discarding badly formed XML document comment for member 'T:WASimCommander.Client.DataRequestRecord'. -->
         <!-- Discarding badly formed XML document comment for member 'F:WASimCommander.Client.RegisteredEvent.name'. -->
         <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.Client.WASimClient.setDefaultTimeout(System.UInt32)'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.Client.WASimClient.setSimVarVariable(std.basic_string<System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator<System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte>>!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,std.basic_string<System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator<System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte>>!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Double)'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.Client.WASimClient.setSimVarVariable(std.basic_string<System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator<System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte>>!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,std.basic_string<System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator<System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte>>!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.Client.WASimClient.setSimVarVariable(std.basic_string<System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator<System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte>>!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Byte,std.basic_string<System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte,std.char_traits{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte},std.allocator<System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte>>!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.Client.WASimClient.removeCustomKeyEvent(System.UInt32)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.Client.WASimClient.setClientEventCallback(std.function<(WASimCommander.Client.ClientEvent!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)(WASimCommander.Client.ClientEvent!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced&)>)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.Client.WASimClient.setListResultsCallback(std.function<(WASimCommander.Client.ListResult!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)(WASimCommander.Client.ListResult!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced&)>)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.Client.WASimClient.setDataCallback(std.function<(WASimCommander.Client.DataRequestRecord!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)(WASimCommander.Client.DataRequestRecord!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced&)>)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.Client.WASimClient.setLogCallback(std.function<(WASimCommander.LogRecord!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,<unknown type>)(WASimCommander.LogRecord!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced&,<unknown type>)>)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.Client.WASimClient.setCommandResultCallback(std.function<(WASimCommander.Command!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)(WASimCommander.Command!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced&)>)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.Client.WASimClient.setResponseCallback(std.function<(WASimCommander.Command!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)(WASimCommander.Command!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced&)>)'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.CLI.Client.WASimClient.setVariable(WASimCommander.CLI.Structs.VariableRequest,System.Double!System.Runtime.CompilerServices.IsConst)'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.CLI.Client.WASimClient.setVariable(WASimCommander.CLI.Structs.VariableRequest,System.String)'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.CLI.Client.WASimClient.setSimVarVariable(System.String,System.String,System.Double!System.Runtime.CompilerServices.IsConst)'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.CLI.Client.WASimClient.setSimVarVariable(System.String,System.Byte,System.String,System.Double!System.Runtime.CompilerServices.IsConst)'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.CLI.Client.WASimClient.setSimVarVariable(System.String,System.String)'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.CLI.Client.WASimClient.setSimVarVariable(System.String,System.Byte,System.String)'. -->
         <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.CLI.Client.WASimClient.sendKeyEvent(System.String,System.Nullable`1{System.UInt32},System.Nullable`1{System.UInt32},System.Nullable`1{System.UInt32},System.Nullable`1{System.UInt32},System.Nullable`1{System.UInt32})'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:WASimCommander.CLI.Client.WASimClient.removeCustomKeyEvent(System.String)'. -->
     </members>
 </doc>
