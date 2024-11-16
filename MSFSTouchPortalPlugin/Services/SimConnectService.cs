@@ -756,17 +756,11 @@ namespace MSFSTouchPortalPlugin.Services
           return _wlib.setOrCreateLocalVariable(varName, unit, (double)value) == HR.OK;
         }
 
-        string calcCode;
-        if (varType == 'Q')
-          calcCode = value.ToString();
-        else if (unit == "string")
-          calcCode = $"'{value}' (>{varType}:{varName})";
-        else if (!string.IsNullOrEmpty(unit))
-          calcCode = $"{value} (>{varType}:{varName}, {unit})";
-        else
-          calcCode = $"{value} (>{varType}:{varName})";
-        _logger.LogTrace("Executing calculator code: '{code}'", calcCode);
-        return ExecuteCalculatorCode(calcCode);
+        _logger.LogTrace("Setting variable type '{varType}' {varName} to '{val}' with unit {unit}", varType, varName, value, unit);
+        var req = new VariableRequest(varType, varName, unit);
+        if (unit == "string")
+          return _wlib.setVariable(req, (string)value) == HR.OK;
+        return _wlib.setVariable(req, (double)value) == HR.OK;
       }
 #endif
 
