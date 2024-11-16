@@ -73,9 +73,12 @@ if ($LastExitCode -ne 0) { throw ("Error " + $LastExitCode) }
 
 if (-not $NoClean) {
   Write-Output "`nCleaning '$ProjectName-Generator' component....`n"
-  dotnet clean "$ProjectName-Generator" --configuration $Configuration -p:Platform=$Platform /p:ValidateExecutableReferencesMatchSelfContained=false
+  dotnet clean "$ProjectName-Generator" --configuration Release -p:Platform=$Platform /p:ValidateExecutableReferencesMatchSelfContained=false
   Write-Output "`nCleaning '$ProjectName' component....`n"
   dotnet clean "$ProjectName" --configuration $Configuration -p:Platform=$Platform
+  if ($Configuration -ne "Release") {
+    dotnet clean "$ProjectName" --configuration Release -p:Platform=$Platform
+  }
 }
 
 if ($BuildAgent) {
