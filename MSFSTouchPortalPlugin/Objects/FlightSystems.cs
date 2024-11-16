@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -127,15 +127,15 @@ namespace MSFSTouchPortalPlugin.Objects
     public static readonly object CowlFlapsAdjust;
 
     [TouchPortalAction("CowlFlapsSet", "Cowl Flaps Lever Set", true,
-      "Set Cowl {0} Flaps Lever to {0} (0 to 16384)",
-      "Set Cowl{0}Flaps Lever\nin Value Range:"
+      "Set Cowl {0} Flaps Lever to {1} (0 to 16384)",
+      "Set Cowl {0} Flaps Lever\nin Value Range:"
     )]
     [TouchPortalActionChoice()]
-    [TouchPortalActionText("0", 0, 16384)]
     [TouchPortalActionMapping("COWLFLAP1_SET", "1")]
     [TouchPortalActionMapping("COWLFLAP2_SET", "2")]
     [TouchPortalActionMapping("COWLFLAP3_SET", "3")]
     [TouchPortalActionMapping("COWLFLAP4_SET", "4")]
+    [TouchPortalActionText("0", 0, 16384)]
     public static readonly object CowlFlapsSet;
 
     // Deprecated
