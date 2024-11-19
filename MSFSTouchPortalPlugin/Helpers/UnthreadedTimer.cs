@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -31,58 +31,122 @@ namespace MSFSTouchPortalPlugin.Helpers
   /// </summary>
   public class UnthreadedTimer : IDisposable
   {
+    /// <summary>
+    /// The Elapsed event is triggered when the timer expires.
+    /// </summary>
     public event EventHandler Elapsed = null;
 
+    /// <summary>
+    /// Determines if the timer will re-start itself after each timeout.
+    /// </summary>
     public bool AutoReset { get; set; } = true;
+
+    /// <summary>
+    /// How often the timer will invoke the callback, in milliseconds.
+    /// Setting this value on an active (`Enabled == true`) timer will restart the counter from that moment,
+    /// discarding any time that may have accumulated so far before the interval value was changed.
+    /// </summary>
     public int Interval
     {
       get { return interval; }
       set {
+        if (value == interval)
+          return;
         interval = Math.Max(value, 1);
         tickInterval = interval * (int)(Stopwatch.Frequency / 1000L);
         UpdateNextTick();
       }
     }
+
+    /// <summary>
+    /// The initial delay before the first time the timer is fired. If `Delay < 0` (default) then the `Interval` is used.
+    /// If set, this becomes the first interval at which the `Elapsed` handler is invoked after `Timer.Start()` is called.
+    /// This is only useful for timers that automatically reset so that the first invocation may have a different interval
+    /// than the following ones (for example like a keyboard repeat).
+    /// Setting or changing this value after the timer has started, but before the first elapsed time, will reset the delay time from that moment
+    /// discarding any time that may have accumulated so far before the delay value was set/changed.
+    /// </summary>
+    public int Delay
+    {
+      get { return delay; }
+      set {
+        if (value == delay)
+          return;
+        delay = value;
+        if (delay > -1)
+          delayInterval = delay * (int)(Stopwatch.Frequency / 1000L);
+        UpdateNextTick();
+      }
+    }
+
+    /// <summary>
+    /// Indicates if the timer is currently enabled.
+    /// Setting this value to `true` or `false` is equivalent to calling `Start()` and `Stop()` methods respectively.
+    /// </summary>
     public bool Enabled
     {
       get { return enabled; }
       set {
+        if (value == enabled)
+          return;
         enabled = value;
-        if (enabled)
+        if (enabled) {
+          hasFired = false;
           UpdateNextTick();
+        }
       }
     }
 
-    private bool enabled = false;
-    private int interval = 1000;
-    private long tickInterval;
-    private long nextTick = 0;
-
     public UnthreadedTimer() { }
-    public UnthreadedTimer(int interval) {
+    public UnthreadedTimer(int interval, int delay = -1) {
       Interval = interval;
+      Delay = delay;
     }
 
+    /// <summary>
+    /// This method must be called periodically to keep the timer "running."
+    /// </summary>
     public void Tick() {
       if (enabled && Stopwatch.GetTimestamp() >= nextTick) {
         enabled = false;
         if (Elapsed != null)
           Elapsed.Invoke(this, EventArgs.Empty);
-        if (AutoReset)
-          Start();
+        hasFired = true;
+        if (AutoReset) {
+          enabled = true;
+          UpdateNextTick();
+        }
       }
     }
 
+    /// <summary> Starts the time counter. Equivalent to setting `Enabled = true`. </summary>
     public void Start() {
       Enabled = true;
     }
 
+    /// <summary> Stops the time counter. Equivalent to setting `Enabled = false`. </summary>
     public void Stop() {
       Enabled = false;
     }
 
+    /// <summary> Same as using `Stop(); Start();`. </summary>
+    public void Restart() {
+      Stop();
+      Start();
+    }
+
+    // private:
+
+    private bool enabled = false;
+    private bool hasFired = false;
+    private int interval = 1000;
+    private int delay = -1;
+    private long tickInterval;
+    private long delayInterval;
+    private long nextTick = 0;
+
     private void UpdateNextTick() {
-      nextTick = Stopwatch.GetTimestamp() + tickInterval;
+      nextTick = Stopwatch.GetTimestamp() + (hasFired || delay < 0 ? tickInterval : delayInterval);
     }
 
     public void Dispose() {

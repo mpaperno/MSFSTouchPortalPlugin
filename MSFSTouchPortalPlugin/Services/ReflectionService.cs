@@ -60,14 +60,28 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     public IEnumerable<TouchPortalActionAttribute> GetActionAttributes(Groups catId) {
-      return GetActionBaseAttributes<TouchPortalActionAttribute>(catId);
+      var attribs = GetActionBaseAttributes<TouchPortalActionAttribute>(catId);
+      foreach (var attr in attribs) {
+        if (!attr.HasHoldFunctionality)
+          continue;
+        int fmtN = attr.Data.Count(),
+          indxN = fmtN;
+        var data = attr.Data.ToList();
+        attr.OnHoldFormat = attr.Format + $" | Fire On {{{fmtN++}}} Repeat {{{fmtN++}}} \nRate {{{fmtN++}}} \nDelay {{{fmtN++}}} \n(ms, empty to use defaults)  ";
+        data.Add(new TouchPortalActionChoiceAttribute(new [] { "Press", "Release", "Press & Release", "Repeat Only" }) { Id = "OnHoldAction", Label = "On Hold Action", UsedInMapping = false });
+        data.Add(new TouchPortalActionSwitchAttribute(true) { Id = "OnHoldRepeat", Label = "Repeat While Held", SkipForValIndex = true });
+        data.Add(new TouchPortalActionTextAttribute("", 0, float.MaxValue) { Id = "OnHoldRate", Label = "Held Action Repeat Rate", SkipForValIndex = true });
+        data.Add(new TouchPortalActionTextAttribute("", 0, float.MaxValue) { Id = "OnHoldDelay", Label = "Held Action Repeat Delay", SkipForValIndex = true });
+        attr.Data = data.ToArray();
+      }
+      return attribs;
     }
 
     public IEnumerable<TouchPortalConnectorAttribute> GetConnectorAttributes(Groups catId)
     {
-      List<TouchPortalConnectorAttribute> attribs = new(); //GetActionBaseAttributes<TouchPortalConnectorAttribute>(catId).ToList();
+      List<TouchPortalConnectorAttribute> attribs = new();
       // Generate connectors from compatible actions or explicit connector attributes.
-      var actionAttribs = GetActionBaseAttributes<TouchPortalActionBaseAttribute>(catId).Where(m => m.GetType() == typeof(TouchPortalConnectorAttribute) || m.ConnectorFormat != null);
+      var actionAttribs = GetActionBaseAttributes<TouchPortalActionBaseAttribute>(catId, true);
       foreach (var actAttr in actionAttribs) {
         TouchPortalConnectorAttribute conn = null;
         List<TouchPortalActionDataAttribute> connData;
@@ -118,13 +132,15 @@ namespace MSFSTouchPortalPlugin.Services
       return attribs;
     }
 
-    IEnumerable<T> GetActionBaseAttributes<T>(Groups catId) where T : TouchPortalActionBaseAttribute
+    IEnumerable<T> GetActionBaseAttributes<T>(Groups catId, bool connOnly = false) where T : TouchPortalActionBaseAttribute
     {
       List<T> ret = new();
       var container = _assemblyTypes.Where(t => t.IsClass && t.GetCustomAttribute<TouchPortalCategoryAttribute>()?.Id == catId);
       foreach (var c in container) {
         foreach (var m in c.GetMembers()) {
           if (m.GetCustomAttribute<T>() is var actionAttrib && actionAttrib != null) {
+            if (connOnly && !(actionAttrib.GetType() == typeof(TouchPortalConnectorAttribute) || actionAttrib.ConnectorFormat != null))
+                continue;
             actionAttrib.Data = m.GetCustomAttributes<TouchPortalActionDataAttribute>(true).ToArray();
             actionAttrib.Mappings = m.GetCustomAttributes<TouchPortalActionMappingAttribute>(true).ToArray();
             actionAttrib.ParentObject = m;
@@ -191,7 +207,7 @@ namespace MSFSTouchPortalPlugin.Services
             fmtStrList.Add($"{{{i}}}");
           act.KeyFormatStr = string.Join(",", fmtStrList);
           foreach (var ma in actAttr.Mappings) {
-            if (!act.TryAddPluginEventMapping($"{string.Join(",", ma.Values)}", (PluginActions)ma.EnumId, ma.ActionId))
+            if (!act.TryAddPluginEventMapping(string.Join(",", ma.Values), (PluginActions)ma.EnumId, ma.ActionId))
               _logger.LogWarning("Duplicate action-to-event mapping found for Plugin action {actId} with choices '{choices} for event '{mapId}'.", act.ActionId, string.Join(",", ma.Values), ma.ActionId);
           }
         }
@@ -230,21 +246,23 @@ namespace MSFSTouchPortalPlugin.Services
           foreach (var dataAttrib in actAttr.Data) {
             if (dataAttrib.ValueType == DataType.Choice) {
               // for Choice types, we combine them to create a unique lookup key which maps to a particular event.
-              fmtStrList.Add($"{{{i++}}}");
+              if (dataAttrib.UsedInMapping)
+                fmtStrList.Add($"{{{i}}}");
             }
-            else {
+            else if (!dataAttrib.SkipForValIndex) {
               // we only support one free-form value per mapping, which is all SimConnect supports, and internal events can handle the data as necessary already.
-              act.ValueIndex = i++;
+              act.ValueIndex = i;
               act.MinValue = dataAttrib.MinValue;
               act.MaxValue = dataAttrib.MaxValue;
               act.ValueType = dataAttrib.ValueType;
             }
+            ++i;
           }
           act.KeyFormatStr = string.Join(",", fmtStrList);
           // Now get all the action mappings to produce the final list of all possible action events
           foreach (var ma in actAttr.Mappings) {
             // Put into collections
-            if (!act.TryAddSimEventMapping($"{string.Join(",", ma.Values)}", ma.ActionId, ma.EventValues))
+            if (!act.TryAddSimEventMapping(string.Join(",", ma.Values), ma.ActionId, ma.EventValues))
               _logger.LogWarning("Duplicate action-to-event mapping found for action {actId} with choices '{choices} for event '{mapId}'.", act.ActionId, string.Join(",", ma.Values), ma.ActionId);
           }
 

@@ -63,9 +63,10 @@ namespace MSFSTouchPortalPlugin.Attributes
 
   public class TouchPortalActionAttribute : TouchPortalActionBaseAttribute
   {
-    public string Prefix { get; set; } = Configuration.PluginConfig.PLUGIN_NAME_PREFIX;
-    public string Type { get; set; } = "communicate";
-    public bool HasHoldFunctionality { get; set; }
+    public string Prefix = Configuration.PluginConfig.PLUGIN_NAME_PREFIX;
+    public string Type = "communicate";
+    public bool HasHoldFunctionality = false;
+    public string OnHoldFormat = null;
 
     public TouchPortalActionAttribute(string id, string name, string format, bool holdable = false) :
       base(id, name, string.Empty, format)
@@ -172,7 +173,7 @@ namespace MSFSTouchPortalPlugin.Attributes
     public virtual double MaxValue { get; set; } = double.NaN;
     public virtual string[] ChoiceValues { get; set; }
     public bool UsedInMapping { get; set; } = true;  // for Choice type meta data creation
-
+    public bool SkipForValIndex { get; set; } = false;  // not an action's main value field (used in injected on-hold data fields)
 
     protected dynamic _defaultValue;
 

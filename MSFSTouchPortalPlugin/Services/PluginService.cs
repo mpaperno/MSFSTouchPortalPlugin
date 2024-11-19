@@ -1704,38 +1704,74 @@ namespace MSFSTouchPortalPlugin.Services
       ProcessPluginSettings(message.Values);
     }
 
+    enum OnHoldActionType {
+      NONE    = 0,
+      PRESS   = 0x01,
+      RELEASE = 0x02,
+      REPEAT  = 0x04,
+    }
+
     public void OnActionEvent(ActionEvent message)
     {
       // Actions used in TP "On Hold" events will send "down" and "up" events, in that order (usually).
-      // "On Pressed" actions will have a "action" event (Tap) when it is _released_.
-      switch (message.GetPressState())
-      {
-        case TouchPortalSDK.Messages.Models.Enums.Press.Down: {
-          // "On Hold" activated ("down" event). Try to add this action to the repeating/scheduled actions queue, unless it already exists.
-          var timer = new Timer(Settings.ActionRepeatInterval.IntValue);
-          timer.Elapsed += delegate { ProcessEvent(message); };
-          if (_repeatingActionTimers.TryAdd(message.ActionId, timer)) {
-            if (ProcessEvent(message))  // fire the event first and see if it event succeeds
-              timer.Start();
-          }
-          else {
-            timer.Dispose();
-          }
-          break;
-        }
-
-        case TouchPortalSDK.Messages.Models.Enums.Press.Up:
-          // "On Hold" released ("up" event). Mark action for removal from repeating queue.
-          if (_repeatingActionTimers.TryRemove(message.ActionId, out var tim))
-            tim.Dispose();
-          // No further processing for this action.
-          break;
-
-        case TouchPortalSDK.Messages.Models.Enums.Press.Tap:
-          // Process an "On Pressed" ("action" event) action.
-          ProcessEvent(message);
-          break;
+      // "On Pressed" actions will have an "action" event (Tap) when it is _released_.
+      var pressState = message.GetPressState();
+      if (pressState == TouchPortalSDK.Messages.Models.Enums.Press.Tap) {
+        ProcessEvent(message);
+        return;
       }
+
+      // These defaults preserve BC with older action versions w/out "On Hold" data attributes.
+      var action = OnHoldActionType.PRESS | OnHoldActionType.REPEAT;
+      var rate = Settings.ActionRepeatInterval.IntValue;
+      var delay = Settings.ActionRepeatDelay.IntValue;
+
+      // Look for new version of "On Hold" actions with data values specific to this use.
+      if (message.Data.TryGetValue("OnHoldAction", out var actionName)) {
+        action = OnHoldActionType.NONE;
+        if (actionName.Contains("Press"))
+          action |= OnHoldActionType.PRESS;
+        if (actionName.Contains("Rel"))
+          action |= OnHoldActionType.RELEASE;
+
+        if (BooleanString.StringToBool(message.Data.GetValueOrDefault("OnHoldRepeat", "On")))
+          action |= OnHoldActionType.REPEAT;
+
+        if (action == OnHoldActionType.NONE)
+          return;
+
+        if (ConvertStringValue(message.Data.GetValueOrDefault("OnHoldRate"), DataType.Number, 0.0, double.NaN, out var fRate) && fRate > 0.0)
+          rate = (int)fRate;
+        if (ConvertStringValue(message.Data.GetValueOrDefault("OnHoldDelay"), DataType.Number, 0.0, double.NaN, out var fDelay) && fDelay > 0.0)
+          delay = (int)fDelay;
+      }
+      //_logger.LogDebug("OnActionEvent - {actId}; pressState: {pressState}; timers: {TimerCount}; data: {data}", message.Id, pressState, _repeatingActionTimers.Count, ActionDataToKVPairString(data));
+
+      if (pressState == TouchPortalSDK.Messages.Models.Enums.Press.Down) {
+        // "On Hold" activated ("down" event).
+        // Fire the event first and see if it succeeds if it has a PRESS flag
+        if ((action & OnHoldActionType.PRESS) > 0 && !ProcessEvent(message))
+          return;
+
+        // If REPEAT flag is set, try to add this action to the repeating/scheduled actions queue, unless it already exists.
+        if ((action & OnHoldActionType.REPEAT) > 0 && !_repeatingActionTimers.ContainsKey(message.ActionId)) {
+          var timer = new Timer(rate, delay);
+          timer.Elapsed += delegate { ProcessEvent(message); };
+          if (_repeatingActionTimers.TryAdd(message.ActionId, timer))
+            timer.Start();
+          else
+            timer.Dispose();
+        }
+      }
+      else /*if (pressState == TouchPortalSDK.Messages.Models.Enums.Press.Up)*/ {
+        // "On Hold" released ("up" event). Mark action for removal from repeating queue.
+        if (_repeatingActionTimers.TryRemove(message.ActionId, out var tim))
+          tim.Dispose();
+        // Fire this action again only if the RELEASE flag was set.
+        if ((action & OnHoldActionType.RELEASE) > 0)
+          ProcessEvent(message);
+      }
+
     }
 
     public void OnConnecterChangeEvent(ConnectorChangeEvent message)

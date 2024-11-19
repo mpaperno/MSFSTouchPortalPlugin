@@ -111,6 +111,21 @@ namespace MSFSTouchPortalPlugin.Configuration
     };
 #endif
 
+    public static readonly PluginSetting ActionRepeatDelay = new PluginSetting("ActionRepeatDelay", DataType.Number) {
+      Name = "Default Held Action Repeat Delay (milliseconds)",
+      Description =
+        "Default delay period before a held action starts repeating.\n" +
+        "* A value of -1 will make the delay be the same as the current repeat interval\n\t(this is the default value for this setting).\n" +
+        "* If set to > -1, the smallest effective value is 25ms, which is the same as the repeat interval.\n\tThis is how often the plugin checks for events to fire.\n\n" +
+        "Typically the delay would be same or longer than the repeat interval.\n" +
+        "For example with a very short interval it may be possible to get unintentional repeating if a button is pressed for a little too long. " +
+        "Introducing a longer delay time before the repeat starts would help the issue.\n\n" +
+        "A delay can also be specified per action when it is used in the \"On Hold\" button setup area, which would override this setting.",
+      Default = "-1",
+      MinValue = -1,
+      MaxValue = uint.MaxValue
+    };
+
     // Internally tracked settings, not used via Touch Portal UI.
 
     // Version of the plugin with which the settings were last saved. Used for change tracking/notifications/etc.
