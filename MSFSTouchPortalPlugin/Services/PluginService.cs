@@ -135,6 +135,7 @@ namespace MSFSTouchPortalPlugin.Services
         return Task.CompletedTask;
       }
 
+      //StartPluginEventsTask();  // useful for testing repeating actions w/out a sim connection
       return SimConnectionMonitor();
     }
 
@@ -143,17 +144,22 @@ namespace MSFSTouchPortalPlugin.Services
     /// </summary>
     /// <param name="cancellationToken">The cancellation token</param>
     public Task StopAsync(CancellationToken cancellationToken) {
-      if (_quitting)
+      if (_quitting) {
+        _logger.LogWarning((int)EventIds.Ignore, "Already Quitting!");
         return Task.CompletedTask;
+      }
       // Shut down
       _quitting = true;
       _logger.LogDebug("Shutting down...");
+      StopPluginEventsTask();
       DisconnectSimConnect();
       if (_pluginConfig.SaveSettings())
         _logger.LogInformation("Saved Settings to file {file}", PluginConfig.SettingsConfigFile);
       if (_client?.IsConnected ?? false) {
         try { _client.Close(); }
-        catch (Exception) { /* ignore */ }
+        catch (Exception ex) {
+          _logger.LogWarning((int)EventIds.Ignore, ex, "TouchPortalClient exception");
+        }
       }
       _simConnectService?.Dispose();
       _simConnectionRequest?.Dispose();
@@ -237,6 +243,34 @@ namespace MSFSTouchPortalPlugin.Services
       return Task.CompletedTask;
     }
 
+    // start checking timer events
+    void StartPluginEventsTask() {
+      if (_simTasksCTS != null)
+          return;
+      _simTasksCTS = new CancellationTokenSource();
+      _simTasksCancelToken = _simTasksCTS.Token;
+      _pluginEventsTask = Task.Run(PluginEventsTask);
+    }
+
+    void StopPluginEventsTask() {
+      if (_simTasksCTS == null)
+          return;
+      _simTasksCTS.Cancel();
+      if (_pluginEventsTask != null) {
+        if (_pluginEventsTask.Status == TaskStatus.Running && !_pluginEventsTask.Wait(5000))
+          _logger.LogWarning((int)EventIds.Ignore, "PluginEventsTask timed out while stopping.");
+        try { _pluginEventsTask.Dispose(); }
+        catch (Exception ex) {
+          _logger.LogWarning((int)EventIds.Ignore, ex, "PluginEventsTask shutdown exception");
+        }
+      }
+      _pluginEventsTask = null;
+      _simTasksCTS.Dispose();
+      _simTasksCTS = null;
+
+      ClearRepeatingActions();
+    }
+
     /// <summary>
     /// Task for running various timed SimConnect events on one thread.
     /// This is primarily used for data polling and repeating (held) actions.
@@ -244,12 +278,13 @@ namespace MSFSTouchPortalPlugin.Services
     async Task PluginEventsTask()
     {
       _logger.LogDebug("PluginEventsTask task started.");
+      using PeriodicTimer timer = new(TimeSpan.FromMilliseconds(25));
       try {
-        while (_simConnectService.IsConnected && !_simTasksCancelToken.IsCancellationRequested) {
+        while (!_simTasksCancelToken.IsCancellationRequested) {
           foreach (Timer tim in (IReadOnlyCollection<Timer>)_repeatingActionTimers.Values)
             tim.Tick();
           CheckPendingRequests();
-          await Task.Delay(25, _simTasksCancelToken);
+          await timer.WaitForNextTickAsync(_simTasksCancelToken).ConfigureAwait(false);
         }
       }
       catch (OperationCanceledException) { /* ignore but exit */ }
@@ -329,12 +364,7 @@ namespace MSFSTouchPortalPlugin.Services
       _logger.LogDebug("SimConnectService connected, starting events task...");
 
       _simConnectionRequest.Reset();
-      _simTasksCTS = new CancellationTokenSource();
-      _simTasksCancelToken = _simTasksCTS.Token;
-      // start checking timer events
-      _pluginEventsTask = Task.Run(PluginEventsTask);
-      _pluginEventsTask.ConfigureAwait(false);  // needed?
-
+      StartPluginEventsTask();
       UpdateSimConnectState();
     }
 
@@ -365,19 +395,8 @@ namespace MSFSTouchPortalPlugin.Services
     private void SimConnectEvent_OnDisconnect() {
       _logger.LogInformation("SimConnect Disconnected");
 
-      _simTasksCTS?.Cancel();
-      if (_pluginEventsTask != null){
-        if (_pluginEventsTask.Status == TaskStatus.Running && !_pluginEventsTask.Wait(5000))
-          _logger.LogWarning((int)EventIds.Ignore, "PluginEventsTask timed out while stopping.");
-        try { _pluginEventsTask.Dispose(); }
-        catch { /* ignore in case it hung */ }
-      }
-      ClearRepeatingActions();
+      StopPluginEventsTask();
       ResetMappedEventIds();
-
-      _pluginEventsTask = null;
-      _simTasksCTS?.Dispose();
-      _simTasksCTS = null;
 
       if (!_simAutoConnectDisable.IsSet && !_quitting)
         _simConnectionRequest.Set();  // re-enable connection attempts
