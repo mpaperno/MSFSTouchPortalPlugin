@@ -2,10 +2,8 @@
 [CmdletBinding(PositionalBinding=$false)]
 Param(
   [string]$ProjectName = "MSFSTouchPortalPlugin",
-  [string]$DistroName = "MSFS-TouchPortal-Plugin",
-  [string]$BinName = $ProjectName,
   [string]$Configuration = "Publish",
-  [string]$Platform = "x64",
+  [string]$Platform = "MSFS",
   [String]$VersionSuffix = "",
   [switch]$FSX = $false,
   [switch]$NoClean = $false,
@@ -14,12 +12,12 @@ Param(
 
 if ($FSX) {
   $Platform = "FSX"
-  $DistroName = "FSX-TouchPortal-Plugin"
-  $BinName = "FSXTouchPortalPlugin"
 }
 
 $ErrorActionPreference = "Stop"
 
+$DistroName = "${Platform}-TouchPortal-Plugin"
+$BinName = "${Platform}TouchPortalPlugin"
 $CurrentDir = [System.IO.Path]::GetDirectoryName($myInvocation.MyCommand.Path)
 $DistFolderPath = "$CurrentDir\packages-dist"
 $PluginFilesPath = "$DistFolderPath\$DistroName"

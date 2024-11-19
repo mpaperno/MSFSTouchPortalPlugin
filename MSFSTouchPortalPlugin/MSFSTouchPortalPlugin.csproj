@@ -5,11 +5,15 @@
     <RootNamespace>MSFSTouchPortalPlugin</RootNamespace>
     <Version>1.5.0.0</Version>
     <FileVersion>1.5.0.0</FileVersion>
-    <Platforms>x64;FSX</Platforms>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <Platforms>MSFS;FSX</Platforms>
     <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath>
     <IntermediateOutputPath>..\build\obj\$(MSBuildProjectName)\$(Platform)-$(Configuration)\</IntermediateOutputPath>
-    <AnalysisLevel>6.0</AnalysisLevel>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <DefineConstants>$(Platform);$(DefineConstants)</DefineConstants>
     <Configurations>Debug;Release;Publish</Configurations>
+    <SelfContained>true</SelfContained>
     <Copyright>Copyright Tim Lewis, Maxim Paperno, and project contributors; All rights reserved.</Copyright>
     <PackageProjectUrl>https://github.com/mpaperno/MSFSTouchPortalPlugin</PackageProjectUrl>
     <DocumentationUrl>https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki</DocumentationUrl>
@@ -23,10 +27,9 @@
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <CheckEolTargetFramework>False</CheckEolTargetFramework>
     <ApplicationIcon>app-icon.ico</ApplicationIcon>
-    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Platform)'=='x64'">
+  <PropertyGroup Condition="'$(Platform)'=='MSFS'">
     <TargetFramework>net8.0</TargetFramework>
     <PlatformTarget>x64</PlatformTarget>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -38,29 +41,28 @@
     <AssemblyName>FSXTouchPortalPlugin</AssemblyName>
     <PlatformTarget>x86</PlatformTarget>
     <RuntimeIdentifier>win-x86</RuntimeIdentifier>
-    <DefineConstants>FSX;$(DefineConstants)</DefineConstants>
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DefineConstants>DEBUG;TRACE;DEBUG_REQUESTS;$(DefineConstants)</DefineConstants>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
 
   <PropertyGroup Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Publish')">
     <NoWarn>1701;1702</NoWarn>
-    <AllowedReferenceRelatedFileExtensions>
-      <!-- Prevent .pdb, .xml, etc from being copied to output folder -->
-      .dll
-    </AllowedReferenceRelatedFileExtensions>
+    <!-- Prevent .pdb, .xml, etc from being copied to output folder -->
+    <AllowedReferenceRelatedFileExtensions>.dll</AllowedReferenceRelatedFileExtensions>
     <DebugType>embedded</DebugType>
     <DebugSymbols>false</DebugSymbols>
     <Optimize>True</Optimize>
     <PathMap>$(MSBuildProjectDirectory)=$(MSBuildProjectName)</PathMap>
+    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Publish'">
     <DefineConstants>PUBLISH_BUILD;$(DefineConstants)</DefineConstants>
-    <SelfContained>true</SelfContained>
     <PublishTrimmed>False</PublishTrimmed>
     <TrimMode>partial</TrimMode>
     <PublishSingleFile>False</PublishSingleFile>
@@ -69,6 +71,7 @@
     <DebugType>none</DebugType>
     <PublishRelease>true</PublishRelease>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+    <RunAnalyzers>false</RunAnalyzers>
   </PropertyGroup>
 
   <ItemGroup>
@@ -98,14 +101,14 @@
 
   <!-- SimConnect libs -->
   <ItemGroup>
-    <Reference Include=".\lib\Microsoft.FlightSimulator.SimConnect.dll" Condition="'$(Platform)'=='x64'">
+    <Reference Include=".\lib\Microsoft.FlightSimulator.SimConnect.dll" Condition="'$(Platform)'=='MSFS'">
       <Private>true</Private>
     </Reference>
     <Reference Include=".\lib\x86\Microsoft.FlightSimulator.SimConnect.dll" Condition="'$(Platform)'=='FSX'">
       <Private>true</Private>
     </Reference>
 
-    <ContentWithTargetPath Include=".\lib\SimConnect.dll" Condition="'$(Platform)'=='x64'">
+    <ContentWithTargetPath Include=".\lib\SimConnect.dll" Condition="'$(Platform)'=='MSFS'">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>SimConnect.dll</TargetPath>
     </ContentWithTargetPath>
@@ -136,7 +139,7 @@
   </ItemGroup>
 
   <!-- WASimCommander Client -->
-  <ItemGroup Condition="'$(Platform)'=='x64'">
+  <ItemGroup Condition="'$(Platform)'=='MSFS'">
     <Reference Include=".\lib\WASimCommander\WASimCommander.WASimClient.dll">
       <Private>true</Private>
     </Reference>
@@ -161,7 +164,7 @@
     <None Update="Configuration\SimConnect.cfg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Configuration\HubHop\hubhop_presets.sqlite3" Condition="'$(Platform)'=='x64'">
+    <None Update="Configuration\HubHop\hubhop_presets.sqlite3" Condition="'$(Platform)'=='MSFS'">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Configuration\MSFS_SDK_Doc_Import.sqlite3">

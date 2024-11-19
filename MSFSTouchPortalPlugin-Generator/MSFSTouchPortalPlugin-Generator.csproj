@@ -4,10 +4,13 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>MSFSTouchPortalPlugin_Generator</RootNamespace>
-    <Platforms>x64;FSX</Platforms>
+    <Platforms>MSFS;FSX</Platforms>
     <Version>1.4.0</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <OutputPath>..\build\$(Platform)-$(Configuration)\</OutputPath>
     <IntermediateOutputPath>..\build\obj\$(MSBuildProjectName)\$(Platform)-$(Configuration)\</IntermediateOutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <Configurations>Debug;Release;Publish</Configurations>
     <Copyright>Copyright Tim Lewis, Maxim Paperno, and project contributors; All rights reserved.</Copyright>
     <PackageProjectUrl>https://github.com/mpaperno/MSFSTouchPortalPlugin</PackageProjectUrl>
@@ -20,12 +23,13 @@
     <ApplicationIcon>..\MSFSTouchPortalPlugin\app-icon.ico</ApplicationIcon>
     <ErrorReport>none</ErrorReport>
     <Company>MSFS Touch Portal Plugin Project</Company>
+    <NoWarn>1701;1702</NoWarn>
+    <SelfContained>true</SelfContained>
     <CheckEolTargetFramework>False</CheckEolTargetFramework>
     <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
-    <NoWarn>1701;1702</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Platform)'=='x64'">
+  <PropertyGroup Condition="'$(Platform)'=='MSFS'">
     <PlatformTarget>x64</PlatformTarget>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <DefineConstants>WASIM;$(DefineConstants)</DefineConstants>
