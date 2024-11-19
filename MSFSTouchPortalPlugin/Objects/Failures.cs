@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -27,8 +27,8 @@ namespace MSFSTouchPortalPlugin.Objects
   [TouchPortalCategory(Groups.Failures)]
   internal static class FailuresMapping
   {
-
-    [TouchPortalAction("Failures", "Failures", "Toggle Failure - {0}")]
+    // DEPRECATED, moved to SimSystems
+    [TouchPortalAction("Failures", "Failures", "Toggle Failure - {0}", Deprecated = true)]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("TOGGLE_ELECTRICAL_FAILURE", "Electrical")]
     [TouchPortalActionMapping("TOGGLE_VACUUM_FAILURE", "Vacuum")]

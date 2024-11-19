@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -36,6 +36,22 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("PLUS", "Increase")]
     [TouchPortalActionMapping("MINUS", "Decrease")]
     public static readonly object SelectedParameterChange;
+
+    [TouchPortalAction("Failures", "Failures", "Toggle Failure - {0}")]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("TOGGLE_ELECTRICAL_FAILURE", "Electrical")]
+    [TouchPortalActionMapping("TOGGLE_VACUUM_FAILURE", "Vacuum")]
+    [TouchPortalActionMapping("TOGGLE_PITOT_BLOCKAGE", "Pitot")]
+    [TouchPortalActionMapping("TOGGLE_STATIC_PORT_BLOCKAGE", "Static Port")]
+    [TouchPortalActionMapping("TOGGLE_HYDRAULIC_FAILURE", "Hydraulic")]
+    [TouchPortalActionMapping("TOGGLE_TOTAL_BRAKE_FAILURE", "Total Brake")]
+    [TouchPortalActionMapping("TOGGLE_LEFT_BRAKE_FAILURE", "Left Brake")]
+    [TouchPortalActionMapping("TOGGLE_RIGHT_BRAKE_FAILURE", "Right Brake")]
+    [TouchPortalActionMapping("TOGGLE_ENGINE1_FAILURE", "Engine 1")]
+    [TouchPortalActionMapping("TOGGLE_ENGINE2_FAILURE", "Engine 2")]
+    [TouchPortalActionMapping("TOGGLE_ENGINE3_FAILURE", "Engine 3")]
+    [TouchPortalActionMapping("TOGGLE_ENGINE4_FAILURE", "Engine 4")]
+    public static readonly object FAILURES;
 
     [TouchPortalAction("PauseFullSet", "Pause - Full", "Set Full Pause to {0} (0/1)", false,
       Description = "A \"full\" pause stops the simulation completely, including any time passing in the simulated world. Same as \"Dev Mode Pause.\""
