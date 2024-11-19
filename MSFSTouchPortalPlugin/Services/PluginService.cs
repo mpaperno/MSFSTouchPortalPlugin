@@ -1030,7 +1030,7 @@ namespace MSFSTouchPortalPlugin.Services
               if (string.IsNullOrEmpty(errMsg))
                   errMsg = "Required parameter 'Value' missing or invalid.";
               _logger.LogError("Error getting value for repeat rate: '{errMsg}'; From data: {data}", errMsg, ActionDataToKVPairString(data));
-              break;
+              return false;
             }
           }
           else if (!ConvertSliderValueRange(connValue, data, out value)) {
@@ -1069,7 +1069,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     bool TryGetVarName(PluginActions actId, ActionData data, out string varName)
     {
-      if (data.TryGetValue("VarName", out varName) && !string.IsNullOrWhiteSpace(varName))
+      if (TryGetSomeActionData(data, "VarName", out varName))
         return true;
       _logger.LogError("Could not parse Variable Name parameter for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
       return false;
@@ -1093,7 +1093,7 @@ namespace MSFSTouchPortalPlugin.Services
       string unitName;
       if (newVersion) {
         // v1.3 added Unit and Index parameters
-        if (!data.TryGetValue("Unit", out unitName) || string.IsNullOrWhiteSpace(unitName)) {
+        if (!TryGetSomeActionData(data, "Unit", out unitName)) {
           _logger.LogError("Unit type missing or empty for Set SimVar '{varName}' in data: {data}", varName, ActionDataToKVPairString(data));
           return false;
         }
@@ -1118,7 +1118,7 @@ namespace MSFSTouchPortalPlugin.Services
     {
       if (!_simConnectService.IsConnected || !TryGetVarName(actId, data, out string varName))
         return false;
-      if ((!data.TryGetValue("Unit", out string unitName) || string.IsNullOrWhiteSpace(unitName)) && SimVarItem.RequiresUnitType(varType)) {
+      if (!TryGetSomeActionData(data, "Unit", out string unitName) && SimVarItem.RequiresUnitType(varType)) {
         _logger.LogError("Unit type is required in {actId} for SimVar {varName}", actId, varName);
         return false;
       }
@@ -1187,8 +1187,9 @@ namespace MSFSTouchPortalPlugin.Services
     //case PluginActions.AddCustomSimVar:  // deprecated
     bool AddSimVarFromActionData(PluginActions actId, ActionData data)
     {
-      if (!data.TryGetValue("VarName", out var varName) || string.IsNullOrWhiteSpace(varName) ||
-          !data.TryGetValue("CatId", out var sCatId)    || !Categories.TryGetCategoryId(sCatId, out Groups catId)
+      if (!TryGetSomeActionData(data, "VarName", out var varName) ||
+          !TryGetSomeActionData(data, "CatId", out var sCatId) ||
+          !Categories.TryGetCategoryId(sCatId, out Groups catId)
       ) {
         _logger.LogError("Could not parse required action parameters for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
         return false;
@@ -1205,7 +1206,7 @@ namespace MSFSTouchPortalPlugin.Services
           varType = 'L';
           break;
         case PluginActions.AddNamedVariable:
-          if (!data.TryGetValue("VarType", out var sVarType)) {
+          if (!TryGetSomeActionData(data, "VarType", out var sVarType)) {
             _logger.LogError("Could not get variable type parameter for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
             return false;
           }
@@ -1213,7 +1214,7 @@ namespace MSFSTouchPortalPlugin.Services
           break;
 #if WASIM
         case PluginActions.AddCalculatedValue:
-          if (!data.TryGetValue("CalcCode", out sCalcCode) || string.IsNullOrWhiteSpace(sCalcCode)) {
+          if (!TryGetSomeActionData(data, "CalcCode", out sCalcCode)) {
             _logger.LogError("Could not get valid CalcCode parameter for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
             return false;
           }
@@ -1347,11 +1348,8 @@ namespace MSFSTouchPortalPlugin.Services
           // For legacy/BC reasons, the first value doesn't have a digit after the name, and is also the only one expected to exist.
           string dataName = valN == 1 ? "Value" : "Value" + valN.ToString();
           string sVal = data.GetValueOrDefault(dataName, null);
-          if (string.IsNullOrWhiteSpace(sVal)) {
-            if (i == 0 && sVal == null)
-              _logger.LogWarning("Could not find {dataName} parameter for {actId} in data: {data}", dataName, actId, ActionDataToKVPairString(data));
+          if (string.IsNullOrWhiteSpace(sVal))
             break;  // exit on first empty value
-          }
           if (!ConvertStringValue(sVal, DataType.Text, int.MinValue, uint.MaxValue, out dVal)) {
             _logger.LogError("Error evaluating {dataName} parameter for {actId} with data: {data}", dataName, actId, ActionDataToKVPairString(data));
             return false;
@@ -1406,7 +1404,7 @@ namespace MSFSTouchPortalPlugin.Services
       if (!_simConnectService.IsConnected)
         return false;
 
-      if (!data.TryGetValue("Code", out var calcCode) || string.IsNullOrWhiteSpace(calcCode)) {
+      if (!TryGetSomeActionData(data, "Code", out var calcCode)) {
         _logger.LogError("Calculator Code parameter missing or empty for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
         return false;
       }
@@ -1479,7 +1477,7 @@ namespace MSFSTouchPortalPlugin.Services
           return SetNamedVariableFromActionData(pluginEventId, 'L', data, connValue);
 
         case PluginActions.SetVariable: {
-          if (data.TryGetValue("VarType", out var varType))
+          if (TryGetSomeActionData(data, "VarType", out var varType))
             return SetNamedVariableFromActionData(PluginActions.SetVariable, varType[0], data, connValue);
           _logger.LogError("Could not parse Variable Type parameter for SetVariable from data: {data}", ActionDataToKVPairString(data));
           return false;
@@ -1524,7 +1522,7 @@ namespace MSFSTouchPortalPlugin.Services
         }
 
         case PluginActions.LoadSimVars: {
-          if (data.TryGetValue("VarsFile", out var filepath) && !string.IsNullOrWhiteSpace(filepath)) {
+          if (TryGetSomeActionData(data, "VarsFile", out var filepath)) {
             LoadCustomSimVarsFromFile(filepath.Trim());
             return true;
           }
@@ -1532,7 +1530,7 @@ namespace MSFSTouchPortalPlugin.Services
         }
 
         case PluginActions.SaveSimVars: {
-          if (data.TryGetValue("VarsFile", out var filepath) && !string.IsNullOrWhiteSpace(filepath)) {
+          if (TryGetSomeActionData(data, "VarsFile", out var filepath)) {
             // Revisit in future TP version.
             //if (data.TryGetValue("VarsDir", out var filedir) && !string.IsNullOrWhiteSpace(filedir)) {
             //  try {
@@ -1772,7 +1770,7 @@ namespace MSFSTouchPortalPlugin.Services
           }
           if (!_simVarCollection.TryGetBySimName(fbVarName, out var simVar)) {
 
-            if ((!data.TryGetValue("Unit", out var unitName) || string.IsNullOrWhiteSpace(unitName))) {
+            if (!TryGetSomeActionData(data, "Unit", out var unitName)) {
               _logger.LogWarning("Unit type missing or empty for '{fbVarName}' in Connector '{cId}'", fbVarName, message.ConnectorId);
               return;
             }
@@ -1806,7 +1804,7 @@ namespace MSFSTouchPortalPlugin.Services
       }
       // every other connector action type
       else {
-        if (!data.TryGetValue("FbVarName", out var fbVarName) || string.IsNullOrWhiteSpace(fbVarName) || fbVarName == "null") {
+        if (!TryGetSomeActionData(data, "FbVarName", out var fbVarName) || fbVarName == "null") {
           _logger.LogDebug("Not tracking connector w/out feedback variable in connector ID '{cId}'", message.ConnectorId);
           return;
         }
@@ -1934,6 +1932,11 @@ namespace MSFSTouchPortalPlugin.Services
     private bool TryEvaluateValue(string strValue, out double value, out string errMsg) {
       value = double.NaN;
       errMsg = null;
+      if (string.IsNullOrWhiteSpace(strValue)) {
+        value = 0.0;
+        errMsg = "Value is empty or null";
+        return true;
+      }
       try {
         strValue = _hexNumberRegex.Replace(strValue, m => (Convert.ToUInt32(m.Groups[1].ToString(), 16).ToString()));
         if (_cultureInfo != CultureInfo.InvariantCulture && _cultureInfo.NumberFormat.NumberDecimalSeparator == ",")
@@ -1972,8 +1975,12 @@ namespace MSFSTouchPortalPlugin.Services
       return true;
     }
 
+    static bool TryGetSomeActionData(ActionData data, string key, out string value) {
+      return data.TryGetValue(key, out value) && !string.IsNullOrWhiteSpace(value);
+    }
+
     static bool TryGetSimVarIdFromActionData(string varName, out string varId) {
-      if (varName[^1] == ']' && (varName.IndexOf('[') is var brIdx && brIdx > -1)) {
+      if (!string.IsNullOrEmpty(varName) && varName[^1] == ']' && (varName.IndexOf('[') is var brIdx && brIdx > -1)) {
         varId = varName[++brIdx..^1];
         return true;
       }
@@ -1983,14 +1990,14 @@ namespace MSFSTouchPortalPlugin.Services
 
     static bool TryGetSimVarNameFromActionData(string selector, out string varId)
     {
-      varId = selector?.Split('\n', 2, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)[0].Replace(":N", string.Empty) ?? string.Empty;
+      varId = selector?.Split('\n', 2, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ElementAtOrDefault(0).Replace(":N", string.Empty) ?? string.Empty;
       return !string.IsNullOrWhiteSpace(varId);
     }
 
     static bool TryGetSimEventIdFromActionData(string selector, out string eventId)
     {
       // old version of SimEvent names used '-' as separator for description, v1.3+ uses newline.
-      eventId = selector?.Split(new[] { '\n', '-' }, 2, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)[0] ?? string.Empty;
+      eventId = selector?.Split(new[] { '\n', '-' }, 2, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ElementAtOrDefault(0) as string ?? string.Empty;
       return !string.IsNullOrWhiteSpace(eventId);
     }
 
