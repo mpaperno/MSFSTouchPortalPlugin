@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -49,7 +49,7 @@ namespace MSFSTouchPortalPlugin.Constants
   {
     internal static string CategoryPrefix { get; set; } = Configuration.PluginConfig.PLUGIN_NAME_PREFIX;
     internal static string NameSeparator { get; set; } = " - ";
-    internal static string CategoryDefaultImage { get; set; } = "airplane_takeoff24.png";
+    internal static string CategoryDefaultImage { get; set; } = "main-" + Configuration.PluginConfig.PLUGIN_NAME_PREFIX.ToLower() + ".png";
 
 
     private static readonly List<string> categoryNames = new()
@@ -158,9 +158,9 @@ namespace MSFSTouchPortalPlugin.Constants
     }
 
     internal static string CategoryImage(Groups catId) {
-      _ = catId;
-      // just the one, for now?
-      return CategoryDefaultImage;
+      if (catId == Groups.None)
+        return CategoryDefaultImage;
+      return catId.ToString() + ".png";
     }
 
   }

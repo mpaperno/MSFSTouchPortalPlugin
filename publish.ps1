@@ -55,7 +55,7 @@ Remove-Item $GenFilesPath -Force -Recurse
 copy "README.md" "$PluginFilesPath"
 copy "CHANGELOG.md" "$PluginFilesPath"
 copy "LICENSE" "$PluginFilesPath"
-copy "$ProjectName\airplane_takeoff24.png" "$PluginFilesPath"
+Copy-Item -Path ".\icons" -Destination "$PluginFilesPath" -Filter *.png -Recurse
 
 # Get version
 $FileVersion = (Get-Command $BinFilesPath\$BinName.dll).FileVersionInfo.ProductVersion

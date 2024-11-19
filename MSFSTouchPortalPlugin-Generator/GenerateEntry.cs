@@ -93,6 +93,7 @@ namespace MSFSTouchPortalPlugin_Generator
     public void Generate()
     {
       string basePath = $"%TP_PLUGIN_FOLDER%{_options.PluginFolder}/";
+      string baseIconPath = basePath + "icons/";
       // Get version number
       VersionInfo.AssemblyLocation = Path.Combine(Path.GetDirectoryName(AppContext.BaseDirectory), _options.PluginId + ".dll");
       uint vNum = VersionInfo.GetProductVersionNumber();
@@ -119,7 +120,7 @@ namespace MSFSTouchPortalPlugin_Generator
         var category = new TouchPortalCategory {
           Id = $"{_options.PluginId}.{catAttrib.Id}",
           Name = Categories.FullCategoryName(catAttrib.Id),
-          Imagepath = basePath + catAttrib.Imagepath
+          Imagepath = baseIconPath + catAttrib.Imagepath
         };
         model.Categories.Add(category);
 
