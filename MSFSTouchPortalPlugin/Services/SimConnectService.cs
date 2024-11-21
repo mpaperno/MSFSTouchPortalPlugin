@@ -106,26 +106,28 @@ namespace MSFSTouchPortalPlugin.Services
     const int MAX_STORED_REQUEST_RECORDS = 500;
     const uint WASM_CLIENT_ID = 0xFF700C49;   // ID to use for connecting with WASimClient; the high byte is replaced at Init() time.
 
-    bool _connected;
-    bool _connecting;
-    bool _simConnectHasQuit = false;  // flag to prevent trying to invoke SimConnect in certain situations, eg. after a Quit or crash.
+    bool _connected;               // fully connected & ready, or not
+    bool _connStateChangePending;  // connecting or disconnecting
     bool WasmConnected => WasmStatus == WasmModuleStatus.Connected;
     bool WasmInitialized => WasmStatus > WasmModuleStatus.NotFound;
     int _reqTrackIndex = 0;  // current write slot index in _requestTracking array
     string _lastLoadedAircraft = "";  // for tracking when user's currently loaded model has changed, to reload aircraft-specific variables/events
     SimulatorInfo _simInfo;
-    Task _messageWaitTask;
     SimConnect _simConnect = null;
 #if WASIM
     WASMLib _wlib = null;
 #endif
 
+    Task _messageWaitTask = null;
+    CancellationTokenSource _messsageWaitCTS;    // for _messsageWaitCancelToken
+    CancellationToken _messsageWaitCancelToken;  // used to shut down local task(s) only needed while simulator is connected
+
     readonly ILogger<SimConnectService> _logger;
     readonly SimVarCollection _simVarCollection;
     readonly SimInputEventCollection _simInputEvents = new();
     readonly EventWaitHandle _scReady = new EventWaitHandle(false, EventResetMode.AutoReset);
-    readonly AutoResetEvent _scQuit = new(false);
     readonly RequestTrackingData[] _requestTracking = new RequestTrackingData[MAX_STORED_REQUEST_RECORDS];  // rolling buffer array for request tracking
+    readonly Dictionary<Type, Action<Enum>> _registerDataDelegates = new();  // handlers for different incoming data types mapped to SimConnect.RegisterDataDefineStruct<type>
 
     // SimConnect method delegates, for centralized interaction in InvokeSimMethod()
     Action<Enum>             ClearDataDefinitionDelegate;
@@ -147,15 +149,14 @@ namespace MSFSTouchPortalPlugin.Services
     Action<ulong> SubscribeInputEventDelegate;
     Action<ulong> UnsubscribeInputEventDelegate;
 
-    readonly Dictionary<Type, Action<Enum> > _registerDataDelegates = new();
 
     uint StartSimConnect(uint configIndex)
     {
-      if (_connecting || _connected)
-        return IsConnected? S_OK : E_FAIL;
+      if (_connStateChangePending || _connected)
+        return IsConnected ? S_OK : E_FAIL;
 
       uint ret = E_FAIL;
-      _connecting = true;
+      _connStateChangePending = true;
       _logger.LogInformation("Connecting to SimConnect...");
 
 #if WASIM
@@ -168,7 +169,10 @@ namespace MSFSTouchPortalPlugin.Services
         // Set up minimum handlers to receive connection notification
         _simConnect.OnRecvOpen += new SimConnect.RecvOpenEventHandler(Simconnect_OnRecvOpen);
         _simConnect.OnRecvException += new SimConnect.RecvExceptionEventHandler(Simconnect_OnRecvException);
-        _scQuit.Reset();
+
+        // Start the message receiver task so that we can get the initial 'Open' message to verify connection.
+        _messsageWaitCTS = new CancellationTokenSource();
+        _messsageWaitCancelToken = _messsageWaitCTS.Token;
         _messageWaitTask = Task.Run(ReceiveMessages);
 
         // Make sure we actually connect
@@ -186,7 +190,7 @@ namespace MSFSTouchPortalPlugin.Services
         unchecked { ret = (uint)e.HResult; }
       }
 
-      _connecting = false;
+      _connStateChangePending = false;
       return ret;
     }
 
@@ -256,16 +260,21 @@ namespace MSFSTouchPortalPlugin.Services
 
     void StopSimConnect()
     {
-      if (_messageWaitTask != null) {
-        _scQuit.Set();  // trigger message wait task to exit
-        var sw = System.Diagnostics.Stopwatch.StartNew();
-        while (_messageWaitTask.Status == TaskStatus.Running && sw.ElapsedMilliseconds <= MSG_RCV_WAIT_TIME_MS)
-          Thread.Sleep(2);
-        if (_messageWaitTask.Status == TaskStatus.Running)
+      if (!_connected || _connStateChangePending)
+        return;
+      _connStateChangePending = true;
+
+      if (_messsageWaitCTS != null) {
+        _messsageWaitCTS.Cancel();  // trigger message wait task to exit
+        if (_messageWaitTask.Status < TaskStatus.RanToCompletion && !_messageWaitTask.Wait(MSG_RCV_WAIT_TIME_MS))
           _logger.LogWarning((int)EventIds.Ignore, "Message wait task timed out while stopping.");
         try { _messageWaitTask.Dispose(); }
         catch { /* ignore in case it hung */ }
+        _messsageWaitCTS.Dispose();
+        _messsageWaitCTS = null;
+        _messageWaitTask = null;
       }
+
 #if WASIM
       if (WasmConnected) {
         _wlib?.disconnectSimulator();
@@ -283,11 +292,11 @@ namespace MSFSTouchPortalPlugin.Services
         catch (Exception e) {
           _logger.LogWarning((int)EventIds.Ignore, e, "Exception while trying to dispose SimConnect client.");
         }
+        _simConnect = null;
       }
-      _simConnect = null;
-      _messageWaitTask = null;
-      _simConnectHasQuit = false;
+
       _connected = false;
+      _connStateChangePending = false;
     }
 
     // runs in separate task/thread
@@ -295,9 +304,9 @@ namespace MSFSTouchPortalPlugin.Services
     {
       _logger.LogDebug("ReceiveMessages task started.");
       int sig;
-      var waitHandles = new WaitHandle[] { _scReady, _scQuit };
+      var waitHandles = new WaitHandle[] { _scReady, _messsageWaitCancelToken.WaitHandle };
       try {
-        while (_connected || _connecting) {
+        while (!_messsageWaitCancelToken.IsCancellationRequested) {
           sig = WaitHandle.WaitAny(waitHandles, MSG_RCV_WAIT_TIME_MS);
           if (sig == 0 && _simConnect != null)
             _simConnect.ReceiveMessage();    // note that this calls our event handlers synchronously on this same thread.
@@ -308,8 +317,8 @@ namespace MSFSTouchPortalPlugin.Services
       catch (ObjectDisposedException) { /* ignore but exit */ }
       catch (Exception e) {
         _logger.LogError((int)EventIds.Ignore, e, "ReceiveMessages task exception {HResult:X}, disconnecting.", e.HResult);
-        _simConnectHasQuit = true;
-        Task.Run(Disconnect);  // async to avoid deadlock
+        if (!_messsageWaitCancelToken.IsCancellationRequested)
+          Task.Run(Disconnect);  // async to avoid deadlock
         // COMException (0xC000014B) = broken pipe (sim crashed/network loss on a Pipe type connection)
       }
       _logger.LogDebug("ReceiveMessages task stopped.");
@@ -395,7 +404,7 @@ namespace MSFSTouchPortalPlugin.Services
     // Centralized SimConnect method handler
     bool InvokeSimMethod(Delegate method, params object[] args)
     {
-      if (method == null || !_connected || _simConnectHasQuit)
+      if (method == null || !_connected || _messsageWaitCancelToken.IsCancellationRequested)
         return false;
       try {
         _logger.LogTrace("Invoking: {methodName}({args})", method.Method.Name, string.Join(", ", args));
@@ -590,6 +599,7 @@ namespace MSFSTouchPortalPlugin.Services
         _logger.LogError("WASM Client could not connect to SimConnect for unknown reason. Result: {hr}", hr.ToString());
 
       if (hr != HR.OK) {
+        _wlib.disconnectSimulator();
         WasmStatus = WasmModuleStatus.NotFound;
         _logger.LogWarning((int)EventIds.PluginError, "WASM Server not found or couldn't connect, integration disabled.");
         return;
@@ -827,7 +837,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     private void Simconnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data) {
       _logger.LogInformation("Received shutdown command from SimConnect, disconnecting.");
-      _simConnectHasQuit = true;
+      _messsageWaitCTS.Cancel();  // trigger message wait task to exit so it doesn't throw and try to disconnect again
       Task.Run(Disconnect);  // async to avoid deadlock
     }
 
@@ -1036,11 +1046,10 @@ namespace MSFSTouchPortalPlugin.Services
           try {
 
             StopSimConnect();
+            _scReady?.Dispose();
 #if WASIM
             _wlib?.Dispose();
 #endif
-            _scReady?.Dispose();
-            _scQuit?.Dispose();
           }
           catch { }
         }
