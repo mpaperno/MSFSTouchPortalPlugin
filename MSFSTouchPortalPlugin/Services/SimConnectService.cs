@@ -929,21 +929,37 @@ namespace MSFSTouchPortalPlugin.Services
       }
     }
 
-    // The two event handlers below are _almost_ the same but subtly different due to the contents of the event data structs.
+    // The two Input Event message handlers below are _almost_ the same but subtly different due to the contents of the event data structs.
     // The first one uses a key value of a request ID which we assigned, whereas the 2nd uses the Hash ID of the event, which we have to look up.
     // https://devsupport.flightsimulator.com/t/simconnect-api-inconsistency-between-getinputevent-and-subscribeinputevent/6670
+
+    // Common handler for OnRecvGetInputEvent and OnRecvSubscribeInputEvent
+    void HandleInputEventValue(SIMCONNECT_INPUT_EVENT_TYPE type, object[] data, Definition def, string name) {
+      object val = null;
+      try {
+        _logger.LogTrace("Got Input Event Value '{Value}' as '{NewValue}' for Input Event '{Item}'", data[0], val, name);
+
+        if (type == SIMCONNECT_INPUT_EVENT_TYPE.STRING)
+          val = ((SimConnect.InputEventString)data[0]).value;
+        else if (Utils.TryConvertDouble(data[0], out double dVal))
+          val = dVal;
+        else
+          OnSimVarError?.Invoke(def, SimVarErrorType.Registration, $"Could not convert value '{data}' to numeric for Input Event '{name}'");
+      }
+      catch (Exception ex) {
+        OnSimVarError?.Invoke(def, SimVarErrorType.Registration, $"Error getting Input Event value from SimConnect data: ${ex.Message}");
+      }
+      if (val != null)
+        OnDataUpdateEvent?.Invoke(def, def, val);
+    }
 
     void SimConnect_OnRecvGetInputEvent(SimConnect sender, SIMCONNECT_RECV_GET_INPUT_EVENT data)
     {
       if (_simVarCollection.TryGet((Definition)data.dwRequestID, out var simVar)) {
-        if ((data.eType == SIMCONNECT_INPUT_EVENT_TYPE.STRING) == simVar.IsStringType) {
-          object val = data.eType == SIMCONNECT_INPUT_EVENT_TYPE.STRING ? ((SimConnect.InputEventString)data.Value[0]).value.ToString() : (double)data.Value[0];
-          _logger.LogTrace("Got Input Event Value '{value}' for {item}", val, simVar.SimVarName);
-          OnDataUpdateEvent?.Invoke(simVar.Def, simVar.Def, val);
-        }
-        else {
+        if ((data.eType == SIMCONNECT_INPUT_EVENT_TYPE.STRING) == simVar.IsStringType)
+          HandleInputEventValue(data.eType, data.Value, simVar.Def, simVar.SimVarName);
+        else
           OnSimVarError?.Invoke(simVar.Def, SimVarErrorType.Registration, $"Got incorrect data type for Input Event '{simVar.SimVarName}'");
-        }
       }
       else {
         _logger.LogDebug("Got Input Event value for unknown variable with request ID {reqId}", data.dwRequestID);
@@ -953,14 +969,10 @@ namespace MSFSTouchPortalPlugin.Services
     void SimConnect_OnRecvSubscribeInputEvent(SimConnect sender, SIMCONNECT_RECV_SUBSCRIBE_INPUT_EVENT data)
     {
       if (_simInputEvents.TryGetValue(data.Hash, out var ev)) {
-        if (data.eType == ev.Type) {
-          object val = data.eType == SIMCONNECT_INPUT_EVENT_TYPE.STRING ? ((SimConnect.InputEventString)data.Value[0]).value.ToString() : (double)data.Value[0];
-          _logger.LogTrace("Got Subscribed Input Event Value '{value}' for '{name}", val, ev.Name);
-          OnDataUpdateEvent?.Invoke(ev.SimVarDef, (Definition)data.Hash, val);
-        }
-        else {
+        if (data.eType == ev.Type)
+          HandleInputEventValue(data.eType, data.Value, ev.SimVarDef, ev.Name);
+        else
           OnSimVarError?.Invoke(ev.SimVarDef, SimVarErrorType.Registration, $"Got incorrect data type for Subscribed Input Event '{ev.Name}'");
-        }
       }
       else {
         _logger.LogDebug("Got Subscribed Input Event for unknown variable with hash ID {hash}", data.Hash);
