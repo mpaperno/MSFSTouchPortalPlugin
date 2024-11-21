@@ -23,6 +23,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Enums;
+using MSFSTouchPortalPlugin.Helpers;
 using MSFSTouchPortalPlugin.Interfaces;
 using MSFSTouchPortalPlugin.Types;
 using System;
@@ -759,18 +760,27 @@ namespace MSFSTouchPortalPlugin.Services
 #if WASIM
       // If WASM is available, take the shorter and better route.
       if (WasmConnected) {
-        if (varType == 'L') {
-          _logger.LogTrace("Setting L variable {varName} to {val}", varName, (double)value);
-          if (string.IsNullOrEmpty(unit) || unit == "number")
-            return _wlib.setOrCreateLocalVariable(varName, (double)value) == HR.OK;
-          return _wlib.setOrCreateLocalVariable(varName, unit, (double)value) == HR.OK;
+        // "Q" type is actually just calculator code, so simplly pass it on.
+        if (varType == 'Q')
+          return ExecuteCalculatorCode(value.ToString());
+
+        var req = new VariableRequest() {
+          variableType = (sbyte)varType,
+          variableName = varName,
+          unitName = unit ?? string.Empty,
+          createLVar = true,
+        };
+        _logger.LogTrace("Setting variable {Request} to '{Value}'", req.ToString(), value.ToString());
+
+        if (unit == "string")
+          return _wlib.setVariable(req, value.ToString()) == HR.OK;
+
+        if (!Utils.TryConvertDouble(value, out double dVal)) {
+          _logger.LogWarning("Could not convert '{value}' to numeric", value);
+          return false;
         }
 
-        _logger.LogTrace("Setting variable type '{varType}' {varName} to '{val}' with unit {unit}", varType, varName, value, unit);
-        var req = new VariableRequest(varType, varName, unit);
-        if (unit == "string")
-          return _wlib.setVariable(req, (string)value) == HR.OK;
-        return _wlib.setVariable(req, (double)value) == HR.OK;
+        return _wlib.setVariable(req, dVal) == HR.OK;
       }
 #endif
 
