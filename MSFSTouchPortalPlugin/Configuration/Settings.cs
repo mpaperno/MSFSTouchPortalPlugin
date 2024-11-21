@@ -42,7 +42,7 @@ namespace MSFSTouchPortalPlugin.Configuration
         "To include the default set of variables/states, use the name `Default` as one of the file names (in any position of the list).\n\n" +
         "Files are loaded in the order in which they appear in the list, and in case of conflicting state IDs, the last one found will be used.\n\n" +
         "The custom file(s) are expected to be in the folder specified in the \"User Config Files Path\" setting (see below).\n\n" +
-        "See [Using Custom States and Simulator Variables](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Using-Custom-States-and-Simulator-Variables) for more details.",
+        "See https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Using-Custom-States-and-Simulator-Variables for more details.",
       DocsUrl = "https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Using-Custom-States-and-Simulator-Variables",
       Default = "Default",
       MaxLength = 255
@@ -55,11 +55,11 @@ namespace MSFSTouchPortalPlugin.Configuration
         "A default \"SimConnect.cfg\" is included with this plugin (in the installation folder). " +
         "You may also use a custom configuration file stored in the \"User Config Files Path\" folder (see below). \n\n" +
         "The index number can be specified in this setting. This is useful for: \n" +
-        "  1. compatibility with FSX, and/or \n" +
-        "  2. custom configurations over network connections (running Touch Portal on a different computer than the sim). \n\n" +
+        "* Compatibility with FSX.\n" +
+        "* Custom configurations over network connections (running Touch Portal on a different computer than the sim). \n\n" +
         "The default configuration index is zero, which (in the included default SimConnect.cfg) is suitable for MSFS (2020). Use the index 1 for compatibility with FSX (or perhaps other sims).\n\n" +
         "See here for more info about the file format: https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_CFG_Definition.htm  \n\n" +
-        "For more information on using Touch Portal remotely see [Multiple Touch Portal Device Setup](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Multiple-Touch-Portal-Device-Setup)",
+        "For more information on using Touch Portal remotely see https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Multiple-Touch-Portal-Device-Setup",
       DocsUrl = "https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Multiple-Touch-Portal-Device-Setup",
 #if !FSX
       Default = "0",
@@ -73,7 +73,7 @@ namespace MSFSTouchPortalPlugin.Configuration
     public static readonly PluginSetting UserConfigFilesPath = new PluginSetting("UserConfigFilesPath", DataType.Text) {
       Name = "User Config Files Path (blank for default)",
       Description = "The system path where plugin settings are stored, including custom user State configuration files for sate definitions & the \"SimConnect.cfg\" configuration file.\n " +
-        "Keep it blank for default, which is \"C:\\Users\\<UserName>\\AppData\\Roaming\\MSFSTouchPortalPlugin\".\n\n" +
+        "Keep it blank for default, which is \"C:\\Users\\<UserName>\\AppData\\Roaming\\" + PluginConfig.PLUGIN_ID + "\".\n\n" +
         "Note that using this plugin's installation folder for custom data storage is not recommended, since anything in there will likely get overwritten during a plugin update/re-install.",
       Default = "",
       MaxLength = 255
@@ -106,7 +106,10 @@ namespace MSFSTouchPortalPlugin.Configuration
 #if WASIM
     public static readonly PluginSetting SortLVarsAlpha = new PluginSetting("SortLVarsAlpha", DataType.Switch) {
       Name = "Sort Local Variables Alphabetically (0/1)",
-      Description = "Set to 1 (one) to have all Local ('L') simulator variables sorted in alphabetical order within selection lists. Setting to 0 (zero) will keep them in the original order they're loaded in on the simulator (by ascending ID).",
+      Description =
+        "Set to 1 (one) to have all Local ('L') simulator variables sorted in alphabetical order within selection lists. " +
+        "Setting to 0 (zero) will keep them in the original order they're loaded in on the simulator (by ascending ID).\n\n" +
+        "This setting only applies when using WASimModule integration since there is no other way to get a list.",
       Default = "1",
     };
 #endif
