@@ -257,7 +257,7 @@ namespace MSFSTouchPortalPlugin.Services
           return;
       _simTasksCTS.Cancel();
       if (_pluginEventsTask != null) {
-        if (_pluginEventsTask.Status == TaskStatus.Running && !_pluginEventsTask.Wait(5000))
+        if (_pluginEventsTask.Status < TaskStatus.RanToCompletion && !_pluginEventsTask.Wait(5000))
           _logger.LogWarning((int)EventIds.Ignore, "PluginEventsTask timed out while stopping.");
         try { _pluginEventsTask.Dispose(); }
         catch (Exception ex) {
