@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -71,6 +71,9 @@ namespace MSFSTouchPortalPlugin_Generator
     static void SerializeActionData(DocActionBase action, TouchPortalActionDataAttribute[] attribData)
     {
       foreach (var attrib in attribData) {
+        if (attrib.Id != null && attrib.Id.StartsWith("OnHold"))
+          continue;
+
         var data = new DocActionData {
           Type = attrib.Type,
           DefaultValue = attrib.GetDefaultValue()?.ToString(),

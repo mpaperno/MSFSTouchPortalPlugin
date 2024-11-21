@@ -69,12 +69,14 @@ namespace MSFSTouchPortalPlugin_Generator
         var data = new TouchPortalActionData {
           Id = $"{action.Id}.Data.{dataId}",
           Type = attrib.Type,
-          Label = attrib.Label ?? "Action",
           DefaultValue = attrib.GetDefaultValue(),
           ValueChoices = attrib.ChoiceValues,
           MinValue = attrib.MinValue,
           MaxValue = attrib.MaxValue,
           AllowDecimals = attrib.AllowDecimals,
+          Label = (bool)_options.TPv3 ? attrib.Label : null,  // deprecated in TPv4 so force to null if excluding v3 support
+          FieldLabel = attrib.Label,         // may be used later for formatting lines, not for TP
+          FieldSuffix = attrib.LabelSuffix,  //  "
         };
         ++i;
         action.Data.Add(data);
@@ -82,9 +84,15 @@ namespace MSFSTouchPortalPlugin_Generator
       var tmpArry = action.Data.Select(d => $"{{${d.Id}$}}").ToArray();
       try {
         action.Format = string.Format(action.Format, tmpArry);
+        if ((bool)_options.TPv4 && action.GetType() == typeof(TouchPortalAction)) {
+          // For actions we also want to format the "on hold" line, if there is one.
+          var holdAct = (action as TouchPortalAction);
+          if (holdAct.FormatOnHold != null)
+            holdAct.FormatOnHold = string.Format(holdAct.FormatOnHold, tmpArry);
+        }
       }
       catch (Exception e) {
-        _logger.LogError("Failed to format {0} for {1} with data {2}\n{error}", action.Format, action.Id, string.Join(',', tmpArry), e);
+        _logger.LogError("Failed to format '{Format}' for {ActionId} with data\n{@Data}\n{Error}", action.Format, action.Id, string.Join(',', tmpArry), e);
         return false;
       }
       return true;
@@ -100,32 +108,81 @@ namespace MSFSTouchPortalPlugin_Generator
       // read the internal plugin states config
       IEnumerable<SimVarItem> simVars = _pluginConfig.LoadPluginStates();
 
-      _logger.LogInformation($"Generating entry.tp v{vNum:X} to '{_options.OutputPath}'.");
+      var tpv3 = (bool)_options.TPv3;
+      var tpv4 = (bool)_options.TPv4;
+
+      _logger.LogInformation($"Generating entry.tp v{vNum:X} [for TPv3 ({tpv3}) | TPv4 ({tpv4})] to '{_options.OutputPath}'");
 
       // Setup Base Model
       var model = new Base {
-        Api = 7,
         Version = vNum,
         Name = _options.PluginName,
         Id = _options.PluginId
       };
+      if (tpv3)
+        model.Sdk = 6;
+      if (tpv4)
+        model.Api = 10;
       if (!_options.Debug)
         model.Plugin_start_cmd = $"\"{basePath}dist/{_options.PluginId}.exe\"";
       model.Configuration.ColorDark = "#" + _options.ColorDark.Trim('#');
       model.Configuration.ColorLight = "#" + _options.ColorLight.Trim('#');
       model.Configuration.ParentCategory = "games";
 
+      // Get all categories
       var categegoryAttribs = _reflectionSvc.GetCategoryAttributes();
-      foreach (var catAttrib in categegoryAttribs) {
-        var category = new TouchPortalCategory {
-          Id = $"{_options.PluginId}.{catAttrib.Id}",
-          Name = Categories.FullCategoryName(catAttrib.Id),
-          Imagepath = baseIconPath + catAttrib.Imagepath
+      TouchPortalCategory category = null;
+
+      if (tpv4) {
+        // Add the main plugin category
+        category = new TouchPortalCategory {
+          Id = _options.PluginId + ".Main",
+          Name = PluginConfig.PLUGIN_NAME_PREFIX,
+          Imagepath = baseIconPath + Categories.CategoryImage(Groups.None)
         };
         model.Categories.Add(category);
 
+        // Add sub-categories to main one
+        category.SubCategories = [];
+        foreach (var catAttrib in categegoryAttribs) {
+          var subCat = new TouchPortalSubCategory {
+            Id = $"{_options.PluginId}.{catAttrib.Id}",
+            Name = Categories.CategoryName(catAttrib.Id),
+            Imagepath = baseIconPath + catAttrib.Imagepath
+          };
+          category.SubCategories.Add(subCat);
+        }
+      }
+
+      // Loop over categories adding actions/connectors/events/states for each.
+      // In TPv4 mode we add everything to the main category, specifying the sub-category ID for actions & connectors.
+      // In TPv3-only mode we'll create new top-level categories in the base model.
+      foreach (var catAttrib in categegoryAttribs) {
+
+        var fullCatName = Categories.FullCategoryName(catAttrib.Id);
+        string subCategoryId = null;
+        if (tpv4) {
+          // For TPv4 we'll assign a sub category ID to each action/connector/event.
+          subCategoryId = $"{_options.PluginId}.{catAttrib.Id}";
+        }
+        else {
+          // create separate top-level categories for TPv3 and add all the contents to that instead of the main one like for TPv4.
+          category = new TouchPortalCategory {
+            Id = $"{_options.PluginId}.{catAttrib.Id}",
+            Name = fullCatName,
+            Imagepath = baseIconPath + catAttrib.Imagepath
+          };
+          model.Categories.Add(category);
+        }
+
         // workaround for backwards compat with mis-named actions in category InstrumentsSystems.Fuel
         string actionCatId = _options.PluginId + "." + Categories.ActionCategoryId(catAttrib.Id);
+
+        // Sort the actions and connectors in each non-internal group (those are manually arranged)
+        if (!Categories.InternalActionCategories.Contains(catAttrib.Id)) {
+          catAttrib.Actions = catAttrib.Actions.OrderBy(c => c.Name).ToArray();
+          catAttrib.Connectors = catAttrib.Connectors.OrderBy(c => c.Name).ToArray();
+        }
 
         // Actions
         foreach (var actionAttrib in catAttrib.Actions) {
@@ -137,14 +194,61 @@ namespace MSFSTouchPortalPlugin_Generator
             Prefix = actionAttrib.Prefix,
             Type = actionAttrib.Type,
             Description = actionAttrib.Description,
-            TryInline = true,
             Format = actionAttrib.Format,
+            FormatOnHold = tpv4 ? actionAttrib.OnHoldFormat : null,
             HasHoldFunctionality = actionAttrib.HasHoldFunctionality,
+            SubCategoryId = subCategoryId,
           };
 
           // Action Data
           if (actionAttrib.Data.Any() && !SerializeActionData(action, actionAttrib.Data))
             continue;
+
+          if (tpv4) {
+            // action.lines object for TP api v7+
+            action.Lines = new TouchPortalLinesCollection();
+            // common description line for action and onhold lines
+            List <TouchPortalLineObject> lineData = [];
+            if (!string.IsNullOrEmpty(action.Description))
+              lineData.Add(new TouchPortalLineObject(action.Description));
+
+            var linesObj = new TouchPortalLinesObject([.. lineData]);
+            action.Lines.Action = [ linesObj ];
+            // Split up actions with many fields into multiple lines. Currently these are just the custom states editor actions.
+            if (actionAttrib.LayoutAsForm) {
+              foreach (var data in action.Data) {
+                linesObj.Data.Add(new TouchPortalLineObject($"{data.FieldLabel} {{${data.Id}$}} {data.FieldSuffix ?? ""}"));
+              }
+              if (actionAttrib.FormLabelWidth > 0) {
+                if (linesObj.Suggestions == null)
+                  linesObj.Suggestions = new();
+                linesObj.Suggestions.FirstLineItemLabelWidth = actionAttrib.FormLabelWidth;
+              }
+            }
+            else {
+              linesObj.Data.Add(new TouchPortalLineObject(action.Format));
+            }
+            //_logger.LogInformation("{isMatch} \n'{format}'\n{@lines}", Regex.IsMatch(action.Format, @"(.+\{\$[\w\.]+\$\}){6,}", RegexOptions.Singleline), action.Format, linesObj.Data);
+
+            if (tpv4 && actionAttrib.HasHoldFunctionality && action.FormatOnHold != null) {
+              // The presence of `lines.onhold` is supposed to enable "HasHoldFunctionality" in TP v4, and allow for multi-line formatting.
+              // However as of TP v4.3b4 beta this doesn't work. But in case it does start working in a future version, we'll have this in place.
+              // Split the "On Hold" format text on pipe char and add as two separate lines. The 2nd line will be the specific "on hold" data fields.
+              List<TouchPortalLineObject> holdLines = [ ..lineData ];
+              action.FormatOnHold.Split('|').ToList().ForEach(l => { holdLines.Add(new TouchPortalLineObject(l.Trim())); });
+              action.Lines.Onhold = [ new TouchPortalLinesObject(holdLines) ];
+            }
+
+            if (!tpv3) {
+              // remove some deprecated properties
+              action.Description = null;
+              action.Format = null;
+              action.Prefix = null;
+              // keep these for BC with initial TP v4 releases
+              //action.FormatOnHold = null;
+              //action.HasHoldFunctionality = false;
+            }
+          }
 
           // validate unique ID
           if (category.Actions.FirstOrDefault(a => a.Id == action.Id) == null)
@@ -162,7 +266,8 @@ namespace MSFSTouchPortalPlugin_Generator
             Id = $"{actionCatId}.Conn.{connAttrib.Id}",
             Name = connAttrib.Name,
             Description = connAttrib.Description,
-            Format = connAttrib.Format
+            Format = connAttrib.Format,
+            SubCategoryId = subCategoryId,
           };
 
           // Connector Data
@@ -177,24 +282,8 @@ namespace MSFSTouchPortalPlugin_Generator
 
         }  // connectors
 
-        // States
-        var categoryStates = simVars.Where(s => s.CategoryId == catAttrib.Id);
-        foreach (SimVarItem state in categoryStates) {
-          var newState = new TouchPortalState {
-            Id = state.TouchPortalStateId,
-            Type = state.TouchPortalValueType,
-            Description = $"{category.Name} - {state.Name}",
-            DefaultValue = state.DefaultValue ?? string.Empty,
-          };
-          // validate unique ID
-          if (category.States.FirstOrDefault(s => s.Id == newState.Id) == null)
-            category.States.Add(newState);
-          else
-            _logger.LogWarning($"Duplicate state ID found: '{newState.Id}', skipping.'");
-        }
-
         // Events
-        var catEvents = _reflectionSvc.GetEvents(catAttrib.Id, fullStateId: true);
+        var catEvents = _reflectionSvc.GetEvents(catAttrib.Id, fullStateId: true).OrderBy(c => c.Name);
         foreach (var ev in catEvents) {
           var tpEv = new Model.TouchPortalEvent {
             Id = category.Id + ".Event." + ev.Id,   // these come unqualified
@@ -203,7 +292,8 @@ namespace MSFSTouchPortalPlugin_Generator
             Type = ev.Type,
             ValueType = ev.ValueType,
             ValueChoices = ev.ValueChoices,
-            ValueStateId =ev.ValueStateId,
+            ValueStateId = ev.ValueStateId,
+            SubCategoryId = subCategoryId,
           };
           // validate unique ID
           if (category.Events.FirstOrDefault(s => s.Id == tpEv.Id) == null)
@@ -212,12 +302,35 @@ namespace MSFSTouchPortalPlugin_Generator
             _logger.LogWarning($"Duplicate Event ID found: '{ev.Id}', skipping.'");
         }
 
-        // Sort the actions and states for SimConnect groups
-        if (!Categories.InternalActionCategories.Contains(catAttrib.Id)) {
-          category.Actions = category.Actions.OrderBy(c => c.Name).ToList();
-          category.Events = category.Events.OrderBy(c => c.Name).ToList();
-          category.States = category.States.OrderBy(c => c.Description).ToList();
+        // States
+        var categoryStates = simVars.Where(s => s.CategoryId == catAttrib.Id).OrderBy(s => s.Name);
+        // If building for TPv4 then we want to add states to new categories, not in the main one.
+        // This way they get sorted correctly along with the dynamic states.
+        // If building for v3 then we already are in the individual categories.
+        var stateCategory = category;
+        if (tpv4 && categoryStates.Count() > 0) {
+          stateCategory = new TouchPortalCategory {
+            Id = $"{_options.PluginId}.{catAttrib.Id}",
+            Name = fullCatName,
+            Imagepath = baseIconPath + catAttrib.Imagepath
+          };
+          model.Categories.Add(stateCategory);
         }
+        foreach (SimVarItem state in categoryStates) {
+          var newState = new TouchPortalState {
+            Id = state.TouchPortalStateId,
+            Type = state.TouchPortalValueType,
+            Description = $"{fullCatName} - {state.Name}",
+            DefaultValue = state.DefaultValue ?? string.Empty,
+            //ParentGroup = fullCatName,
+          };
+          // validate unique ID
+          if (stateCategory.States.FirstOrDefault(s => s.Id == newState.Id) == null)
+            stateCategory.States.Add(newState);
+          else
+            _logger.LogWarning($"Duplicate state ID found: '{newState.Id}', skipping.'");
+        }
+
       }  // categories loop
 
       // Settings

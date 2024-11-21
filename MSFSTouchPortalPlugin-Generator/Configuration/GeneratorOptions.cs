@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -29,6 +29,20 @@ namespace MSFSTouchPortalPlugin_Generator.Configuration
     [Option('o', "OutputPath", Default = ".\\", MetaValue = "<Path>", Required = false,
       HelpText = "Output directory path for generated files (default is current working directory).")]
     public string OutputPath { get; set; }
+
+    [Option("tpv3", Default = (bool)true, MetaValue = "(true|false)", Required = false,
+      HelpText = "Enables generating entry.tp that works with Touch Portal v3. If --tpv4 is disabled then no api v7 features are included.")]
+    public bool? TPv3 { get; set; }
+
+    [Option("tpv4", Default = (bool)true, MetaValue = "(true|false)", Required = false,
+      HelpText =
+        "Enables generating entry.tp with specific additions for Touch Portal api v7. If --tpv3 is disabled, the output will be for api 7+ only. " +
+        "If --tpv3 is enabled, the output will be compatible but all actions will be in one category.")]
+    public bool? TPv4 { get; set; }
+
+    [Option('d', "debug", Default = false, Required = false,
+      HelpText = "Enables generating a 'debug' version of entry.tp. Currently that means w/out a startup command.")]
+    public bool Debug { get; set; }
 
     [Option('s', "StateFiles", Default = null, MetaValue = "<LIST>", Separator = ',', Required = false,
       HelpText = "\nOne or more custom configuration files which define Simulator Variables/Touch Portal States for documentation. \n" +
@@ -83,8 +97,5 @@ namespace MSFSTouchPortalPlugin_Generator.Configuration
       HelpText = "\nURL to full project documentation, if any.")]
     public string DocumentationUrl { get; set; }
 
-    [Option('d', "debug", Default = false, Required = false,
-      HelpText = "Enables generating a 'debug' version of entry.tp. Currently that means w/out a startup command.")]
-    public bool Debug { get; set; }
   }
 }
