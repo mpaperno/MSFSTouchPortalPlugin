@@ -28,17 +28,19 @@ namespace MSFSTouchPortalPlugin.Attributes
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
   public class TouchPortalActionBaseAttribute : Attribute
   {
-    public string Id { get; set; }
-    public Enum EnumId { get; set; } = default;
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public string Format { get; set; }
-    public string ConnectorFormat { get; set; } = null;
-    public System.Reflection.MemberInfo ParentObject { get; set; } = null;
-    public bool Deprecated { get; set; } = false;  // exclude from generated entry.tp and docs if true, but preserve mappings for backwards compat.
-    public int UserValueIndex { get; set; } = 0;  // index at which to insert user-provided value(s) in relation to any static values; -1 means append to end.
-    public TouchPortalActionDataAttribute[] Data { get; set; } = Array.Empty<TouchPortalActionDataAttribute>();
-    public TouchPortalActionMappingAttribute[] Mappings { get; set; } = Array.Empty<TouchPortalActionMappingAttribute>();
+    public string Id;
+    public Enum EnumId = default;
+    public string Name;
+    public string Description;
+    public string Format;
+    public string ConnectorFormat = null;
+    public System.Reflection.MemberInfo ParentObject = null;
+    public bool LayoutAsForm = false;   // place all action data fields on separate lines in a vertical form-style layout (TP v4+)
+    public int FormLabelWidth = 150;    // how wide the label column should be in form layouts
+    public bool Deprecated = false;     // exclude from generated entry.tp and docs if true, but preserve mappings for backwards compat.
+    public int UserValueIndex = 0;      // index at which to insert user-provided value(s) in relation to any static values; -1 means append to end.
+    public TouchPortalActionDataAttribute[] Data = Array.Empty<TouchPortalActionDataAttribute>();
+    public TouchPortalActionMappingAttribute[] Mappings = Array.Empty<TouchPortalActionMappingAttribute>();
 
     public TouchPortalActionBaseAttribute(string id, string name, string description, string format, string connectorFormat = null)
     {
@@ -128,14 +130,14 @@ namespace MSFSTouchPortalPlugin.Attributes
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
   public class TouchPortalConnectorMetaAttribute : Attribute
   {
-    public double DefaultMin { get; set; } = -16384;
-    public double DefaultMax { get; set; } = 16384;
-    public double MinValue { get; set; } = float.MinValue;
-    public double MaxValue { get; set; } = float.MaxValue;
-    public int RangeStartIndex { get; set; } = -1;
-    public bool AllowDecimals { get; set; } = true;
-    public bool UseFeedback { get; set; } = true;
-    public bool InsertValueRange { get; set; } = true;
+    public double DefaultMin = -16384;
+    public double DefaultMax = 16384;
+    public double MinValue = float.MinValue;
+    public double MaxValue = float.MaxValue;
+    public int RangeStartIndex = -1;
+    public bool AllowDecimals = true;
+    public bool UseFeedback = true;
+    public bool InsertValueRange = true;
 
     public TouchPortalConnectorMetaAttribute() { }
     public TouchPortalConnectorMetaAttribute(bool decimals, bool feedback = true)
@@ -166,14 +168,15 @@ namespace MSFSTouchPortalPlugin.Attributes
     //public string Id { get; set; }
     public DataType ValueType { get; set; }
     public string Type => ValueType.ToString().ToLower();
-    public virtual string Id { get; set; }
-    public virtual string Label { get; set; } = "Action";
-    public virtual bool AllowDecimals { get; set; } = true;  // this default will prevent inclusion in entry.tp by json generator
-    public virtual double MinValue { get; set; } = double.NaN;
-    public virtual double MaxValue { get; set; } = double.NaN;
-    public virtual string[] ChoiceValues { get; set; }
-    public bool UsedInMapping { get; set; } = true;  // for Choice type meta data creation
-    public bool SkipForValIndex { get; set; } = false;  // not an action's main value field (used in injected on-hold data fields)
+    public string Id;
+    public string Label = "Action";    // the labels are used for formatting action data fields on individual lines in TP v4+
+    public string LabelSuffix = null;
+    public bool AllowDecimals = true;  // this default will prevent inclusion in entry.tp by json generator
+    public double MinValue = double.NaN;
+    public double MaxValue = double.NaN;
+    public string[] ChoiceValues;
+    public bool UsedInMapping = true;  // for Choice type meta data creation
+    public bool SkipForValIndex = false;  // not an action's main value field (used in injected on-hold data fields)
 
     protected dynamic _defaultValue;
 
