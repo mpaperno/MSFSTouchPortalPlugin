@@ -884,11 +884,14 @@ namespace MSFSTouchPortalPlugin.Services
     // List of input events
     void UpdateSimInputEvents()
     {
-      if (!_simConnectService.SimInputEvents.Any()) {
-        UpdateActionDataList(PluginActions.SetInputEvent, "VarName", new[] { "<no input events loaded>" }, DataListUpdtType.All);
-        return;
-      }
-      UpdateActionDataList(PluginActions.SetInputEvent, "VarName", _simConnectService.SimInputEvents.Keys.OrderBy(n => n), DataListUpdtType.All);
+      IEnumerable<string> list;
+      if (_simConnectService.SimInputEvents.Any())
+        list = _simConnectService.SimInputEvents.Keys.OrderBy(n => n);
+      else
+        list = new[] { "<no input events loaded>" };
+
+      UpdateActionDataList(PluginActions.SetInputEvent, "VarName", list, null, DataListUpdtType.All);
+      UpdateActionDataList(PluginActions.AddInputEventVar, "VarName", list, null, DataListUpdtType.Action);
     }
 
     // Misc. data update/clear  -------------------------------
@@ -1179,12 +1182,13 @@ namespace MSFSTouchPortalPlugin.Services
     // Variable Requests
     //
 
-    //case PluginActions.AddSimulatorVar:
-    //case PluginActions.AddLocalVar:
-    //case PluginActions.AddNamedVariable:
-    //case PluginActions.AddCalculatedValue:
-    //case PluginActions.AddKnownSimVar:  // deprecated
-    //case PluginActions.AddCustomSimVar:  // deprecated
+    // PluginActions.AddSimulatorVar:
+    // PluginActions.AddLocalVar:
+    // PluginActions.AddInputEventVar:
+    // PluginActions.AddNamedVariable:
+    // PluginActions.AddCalculatedValue:
+    // PluginActions.AddKnownSimVar:  // deprecated
+    // PluginActions.AddCustomSimVar:  // deprecated
     bool AddSimVarFromActionData(PluginActions actId, ActionData data)
     {
       if (!TryGetSomeActionData(data, "VarName", out var varName) ||
@@ -1204,6 +1208,9 @@ namespace MSFSTouchPortalPlugin.Services
       switch (actId) {
         case PluginActions.AddLocalVar:
           varType = 'L';
+          break;
+        case PluginActions.AddInputEventVar:
+          varType = 'B';
           break;
         case PluginActions.AddNamedVariable:
           if (!TryGetSomeActionData(data, "VarType", out var sVarType)) {
@@ -1498,6 +1505,7 @@ namespace MSFSTouchPortalPlugin.Services
 
         case PluginActions.AddSimulatorVar:
         case PluginActions.AddLocalVar:
+        case PluginActions.AddInputEventVar:
         case PluginActions.AddNamedVariable:
         case PluginActions.AddCalculatedValue:
         case PluginActions.AddKnownSimVar:  // deprecated

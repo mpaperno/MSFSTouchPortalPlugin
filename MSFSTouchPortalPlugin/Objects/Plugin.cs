@@ -212,7 +212,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalConnectorMeta()]
     public static readonly object SetLocalVar;
 
-    [TouchPortalAction(PluginActions.SetInputEvent, "Set a Selected Airplane Input Event Value",
+    [TouchPortalAction(PluginActions.SetInputEvent, "Set a Selected Input Event Value",
       "Sets a value on an Input Event from currently loaded aircraft. These are sometimes also referred to as 'B' type variables and are always model-specific.\n" +
         "The value meaning and type (numeric/string) depends entirely on the specific event. A list of Input Events can be found in the MSFS Dev Mode 'Behaviors' window.",
       "Set Input Event: {0} To Value: {1}",
@@ -315,7 +315,7 @@ namespace MSFSTouchPortalPlugin.Objects
 #if !FSX
     [TouchPortalAction(PluginActions.AddLocalVar, "Request an Airplane Local Variable",
       "Request an Airplane Local Variable.\t\t\t\t\t** Requires WASimModule for list (otherwise use \"Request Named Variable\") **\n" +
-      "The list of variables is loaded live from Simulator." +
+      "The list of variables is loaded live from the Simulator." +
         "The Unit type is usually \"number\" and will be ignored except in a few specific instances for some 3rd-party models.",
       "Request\nVariable {0} Unit\n(opt) {1} for Plugin\nCategory{2} Format{3} Default\nValue{4} Update\nPeriod{5} Update\nInterval{6} Delta\nEpsilon{7}",
       LayoutAsForm = true
@@ -329,6 +329,21 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionNumeric(0, 0, int.MaxValue, false, Id = "UpdInt", Label = "Update Interval", LabelSuffix = "(# of Update Periods to skip between updates)")]
     [TouchPortalActionNumeric(SimVarItem.DELTA_EPSILON_DEFAULT, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon", LabelSuffix = "(only for floating-point value types)")]
     public static readonly object AddLocalVar;
+
+    [TouchPortalAction(PluginActions.AddInputEventVar, "Request an Input Event Value",
+      "Request an \"Input Event\" Value.\n" +
+      "The list of available variables is loaded live from the Simulator. Input Events are a.k.a. 'B' variables and are always model-specific.",
+      "Request\nVariable {0} for Plugin\nCategory{1} Format{2} Default\nValue{3} Update\nPeriod{4} Update\nInterval{5} Delta\nEpsilon{6}",
+      LayoutAsForm = true
+    )]
+    [TouchPortalActionChoice("[simulator not connected]", "", Id = "VarName", Label = "Variable Name")]
+    [TouchPortalActionChoice("[plugin not connected]", "", Id = "CatId", Label = "Plugin Category", LabelSuffix = "(for sorting in Touch Portal)")]
+    [TouchPortalActionText("F2", Id = "Format", Label = "Formatting String", LabelSuffix = "(.NET-style formatting for numeric values)")]
+    [TouchPortalActionText("0", Id = "DfltVal", Label = "Default Value")]
+    [TouchPortalActionChoice(new[] { /*"Never",*/ "Once", /*"VisualFrame",*/ "SimFrame", "Second", "Millisecond", }, "SimFrame", Id = "UpdPer", Label = "Update Period")]
+    [TouchPortalActionNumeric(0, 0, int.MaxValue, false, Id = "UpdInt", Label = "Update Interval", LabelSuffix = "(# of Update Periods to skip between updates)")]
+    [TouchPortalActionNumeric(SimVarItem.DELTA_EPSILON_DEFAULT, 0.0, float.MaxValue, true, Id = "Epsilon", Label = "Delta Epsilon", LabelSuffix = "(only for floating-point value types)")]
+    public static readonly object AddInputEventVar;
 #endif
 
     [TouchPortalAction(PluginActions.AddNamedVariable, "Request a Named Variable",

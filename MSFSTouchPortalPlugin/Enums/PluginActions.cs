@@ -41,6 +41,7 @@ namespace MSFSTouchPortalPlugin.Enums
 
     AddSimulatorVar,
     AddLocalVar,
+    AddInputEventVar,
     AddNamedVariable,
     AddCalculatedValue,
     UpdateVarValue,
