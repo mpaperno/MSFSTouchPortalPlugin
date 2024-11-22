@@ -39,6 +39,9 @@ namespace MSFSTouchPortalPlugin.Configuration
 #endif
     public const string PLUGIN_ID = PLUGIN_NAME_PREFIX + "TouchPortalPlugin";
 
+    public const int    ACTION_REPEAT_RATE_MIN_MS     = 25;    // low limit for action repeat and delay times
+    public const string ACTION_REPEAT_RATE_MIN_MS_STR = "25";  // for attribute value... must be const string
+
     /// <summary> RootName is used as the basis for the user folder name and TP State ID generation. </summary>
     public static string RootName { get; set; } = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
 

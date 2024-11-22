@@ -20,6 +20,7 @@ and is also available at <http://www.gnu.org/licenses/>.
 */
 
 using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Enums;
 using SimVarItem = MSFSTouchPortalPlugin.Types.SimVarItem;
 
@@ -54,19 +55,19 @@ namespace MSFSTouchPortalPlugin.Objects
     public static readonly object Connection;
 
     [TouchPortalAction(PluginActions.ActionRepeatInterval, "Action Repeat Interval",
-      "Set the default held action repeat rate, in milliseconds.",
+      $"Set the default held action repeat rate, in milliseconds. The minimum value is {PluginConfig.ACTION_REPEAT_RATE_MIN_MS_STR}ms.",
       "Repeat Interval: {0} to/by: {1}",
-      "Set Repeat Interval in Range (ms):",
+      $"Set Repeat Interval Milliseconds in Range (min: {PluginConfig.ACTION_REPEAT_RATE_MIN_MS_STR}ms):",
       holdable: true)]
     [TouchPortalActionChoice(Id = "Action")]
     [TouchPortalActionMapping(PluginActions.ActionRepeatIntervalSet, "Set")]
     [TouchPortalActionMapping(PluginActions.ActionRepeatIntervalInc, "Increment")]
     [TouchPortalActionMapping(PluginActions.ActionRepeatIntervalDec, "Decrement")]
-    [TouchPortalActionText("450", 50, int.MaxValue, Id = "Value")]
+    [TouchPortalActionText("450", PluginConfig.ACTION_REPEAT_RATE_MIN_MS, int.MaxValue, Id = "Value")]
     // hidden data fields for connector
     [TouchPortalActionText("Plugin", Id = "FbCatId", SkipForValIndex = true)]
     [TouchPortalActionText("[ActionRepeatInterval]", Id = "FbVarName", SkipForValIndex = true)]
-    [TouchPortalConnectorMeta(1000, 50, 50, int.MaxValue, false, false, RangeStartIndex = 3)]
+    [TouchPortalConnectorMeta(1000, 50, PluginConfig.ACTION_REPEAT_RATE_MIN_MS, int.MaxValue, false, false, RangeStartIndex = 3)]
     public static readonly object ActionRepeatInterval;
 
     // Trigger Events

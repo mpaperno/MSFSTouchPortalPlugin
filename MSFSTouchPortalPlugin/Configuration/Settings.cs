@@ -118,14 +118,16 @@ namespace MSFSTouchPortalPlugin.Configuration
       Name = "Default Held Action Repeat Delay (milliseconds)",
       Description =
         "Default delay period before a held action starts repeating.\n" +
-        "* A value of -1 will make the delay be the same as the current repeat interval\n\t(this is the default value for this setting).\n" +
-        "* If set to > -1, the smallest effective value is 25ms, which is the same as the repeat interval.\n\tThis is how often the plugin checks for events to fire.\n\n" +
+        "* A value of 0 will make the delay be the same as the current repeat interval\n\t(this is the default value for this setting).\n" +
+        "* If set to > 0, the smallest effective value is " + PluginConfig.ACTION_REPEAT_RATE_MIN_MS.ToString() + "ms, same as the repeat interval.\n" +
+        "\tThis is how often the plugin checks for events to fire.\n\n" +
         "Typically the delay would be same or longer than the repeat interval.\n" +
         "For example with a very short interval it may be possible to get unintentional repeating if a button is pressed for a little too long. " +
         "Introducing a longer delay time before the repeat starts would help the issue.\n\n" +
         "A delay can also be specified per action when it is used in the \"On Hold\" button setup area, which would override this setting.",
-      Default = "-1",
-      MinValue = -1,
+      Default = "0",
+      TpMinValue = 0,
+      MinValue = PluginConfig.ACTION_REPEAT_RATE_MIN_MS,
       MaxValue = uint.MaxValue
     };
 
@@ -136,6 +138,6 @@ namespace MSFSTouchPortalPlugin.Configuration
     // Random part of WASimClient ID, set once per plugin installation and saved in settings config file.
     public static readonly PluginSetting WasimClientIdHighByte = new("WasimClientIdHighByte", 0, 0xFF, "0");
     // Held action repeat interval; settable by user.
-    public static readonly PluginSetting ActionRepeatInterval = new("ActionRepeatInterval", 50, uint.MaxValue, "450");
+    public static readonly PluginSetting ActionRepeatInterval = new("ActionRepeatInterval", PluginConfig.ACTION_REPEAT_RATE_MIN_MS, uint.MaxValue, "450");
   }
 }

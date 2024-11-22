@@ -1622,8 +1622,9 @@ namespace MSFSTouchPortalPlugin.Services
       foreach (var s in settings) {
         if (!pluginSettingsDictionary.TryGetValue(s.Name, out PluginSetting setting) || setting.Equals(s.Value))
           continue;
-        _logger.LogDebug("{setName}; current: {oldVal}; new: {newVal};", setting.Name, setting.StringValue, s.Value);
+        var lastVal = setting.StringValue;
         setting.SetValueFromString(s.Value);
+        _logger.LogDebug("{setName}; previous: '{oldVal}'; sent: '{sentVal}'; new: '{newVal}'", setting.Name, lastVal, s.Value, setting.StringValue);
         if (!string.IsNullOrWhiteSpace(setting.TouchPortalStateId))
           UpdateTpStateValue(setting.TouchPortalStateId, setting.StringValue);
       }
@@ -1749,10 +1750,13 @@ namespace MSFSTouchPortalPlugin.Services
           return;
 
         if (ConvertStringValue(message.Data.GetValueOrDefault("OnHoldRate"), DataType.Number, 0.0, double.NaN, out var fRate) && fRate > 0.0)
-          rate = (int)fRate;
+          rate = Math.Max((int)fRate, PluginConfig.ACTION_REPEAT_RATE_MIN_MS);
         if (ConvertStringValue(message.Data.GetValueOrDefault("OnHoldDelay"), DataType.Number, 0.0, double.NaN, out var fDelay) && fDelay > 0.0)
-          delay = (int)fDelay;
+          delay = Math.Max((int)fDelay, PluginConfig.ACTION_REPEAT_RATE_MIN_MS);
       }
+      // The UnthreadedTimer uses -1 to signal no delay, whereas here 0 means to use no delay
+      if (delay == 0)
+        delay = -1;
       //_logger.LogDebug("OnActionEvent - {actId}; pressState: {pressState}; timers: {TimerCount}; data: {data}", message.Id, pressState, _repeatingActionTimers.Count, ActionDataToKVPairString(data));
 
       if (pressState == TouchPortalSDK.Messages.Models.Enums.Press.Down) {
