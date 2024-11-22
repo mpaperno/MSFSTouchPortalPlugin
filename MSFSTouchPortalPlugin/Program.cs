@@ -84,7 +84,6 @@ namespace MSFSTouchPortalPlugin {
           })
           .ConfigureServices((context, services) => {
             services
-              .Configure<MsfsTouchPortalPlugin>((opt) => { })
               .AddHostedService<PluginService>()
               .AddSingleton<ISimConnectService, SimConnectService>()
               .AddSingleton<IReflectionService, ReflectionService>()
