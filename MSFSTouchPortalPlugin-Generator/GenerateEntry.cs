@@ -350,7 +350,9 @@ namespace MSFSTouchPortalPlugin_Generator
         };
         if (s.MaxLength > 0)
           setting.MaxLength = s.MaxLength;
-        if (!double.IsNaN(s.MinValue))
+        else if (!double.IsNaN(s.TpMinValue))
+          setting.MinValue = s.TpMinValue;
+        else if (!double.IsNaN(s.MinValue))
           setting.MinValue = s.MinValue;
         if (!double.IsNaN(s.MaxValue))
           setting.MaxValue = s.MaxValue;

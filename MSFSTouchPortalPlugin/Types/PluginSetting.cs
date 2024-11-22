@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -33,6 +33,7 @@ namespace MSFSTouchPortalPlugin.Types
     public int MaxLength { get; set; } = int.MinValue;
     public double MinValue { get; set; } = double.NaN;
     public double MaxValue { get; set; } = double.NaN;
+    public double TpMinValue { get; set; } = double.NaN;  // sometimes the UI validation is different than actual value minimum
 
     public bool ReadOnly { get; set; } = false;    // for TP definition (maybe also future use)
     public bool IsPassword { get; set; } = false;  // for TP definition
@@ -88,10 +89,12 @@ namespace MSFSTouchPortalPlugin.Types
       try {
         if (ValueType == DataType.Number) {
           double realVal = Convert.ToDouble(value);
-          if (!double.IsNaN(MinValue))
-            realVal = Math.Max(realVal, MinValue);
-          if (!double.IsNaN(MaxValue))
-            realVal = Math.Min(realVal, MaxValue);
+          if (Default == null || !double.TryParse(Default, out var dVal) || dVal != realVal) {
+            if (!double.IsNaN(MinValue))
+              realVal = Math.Max(realVal, MinValue);
+            if (!double.IsNaN(MaxValue))
+              realVal = Math.Min(realVal, MaxValue);
+          }
           _value = realVal;
         }
         // string or "switch" bool
