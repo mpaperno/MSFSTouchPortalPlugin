@@ -105,13 +105,14 @@ namespace MSFSTouchPortalPlugin_Generator
       // Get version number
       VersionInfo.AssemblyLocation = Path.Combine(Path.GetDirectoryName(AppContext.BaseDirectory), _options.PluginId + ".dll");
       uint vNum = VersionInfo.GetProductVersionNumber();
+      // TP version(s) to generate for
+      bool tpv3 = (bool)_options.TPv3;
+      bool tpv4 = (bool)_options.TPv4;
+
+      _logger.LogInformation($"\nGenerating {PluginConfig.PLUGIN_NAME_PREFIX} edition entry.tp v{vNum:X} [for TPv3 ({tpv3}) | TPv4 ({tpv4})] to '{_options.OutputPath}'");
+
       // read the internal plugin states config
       IEnumerable<SimVarItem> simVars = _pluginConfig.LoadPluginStates();
-
-      var tpv3 = (bool)_options.TPv3;
-      var tpv4 = (bool)_options.TPv4;
-
-      _logger.LogInformation($"Generating entry.tp v{vNum:X} [for TPv3 ({tpv3}) | TPv4 ({tpv4})] to '{_options.OutputPath}'");
 
       // Setup Base Model
       var model = new Base {
@@ -376,7 +377,7 @@ namespace MSFSTouchPortalPlugin_Generator
       var result = JsonConvert.SerializeObject(model, Formatting.Indented);
       var dest = Path.Combine(_options.OutputPath, "entry.tp");
       File.WriteAllText(dest, result);
-      _logger.LogInformation($"Generated '{dest}'.");
+      _logger.LogInformation($"Generated '{dest}'.\n");
     }
   }
 }
