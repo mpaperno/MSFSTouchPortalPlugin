@@ -226,17 +226,22 @@ namespace MSFSTouchPortalPlugin.Objects
 #endif
 
     [TouchPortalAction(PluginActions.SetVariable, "Set a Named Variable",
-      "Set a Named Variable.\tSets a value on any named variable of various types.\t\t\t\t\t** Using 'C', 'H', 'K', and 'Z' types require WASimModule. **\n" +
+#if FSX
+      "Set a Named Simulator Variable.\nFor SimVars requiring an index, include it in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
+      "Variable\nName{0} Unit {1} Value {2} ",
+      "Variable\nName{0} Unit {1} Value\nRange:",
+#else
+      "Set a Named Variable.\tSets a value on any named variable of various types." +
+        "\t\t\t\t\t** Using 'C', 'H', 'K', and 'Z' types require WASimModule. **\n" +
         "'L' type variables can also be created. 'A' and 'C' types require a Unit, for 'B' and 'L' it is optional (default is 'number'). " +
         "For SimVars requiring an index, include it in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
       "Variable\nType{0} Variable\nName{1} Unit {2} Value {3} ",
       "Variable\nType{0} Variable\nName{1} Unit {2} Value\nRange:",
+#endif
       holdable: true)]
 #if WASIM
     [TouchPortalActionChoice(new[] { "A: SimVar", "B: Input Event", "C: GPS", "H: HTML Event", "K: Key Event", "L: Local", "Z: Custom SimVar" }, Id = "VarType", Label = "Variable Type")]
-#elif FSX
-    [TouchPortalActionChoice(new[] { "A: SimVar" }, Id = "VarType", Label = "Variable Type")]
-#else
+#elif !FSX
     [TouchPortalActionChoice(new[] { "A: SimVar", "B: Input Event", "L: Local" }, Id = "VarType", Label = "Variable Type")]
 #endif
     [TouchPortalActionText("", Id = "VarName", Label = "Variable Name")]
@@ -348,21 +353,28 @@ namespace MSFSTouchPortalPlugin.Objects
 #endif
 
     [TouchPortalAction(PluginActions.AddNamedVariable, "Request a Named Variable",
+#if FSX
+      "Request a Named Simulator Variable.\nFor SimVars requiring an index, include it in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
+      "Name{0} Unit{1} for Plugin\nCategory{2} Format{3} Default\nValue{4} Update\nPeriod{5} Update\nInterval{6} Delta\nEpsilon{7}",
+#else
       "Request a Named Variable.\t\t\t\t\t** Using types other than 'A', 'B', or 'L' requires WASimModule. **\n" +
         "'A', 'C', & 'E' types require a Unit type, and for 'L' it is optional (default is 'number'). " +
         "For SimVars requiring an index, include it in the name after a : (colon), eg. \"VARIABLE NAME:1\".",
       "Type{0} Name{1} Unit{2} for Plugin\nCategory{3} Format{4} Default\nValue{5} Update\nPeriod{6} Update\nInterval{7} Delta\nEpsilon{8}",
+#endif
       LayoutAsForm = true
     )]
 #if WASIM
     [TouchPortalActionChoice(new[] { "A: SimVar", "B: Input Event", "C: GPS", "E: Env.", "L: Local", "M: Mouse", "R: Rsrc.", "T: Token", "Z: Custom" }, Id = "VarType", Label = "Variable Type")]
-#elif FSX
-    [TouchPortalActionChoice(new[] { "A: SimVar" }, Id = "VarType", Label = "Variable Type")]
-#else
+#elif !FSX
     [TouchPortalActionChoice(new[] { "A: SimVar", "B: Input Event", "L: Local" }, Id = "VarType", Label = "Variable Type")]
 #endif
     [TouchPortalActionText("FULL VARIABLE NAME", Id = "VarName", Label = "Variable Name", LabelSuffix = "(include SimVar index in name after colon, if required)")]
-    [TouchPortalActionChoice("[plugin not connected]", "number", Id = "Unit", Label = "Unit Name", LabelSuffix = "(required for 'A', 'C', & 'E' types, optional for 'L')")]
+    [TouchPortalActionChoice("[plugin not connected]", "number", Id = "Unit", Label = "Unit Name"
+#if !FSX
+      , LabelSuffix = "(required for 'A', 'C', & 'E' types, optional for 'L')"
+#endif
+     )]
     [TouchPortalActionChoice("[plugin not connected]", "", Id = "CatId", Label = "Plugin Category", LabelSuffix = "(for sorting in Touch Portal)")]
     [TouchPortalActionText("F2", Id = "Format", Label = "Formatting String", LabelSuffix = "(.NET-style formatting for numeric values)")]
     [TouchPortalActionText("0", Id = "DfltVal", Label = "Default Value")]
