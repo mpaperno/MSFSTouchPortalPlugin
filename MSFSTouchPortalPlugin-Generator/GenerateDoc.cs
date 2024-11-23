@@ -63,7 +63,7 @@ namespace MSFSTouchPortalPlugin_Generator
       var result = CreateMarkdown(model);
 
       // Save
-      var dest = Path.Combine(_options.OutputPath, "DOCUMENTATION.md");
+      var dest = Path.Combine(_options.OutputPath, _options.DocFilename);
       File.WriteAllText(dest, result);
       _logger.LogInformation($"Generated '{dest}'.");
     }

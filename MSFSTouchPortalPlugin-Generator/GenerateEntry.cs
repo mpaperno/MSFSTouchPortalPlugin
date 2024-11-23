@@ -118,7 +118,11 @@ namespace MSFSTouchPortalPlugin_Generator
       var model = new Base {
         Version = vNum,
         Name = _options.PluginName,
-        Id = _options.PluginId
+        Id = _options.PluginId,
+        SettingsDescription =
+          GeneratorConstants.INTRO_TEXT +
+          " For full documentation, please see " + _options.DocumentationUrl +
+          "\nPlugin Version: " + VersionInfo.GetProductVersionString(),
       };
       if (tpv3)
         model.Sdk = 6;

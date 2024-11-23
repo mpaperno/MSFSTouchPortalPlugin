@@ -59,6 +59,9 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     [ValidateObject]
     public List<TouchPortalCategory> Categories = new();
     public List<TouchPortalSetting> Settings = new();
+    // This description text can be used to add information on the top of the plug-in settings page.
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public string SettingsDescription = null;  // api v10
   }
 
   //
