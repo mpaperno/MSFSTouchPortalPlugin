@@ -40,7 +40,7 @@ namespace MSFSTouchPortalPlugin_Generator.Configuration
         "If --tpv3 is enabled, the output will be compatible but all actions will be in one category.")]
     public bool? TPv4 { get; set; }
 
-    [Option('g', "generate", Default = "entry,doc", MetaValue = "(entry|doc)", Separator = ',', Required = false,
+    [Option('g', "generate", Default = new string[] {"entry", "doc"}, MetaValue = "(entry|doc)", Separator = ',', Required = false,
       HelpText = "Determines which part(s) to generate. Eg. 'entry', 'doc' or 'entry,doc'.")]
     public System.Collections.Generic.IEnumerable<string> Generate { get; set; }
 
