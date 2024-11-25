@@ -359,13 +359,20 @@ namespace MSFSTouchPortalPlugin.Services
 
     #region SimConnect Events   /////////////////////////////////////
 
-    void SimConnectEvent_OnConnect(SimulatorInfo _)
+    void SimConnectEvent_OnConnect(SimulatorInfo simInfo)
     {
       _logger.LogDebug("SimConnectService connected, starting events task...");
 
       _simConnectionRequest.Reset();
       StartPluginEventsTask();
       UpdateSimConnectState();
+
+      var simVersionTag = $"MSFS_{simInfo.AppVersionMaj}";
+      if (DocImportsCollection.SimulatorVersion != simVersionTag) {
+        DocImportsCollection.SimulatorVersion = simVersionTag;
+        UpdateSimVarCategories();
+        UpdateSimEventCategories();
+      }
     }
 
     void SimConnectEvent_OnDataUpdateEvent(Definition def, Definition _ /*dwRequestID*/, object data)
@@ -696,11 +703,9 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     // List of imported SimVariable categories
-    void UpdateSimVarCategories()
-    {
+    void UpdateSimVarCategories() {
       // settable
-      var cats = _imports.SimVarSystemCategories(true);
-      UpdateActionDataList(PluginActions.SetSimulatorVar, "CatId", cats, DataListUpdtType.All);
+      UpdateActionDataList(PluginActions.SetSimulatorVar, "CatId", _imports.SimVarSystemCategories(true), DataListUpdtType.All);
       // all
       UpdateActionDataList(PluginActions.AddSimulatorVar, "SimCatName", _imports.SimVarSystemCategories());
     }

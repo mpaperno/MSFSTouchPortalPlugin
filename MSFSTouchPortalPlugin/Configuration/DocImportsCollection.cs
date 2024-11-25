@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -73,16 +73,15 @@ namespace MSFSTouchPortalPlugin.Configuration
     #region Public
 
     public event DocImportsDataErrorEventHandler OnDataErrorEvent;
-
+#if FSX
+    public static string SimulatorVersion = "MSFS_10";
+#else
+    public static string SimulatorVersion = "MSFS_12";
+#endif
     public static string ImportsDbName { get; set; } = "MSFS_SDK_Doc_Import.sqlite3";
-    public static string BetaImportsDbName { get; set; } = "MSFS_SDK_Doc_Import-flighting.sqlite3";
-
     public static string DataFolder { get => PluginConfig.AppConfigFolder; }
     public static string ImportsDb { get => Path.Combine(DataFolder, ImportsDbName); }
-    public static string BetaImportsDb { get => Path.Combine(DataFolder, BetaImportsDbName); }
-
     public static int SelectorsMaxLineLen { get; set; } = 75;  // maximum characters to show in event/SimVar description lines
-    public static bool UseBetaData { get; set; } = false;
 
     public static ILogger Logger { get; set; } = null;
 
@@ -92,7 +91,7 @@ namespace MSFSTouchPortalPlugin.Configuration
     public bool OpenDataFile(string dbfile = default)
     {
       if (dbfile == default)
-        dbfile = UseBetaData ? BetaImportsDb : ImportsDb;
+        dbfile = ImportsDb;
       try {
         if (_db != null) {
           _db.Dispose();
@@ -145,7 +144,7 @@ namespace MSFSTouchPortalPlugin.Configuration
     public List<string> EventSystemCategories()
     {
       DocImportQuery criteria = new DocImportQuery(DocImportType.KeyEvent, null, null, null, null, "System, Category");
-      return QueryStringScalars(@"REPLACE(System, '/Flight Assistance', '') || ' - ' || Category AS SystemCategory", criteria);
+      return QueryStringScalars(@"REPLACE(System, '/Flight Assistance', '/FA') || ' - ' || Category AS SystemCategory", criteria);
     }
 
     public List<string> EventNamesForSelector(string system = null, string category = null)
@@ -414,6 +413,9 @@ namespace MSFSTouchPortalPlugin.Configuration
         args.Add(qry.Name);
       }
       if (qry.Type != DocImportType.Unit) {
+        cond.Add($"{SimulatorVersion} = ?");
+        args.Add(qry.Deprecated ? 2 : 1);
+
         if (!string.IsNullOrEmpty(qry.System)) {
           cond.Add("System LIKE ?");
           args.Add(qry.System + '%');
@@ -422,8 +424,6 @@ namespace MSFSTouchPortalPlugin.Configuration
           cond.Add("Category = ?");
           args.Add(qry.Category);
         }
-        cond.Add("Deprecated = ?");
-        args.Add(qry.Deprecated);
       }
 
       qry.OrderBy ??= fieldName;
