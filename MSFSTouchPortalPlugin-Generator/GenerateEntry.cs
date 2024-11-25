@@ -291,7 +291,7 @@ namespace MSFSTouchPortalPlugin_Generator
         var catEvents = _reflectionSvc.GetEvents(catAttrib.Id, fullStateId: true).OrderBy(c => c.Name);
         foreach (var ev in catEvents) {
           var tpEv = new Model.TouchPortalEvent {
-            Id = category.Id + ".Event." + ev.Id,   // these come unqualified
+            Id = $"{_options.PluginId}.{catAttrib.Id}.Event.{ev.Id}",   // these come unqualified
             Name = ev.Name,
             Format = ev.Format,
             Type = ev.Type,
