@@ -348,7 +348,7 @@ namespace MSFSTouchPortalPlugin.Services
         simVar.RegistrationStatus = SimVarRegistrationStatus.Unregistered;
         return;
       }
-      if (!string.IsNullOrEmpty(simVar.SimVersion) && !_simInfo.AppVersionString.StartsWith(simVar.SimVersion, StringComparison.Ordinal)) {
+      if (_simInfo.AppVersion != null && _simInfo.AppVersion.CompareTo(simVar.MinSimVersion) < 0) {
         OnSimVarError?.Invoke(simVar.Def, SimVarErrorType.SimVersion, _simInfo.AppVersionString);
         return;
       }

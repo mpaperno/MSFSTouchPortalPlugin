@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -39,6 +39,7 @@ namespace MSFSTouchPortalPlugin.Types
     public uint SimConnectBuildMin;
     public uint SimConnectServerVersion;
     public string AppVersionString;
+    public Version AppVersion;
     public string SimConnectVersionString;
 
     public SimulatorInfo(Microsoft.FlightSimulator.SimConnect.SIMCONNECT_RECV_OPEN data) {
@@ -54,6 +55,12 @@ namespace MSFSTouchPortalPlugin.Types
       SimConnectServerVersion = data.dwVersion;
       AppVersionString = $"{AppVersionMaj}.{AppVersionMin}.{AppBuildMaj}.{AppBuildMin}";
       SimConnectVersionString = $"{SimConnectVersionMaj}.{SimConnectVersionMin}.{SimConnectBuildMaj}.{SimConnectBuildMin}";
+      try {
+        AppVersion = new Version((int)AppVersionMaj, (int)AppVersionMin, (int)AppBuildMaj, (int)AppBuildMin);
+      }
+      catch (Exception) {
+        AppVersion = null;
+      }
     }
 
     public override string ToString() {

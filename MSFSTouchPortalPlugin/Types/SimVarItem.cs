@@ -90,8 +90,6 @@ namespace MSFSTouchPortalPlugin.Types
     /// <summary> Only report change if it is greater than the value of this parameter (not greater than or equal to).
     /// Eg. value of 0.009f limits changes to 2 decimal places which is suitable for most decimal unit types (except perhaps MHz and "percent over 100"). </summary>
     public float DeltaEpsilon { get; set; } = (float)DELTA_EPSILON_DEFAULT;
-    /// <summary> Simulator version match required for this variable. Eg. "11" or "11.0.23112" </summary>
-    public string SimVersion { get; set; }
     /// <summary> Could also be "choice" but we don't use that (yet?) </summary>
     public string TouchPortalValueType { get; set; } = "text";
     /// <summary> This could/should be populated by whatever is creating the SimVarItem instance </summary>
@@ -276,6 +274,28 @@ namespace MSFSTouchPortalPlugin.Types
     /// <summary> For serializing the "raw" formatting string w/out "{0}" parts </summary>
     public string FormattingString => _formatString;
 
+    /// <summary> Minimum Simulator version match required for this variable. Eg. "11" or "11.0.23112" </summary>
+    public string SimVersion
+    {
+      set {
+        _simVersion = value;
+        if (!string.IsNullOrEmpty(_simVersion)) {
+          if (!_simVersion.Contains('.'))
+            _simVersion += ".0";
+          try {
+            MinSimVersion = new System.Version(_simVersion);
+          }
+          catch (System.Exception) { }
+        }
+        else {
+          MinSimVersion = null;
+        }
+      }
+      get { return _simVersion; }
+    }
+    /// <summary> Minimum Simulator version as a `System.Version` object. </summary>
+    internal System.Version MinSimVersion { get; set; } = null;
+
     /// <summary>
     /// Indicates that the value has "expired" based on the UpdatePeriod and UpdateInterval since the last time the value was set.
     /// This always returns false if UpdatePeriod != UpdatePeriod.Millisecond. Also returns false if a request for this value is pending and hasn't yet timed out.
@@ -287,6 +307,7 @@ namespace MSFSTouchPortalPlugin.Types
     private object _value;         // the actual Value storage
     private string _unit;          // unit type storage
     private string _formatString;  // the "raw" formatting string w/out "{0}" part
+    private string _simVersion;    // SimVersion value
     private long _lastUpdate = 0;  // value update timestamp in Stopwatch ticks
     private long _valueExpires;    // value expiry timestamp in Stopwatch ticks, if a timed UpdatePeriod type, zero otherwise
     private long _requestTimeout;  // for tracking last data request time to avoid race conditions, next pending timeout ticks count or zero if not pending
