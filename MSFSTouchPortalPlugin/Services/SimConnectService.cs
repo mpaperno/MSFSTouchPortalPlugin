@@ -606,7 +606,7 @@ namespace MSFSTouchPortalPlugin.Services
         return;
       }
       WasmStatus = WasmModuleStatus.Connected;
-      _logger.LogInformation("Connected to WASimConnect Server v{serverVer:X08}", _wlib.serverVersion());
+      _logger.LogInformation("Connected to WASimModule Server v{serverVer:X08}", _wlib.serverVersion());
     }
 
     SimVarRegistrationStatus RegisterToWasm(SimVarItem simVar)
@@ -913,7 +913,7 @@ namespace MSFSTouchPortalPlugin.Services
         _simInputEvents.Clear();
       foreach (var ed in data.rgData) {
         var ied = (SIMCONNECT_INPUT_EVENT_DESCRIPTOR)ed;
-        _logger.LogDebug("Got Sim Input Event Name: {name}; Type: {type}; Hash: {hash};", ied.Name, ied.eType, ied.Hash);
+        _logger.LogTrace("Got Sim Input Event Name: {name}; Type: {type}; Hash: {hash};", ied.Name, ied.eType, ied.Hash);
         _simInputEvents[ied.Name] = new SimInputEvent(ied);
         //InvokeSimMethod(EnumerateInputEventParamsDelegate, ied.Hash);  // unused for now, not clear what params are for
       }
@@ -925,7 +925,7 @@ namespace MSFSTouchPortalPlugin.Services
     void SimConnect_OnRecvEnumInputEventParams(SimConnect sender, SIMCONNECT_RECV_ENUMERATE_INPUT_EVENT_PARAMS data) {
       if (_simInputEvents.TryGetValue(data.Hash, out var ev)) {
         ev.Params = data.Value;
-        _logger.LogDebug("Input Event Param for {name} ({hash}): '{value}'", ev.Name, data.Hash, data.Value);
+        _logger.LogTrace("Input Event Param for {name} ({hash}): '{value}'", ev.Name, data.Hash, data.Value);
       }
     }
 
