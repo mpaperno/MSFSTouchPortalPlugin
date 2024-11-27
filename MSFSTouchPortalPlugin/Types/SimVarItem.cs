@@ -508,8 +508,8 @@ namespace MSFSTouchPortalPlugin.Types
       // Check type-specific attributes and also that the type can be requested in the first place.
       switch (VariableType) {
         case 'A':
-          // SimVar names may have spaces but never underscores; may be followed by ":I" index value.
-          if (!Regex.IsMatch(SimVarName, @"^[a-zA-Z][a-zA-Z0-9 ]+(?::\d{1,3})?$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
+          // SimVar names may have spaces but never underscores; may be followed by one or more of ":I" index value or ":'ComponentName'_n".
+          if (!Regex.IsMatch(SimVarName, @"^[a-zA-Z0-9][a-zA-Z0-9 ]+(?::\d{1,3}|:'[\w ]+'_n)*$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
             return returnError($"SimVar Name '{SimVarName}' contains invalid character(s)", ref resultMsg);
           break;
 
