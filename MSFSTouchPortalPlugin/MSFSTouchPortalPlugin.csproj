@@ -143,12 +143,10 @@
 
   <!-- TouchPortal API lib -->
   <ItemGroup>
-    <PackageReference Include="TouchPortal-CS-API" Version="1.46.1" />
+    <PackageReference Include="TouchPortal-CS-API" Version="1.47.1" />
     <!--
-    <Reference Include="TouchPortalSDK, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>.\lib\TouchPortalSDK\TouchPortalSDK.dll</HintPath>
+    <Reference Include=".\lib\TouchPortalSDK\TouchPortalSDK.dll">
       <Private>true</Private>
-      <EmbedInteropTypes>false</EmbedInteropTypes>
     </Reference>
     -->
   </ItemGroup>

@@ -1961,18 +1961,10 @@ namespace MSFSTouchPortalPlugin.Services
       }
     }
 
-    public void OnNotificationOptionClickedEvent(NotificationOptionClickedEvent message) {
-      // not implemented yet
-    }
-
     public void OnBroadcastEvent(BroadcastEvent message)
     {
       if (message.Event == "pageChange")
         UpdateTpStateValue("CurrentTouchPortalPage", message.PageName.Replace(".tml", string.Empty, true, CultureInfo.InvariantCulture));
-    }
-
-    public void OnUnhandledEvent(string jsonMessage) {
-      _logger?.LogDebug("Unhandled message: {jsonMessage}", jsonMessage);
     }
 
     #endregion TouchPortalSDK Events
