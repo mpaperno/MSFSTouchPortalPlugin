@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -77,6 +77,7 @@ namespace MSFSTouchPortalPlugin.Enums
 
     //[Display(Description = "Upon every visual frame while simulator is not paused.")]
     //Frame,      // not used for now since it's a lot of data for no particular reason...
+
 #if !FSX
     [Display(Name = "Pause State Changed", Description = "When the flight is paused or unpaused, with more detail than the regular Pause system event.")]
     Pause_EX1,      // this one is actually multiple events, (see "virtual" Pause* events below) and is currently not presented to the user as a choice.
@@ -115,6 +116,9 @@ namespace MSFSTouchPortalPlugin.Enums
     SimEventLast,      // marker
 
     // "virtual" SimConnect events
+
+    // Expanded from View event
+
     [Display(Name = "View 3D Cockpit", Description = "When the view changes to the 3D virtual cockpit view.")]
     ViewCockpit,       // View event if dwData == 2
 

@@ -412,14 +412,19 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     private void SimConnectEvent_OnEventReceived(EventIds eventId, Groups categoryId, object data) {
-      if (eventId > EventIds.SimEventNone && eventId < EventIds.SimEventLast) {
-        if (eventId == EventIds.View) {
+      if (eventId <= EventIds.SimEventNone || eventId >= EventIds.SimEventLast)
+        return;
+      switch (eventId) {
+        case EventIds.View:
           eventId = (uint)data == SimConnectService.VIEW_EVENT_DATA_COCKPIT_3D ? EventIds.ViewCockpit : EventIds.ViewExternal;
-        }
+          break;
 #if !FSX
-        else if (eventId == EventIds.Pause_EX1) {
+        case EventIds.Pause_EX1: {
           SimPauseStates lastState = _simPauseState;
           _simPauseState = (SimPauseStates)Convert.ToByte(data);
+          if (lastState == _simPauseState)
+            return;
+
           UpdateTpStateValue("SimPauseState", _simPauseState.ToString("G"), Groups.SimSystem);
           if (_simPauseState == SimPauseStates.OFF) {
             // "Unpaused" is reported as a separate event, do not duplicate.
@@ -445,10 +450,12 @@ namespace MSFSTouchPortalPlugin.Services
                 break;
             }
           }
+          break;
         }
 #endif
-        UpdateSimSystemEventState(eventId, data);
       }
+
+      UpdateSimSystemEventState(eventId, data);
     }
 
 #nullable enable
@@ -909,7 +916,7 @@ namespace MSFSTouchPortalPlugin.Services
 
     // common handler for state updates
     void UpdateTpStateValue(string stateId, string value, Groups catId = Groups.Plugin) {
-      _client.StateUpdate(PluginConfig.PLUGIN_ID + "." + catId.ToString() + ".State." + stateId, value);
+      _client.StateUpdate($"{PluginId}.{catId}.State.{stateId}", value);
     }
 
     // update SimSystemEvent and (maybe) SimSystemEventData states in SimSystem group
@@ -924,10 +931,9 @@ namespace MSFSTouchPortalPlugin.Services
 
     // update Connected state and trigger corresponding UpdateSimSystemEventState update
     private void UpdateSimConnectState() {
-      EventIds evtId = EventIds.SimConnected;
-      if (!_simConnectService.IsConnected)
-        evtId = _simConnectionRequest.IsSet ? EventIds.SimConnecting : EventIds.SimDisconnected;
-      UpdateTpStateValue("Connected", evtId switch { EventIds.SimConnected => "true", EventIds.SimDisconnected => "false", _ => "connecting" });
+      EventIds evtId = _simConnectService.IsConnected ? EventIds.SimConnected : _simConnectionRequest.IsSet ? EventIds.SimConnecting : EventIds.SimDisconnected;
+      string evtStr = evtId switch { EventIds.SimConnected => "true", EventIds.SimDisconnected => "false", _ => "connecting" };
+      UpdateTpStateValue("Connected", evtStr);
       UpdateSimSystemEventState(evtId);
     }
 
