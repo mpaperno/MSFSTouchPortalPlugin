@@ -300,6 +300,16 @@ namespace MSFSTouchPortalPlugin_Generator
             ValueStateId = $"{_options.PluginId}.{ev.ValueStateId}",
             SubCategoryId = subCategoryId,
           };
+          if (ev.States != null && ev.States.Count > 0) {
+            tpEv.Localstates = new();
+            foreach (var state in ev.States) {
+              tpEv.Localstates.Add(new TouchPortalLocalState() {
+                Id = $"{tpEv.Id}.{state.Key}",
+                Name = $"{fullCatName} - {state.Value}",
+                ParentCategory = fullCatName
+              });
+            }
+          }
           // validate unique ID
           if (category.Events.FirstOrDefault(s => s.Id == tpEv.Id) == null)
             category.Events.Add(tpEv);
