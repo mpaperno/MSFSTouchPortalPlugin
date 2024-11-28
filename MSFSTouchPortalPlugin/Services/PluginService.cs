@@ -335,10 +335,14 @@ namespace MSFSTouchPortalPlugin.Services
       if (_client.IsConnected) {
         if (evId == EventIds.None && logLevel > LogLevel.Information)
           evId = EventIds.PluginError;
-        if (evId != EventIds.None)
+        if (evId != EventIds.None) {
           UpdateSimSystemEventState(evId, message);
-        if (_logMessages.Count > 0)
-          UpdateTpStateValue("LogMessages", string.Join('\n', _logMessages.ToArray()));
+          TriggerTpEvent(PluginMapping.MessageEvent, new() {
+            { "Type",    evId.ToString() },
+            { "Message", message }
+          });
+        }
+        UpdateTpStateValue("LogMessages", string.Join('\n', _logMessages.ToArray()));
       }
     }
 
@@ -439,6 +443,8 @@ namespace MSFSTouchPortalPlugin.Services
             return;
 
           UpdateTpStateValue("SimPauseState", _simPauseState.ToString("G"), Groups.SimSystem);
+          TriggerTpEvent(SimSystemMapping.SimulatorPauseEvent, new() { { "Value", _simPauseState.ToString("G") } });
+
           if (_simPauseState == SimPauseStates.OFF) {
             // "Unpaused" is reported as a separate event, do not duplicate.
             return;
@@ -932,6 +938,18 @@ namespace MSFSTouchPortalPlugin.Services
       _client.StateUpdate($"{PluginId}.{catId}.State.{stateId}", value);
     }
 
+    void TriggerTpEvent(TouchPortalEvent tpEv, Dictionary<string, string> states = null)
+    {
+      var tpEventId = $"{PluginId}.{tpEv.CategoryId}.Event.{tpEv.Id}";
+      TouchPortalSDK.Messages.Commands.TriggerEventStates map = null;
+      if (states != null && states.Count > 0) {
+        map = new();
+        foreach (var state in states)
+          map.Add($"{tpEventId}.{state.Key}", state.Value);
+      }
+      _client.TriggerEvent(tpEventId, map);
+    }
+
     // update SimSystemEvent and (maybe) SimSystemEventData states in SimSystem group
     private void UpdateSimSystemEventState(EventIds eventId, object data = null) {
       if (SimSystemMapping.SimSystemEvent.ChoiceMappings.TryGetValue(eventId, out var eventName)) {
@@ -948,6 +966,7 @@ namespace MSFSTouchPortalPlugin.Services
       string evtStr = evtId switch { EventIds.SimConnected => "true", EventIds.SimDisconnected => "false", _ => "connecting" };
       UpdateTpStateValue("Connected", evtStr);
       UpdateSimSystemEventState(evtId);
+      TriggerTpEvent(PluginMapping.SimConnectionEvent, new () { { "Value", evtStr } });
     }
 
     void UpdateLoadedStateFilesList() {
