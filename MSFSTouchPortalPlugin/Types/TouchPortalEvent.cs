@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -19,14 +19,18 @@ and is also available at <http://www.gnu.org/licenses/>.
 */
 
 using MSFSTouchPortalPlugin.Enums;
+using MSFSTouchPortalPlugin.Constants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using DisplayAttribute = System.ComponentModel.DataAnnotations.DisplayAttribute;
+using CallerFilePath = System.Runtime.CompilerServices.CallerFilePathAttribute;
 
 namespace MSFSTouchPortalPlugin.Types
 {
+  public class EventDataStates: Dictionary<string, string> { }
+
   public class TouchPortalEvent
   {
     // Touch Portal properties
@@ -36,6 +40,8 @@ namespace MSFSTouchPortalPlugin.Types
     public string Type { get; set; } = "communicate";
     public string ValueType => DataType.ToString().ToLower();
     public string ValueStateId { get; set; }
+    public string Description { get; set; }  // for documentation
+    public EventDataStates States = null;  // ID, name
     public string[] ValueChoices {
       get => _choices;
       set {
@@ -47,6 +53,7 @@ namespace MSFSTouchPortalPlugin.Types
     // Plugin-specific properties, etc.
 
     public DataType DataType { get; set; } = DataType.Choice;
+    public Groups CategoryId { get; set; } = Groups.None;
 
     public Dictionary<Enum, string> ChoiceMappings
     {
@@ -57,27 +64,28 @@ namespace MSFSTouchPortalPlugin.Types
       }
     }
 
-    string[] _choices = null;
+    string[] _choices = Array.Empty<string>();
     Dictionary<Enum, string> _mappings = null;
 
     /// <summary>
     /// Create an event with no choices and optionally a specific DataType.
     /// If stateId is null then the id parameter is used.
     /// </summary>
-    public TouchPortalEvent(string id, string name, string format, string stateId = null, DataType type = DataType.Choice) {
+    public TouchPortalEvent(string id, string name, string format, string stateId = null, DataType type = DataType.Choice, [CallerFilePath]string callerFile = null) {
       Id = id;
       Name = name;
       Format = format;
       ValueStateId = stateId ?? id;
       DataType = type;
+      CategoryId = Categories.IdFromFile(callerFile);
     }
 
     /// <summary>
     /// Create an event of Choice type with given array of choice text values.
     /// If stateId is null then the id parameter is used.
     /// </summary>
-    public TouchPortalEvent(string id, string name, string format, string[] choices, string stateId = null)
-      : this(id, name, format, stateId)
+    public TouchPortalEvent(string id, string name, string format, string[] choices, string stateId = null, [CallerFilePath]string callerFile = null)
+      : this(id, name, format, stateId, DataType.Choice, callerFile)
     {
       ValueChoices = choices;
     }
@@ -86,8 +94,8 @@ namespace MSFSTouchPortalPlugin.Types
     /// Create an event of Choice type with given dict of Enum ids to TP choice name mappings.
     /// If stateId is null then the id parameter is used.
     /// </summary>
-    public TouchPortalEvent(string id, string name, string format, Dictionary<Enum, string> mappings, string stateId = null)
-      : this(id, name, format, stateId)
+    public TouchPortalEvent(string id, string name, string format, Dictionary<Enum, string> mappings, string stateId = null, [CallerFilePath]string callerFile = null)
+      : this(id, name, format, stateId, DataType.Choice, callerFile)
     {
       ChoiceMappings = mappings;
     }
@@ -96,10 +104,20 @@ namespace MSFSTouchPortalPlugin.Types
     /// Create an event of Choice type with event mappings automatically generated based on DisplayAttribute.Name properties applied to eventIds enum values.
     /// If stateId is null then the id parameter is used.
     /// </summary>
-    public TouchPortalEvent(string id, string name, string format, IEnumerable<Enum> eventIds, string stateId = null)
-      : this(id, name, format, stateId)
+    public TouchPortalEvent(string id, string name, string format, IEnumerable<Enum> eventIds, string stateId = null, [CallerFilePath]string callerFile = null)
+      : this(id, name, format, stateId, DataType.Choice, callerFile)
     {
       SetMappingsFromEventIds(eventIds);
+    }
+
+    /// <summary>
+    /// Create an event with no choices but a collection of "local states" which will be sent with this event.
+    /// These types of events are triggered by ID with TP API v7+ `triggerEvent` message. They do not use State changes nor the `ValueStateId`.
+    /// </summary>
+    public TouchPortalEvent(string id, string name, string format, EventDataStates states, [CallerFilePath]string callerFile = null)
+      : this(id, name, format, null, DataType.Choice, callerFile)
+    {
+      States = states;
     }
 
     /// <summary>
@@ -120,6 +138,7 @@ namespace MSFSTouchPortalPlugin.Types
 
     void SetMappingsFromEventIds(IEnumerable<Enum> eventIds) {
       ChoiceMappings = new();
+      _mappings?.Clear();
       if (!eventIds.Any())
         return;
       var enumType = eventIds.First().GetType();
