@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -126,7 +126,6 @@ namespace MSFSTouchPortalPlugin.Configuration
         db.RunInTransactionAsync((t) => { Load(presets, t); })
         .ContinueWith((t) => { db.CloseAsync(); });
       //Debug();
-      //_db.Execute("VACUUM");
       return true;
     }
 
@@ -136,7 +135,6 @@ namespace MSFSTouchPortalPlugin.Configuration
     {
       if (_db != null && TryLoadJson(jsonFile == default ? Common.PresetsFile : jsonFile, out JToken presets)) {
         _db.RunInTransaction(() => { Load(presets, _db); });
-        //_db.Execute("VACUUM");
         return true;
       }
       return false;
@@ -296,14 +294,23 @@ namespace MSFSTouchPortalPlugin.Configuration
       foreach (var p in presets) {
         try {
           var hhp = p.ToObject<HubHopPreset>(serializer);
-          if (hhp != null && !string.IsNullOrWhiteSpace(hhp.Id) && hhp.Version > 0)
-            InsertOrUpdate(hhp, db);
+          if (hhp != null && !string.IsNullOrWhiteSpace(hhp.Id) && hhp.Version > 0) {
+            // don't import Output types for now, there are a lot of them and we don't use 'em
+            if (hhp.PresetType != HubHopType.Output)
+              InsertOrUpdate(hhp, db);
+          }
           else
             Common.Logger?.LogWarning("Error in JSON element {p}: Was null or had no ID or invalid Version.", p.ToString());
         }
         catch (Exception e) {
-          Common.Logger?.LogError("Error deserializing element {p}: {message}", p.ToString(), e.Message);
+          Common.Logger?.LogError(e, "Error deserializing element {p}:", p.ToString());
         }
+      }
+      try {
+        db.Execute("VACUUM;\nPRAGMA optimize;");
+      }
+      catch (Exception e) {
+        Common.Logger?.LogError(e, "Error running VACCUM/optimize after import");
       }
     }
 
@@ -321,12 +328,12 @@ namespace MSFSTouchPortalPlugin.Configuration
             cdts = DateTime.UtcNow;
           db.Execute(
             "UPDATE HubHopPreset SET LastDbUpdate = ?, CreatedDateTS = ? WHERE Id = ?",
-            new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds(), new DateTimeOffset(cdts).ToUnixTimeSeconds(), p.Id
+            DateTimeOffset.UtcNow.ToUnixTimeSeconds(), new DateTimeOffset(cdts).ToUnixTimeSeconds(), p.Id
           );
         }
       }
       catch (Exception e) {
-        Common.Logger?.LogError(e, "Database error with {p}: {message}", p.ToString(), e.Message);
+        Common.Logger?.LogError(e, "Database error with {p}:", p.ToString());
       }
     }
 
