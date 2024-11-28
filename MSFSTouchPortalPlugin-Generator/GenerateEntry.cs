@@ -288,7 +288,7 @@ namespace MSFSTouchPortalPlugin_Generator
         }  // connectors
 
         // Events
-        var catEvents = _reflectionSvc.GetEvents(catAttrib.Id, fullStateId: true).OrderBy(c => c.Name);
+        var catEvents = _reflectionSvc.GetEvents(catAttrib.Id).OrderBy(c => c.Name);
         foreach (var ev in catEvents) {
           var tpEv = new Model.TouchPortalEvent {
             Id = $"{_options.PluginId}.{catAttrib.Id}.Event.{ev.Id}",   // these come unqualified
@@ -297,7 +297,7 @@ namespace MSFSTouchPortalPlugin_Generator
             Type = ev.Type,
             ValueType = ev.ValueType,
             ValueChoices = ev.ValueChoices,
-            ValueStateId = ev.ValueStateId,
+            ValueStateId = $"{_options.PluginId}.{ev.ValueStateId}",
             SubCategoryId = subCategoryId,
           };
           // validate unique ID

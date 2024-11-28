@@ -37,7 +37,6 @@ namespace MSFSTouchPortalPlugin.Services
   {
 
     public static Assembly ExecutingAssembly { get; set; } = Assembly.GetExecutingAssembly();
-    public static string TouchPortalBaseId { get; set; } = ExecutingAssembly.GetName().Name;
 
     private readonly Type[] _assemblyTypes = ExecutingAssembly.GetTypes();
     private readonly ILogger<ReflectionService> _logger;
@@ -169,17 +168,16 @@ namespace MSFSTouchPortalPlugin.Services
       return ret;
     }
 
-    public IEnumerable<TouchPortalEvent> GetEvents(Groups catId, bool fullStateId = false) {
+    public IEnumerable<TouchPortalEvent> GetEvents(Groups catId) {
       List<TouchPortalEvent> ret = new();
       var container = _assemblyTypes.Where(t => t.IsClass && t.GetCustomAttribute<TouchPortalCategoryAttribute>()?.Id == catId);
       foreach (Type c in container) {
-        var fields = c.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+        var fields = c.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public).Where(f => f.FieldType == typeof(TouchPortalEvent));
         foreach (FieldInfo field in fields) {
-          if (field.FieldType == typeof(TouchPortalEvent) && ((TouchPortalEvent)field.GetValue(null) is var ev && ev != null)) {
+          if ((TouchPortalEvent)field.GetValue(null) is var ev && ev != null) {
             if (ev.ValueStateId?.IndexOf('.') < 0)
-              ev.ValueStateId = catId.ToString() + ".State." + ev.ValueStateId;  // qualify with category name, but not plugin name (which is assumed)
-            if (fullStateId)
-              ev.ValueStateId = TouchPortalBaseId + '.' + ev.ValueStateId;  // ok actually add the plugin name also, this is for the generators
+              ev.ValueStateId = $"{catId}.State.{ev.ValueStateId}";  // qualify with category name, but not plugin name (which is assumed)
+
             ret.Add(ev);
           }
         }

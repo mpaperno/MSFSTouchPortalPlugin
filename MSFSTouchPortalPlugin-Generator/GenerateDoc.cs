@@ -186,7 +186,7 @@ namespace MSFSTouchPortalPlugin_Generator
       foreach (var cat in categegoryAttribs) {
         var actList = cat.Actions.Where(a => !a.Deprecated);
         var connList = cat.Connectors.Where(a => !a.Deprecated);
-        var evList = _reflectionSvc.GetEvents(cat.Id, fullStateId: false).OrderBy(c => c.Name);
+        var evList = _reflectionSvc.GetEvents(cat.Id).OrderBy(c => c.Name);
         var stateList = simVars.Where(s => s.CategoryId == cat.Id).OrderBy(c => c.Name);
         if (!actList.Any() && !connList.Any() && !evList.Any() && !stateList.Any())
           continue;

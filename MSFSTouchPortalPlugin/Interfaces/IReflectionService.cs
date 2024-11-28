@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -33,6 +33,6 @@ namespace MSFSTouchPortalPlugin.Interfaces
     IEnumerable<TouchPortalActionAttribute> GetActionAttributes(Groups catId);
     IEnumerable<TouchPortalConnectorAttribute> GetConnectorAttributes(Groups catId);
     IEnumerable<TouchPortalCategoryAttribute> GetCategoryAttributes();
-    IEnumerable<TouchPortalEvent> GetEvents(Groups catId, bool fullStateId = false);
+    IEnumerable<TouchPortalEvent> GetEvents(Groups catId);
   }
 }
