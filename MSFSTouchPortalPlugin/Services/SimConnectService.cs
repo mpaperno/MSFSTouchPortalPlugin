@@ -754,8 +754,20 @@ namespace MSFSTouchPortalPlugin.Services
         return false;
       }
 
-      if (varType == 'B')
-        return _simInputEvents.TryGetValue(varName, out var ev) && SetInputEvent(ev.Hash, value);
+      if (varType == 'B') {
+        if (_simInputEvents.TryGetValue(varName, out var ev))
+          return SetInputEvent(ev.Hash, value);
+
+        // With MSFS 24 try sending the B var to WASimClient to run as calculator code
+        if (_simInfo.AppVersionMaj < 12) {
+          _logger.LogError("Cannot set unknown 'B' type (Input Event) variable '{varName}' with sim version {simVersion}", varName, _simInfo.AppVersionString);
+          return false;
+        }
+        if (!WasmConnected) {
+          _logger.LogError("Cannot set 'B' type (Input Event) variable '{varName}' without active WASM module connection.", varName);
+          return false;
+        }
+      }
 
 #if WASIM
       // If WASM is available, take the shorter and better route.
