@@ -22,6 +22,7 @@ and is also available at <http://www.gnu.org/licenses/>.
 using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Enums;
+using MSFSTouchPortalPlugin.Types;
 using SimVarItem = MSFSTouchPortalPlugin.Types.SimVarItem;
 
 namespace MSFSTouchPortalPlugin.Objects
@@ -293,7 +294,31 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalConnectorMeta(decimals: true, feedback: false, RangeStartIndex = 3)]
     public static readonly object SetSimVar;
 
-  }
+
+    //
+    // Events
+    //
+
+    public static readonly TouchPortalEvent MessageEvent = new (
+      "Info",
+      "Plugin Information Event",
+      "When the plugin sends important information...",
+      new EventDataStates() {
+        { "Type",    "Event Type (PluginInfo, PluginError, SimError)" },
+        { "Message", "Event Log Entry" },
+      }
+    );
+
+    public static readonly TouchPortalEvent SimConnectionEvent = new(
+      "SimConnection",
+      "Simulator Connection Changed",
+      "When simulator connection status changes",
+      new EventDataStates() {
+        { "Value",  "Status (true, false, connecting)" },
+      }
+    );
+
+  }  // PluginMapping
 
   // Actions for editing variable requests has own category in TP UI, though actually these act as if they were in `Groups.Plugin`.
   [TouchPortalCategory(Groups.StatesEditor)]

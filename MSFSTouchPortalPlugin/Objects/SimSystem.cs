@@ -120,5 +120,22 @@ namespace MSFSTouchPortalPlugin.Objects
        EventIds.ViewCockpit,
        EventIds.ViewExternal,
     });
+
+    public static readonly TouchPortalEvent SimulatorPauseEvent =
+      new(
+        "SimulatorPauseEvent",
+        "Simulator Pause State Changed",
+        "When the simulator's Pause State changes",
+        new EventDataStates() {
+          { "Value", "Pause State" },
+        }
+      ) {
+      Description = "Describes the Pause State of the simulator, which is a 4-bit Flag type with the following values:\n" +
+         "0 = No Pause" +
+         "1 = Full Pause with time (sim + traffic + etc...)  (SET_PAUSE 1 / Dev -> Options -> Pause)" +
+         "2 = FSX Legacy Pause (not used anymore)" +
+         "4 = Pause was activated using the \"Active Pause\" Button (position/attitude freeze)" +
+         "8 = Pause the player sim but traffic, multi, etc... will still run (SET_PAUSE_ON / ESC menu pause)"
+     };
   }
 }
