@@ -157,11 +157,27 @@ namespace MSFSTouchPortalPlugin.Constants
       return catId.ToString();
     }
 
+    /// <summary>
+    /// Gets an icon file path for given category, or the default icon if the category doesn't have a specific one.
+    /// </summary>
+    /// <param name="catId">Enum of category group</param>
+    /// <returns>An image file name, without any path.</returns>
     internal static string CategoryImage(Groups catId) {
       if (catId == Groups.None)
         return CategoryDefaultImage;
       return catId.ToString() + ".png";
     }
 
+    /// <summary>
+    /// Returns a Groups enum value based on passed file name, typically from an Objects class file.
+    /// </summary>
+    /// <param name="file">file name with or w/out path</param>
+    /// <returns>One of Groups enum values. Groups.None if the file name couldn't be parsed to a valid value.</returns>
+    internal static Groups IdFromFile(string file) {
+
+      if (!string.IsNullOrWhiteSpace(file) && System.Enum.TryParse(file.Split(new []{'\\', '/' })[^1].Split('.')[0], out Groups catId))
+        return catId;
+      return Groups.None;
+    }
   }
 }
