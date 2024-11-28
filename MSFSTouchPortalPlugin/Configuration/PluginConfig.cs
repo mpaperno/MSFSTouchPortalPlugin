@@ -42,9 +42,6 @@ namespace MSFSTouchPortalPlugin.Configuration
     public const int    ACTION_REPEAT_RATE_MIN_MS     = 25;    // low limit for action repeat and delay times
     public const string ACTION_REPEAT_RATE_MIN_MS_STR = "25";  // for attribute value... must be const string
 
-    /// <summary> RootName is used as the basis for the user folder name and TP State ID generation. </summary>
-    public static string RootName { get; set; } = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
-
     public static string SettingsConfigFile { get; set; } = "plugin_settings.ini";
     public static string StatesConfigFile { get; set; }       = "States.ini";
     public static string PluginStatesConfigFile { get; set; } = "PluginStates.ini";
@@ -88,7 +85,7 @@ namespace MSFSTouchPortalPlugin.Configuration
     public List<string> LoadedStateConfigFiles = new();
 
     const string STR_DEFAULT = "default";
-    static readonly string _defaultUserCfgFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), RootName);
+    static readonly string _defaultUserCfgFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), PLUGIN_ID);
     static readonly Regex _reSimVarIdFromName = new Regex(@"(?:\b|\W|_)(\w)");  // for creating a PascalCase ID from a SimVar name
     string _currentUserCfgFolder = _defaultUserCfgFolder;
     string[] _userStateFiles = Array.Empty<string>();
@@ -180,8 +177,10 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     static void SetSimVarItemTpMetaData(SimVarItem simVar)
     {
-      simVar.TouchPortalStateId = $"{RootName}.{simVar.CategoryId}.State.{simVar.Id}";
+      simVar.TouchPortalStateId = $"{PLUGIN_ID}.{simVar.CategoryId}.State.{simVar.Id}";
       simVar.TouchPortalSelector = $"{simVar.Name} ({simVar.Unit}) [{simVar.Id}]";
+      if (simVar.TouchPortalValueChoices != null)
+        simVar.TouchPortalValueType = "choice";
     }
 
     // Config File loaders

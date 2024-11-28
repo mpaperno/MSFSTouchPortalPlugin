@@ -225,7 +225,7 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     [Required, JsonProperty("default")]
     public string DefaultValue;
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public List<string> ValueChoices = null;
+    public string[] ValueChoices = null;
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public string ParentGroup = null;  // api v6
   }
@@ -267,7 +267,7 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public string SubCategoryId = null;  // api v7
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public TouchPortalLocalState[] Localstates = null;  // api v10
+    public List<TouchPortalLocalState> Localstates = null;  // api v10
   }
 
   //

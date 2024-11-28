@@ -96,6 +96,8 @@ namespace MSFSTouchPortalPlugin.Types
     public string TouchPortalStateId { get; set; }
     /// <summary> A string used to identify this var in TP selection lists. This could/should be populated by whatever is creating the SimVarItem instance </summary>
     public string TouchPortalSelector { get; set; }
+    /// <summary> List of value choices for IF statements. Only for static states. </summary>
+    public string[] TouchPortalValueChoices { get; set; } = null;
     /// <summary> Tracks the origin of this item for later reference. </summary>
     public SimVarDefinitionSource DefinitionSource { get; set; }
     /// <summary> Tracks which file this item was loaded from, if any, for later reference. </summary>

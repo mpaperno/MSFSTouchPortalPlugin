@@ -327,6 +327,7 @@ namespace MSFSTouchPortalPlugin_Generator
             Type = state.TouchPortalValueType,
             Description = $"{fullCatName} - {state.Name}",
             DefaultValue = state.DefaultValue ?? string.Empty,
+            ValueChoices = state.TouchPortalValueChoices,
             //ParentGroup = fullCatName,
           };
           // validate unique ID
