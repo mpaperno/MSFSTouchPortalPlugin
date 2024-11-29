@@ -367,11 +367,10 @@ namespace MSFSTouchPortalPlugin.Services
       StartPluginEventsTask();
       UpdateSimConnectState();
 
-      var simVersionTag = $"MSFS_{simInfo.AppVersionMaj}";
-      if (DocImportsCollection.SimulatorVersion != simVersionTag) {
-        DocImportsCollection.SimulatorVersion = simVersionTag;
+      if (DocImportsCollection.SetNewSimulatorVersion(simInfo.AppVersionMaj)) {
         UpdateSimVarCategories();
         UpdateSimEventCategories();
+        _logger.LogDebug("Reloaded doc imports for simulator version {SimVersionTag}", DocImportsCollection.SimulatorVersion);
       }
     }
 

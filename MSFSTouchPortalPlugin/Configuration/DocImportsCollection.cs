@@ -43,7 +43,7 @@ namespace MSFSTouchPortalPlugin.Configuration
     public string Name = null;
     public string Alias = null;
     public bool? Settable = null;
-    public bool Deprecated = false;
+    public bool Deprecated = true;
     public string OrderBy = null;
     public int Limit = -1;
 
@@ -85,6 +85,15 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     public static ILogger Logger { get; set; } = null;
 
+    /// <summary> Sets current simulator major version, used in queries to limit results to supported sim version. </summary>
+    /// <returns>true if the version was changed, false if unchanged.</returns>
+    public static bool SetNewSimulatorVersion(uint versionMajor) {
+      var simVersionTag = $"MSFS_{versionMajor}";
+      if (simVersionTag == SimulatorVersion)
+        return false;
+      SimulatorVersion = simVersionTag;
+      return true;
+    }
 
     /// <summary> Opens the specified database file for reading . The database must have the required tables. Errors are reported via `OnDataErrorEvent` event handler. </summary>
     /// <returns>True on success, false on failure.</returns>
@@ -100,8 +109,8 @@ namespace MSFSTouchPortalPlugin.Configuration
         _db = new SQLiteConnection(dbfile, SQLiteOpenFlags.ReadOnly);
         sqlite3_create_function(_db.Handle, "REGEXP", 2, SQLITE_DETERMINISTIC, null, sql_RegexIsMatch);
         sqlite3_create_function(_db.Handle, "ReReplace", 3, SQLITE_DETERMINISTIC, null, sql_RegexReplace);
-        sqlite3_create_function(_db.Handle, "EventNameForSelector", 3, SQLITE_DETERMINISTIC, null, sql_EventNameForSelector);
-        sqlite3_create_function(_db.Handle, "SimVarNameForSelector", 4, SQLITE_DETERMINISTIC, null, sql_SimVarNameForSelector);
+        sqlite3_create_function(_db.Handle, "EventNameForSelector", 4, SQLITE_DETERMINISTIC, null, sql_EventNameForSelector);
+        sqlite3_create_function(_db.Handle, "SimVarNameForSelector", 5, SQLITE_DETERMINISTIC, null, sql_SimVarNameForSelector);
         Logger?.LogDebug("DocImportsCollection: opened database: {file}", dbfile);
         return true;
       }
@@ -144,13 +153,13 @@ namespace MSFSTouchPortalPlugin.Configuration
     public List<string> EventSystemCategories()
     {
       DocImportQuery criteria = new DocImportQuery(DocImportType.KeyEvent, null, null, null, null, "System, Category");
-      return QueryStringScalars(@"REPLACE(System, '/Flight Assistance', '/FA') || ' - ' || Category AS SystemCategory", criteria);
+      return QueryStringScalars("System || ' - ' || Category AS SystemCategory", criteria);
     }
 
     public List<string> EventNamesForSelector(string system = null, string category = null)
     {
       DocImportQuery criteria = new DocImportQuery(DocImportType.KeyEvent, system, category, null, null, "Name");
-      return QueryStringScalars("EventNameForSelector(Name, Description, Params) AS EventSelectorName", criteria);
+      return QueryStringScalars($"EventNameForSelector(Name, Description, Params, {SimulatorVersion}) AS EventSelectorName", criteria);
     }
 
     public List<string> EventNamesForSelector(string systemCategory)
@@ -193,7 +202,7 @@ namespace MSFSTouchPortalPlugin.Configuration
       DocImportQuery criteria = new DocImportQuery(system, category, settable, "Name");
       string current = currentNames != null ? string.Join(',', currentNames) : string.Empty;
       //Logger?.LogDebug("UnitForSimVar({simVarName}): {C} {result}", simVarName, p.Count, (p.Count > 0 ? p[0] : null));
-      return QueryStringScalars($"SimVarNameForSelector(Name, Description, Indexed, '{current}') AS SimVarSelectorName", criteria);
+      return QueryStringScalars($"SimVarNameForSelector(Name, Description, Indexed, {SimulatorVersion}, '{current}') AS SimVarSelectorName", criteria);
     }
 
     public List<string> SimVarNamesForSelector(string systemCategory, bool? settable = null, IEnumerable<string> currentNames = null)
@@ -413,8 +422,10 @@ namespace MSFSTouchPortalPlugin.Configuration
         args.Add(qry.Name);
       }
       if (qry.Type != DocImportType.Unit) {
-        cond.Add($"{SimulatorVersion} = ?");
-        args.Add(qry.Deprecated ? 2 : 1);
+        if (qry.Deprecated)
+          cond.Add($"{SimulatorVersion} > 0");
+        else
+          cond.Add($"{SimulatorVersion} = 1");
 
         if (!string.IsNullOrEmpty(qry.System)) {
           cond.Add("System LIKE ?");
@@ -452,35 +463,38 @@ namespace MSFSTouchPortalPlugin.Configuration
       sqlite3_result_text(ctx, newStr.Trim());
     }
 
+    // EventNameForSelector(Name, Description, Params, {SimulatorVersion})
     private static void sql_EventNameForSelector(SQLitePCL.sqlite3_context ctx, object _, SQLitePCL.sqlite3_value[] args)
     {
       string name = sqlite3_value_text(args[0]).utf8_to_string();
       string desc = sqlite3_value_text(args[1]).utf8_to_string();
       string para = sqlite3_value_text(args[2]).utf8_to_string();
-      if (string.IsNullOrEmpty(desc) && string.IsNullOrEmpty(para)) {
-        sqlite3_result_text(ctx, name);
-        return;
-      }
+      int simVer = sqlite3_value_int(args[3]);
       if (!string.IsNullOrEmpty(desc))
         name += FormatDescriptionForSelector(desc);
-      if (!string.IsNullOrEmpty(para) && !para.Equals("N/A", StringComparison.InvariantCultureIgnoreCase)) {
+      if (!string.IsNullOrEmpty(para) && !para.Equals("N/A", StringComparison.InvariantCultureIgnoreCase))
         name += "\n\t" + RxShortenLines.Replace(RxTabifyLines.Replace(para, "\n\t"), "$1");
-      }
+      if (simVer == 2)
+        name += '\n' + "(DEPRECATED)";
       sqlite3_result_text(ctx, name);
     }
 
+    // SimVarNameForSelector(Name, Description, Indexed, {SimulatorVersion}, '{current}')
     private static void sql_SimVarNameForSelector(SQLitePCL.sqlite3_context ctx, object _, SQLitePCL.sqlite3_value[] args)
     {
       string name = sqlite3_value_text(args[0]).utf8_to_string();
       string desc = sqlite3_value_text(args[1]).utf8_to_string();
       bool indx = sqlite3_value_int(args[2]) > 0;
-      string existing = sqlite3_value_text(args[3]).utf8_to_string();
+      int simVer = sqlite3_value_int(args[3]);
+      string existing = sqlite3_value_text(args[4]).utf8_to_string();
       if (!string.IsNullOrEmpty(existing) && Array.Exists(existing.Split(','), n => n.Split(':').First().Equals(name)))
         name = "* " + name;
       if (indx)
         name += ":N";
       if (!string.IsNullOrEmpty(desc))
         name += FormatDescriptionForSelector(desc);
+      if (simVer == 2)
+        name += '\n' + "(DEPRECATED)";
       //Logger.LogDebug("SQL: {name}\n{existing}", name, existing.Split(','));
       sqlite3_result_text(ctx, name);
     }
