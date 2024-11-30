@@ -1,11 +1,90 @@
-# MSFS/FSX Touch Portal Plugin Change Log
+# MSFS/SimConnect Touch Portal Plugin Change Log
 
-## 1.5.0.0 (Nov-7-2022)
+## 1.6.0.0 (Nov-30-2024)
+Version number: `1060000`
+
+### New Features for Touch Portal v4.3
+* Added ability to customize the "On Hold" behavior for each individual action:
+  * Can now set if an action will be activated on Press, Release, both, or neither (repeat only).
+  * Repeating on hold can be turned off.
+  * The Repeat Rate (interval) can be set per action.
+  * A new Repeat Delay property is added for setting an initial wait period before an action starts repeating (a new plugin setting has been added to set the default delay, see "Other New Features").
+  * You can now have separate actions triggering for a button's "press" vs. "release" by placing them in both the "On Hold" and "On Pressed" button setup panels, respectively.
+    The action(s) in "On Pressed" is/are only activated when the button is _released_, while the one in "On Hold" can be set to fire only on the initial button _press_.
+* All action & connector category groups are now placed inside one main group for the whole plugin. They also now have new individual icons.
+* The long actions from "Custom States & Variables" category are now formatted in a multi-row form-style layout.
+
+### Other New Features
+* Added "Request an Input Event Value" action for "Custom States & Variables" category which allows selection of an event name from a live list.
+* The lists of available Simulator Variables and Events in various actions (like "Activate a Selected Simulator Event") are now filtered by connected simulator version.
+  The database distinguishes between MSFS X, 2020, and 2024 versions. 'MSFS' plugin edition loads FS 24 data by default (before first connection to sim), 'FSX' edition loads FS-X data
+  (P3D users are on their own for now, sorry!).
+* Event names in the HubHop Events list now indicate if it is a "potentiometer" event (expects an input value) by appending an "@" symbol. A snippet of the event description,
+  if any exists, has also been added.
+
+### New Settings
+* Added "Check For New Plugin Version on Startup" setting, which does as it says. This is disabled by default. Minimum time between update checks is 6 hours, even if plugin is restarted.
+* Added "Default Held Action Repeat Delay" plugin setting. Initial delay value is going to be the same as the current repeat interval (rate). (This affects _all_ held/repeating actions,
+  not just the new "TP v4" style added in this version.)
+* Added "Maximum Length of Descriptions in Action Lists" setting to control how much description text appears in lists of Simulator Variables, Key Events, and HubHop Events.
+  The descriptions can also be disabled entirely by setting this option to zero.
+* Added "Maximum Message Log Lines" setting to control how many logging entries are sent in the "Most recent plugin log messages" state value. This can also be set to zero to suppress
+  all updates of that state.
+
+### Fixes
+* Fixed being able to set string type values on Simulator Variables (like ATC IDs) in MSFS edition since plugin v1.5 (FSX was OK).
+* Fixed missing value field in "Set Cowl Flaps Lever" action (cowl index was duplicated instead).
+* Fixed action "Radio Interaction" with options "COM3 Decrease 25 KHz w/ Carry Digits" which used an invalid event ID.
+
+### Changes
+* Moved "Failures" action into "Simulator System" category. This removes the "Failures" category from the actions menu since that was the only action in it.
+* Renamed "Set a Selected Airplane Input Event Value" -> "Set a Selected Input Event Value".
+* Minimum held action repeat interval (rate) was reduced from 50ms to 25ms.
+* The lists of available Simulator Variables and Key Events in actions now include those marked as deprecated in sim documentation, with a "(DEPRECATED)" note added in details. Some of those may still work.
+* Improved version comparison check when using `SimVersion` property in variable request INI files and added example of usage in the [Custom States - INI Files] wiki and included [States.ini].
+* When using the "Plugin - Status of SimConnect" state in an `IF` action, the 3 possible value choices (true/false/connecting) will be available for selection.
+* **Touch Portal v3 users** may wish to use the alternate `entry.tp` plugin definitions file as described in the [Replacing The entry.tp File For Touch Portal v3] wiki page. The TP v3 file is already included with the plugin.
+
+### For MSFS 2024
+* Setting 'B' type variables (triggering Input Events) is now possible for the "_Set", "_Inc", "_Dec", "_Toggle" etc, suffixes found in the sim's dev mode "Behaviors" inspector.
+  These do not show up in the list of Input Events the plugin gets from the simulator itself, but can be manually entered in the "Set Named Variable" or "Execute Calculator Code" actions.
+* Validation of Simulator Variable ('A' type) names will now accept the new "VARIABLE NAME:'ComponentName'_n" syntax in MSFS 24.
+* New Simulator Variables and Events are available in action selection lists when connected to FS 24.
+
+### 'FSX' Edition
+* Removed all actions/connectors which use Key Events that don't exist in FS-X.
+* Events and Sim Vars shown in action selection lists will now be limited only to those that FS-X is known to support.
+* The "Set a Named Variable" and "Request a Named Variable" actions have been simplified to exclude the irrelevant variable type selector.
+
+### Other Improvements
+* Updated database of Simulator Variables and Event IDs imported from MSFS 2020 & 2024 SDK Web site documentation as of Nov. 25 '24. The groupings now reflect published FS '24 documentation (a few events/vars were moved around).
+  Also added 91 Key Events that aren't documented anywhere except in the game itself (these are sorted into the "Miscellaneous - Undocumented" category).
+* Generated documentation layout of plugin actions, connectors, and events has been updated for clarity; Separate MSFS and FSX plugin edition versions are now generated, and the documentation has been moved to the [Wiki].
+* Documentation of plugin's settings has been improved for the new Touch Portal v4.3 layout. Actual (dotted) version number is now shown at the top as well.
+* HubHop data update has been streamlined a bit, and now fixes any mis-categorized "potentiometer" type events (that expect input values) in the downloaded data,
+  where some events that did not expect input were marked as if they do, and vice versa. The included database of events is current as of Nov. 30th.
+* Improved error checking on some submitted action data to provide more useful diagnostics in the plugin logs in case of failure.
+* Some minor improvements on shutdown when dealing with unexpected simulator/SimConnect disconnections and Touch Portal exceptions.
+* Updated to use .NET 8 runtime for MSFS edition (up from v7). Most external dependencies also got an update. (All required components are included in the distribution as before.)
+* MSFS edition built with latest MSFS 2020 SDK/SimConnect [v0.24.3][MSFS_SDK_ChangeLog].
+* Updated WASimCommander components from v1.2.0 to [v1.3.1](https://github.com/mpaperno/WASimCommander/releases/tag/1.3.1.0) for features and fixes.
+
+
+[MSFS_SDK_ChangeLog]: https://docs.flightsimulator.com/html/Introduction/Release_Notes.htm
+[States.ini]: https://github.com/mpaperno/MSFSTouchPortalPlugin/blob/next/MSFSTouchPortalPlugin/Configuration/States.ini
+[Wiki]: https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki
+[Custom States - INI Files]: https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Using-Custom-States-and-Simulator-Variables#editing-configuration-files-manually
+[Replacing The entry.tp File For Touch Portal v3]: https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Replacing-The-entry.tp-File-For-Touch-Portal-v3
+[Release 1.6.0]: https://github.com/mpaperno/MSFSTouchPortalPlugin/releases/tag/1.6.0.0
+
+
+---
+## 1.5.0.0 (Nov-7-2023)
 Version number: `1050000`
 
 ### Additions
 * Added _experimental_ ability to set and read simulator "Input Events" values, which is a new feature in MSFS SU13. This provides access to aircraft-specific controls which may not be available otherwise.
-  These events can be seen in MSFS "developer mode" using the "Behaviors" tool window. 
+  These events can be seen in MSFS "developer mode" using the "Behaviors" tool window.
   They are also referred-to as "B" type variables, and custom variable requests can be set up for them like for other variable types.
   * **IMPORTANT NOTES**
     * **The SU13 implementation of this is BUGGY!!**
@@ -13,17 +92,17 @@ Version number: `1050000`
       - **The simulator will crash** if there are any Input Event values being requested/read while switching airplane models. So either don't use that feature for now or make sure to manually
         remove any requested 'B' type variables before changing models (including in he main menu/World Map). See new feature below for removing all requests of particular variable type.
     * Both issues are supposedly fixed in SU14 (currently in beta), but I have not tested it personally.
-    * Only the currently loaded model's Input Events exist in the simulator at any given time. 
+    * Only the currently loaded model's Input Events exist in the simulator at any given time.
       Plugin errors are logged when trying to set or request an input event ('B' var) value which doesn't exist in the current model.
     * There may be other changes in SU14 which will modify or break how the whole system works... the current system is rather wonky. So, no guarantees (as usual).
   * Added "Set a Selected Airplane Input Event Value" action with a list of the current model's Input Events.
   * Added 'B' variable type choice to "Set a Named Variable" and "Request a Named Variable" actions.
   * Added ""Update Airplane Input Events List" and "Re-Submit Input Event Value Requests" choices in the "Connect & Update" action.
 * Added ability in the "Clear Variable Definitions" action to remove variable requests by the file they were loaded from and by the type of variable.
-  
+
 ### Changes
-* Setting ('L') type variables with a specific Unit type is now (again) handled by WASimModule (when available) for greater efficiency. 
-  * 'L' vars are created on the simulator if they don't already exist, using the specified Unit type (if any), which mimics SimConnect behavior. 
+* Setting ('L') type variables with a specific Unit type is now (again) handled by WASimModule (when available) for greater efficiency.
+  * 'L' vars are created on the simulator if they don't already exist, using the specified Unit type (if any), which mimics SimConnect behavior.
   * The "Create Local Variable" option has been removed from the "Set a Named Variable" action.
 * For Touch Portal v4:
   * The plugin will now show up in the "Games" category instead of "Misc."
@@ -38,7 +117,7 @@ Version number: `1050000`
 
 ### Related
 * The user-interface part of my WASimCommander project, [WASimUI](https://github.com/mpaperno/WASimCommander/tree/next#desktop-gui), now supports importing and exporting custom variable requests in the plugin's format.
-  That includes a new interface for editing plugin-specific information like category, state ID, name, default value, and formatting. 
+  That includes a new interface for editing plugin-specific information like category, state ID, name, default value, and formatting.
   It can be downloaded at that project's [Releases](https://github.com/mpaperno/WASimCommander/releases/tag/1.2.0.0) page.
 
 ---
@@ -96,7 +175,7 @@ Version number: `1040000`
     This could lead to some confusion, for example if a variable name is misspelled or never used by any model in the first place.
 * Added some basic validation of variable request parameters when loading from .INI configuration files. Invalid requests are rejected. Validation errors and warnings are reported in the plugin's log.
 * The "Paused", "Unpaused" and "Pause Toggled" Touch Portal Events now work correctly (or at least more logically/consistently) due to a fix in SU12.
-  * Note: the "Pause Toggled" event triggers on any/every "pause mode" change, even if the sim is not actually "unpaused" completely. 
+  * Note: the "Pause Toggled" event triggers on any/every "pause mode" change, even if the sim is not actually "unpaused" completely.
     The name has been kept for backwards compatibility. See the new event descriptions below for more details on pause modes.
   * The "Paused" event is also triggered when _any_ pause mode is activated, even if the simulator already had another pause mode active.
   * "Unpaused" at least behaves as expected and only triggers when _all_ pause modes have been deactivated.
@@ -114,7 +193,7 @@ _MSFS - Simulator System_ category:
 
 ### Added Events
 Added to _MSFS - Simulator System -> Simulator System Event_ choices:
-* "Full Pause" - Indicates a complete pause including any time passing. Triggered when a flight is loading, by "Dev Mode Pause" (in developer toolbar "Options"), 
+* "Full Pause" - Indicates a complete pause including any time passing. Triggered when a flight is loading, by "Dev Mode Pause" (in developer toolbar "Options"),
   the new "Pause - Full" plugin action, or a SimConnect "PAUSE_SET" Event with a value of `1`. (Possibly other ways as well?)
 * "Active Pause" - Simulator has been paused using "active pause" key binding or toolbar button.
 * "Simulator Pause" - The simulator has been paused with the "ESC" key to the menu, or with "Pause - Simulator" action, or "PAUSE_ON" SimConnect Event.
@@ -144,7 +223,7 @@ Version number: `1030000`
 
 * Added database of Events, SimVars, and Unit types imported ("scraped") from MSFS SDK Web site documentation (part of my separate "MSFS Tools" project).
 * Event and SimVar actions which allowed selection from lists now refer to imported MSFS documentation. These now show partial descriptions and Event parameter meanings (when available).
-* _Any_ SimVar marked settable in MSFS docs is now available in (the updated) "Set a Selected Simulator Variable" action/connector with a selectable Unit type. 
+* _Any_ SimVar marked settable in MSFS docs is now available in (the updated) "Set a Selected Simulator Variable" action/connector with a selectable Unit type.
   * The SimVar no longer has to be "requested" first. This works with or without _WASimModule_ integration (_SimConnect_ only).
     * In the latter case, _SimConnect_ only, any action/connector which sets the same SimVar (at the same index, if any) must use the same Unit type.
   * Connector type now has "feedback" as an option; when enabled, the corresponding SimVar is automatically requested from the simulator if it has not been already.
@@ -558,7 +637,7 @@ This evaluation could be expanded upon later if there is a need (to include high
 * Modified states:
   * Plugin.State.Connected added "connecting" status which is active while SimConnect is not connected but is trying to be. "false" now indicates that it is disconnected and no attempts are being made to connect.  **POSSIBLY BREAKS CURRENT BUTTONS** if they rely on the "false" status.
 
-For some hints on using the new Set commands, check out the wiki page [Tips And Tricks For Setting Simulator Values](https://github.com/tlewis17/MSFSTouchPortalPlugin/wiki/Tips-And-Tricks-For-Setting-Simulator-Values).
+For some hints on using the new Set commands, check out the wiki page [Tips And Tricks For Setting Simulator Values](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Tips-And-Tricks-For-Setting-Simulator-Values).
 
 ---
 ## 0.5.4-mp (Feb-08-2022)

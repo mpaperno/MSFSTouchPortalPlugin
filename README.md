@@ -13,9 +13,8 @@
 
 ## Overview
 
-This plugin provided tools to build two-way interactive interfaces between
-[Touch Portal](https://www.touch-portal.com/) macro launcher software and Flight Simulators which use SimConnect,
-such as Microsoft Flight Simulator 2020 (MSFS) and FS-X. The plugin makes available new Touch Portal
+This plugin provides tools for [Touch Portal](https://www.touch-portal.com/) macro launcher software to build two-way interactive interfaces for Flight Simulators which use SimConnect,
+such as Microsoft Flight Simulator 2020/2024/FS-X and Prepar3D. The plugin makes available new Touch Portal
 Actions, Connectors, States, and Events for creating buttons and pages suitable for virtually any
 simulated aircraft, component, or system.
 
@@ -28,25 +27,26 @@ This project is a continuation of the original [MSFSTouchPortalPlugin by Tim Lew
 * Allows getting data variables from simulator at regular intervals, such as flight instrument readings, control surface positions, or switch states.
 * Allows triggering any interactive aircraft event via Touch Portal Actions, such as setting switches, adjusting control surfaces, radio frequencies, and so on.
 * Use Touch Portal "Sliders" to control a value within any range, and/or provide visual feedback to simulator variable changes
-  (eg. a throttle slider can both control the sim throttle and show the actual position when the throttle is moved with mouse/joystick/keyboard).
+  (eg. a throttle slider can both control the sim throttle and show the actual position when the throttle is moved in the sim via other methods).
 * Completely configurable to request any variable or trigger any event supported by the connected simulator, including with custom extensions like MobiFlight.
 * Supports simulator system events (such as "flight loaded" or "sim started") as Touch Portal Events.
 * Set and read model-specific "Input Event" values (**new in plugin v1.5** and MSFS SU13).
 * Allows simultaneous usage from multiple networked Touch Portal devices.
 * Optional WASM (Web ASseMbly) module integration allows even greater expansion, with access to many variable types and events/actions not normally accessible via SimConnect alone.
+* Execute "Reverse Polish Notation" (RPN) language scripts on the simulator to get or set custom values, trigger events, format strings, and more (requires WASM module add-on).
 * Categorized lists of all SimConnect Event IDs and Simulator Variables to choose from, custom imported from MSFS online documentation (exclusive feature!).
 * Integrates live HubHop data for activating thousands of available Input Events provided by the community (requires WASM integration).
-* Separate plugins available for MSFS 2020 and older sims supporting FS-X versions of SimConnect.
+* Separate plugins available for MSFS 2020/2024 and older sims supporting 32-bit FS-X versions of SimConnect.
 
 
 ---
 ## Editions
 
-There are two separate plugins available here, one for MSFS 2020 (and eventually 2024), and another for "legacy" sims like FSX,
+There are two separate plugins available here, one for MSFS 2020/2024, and another for "legacy" sims like FS-X and Prepar3D,
 which should work with any sim which supports the older SimConnect SDK.
-* The "MSFS" edition is recommended for use with MSFS 2020 since it provides features specific to this version (like setting 'L' vars and WASM integration).
-* The "FSX" edition will connect to FSX Deluxe SP2 or newer simulators (including Steam and Acceleration editions).
-  This also includes MSFS 2020, but will not support certain features like WASM and HubHop integration or setting multiple SimConnect Event values.
+* The "MSFS" edition is recommended for use with MSFS 2020 & 2024 since it provides features specific to these versions (like setting 'L' vars and WASM integration).
+* The "FSX" edition will connect to FSX Deluxe SP2 or newer simulators (including Steam and Acceleration editions and all known versions of P3D).<br />
+  This _also_ includes MSFS 20/24, but will not support certain features like WASM and HubHop integration or setting multiple SimConnect Event values.
 * The two plugin editions are completely separate and can be installed and run in Touch Portal at the same time.
 * Pages and buttons made for one edition will not work in the other (because they're separate plugins as far as TP is concerned).
 
@@ -54,7 +54,7 @@ which should work with any sim which supports the older SimConnect SDK.
 ---
 ## Installation
 
-Note: As with all plugins, this requires the Touch Portal Pro (paid) version to function. Use the latest available Touch Portal version for best results.
+Note: As with all plugins, this requires the Touch Portal Pro (paid) version to function.
 
 1. Get the latest release of this plugin(s) you want to install from the  [Releases](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases) page.
 2. The plugins are distributed and installed as a standard Touch Portal `.tpp` plugin files. If you know how to import a plugin, just do that and skip to step 4.
@@ -63,10 +63,7 @@ Note: As with all plugins, this requires the Touch Portal Pro (paid) version to 
     2. Click the Settings "gear" icon at the top-right and select "Import plugin..." from the menu.
     3. Browse to where you downloaded this plugin's `.tpp` file and select it.
     4. When prompted by _Touch Portal_ to trust the plugin startup script, select "Trust Always" or "Yes" (the source code is public!).
-       * "Trust Always" will automatically start the plugin each time Touch Portal starts.
-       * "Yes" will start the plugin this time and then prompt again each time Touch Portal starts.
-       * If you select "No" then you can still start the plugin manually from Touch Portal's _Settings -> Plug-ins_ dialog.
-4. **By default the plugin will not attempt to connect to a flight simulator on startup.** You have two options:
+4. **By default the plugin will not attempt to connect to a flight simulator automatically.** You have two options:
     1. Recommended: Create/import a [Touch Portal button](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics#the-connect-button)
      which triggers the "_MSFS - Plugin - Connect & Update -> Toggle Simulator Connection_" action. (Also a good place to show the current connection status.)
     2. Change the plugin's settings: Click the Touch Portal "gear" icon at top right of the main screen,
@@ -74,7 +71,7 @@ Note: As with all plugins, this requires the Touch Portal Pro (paid) version to 
     "Connect To Flight Sim on Startup" setting to a value of `1` (one) and save the settings.
     The plugin will keep attempting to connect to the simulator every 30 seconds.
 
-### Optional WASM Module (only for MSFS 2020 on PC)
+### Optional WASM Module (only for MSFS 2020/2024 on PC)
 
 5. The optional `WASimModule` MSFS component is **highly recommended** as a companion to this plugin. It it not required to use most
 of the basic plugin features, but it will provide a more advanced feature set (such as access to local "L" variables and HubHop Input Events)
@@ -87,7 +84,7 @@ and further optimizations.
 ### Updates
 
 The plugin can be updated to a new version by following the same installation procedure described above. It is _not_ necessary to remove any previous version first.
-The only thing to be aware of is that any old plugin log files will be removed during the update process.
+The only thing to be aware of is that any old plugin log files will be removed during the update process.  See below about how to get notified of updates automatically.
 
 
 ### Installation Guides
@@ -99,28 +96,23 @@ Keep in mind that while guides can be helpful as an overview and to get started,
 
 
 ---
-## Documentation
+## Documentation, Pages and Examples
 
-See the [Wiki](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/) for guides, tips, and example
-[pages and buttons](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) to get started with
-
-Auto-generated documentation on all actions, connectors, events, settings, and default included states can be found in [DOCUMENTATION.md](DOCUMENTATION.md).
-
-
----
-## Pages and Examples
-
-Check out the [Pages, Buttons, & Graphics](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Pages-Buttons-and-Graphics) for examples to get started with.
-
-The list of known pages has also moved to the Wiki: [List of Published Touch Portal Pages for MSFS Plugin](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/List-of-Published-Touch-Portal-Pages-for-MSFS-Plugin)
+[See the Wiki](https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/) for all documentation, guides, tips, and example
+pages and buttons to get started with.
 
 
 ---
 ## Troubleshooting
 
 The plugin logs errors and warnings to a plain-text file. 7 days worth of logs are kept by default (a new file is started for each day).
-The log files are located within the plugin's installation folder, which is in Touch Portal's configuration directory:<br />
-`C:\Users\<User_Name>\AppData\Roaming\TouchPortal\plugins\MSFS-TouchPortal-Plugin\logs` folder, where `<User_Name>` is your Windows user name.
+The log files are located within the plugin's installation folder, which is in Touch Portal's configuration directory:
+
+`C:\Users\<User_Name>\AppData\Roaming\TouchPortal\plugins\MSFS-TouchPortal-Plugin\logs`<br />
+or for the FSX edition: <br />
+`C:\Users\<User_Name>\AppData\Roaming\TouchPortal\plugins\FSX-TouchPortal-Plugin\logs`
+
+folder, where `<User_Name>` is your Windows user name.
 
 **If something isn't working as expected, check the log.**
 
@@ -147,7 +139,7 @@ Please use the GitHub [Issues](https://github.com/mpaperno/MSFSTouchPortalPlugin
 Use the [Discussions](https://github.com/mpaperno/MSFSTouchPortalPlugin/discussions) pages for general conversation on any related topic like suggestions or support questions.
 
 There is also a [Discord support forum](https://discord.gg/ypEY9Rk2TS) on my server, an [announcements channel](https://discord.gg/gUh5DwXjSj), and discussion rooms
-on my server channel [#msfs-general](https://discord.gg/6nHKnsWkB7) and at Touch Portal's Discord server channel [#msfs2020](https://discord.gg/B2frqDVtbA)
+on my server channel [#msfs-general](https://discord.gg/6nHKnsWkB7) and at Touch Portal's Discord server channel [#msfs](https://discord.gg/B2frqDVtbA)
 
 
 ---
@@ -155,11 +147,14 @@ on my server channel [#msfs-general](https://discord.gg/6nHKnsWkB7) and at Touch
 
 The latest version of this software is always published on the GitHub [Releases](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases) page.
 
-You have several options for getting **automatically notified** about new releases:
+As of plugin version 1.6, there is now an option to automatically check for updates when the plugin starts. If enabled, it will notify you of available
+updates via the Touch Portal notifications area.
+
+You also have several options for getting **automatically notified** about new releases:
 * **If you have a GitHub account**, just open the _Watch_ menu of this repo in the top right of this page, then go to  _Custom_ and select the
 _Releases_ option, then hit _Apply_ button.
 * The plugin and updates are [published on Flightsim.to](https://flightsim.to/file/36546/msfs-touch-portal-plugin) where one could "subscribe" to release notifications (account required).
-* If you use **Discord**, subscribe to notifications on my server channel [#msfs-plugin](https://discord.gg/gUh5DwXjSj).
+* If you use **Discord**, subscribe to notifications on my server channel [#msfs-plugin](https://discord.gg/gUh5DwXjSj) (only announcements are posted to this room, no chatter).
 * **If you already use an RSS/Atom feed reader**, just subscribe to the [feed URL](https://github.com/mpaperno/MSFSTouchPortalPlugin/releases.atom).
 * **Use an RSS/Atom feed notification service**, either one specific for GitHub or a generic one, such as
 (a list of services I found, I haven't necessarily tried nor do I endorse any of these):
@@ -182,10 +177,33 @@ beautiful multi-layered gauges animated in real-time based on Simulator data.
 ---
 ## References
 
-* [SDK Event IDs](https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Event_IDs.htm)
+### MSFS 2020
+* [SDK Key Event IDs](https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Event_IDs.htm)
 * [SDK Simulator Variables](https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Simulation_Variables.htm)
-* [FlightSimulator.com SDK Reference](https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_SDK.htm)
+* [SDK Environment Variables](https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm)
+* [SDK GPS Variables](https://docs.flightsimulator.com/html/Programming_Tools/GPSVars/GPS_Variables.htm)
+* [SDK Token Variables](https://docs.flightsimulator.com/html/Programming_Tools/WASM/Gauge_API/Token_Vars/Token_Variables.htm)
+* [RPN Reference & Variable Types Overview](https://docs.flightsimulator.com/html/Additional_Information/Reverse_Polish_Notation.htm)
+
+### MSFS 2024
+* [SDK Key Event IDs](https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Key_Events.htm)
+* [SDK Simulator Variables](https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Simulation_Variables.htm)
+* [SDK Environment Variables](https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm)
+* [SDK GPS Variables](https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/GPS_Variables.htm) ("deprecated")
+* [SDK Token Variables](https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/WASM/Gauge_API/Token_Vars/Token_Variables.htm) ("deprecated")
+* [RPN Reference & Variable Types Overview](https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Reverse_Polish_Notation.htm)
+
+### MSFS
 * [HubHop Community Database](https://hubhop.mobiflight.com)
+
+### Prepar3D v6
+* [SDK Variable Types Overview](https://www.prepar3d.com/SDKv6/sdk/references/variables/variables_overview.html)
+* [SDK Key Event IDs](https://www.prepar3d.com/SDKv6/sdk/references/variables/event_ids.html)
+* [SDK Simulator Variables](https://www.prepar3d.com/SDKv6/sdk/references/variables/simulation_variables.html)
+* [SDK Environment Variables](https://www.prepar3d.com/SDKv6/sdk/references/variables/environment_variables.html)
+* [SDK Custom Variables](https://www.prepar3d.com/SDKv6/sdk/references/variables/custom_variables.html)
+* [SDK Token Variables](https://www.prepar3d.com/SDKv6/sdk/panels_and_user_interface/gauges/references/token_variables.html)
+* [RPN Scripting Reference](https://www.prepar3d.com/SDKv6/sdk/scripting/rpn_scripting.html)
 
 
 ---
