@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -47,6 +47,11 @@ namespace MSFSTouchPortalPlugin.Helpers
     internal static uint GetProductVersionNumber() {
       var vi = GetVersionInfo();
       return (uint)((byte)(vi.ProductMajorPart & 0xFF) << 24 | (byte)(vi.ProductMinorPart & 0xFF) << 16 | (byte)(vi.ProductBuildPart & 0xFF) << 8 | (byte)(vi.ProductPrivatePart & 0xFF));
+    }
+
+    internal static System.Version GetProductVersion() {
+      var vi = GetVersionInfo();
+      return new System.Version(vi.ProductMajorPart, vi.ProductMinorPart, vi.ProductBuildPart, vi.ProductPrivatePart);
     }
 
     /// <summary>

@@ -42,8 +42,8 @@ namespace MSFSTouchPortalPlugin.Configuration
         "To include the default set of variables/states, use the name `Default` as one of the file names (in any position of the list).\n\n" +
         "Files are loaded in the order in which they appear in the list, and in case of conflicting state IDs, the last one found will be used.\n\n" +
         "The custom file(s) are expected to be in the folder specified in the \"User Config Files Path\" setting (see below).\n\n" +
-        "See https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Using-Custom-States-and-Simulator-Variables for more details.",
-      DocsUrl = "https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Using-Custom-States-and-Simulator-Variables",
+        $"See {PluginConfig.PLUGIN_URL_DOCS}/Using-Custom-States-and-Simulator-Variables for more details.",
+      DocsUrl = $"{PluginConfig.PLUGIN_URL_DOCS}/Using-Custom-States-and-Simulator-Variables",
       Default = "Default",
       MaxLength = 255
     };
@@ -59,8 +59,8 @@ namespace MSFSTouchPortalPlugin.Configuration
         "* Custom configurations over network connections (running Touch Portal on a different computer than the sim). \n\n" +
         "The default configuration index is zero, which (in the included default SimConnect.cfg) is suitable for MSFS (2020). Use the index 1 for compatibility with FSX (or perhaps other sims).\n\n" +
         "See here for more info about the file format: https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_CFG_Definition.htm  \n\n" +
-        "For more information on using Touch Portal remotely see https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Multiple-Touch-Portal-Device-Setup",
-      DocsUrl = "https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki/Multiple-Touch-Portal-Device-Setup",
+        $"For more information on using Touch Portal remotely see {PluginConfig.PLUGIN_URL_DOCS}/Multiple-Touch-Portal-Device-Setup",
+      DocsUrl = $"{PluginConfig.PLUGIN_URL_DOCS}/Multiple-Touch-Portal-Device-Setup",
 #if !FSX
       Default = "0",
 #else
@@ -90,8 +90,9 @@ namespace MSFSTouchPortalPlugin.Configuration
 #if !FSX
     public static readonly PluginSetting UpdateHubHopOnStartup = new PluginSetting("UpdateHubHopOnStartup", DataType.Switch) {
       Name = "Update HubHop Data on Startup (0/1)",
-      Description = "Set to 1 (one) to automatically load latest HubHop data when plugin starts. Set to 0 (zero) to disable. Updates can always be triggered manually via the Action \"MSFS - Plugin -> Connect & Update\".\n" +
-                    "**Updates require a working Internet connection!**",
+      Description = "Set to 1 (one) to automatically load latest HubHop data when plugin starts. Set to 0 (zero) to disable. " +
+        "Updates can always be triggered manually via the Action \"MSFS - Plugin -> Connect & Update\".\n" +
+        "**Updates require a working Internet connection!**",
       Default = "0",
     };
 

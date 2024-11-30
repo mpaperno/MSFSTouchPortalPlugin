@@ -84,19 +84,19 @@ namespace MSFSTouchPortalPlugin_Generator.Configuration
     public string PluginId { get; set; }
 
     [Option('n', "PluginName",
-      Default = PluginConfig.PLUGIN_NAME_PREFIX + " Touch Portal Plugin",
+      Default = PluginConfig.PLUGIN_NAME,
       MetaValue = "<STRING>", Required = false,
       HelpText = "\nThe Plugin Name for TP entry.tp base name attribute.")]
     public string PluginName { get; set; }
 
     [Option('f', "PluginFolder",
-      Default = PluginConfig.PLUGIN_NAME_PREFIX + "-TouchPortal-Plugin",
+      Default = PluginConfig.PLUGIN_PATH_NAME,
       MetaValue = "<STRING>", Required = false,
       HelpText = "\nName of the plugin's folder once installed to TP.")]
     public string PluginFolder { get; set; }
 
     [Option('u', "DocsUrl",
-      Default = "https://github.com/mpaperno/MSFSTouchPortalPlugin/wiki",
+      Default = PluginConfig.PLUGIN_URL_DOCS,
       MetaValue = "<URL>", Required = false,
       HelpText = "\nURL to full project documentation, if any.")]
     public string DocumentationUrl { get; set; }

@@ -34,10 +34,18 @@ namespace MSFSTouchPortalPlugin.Configuration
   {
 #if FSX
     public const string PLUGIN_NAME_PREFIX = "FSX";
+    public const string PLUGIN_URL_FLIGHTSIMIO = "https://flightsim.to/file/60288/fsx-touch-portal-plugin";
 #else
     public const string PLUGIN_NAME_PREFIX = "MSFS";
+    public const string PLUGIN_URL_FLIGHTSIMIO = "https://flightsim.to/file/36546/msfs-touch-portal-plugin";
 #endif
-    public const string PLUGIN_ID = PLUGIN_NAME_PREFIX + "TouchPortalPlugin";
+    public const string PLUGIN_ID            = PLUGIN_NAME_PREFIX + "TouchPortalPlugin";
+    public const string PLUGIN_NAME          = PLUGIN_NAME_PREFIX + " Touch Portal Plugin";
+    public const string PLUGIN_PATH_NAME     = PLUGIN_NAME_PREFIX + "-TouchPortal-Plugin";  // for legacy reasons, the install path has dashes in it
+    public const string PLUGIN_REPO_URL_BASE = "https://github.com/";
+    public const string PLUGIN_REPO_URL_PATH = "mpaperno/MSFSTouchPortalPlugin";
+    public const string PLUGIN_URL_HOME      = PLUGIN_REPO_URL_BASE + PLUGIN_REPO_URL_PATH;
+    public const string PLUGIN_URL_DOCS      = PLUGIN_URL_HOME + "/" + "wiki";
 
     public const int    ACTION_REPEAT_RATE_MIN_MS     = 25;    // low limit for action repeat and delay times
     public const string ACTION_REPEAT_RATE_MIN_MS_STR = "25";  // for attribute value... must be const string
