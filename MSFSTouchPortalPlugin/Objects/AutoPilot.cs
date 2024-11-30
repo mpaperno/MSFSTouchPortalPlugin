@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -44,9 +44,11 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("AP_ALT_HOLD",          "Altitude Hold",     "Toggle")]
     [TouchPortalActionMapping("AP_ALT_HOLD_ON",       "Altitude Hold",     "On")]
     [TouchPortalActionMapping("AP_ALT_HOLD_OFF",      "Altitude Hold",     "Off")]
+#if !FSX
     [TouchPortalActionMapping("PANEL_ALTITUDE_HOLD",  "Panel Altitude Hold", "Toggle")]
     [TouchPortalActionMapping("PANEL_ALTITUDE_ON",    "Panel Altitude Hold", "On")]
     [TouchPortalActionMapping("PANEL_ALTITUDE_OFF",   "Panel Altitude Hold", "Off")]
+#endif
     [TouchPortalActionMapping("AP_APR_HOLD",          "Approach Mode",     "Toggle")]
     [TouchPortalActionMapping("AP_APR_HOLD_ON",       "Approach Mode",     "On")]
     [TouchPortalActionMapping("AP_APR_HOLD_OFF",      "Approach Mode",     "Off")]
@@ -56,12 +58,14 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("AP_BC_HOLD",           "Back Course Mode",  "Toggle")]
     [TouchPortalActionMapping("AP_BC_HOLD_ON",        "Back Course Mode",  "On")]
     [TouchPortalActionMapping("AP_BC_HOLD_OFF",       "Back Course Mode",  "Off")]
+#if !FSX
     [TouchPortalActionMapping("AP_BANK_HOLD",         "Bank Mode",         "Toggle")]
     [TouchPortalActionMapping("AP_BANK_HOLD_ON",      "Bank Mode",         "On")]
     [TouchPortalActionMapping("AP_BANK_HOLD_OFF",     "Bank Mode",         "Off")]
     [TouchPortalActionMapping("AP_FLIGHT_LEVEL_CHANGE",     "Flight Level Change", "Toggle")]
     [TouchPortalActionMapping("AP_FLIGHT_LEVEL_CHANGE_ON",  "Flight Level Change", "On")]
     [TouchPortalActionMapping("AP_FLIGHT_LEVEL_CHANGE_OFF", "Flight Level Change", "Off")]
+#endif
     [TouchPortalActionMapping("AP_HDG_HOLD",          "Heading Hold",      "Toggle")]
     [TouchPortalActionMapping("AP_HDG_HOLD_ON",       "Heading Hold",      "On")]
     [TouchPortalActionMapping("AP_HDG_HOLD_OFF",      "Heading Hold",      "Off")]
@@ -106,6 +110,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("AP_PITCH_REF_INC_DN", "Decrease")]
     public static readonly object AP_ATTITUDE_PITCH;
 
+#if !FSX
     [TouchPortalAction("AutoPilotAttitudeSet", "Attitude Hold Pitch Value Set", true,
       "Set Attitude Hold Pitch Value to {0} (-16384 to +16384)",
       "Set Attitude Pitch Hold\nin Value Range:"
@@ -113,6 +118,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionText("0", -16384, 16384)]
     [TouchPortalActionMapping("AP_PITCH_REF_SET")]
     public static readonly object AP_ATTITUDE_PITCH_SET;
+#endif
 
     #endregion
 
@@ -124,6 +130,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("AP_MAX_BANK_DEC", "Decrease")]
     public static readonly object AP_MAX_BANK;
 
+#if !FSX
     [TouchPortalAction("AutoPilotMaxBankSet", "Max. Bank Set", true,
       "Set Max Bank {0} Value to {1}",
       "Set Max Bank {0}in Value\nRange:"
@@ -134,6 +141,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("AP_MAX_BANK_ANGLE_SET", "Angle")]
     [TouchPortalActionMapping("AP_MAX_BANK_VELOCITY_SET", "Velocity")]
     public static readonly object AP_MAX_BANK_SET;
+#endif
 
     #endregion
 
@@ -191,7 +199,9 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("VSI_BUG_SELECT", "Select")]
     [TouchPortalActionMapping("AP_VS_VAR_INC", "Increase")]
     [TouchPortalActionMapping("AP_VS_VAR_DEC", "Decrease")]
+#if !FSX
     [TouchPortalActionMapping("AP_VS_VAR_SET_CURRENT", "Hold Current")]
+#endif
     public static readonly object AP_VERTICALSPEED_VAR;
 
     [TouchPortalAction("AutoPilotVerticalSpeedSet", "Vertical Speed Value Set", true,
@@ -213,7 +223,9 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("AIRSPEED_BUG_SELECT", "Select")]
     [TouchPortalActionMapping("AP_SPD_VAR_INC", "Increase")]
     [TouchPortalActionMapping("AP_SPD_VAR_DEC", "Decrease")]
+#if !FSX
     [TouchPortalActionMapping("AP_PANEL_SPEED_HOLD_TOGGLE", "Hold Current")]  // KEY_AUTOPILOT_AIRSPEED_HOLD_CURRENT
+#endif
     public static readonly object AP_AIRSPEED_VAR;
 
     [TouchPortalAction("AutoPilotAirSpeedSet", "Airspeed Hold Value Set", true,
@@ -226,6 +238,7 @@ namespace MSFSTouchPortalPlugin.Objects
 
     #endregion
 
+#if !FSX
     #region AutoThrottle
 
     [TouchPortalAction("AutoThrottle", "Auto Throttle", "Toggle Auto Throttle - {0}")]
@@ -258,6 +271,7 @@ namespace MSFSTouchPortalPlugin.Objects
     public static readonly object AUTO_BRAKE_SET;
 
     #endregion
+#endif
 
     #region Mach
 
@@ -265,7 +279,9 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("AP_MACH_VAR_INC", "Increase")]
     [TouchPortalActionMapping("AP_MACH_VAR_DEC", "Decrease")]
+#if !FSX
     [TouchPortalActionMapping("AP_PANEL_MACH_HOLD_TOGGLE", "Hold Current")]  // KEY_AUTOPILOT_MACH_HOLD_CURRENT
+#endif
     public static readonly object AP_MACH_VAR;
 
     [TouchPortalAction("AutoPilotMachSet", "Mach Hold Value Set", true,

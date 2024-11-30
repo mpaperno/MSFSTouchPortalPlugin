@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -54,8 +54,10 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("FUEL_SELECTOR_LEFT_AUX", new[] { "1", "Left - Aux" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_RIGHT_AUX", new[] { "1", "Right - Aux" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_CENTER", new[] { "1", "Center" })]
+#if !FSX
     [TouchPortalActionMapping("FUEL_SELECTOR_1_CROSSFEED", new[] { "1", "Crossfeed" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_1_ISOLATE",   new[] { "1", "Isolate" })]
+#endif
 
     [TouchPortalActionMapping("FUEL_SELECTOR_2_ALL", new[] { "2", "All" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_2_OFF", new[] { "2", "Off" })]
@@ -66,8 +68,10 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("FUEL_SELECTOR_2_LEFT_AUX", new[] { "2", "Left - Aux" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_2_RIGHT_AUX", new[] { "2", "Right - Aux" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_2_CENTER", new[] { "2", "Center" })]
+#if !FSX
     [TouchPortalActionMapping("FUEL_SELECTOR_2_CROSSFEED", new[] { "2", "Crossfeed" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_2_ISOLATE",   new[] { "2", "Isolate" })]
+#endif
 
     [TouchPortalActionMapping("FUEL_SELECTOR_3_ALL", new[] { "3", "All" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_3_OFF", new[] { "3", "Off" })]
@@ -78,8 +82,10 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("FUEL_SELECTOR_3_LEFT_AUX", new[] { "3", "Left - Aux" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_3_RIGHT_AUX", new[] { "3", "Right - Aux" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_3_CENTER", new[] { "3", "Center" })]
+#if !FSX
     [TouchPortalActionMapping("FUEL_SELECTOR_3_CROSSFEED", new[] { "3", "Crossfeed" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_3_ISOLATE",   new[] { "3", "Isolate" })]
+#endif
 
     [TouchPortalActionMapping("FUEL_SELECTOR_4_ALL", new[] { "4", "All" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_4_OFF", new[] { "4", "Off" })]
@@ -90,10 +96,13 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("FUEL_SELECTOR_4_LEFT_AUX", new[] { "4", "Left - Aux" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_4_RIGHT_AUX", new[] { "4", "Right - Aux" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_4_CENTER", new[] { "4", "Center" })]
+#if !FSX
     [TouchPortalActionMapping("FUEL_SELECTOR_4_CROSSFEED", new[] { "4", "Crossfeed" })]
     [TouchPortalActionMapping("FUEL_SELECTOR_4_ISOLATE",   new[] { "4", "Isolate" })]
+#endif
     public static readonly object FUEL_SELECTORS;
 
+#if !FSX
     [TouchPortalAction("FuelSystem", "Fuel System Component", "Set {0} on Fuel System @ Index {1}")]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("FUELSYSTEM_PUMP_SET",    "Pump Auto", 2 )]
@@ -108,6 +117,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("FUELSYSTEM_VALVE_TOGGLE", "Valve Toggle")]
     [TouchPortalActionText("1", 0, 99)]
     public static readonly object FUEL_SYSTEM;
+#endif
 
     #region Engine-related
 
@@ -129,6 +139,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("TOGGLE_FUEL_VALVE_ENG4", "4")]
     public static readonly object FUEL_VALVE;
 
+#if !FSX
     [TouchPortalAction("ElectricFuelPumpSet", "Electric Fuel Pump Set", "Set Electric Fuel Pump {0} to {1} (0 = Off; 1 = On; 2 = Auto)")]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("ELECT_FUEL_PUMP1_SET", "1")]
@@ -137,6 +148,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("ELECT_FUEL_PUMP4_SET", "4")]
     [TouchPortalActionText("1", 0, 2)]
     public static readonly object ELECTRIC_FUEL_PUMP_SET;
+#endif
 
     [TouchPortalAction("ElectricFuelPump", "Electric Fuel Pump Toggle", "Toggle Electric Fuel Pump: {0}")]
     [TouchPortalActionChoice()]

@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -40,6 +40,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("ENGINE_AUTO_SHUTDOWN", "Shutdown")]
     public static readonly object ENGINE_AUTO;
 
+#if !FSX
     [TouchPortalAction("EngineMasterTgl", "Engine Master Toggle", "Toggle Engine Master Switch {0}")]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("ENGINE_MASTER_TOGGLE", "All")]
@@ -58,6 +59,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("ENGINE_MASTER_4_SET", "4")]
     [TouchPortalActionNumeric(1, 0, 1)]
     public static readonly object ENGINE_MASTER_SET;
+#endif
 
     #endregion
 
@@ -160,11 +162,13 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("STARTER2_SET", new[] { "2",   "Set" })]
     [TouchPortalActionMapping("STARTER3_SET", new[] { "3",   "Set" })]
     [TouchPortalActionMapping("STARTER4_SET", new[] { "4",   "Set" })]
+#if !FSX
     [TouchPortalActionMapping("SET_STARTER_ALL_HELD",  new[] { "All", "Set Held" })]
     [TouchPortalActionMapping("SET_STARTER1__HELD",    new[] { "1",   "Set Held" })]
     [TouchPortalActionMapping("SET_STARTER2__HELD",    new[] { "2",   "Set Held" })]
     [TouchPortalActionMapping("SET_STARTER3__HELD",    new[] { "3",   "Set Held" })]
     [TouchPortalActionMapping("SET_STARTER4__HELD",    new[] { "4",   "Set Held" })]
+#endif
     [TouchPortalActionNumeric(1, 0, 1)]
     public static readonly object STARTERS_SET;
 
@@ -306,6 +310,7 @@ namespace MSFSTouchPortalPlugin.Objects
 
     #region Condition Lever
 
+#if !FSX
     [TouchPortalAction("ConditionLever", "Condition Lever Adjust", "Condition Lever {0} {1}", true)]
     [TouchPortalActionChoice()]
     [TouchPortalActionChoice()]
@@ -319,21 +324,21 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("CONDITION_LEVER_2_DEC", "2", "Decrement")]
     [TouchPortalActionMapping("CONDITION_LEVER_3_DEC", "3", "Decrement")]
     [TouchPortalActionMapping("CONDITION_LEVER_4_DEC", "4", "Decrement")]
-    [TouchPortalActionMapping("CONDITION_LEVER_HIGH_IDLE", "All", "Set to High Idle")]
-    [TouchPortalActionMapping("CONDITION_LEVER_1_HIGH_IDLE", "1", "Set to High Idle")]
-    [TouchPortalActionMapping("CONDITION_LEVER_2_HIGH_IDLE", "2", "Set to High Idle")]
-    [TouchPortalActionMapping("CONDITION_LEVER_3_HIGH_IDLE", "3", "Set to High Idle")]
-    [TouchPortalActionMapping("CONDITION_LEVER_4_HIGH_IDLE", "4", "Set to High Idle")]
-    [TouchPortalActionMapping("CONDITION_LEVER_LOW_IDLE", "All", "Set to Low Idle")]
-    [TouchPortalActionMapping("CONDITION_LEVER_1_LOW_IDLE", "1", "Set to Low Idle")]
-    [TouchPortalActionMapping("CONDITION_LEVER_2_LOW_IDLE", "2", "Set to Low Idle")]
-    [TouchPortalActionMapping("CONDITION_LEVER_3_LOW_IDLE", "3", "Set to Low Idle")]
-    [TouchPortalActionMapping("CONDITION_LEVER_4_LOW_IDLE", "4", "Set to Low Idle")]
-    [TouchPortalActionMapping("CONDITION_LEVER_CUT_OFF", "All", "Cutoff")]
-    [TouchPortalActionMapping("CONDITION_LEVER_1_CUT_OFF", "1", "Cutoff")]
-    [TouchPortalActionMapping("CONDITION_LEVER_2_CUT_OFF", "2", "Cutoff")]
-    [TouchPortalActionMapping("CONDITION_LEVER_3_CUT_OFF", "3", "Cutoff")]
-    [TouchPortalActionMapping("CONDITION_LEVER_4_CUT_OFF", "4", "Cutoff")]
+    [TouchPortalActionMapping("CONDITION_LEVER_HIGH_IDLE", "All", "Set to High Idle", Deprecated = true)]
+    [TouchPortalActionMapping("CONDITION_LEVER_1_HIGH_IDLE", "1", "Set to High Idle", Deprecated = true)]
+    [TouchPortalActionMapping("CONDITION_LEVER_2_HIGH_IDLE", "2", "Set to High Idle", Deprecated = true)]
+    [TouchPortalActionMapping("CONDITION_LEVER_3_HIGH_IDLE", "3", "Set to High Idle", Deprecated = true)]
+    [TouchPortalActionMapping("CONDITION_LEVER_4_HIGH_IDLE", "4", "Set to High Idle", Deprecated = true)]
+    [TouchPortalActionMapping("CONDITION_LEVER_LOW_IDLE", "All", "Set to Low Idle", Deprecated = true)]
+    [TouchPortalActionMapping("CONDITION_LEVER_1_LOW_IDLE", "1", "Set to Low Idle", Deprecated = true)]
+    [TouchPortalActionMapping("CONDITION_LEVER_2_LOW_IDLE", "2", "Set to Low Idle", Deprecated = true)]
+    [TouchPortalActionMapping("CONDITION_LEVER_3_LOW_IDLE", "3", "Set to Low Idle", Deprecated = true)]
+    [TouchPortalActionMapping("CONDITION_LEVER_4_LOW_IDLE", "4", "Set to Low Idle", Deprecated = true)]
+    [TouchPortalActionMapping("CONDITION_LEVER_CUT_OFF", "All", "Cutoff", Deprecated = true)]
+    [TouchPortalActionMapping("CONDITION_LEVER_1_CUT_OFF", "1", "Cutoff", Deprecated = true)]
+    [TouchPortalActionMapping("CONDITION_LEVER_2_CUT_OFF", "2", "Cutoff", Deprecated = true)]
+    [TouchPortalActionMapping("CONDITION_LEVER_3_CUT_OFF", "3", "Cutoff", Deprecated = true)]
+    [TouchPortalActionMapping("CONDITION_LEVER_4_CUT_OFF", "4", "Cutoff", Deprecated = true)]
     public static readonly object CONDITION_LEVER_ADJ;
 
     [TouchPortalAction("ConditionLeverSet", "Condition Lever Set", true,
@@ -354,6 +359,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("AXIS_CONDITION_LEVER_3_SET", "3", "Axis" )]
     [TouchPortalActionMapping("AXIS_CONDITION_LEVER_4_SET", "4", "Axis" )]
     public static readonly object CONDITION_LEVER_SET;
+#endif
 
     #endregion
 

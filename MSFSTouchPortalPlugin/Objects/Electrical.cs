@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -32,10 +32,12 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalAction("AvionicsMasterSwitchAdj", "Avionics Master Switch", "Avionics {0}")]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("TOGGLE_AVIONICS_MASTER", "Master Toggle")]
+#if !FSX
     [TouchPortalActionMapping("AVIONICS_MASTER_1_OFF", "Master 1 Off")]
     [TouchPortalActionMapping("AVIONICS_MASTER_1_ON",  "Master 1 On")]
     [TouchPortalActionMapping("AVIONICS_MASTER_2_OFF", "Master 2 Off")]
     [TouchPortalActionMapping("AVIONICS_MASTER_2_ON",  "Master 2 On")]
+#endif
     public static readonly object AVIONICS_MASTER_ADJ;
 
     #endregion
@@ -59,6 +61,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("TOGGLE_ALTERNATOR4", "4")]
     public static readonly object ALTERNATOR_INDEX;
 
+#if !FSX
     [TouchPortalAction("AlternatorSwitch", "Alternator Control", "{0} Alternator at Index {1}")]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("TOGGLE_MASTER_ALTERNATOR", "Toggle")]
@@ -66,12 +69,19 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("ALTERNATOR_OFF", "Turn Off")]
     [TouchPortalActionText("0", 0, 99)]
     public static readonly object ALTERNATOR_SWITCH;
+#endif
 
     #endregion
 
     #region Lights
 
-    [TouchPortalAction("LandingLights", "Landing Lights Switch/Direction", "Landing Lights {0} at circuit index {1}")]
+    [TouchPortalAction("LandingLights", "Landing Lights Switch/Direction",
+#if !FSX
+      "Landing Lights {0} at circuit index {1}"
+#else
+      "Landing Lights {0}"
+#endif
+    )]
     [TouchPortalActionChoice()]
     [TouchPortalActionMapping("LANDING_LIGHTS_TOGGLE", "Toggle")]
     [TouchPortalActionMapping("LANDING_LIGHTS_ON", "On")]
@@ -81,14 +91,18 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("LANDING_LIGHT_UP", "Up")]
     [TouchPortalActionMapping("LANDING_LIGHT_DOWN", "Down")]
     [TouchPortalActionMapping("LANDING_LIGHT_HOME", "Home")]
+#if !FSX
     [TouchPortalActionText("0", 0, 99)]
+#endif
     public static readonly object LANDING_LIGHTS;
 
+#if !FSX
     [TouchPortalAction("LightSwitches", "Light Switch Control",
       "Light Switch Controls. NOTE: The 'All' and 'Circuit' types can only be Toggled.",
-      "Switch {0} Light {1} at circuit index {2}", UserValueIndex = -1)]
+      "Switch {0} {1} at circuit index {2}", UserValueIndex = -1)]
     [TouchPortalActionChoice()]
     [TouchPortalActionChoice()]
+    // Toggle
     [TouchPortalActionMapping("ALL_LIGHTS_TOGGLE", "All", "Toggle")]
     [TouchPortalActionMapping("TOGGLE_BEACON_LIGHTS", "Beacon", "Toggle")]
     [TouchPortalActionMapping("TOGGLE_CABIN_LIGHTS", "Cabin", "Toggle")]
@@ -102,8 +116,8 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("STROBES_TOGGLE", "Strobe", "Toggle")]
     [TouchPortalActionMapping("TOGGLE_TAXI_LIGHTS", "Taxi", "Toggle")]
     [TouchPortalActionMapping("TOGGLE_WING_LIGHTS", "Wing", "Toggle")]
-    [TouchPortalActionMapping("ELECTRICAL_CIRCUIT_TOGGLE", "Circuit")]
-    //[TouchPortalActionMapping("ALL_LIGHTS_TOGGLE",       "All",         "On")]
+    [TouchPortalActionMapping("ELECTRICAL_CIRCUIT_TOGGLE", "Circuit", "Toggle")]
+    // On
     [TouchPortalActionMapping("BEACON_LIGHTS_ON", "Beacon", "On")]
     [TouchPortalActionMapping("CABIN_LIGHTS_ON", "Cabin", "On")]
     [TouchPortalActionMapping("GLARESHIELD_LIGHTS_ON", "Glareshield", "On")]
@@ -116,7 +130,7 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("STROBES_ON", "Strobe", "On")]
     [TouchPortalActionMapping("TAXI_LIGHTS_ON", "Taxi", "On")]
     [TouchPortalActionMapping("WING_LIGHTS_ON", "Wing", "On")]
-    //[TouchPortalActionMapping("ALL_LIGHTS_TOGGLE",       "All",         "Off")]
+    // Off
     [TouchPortalActionMapping("BEACON_LIGHTS_OFF", "Beacon", "Off")]
     [TouchPortalActionMapping("CABIN_LIGHTS_OFF", "Cabin", "Off")]
     [TouchPortalActionMapping("GLARESHIELD_LIGHTS_OFF", "Glareshield", "Off")]
@@ -149,14 +163,6 @@ namespace MSFSTouchPortalPlugin.Objects
     //[TouchPortalActionText("0", 0, 1)]
     //[TouchPortalActionText("0", 0, 99)]
     //public static readonly object LIGHT_SWITCH_SET;
-
-    [TouchPortalAction("ExternalPower", "External Power", "External Power Control.", "External Power {0} at index {1}", UserValueIndex = -1)]
-    [TouchPortalActionChoice()]
-    [TouchPortalActionMapping("TOGGLE_EXTERNAL_POWER", "Toggle")]
-    [TouchPortalActionMapping("SET_EXTERNAL_POWER", "Off", 0)]
-    [TouchPortalActionMapping("SET_EXTERNAL_POWER", "On", 1)]
-    [TouchPortalActionText("0", 0, 99)]
-    public static readonly object EXT_POWER;
 
     [TouchPortalAction("LightPorentiometerSet", "Light Dimming", true,
       "Set Light Potentiometer {0} to {1} (0 to 100)",
@@ -197,6 +203,56 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("LIGHT_POTENTIOMETER_30_SET", "30")]
     public static readonly object LIGHT_POTENTIOMETER_SET;
 
+#else  // FSX
+
+    [TouchPortalAction("LightSwitches", "Light Switch Control", "Switch {0} {1}")]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("LANDING_LIGHTS_TOGGLE", "Landing", "Toggle")]
+    [TouchPortalActionMapping("LANDING_LIGHTS_ON", "Landing", "On")]
+    [TouchPortalActionMapping("LANDING_LIGHTS_OFF", "Landing", "Off")]
+    [TouchPortalActionMapping("PANEL_LIGHTS_TOGGLE", "Panel", "Toggle")]
+    [TouchPortalActionMapping("PANEL_LIGHTS_ON", "Panel", "On")]
+    [TouchPortalActionMapping("PANEL_LIGHTS_OFF", "Panel", "Off")]
+    [TouchPortalActionMapping("STROBES_TOGGLE", "Strobe", "Toggle")]
+    [TouchPortalActionMapping("STROBES_ON", "Strobe", "On")]
+    [TouchPortalActionMapping("STROBES_OFF", "Strobe", "Off")]
+    public static readonly object LIGHT_SWITCHES;
+
+#endif
+
+    [TouchPortalAction("ToggleLights", "Light Switch Toggle", "Toggle Lights - {0}"
+#if !FSX
+     , Deprecated = true
+#endif
+    )]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("ALL_LIGHTS_TOGGLE", "All")]
+    [TouchPortalActionMapping("TOGGLE_BEACON_LIGHTS", "Beacon")]
+    [TouchPortalActionMapping("TOGGLE_CABIN_LIGHTS", "Cabin")]
+    [TouchPortalActionMapping("LANDING_LIGHTS_TOGGLE", "Landing")]
+    [TouchPortalActionMapping("TOGGLE_LOGO_LIGHTS", "Logo")]
+    [TouchPortalActionMapping("TOGGLE_NAV_LIGHTS", "Nav")]
+    [TouchPortalActionMapping("TOGGLE_RECOGNITION_LIGHTS", "Recognition")]
+    [TouchPortalActionMapping("TOGGLE_TAXI_LIGHTS", "Taxi")]
+    [TouchPortalActionMapping("TOGGLE_WING_LIGHTS", "Wing")]
+    public static readonly object TOGGLE_LIGHTS;
+
+
+    #endregion
+
+    #region External Power
+
+#if !FSX
+    [TouchPortalAction("ExternalPower", "External Power", "External Power Control.", "External Power {0} at index {1}", UserValueIndex = -1)]
+    [TouchPortalActionChoice()]
+    [TouchPortalActionMapping("TOGGLE_EXTERNAL_POWER", "Toggle")]
+    [TouchPortalActionMapping("SET_EXTERNAL_POWER", "Off", 0)]
+    [TouchPortalActionMapping("SET_EXTERNAL_POWER", "On", 1)]
+    [TouchPortalActionText("0", 0, 99)]
+    public static readonly object EXT_POWER;
+#endif
+
     #endregion
 
     #region DEPRECATED
@@ -210,17 +266,6 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("TOGGLE_MASTER_ALTERNATOR")]
     public static readonly object MASTER_ALTERNATOR;
 
-    [TouchPortalAction("ToggleLights", "Toggle All/Specific Lights", "Toggle Lights - {0}", Deprecated = true)]
-    [TouchPortalActionChoice(new[] { "All", "Beacon", "Taxi", "Logo", "Recognition", "Wing", "Nav", "Cabin" })]
-    [TouchPortalActionMapping("ALL_LIGHTS_TOGGLE", "All")]
-    [TouchPortalActionMapping("TOGGLE_BEACON_LIGHTS", "Beacon")]
-    [TouchPortalActionMapping("TOGGLE_TAXI_LIGHTS", "Taxi")]
-    [TouchPortalActionMapping("TOGGLE_LOGO_LIGHTS", "Logo")]
-    [TouchPortalActionMapping("TOGGLE_RECOGNITION_LIGHTS", "Recognition")]
-    [TouchPortalActionMapping("TOGGLE_WING_LIGHTS", "Wing")]
-    [TouchPortalActionMapping("TOGGLE_NAV_LIGHTS", "Nav")]
-    [TouchPortalActionMapping("TOGGLE_CABIN_LIGHTS", "Cabin")]
-    public static readonly object ALL_LIGHTS;
     [TouchPortalAction("StrobeLights", "Toggle/On/Off Strobe Lights", "Strobe Lights - {0}", Deprecated = true)]
     [TouchPortalActionChoice(new[] { "Toggle", "On", "Off" })]
     [TouchPortalActionMapping("STROBES_TOGGLE", "Toggle")]

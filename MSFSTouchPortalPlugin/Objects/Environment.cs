@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -37,7 +37,6 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("ANTI_ICE_TOGGLE_ENG3",    "Engine 3 Anti Ice", "Toggle")]
     [TouchPortalActionMapping("ANTI_ICE_TOGGLE_ENG4",    "Engine 4 Anti Ice", "Toggle")]
     [TouchPortalActionMapping("PITOT_HEAT_TOGGLE",       "Pitot Heat",        "Toggle")]
-    [TouchPortalActionMapping("WINDSHIELD_DEICE_TOGGLE", "Windshield De Ice", "Toggle")]
     [TouchPortalActionMapping("TOGGLE_STRUCTURAL_DEICE", "Structural De Ice", "Toggle")]
     [TouchPortalActionMapping("TOGGLE_PROPELLER_DEICE",  "Propeller De Ice",  "Toggle")]
     [TouchPortalActionMapping("ANTI_ICE_ON",             "Anti Ice Switches", "On")]
@@ -46,14 +45,17 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("ANTI_ICE_SET_ENG3",       "Engine 3 Anti Ice", "On", 1)]
     [TouchPortalActionMapping("ANTI_ICE_SET_ENG4",       "Engine 4 Anti Ice", "On", 1)]
     [TouchPortalActionMapping("PITOT_HEAT_ON",           "Pitot Heat",        "On")]
-    [TouchPortalActionMapping("WINDSHIELD_DEICE_ON",     "Windshield De Ice", "On")]
     [TouchPortalActionMapping("ANTI_ICE_OFF",            "Anti Ice Switches", "Off")]
     [TouchPortalActionMapping("ANTI_ICE_SET_ENG1",       "Engine 1 Anti Ice", "Off", 0)]
     [TouchPortalActionMapping("ANTI_ICE_SET_ENG2",       "Engine 2 Anti Ice", "Off", 0)]
     [TouchPortalActionMapping("ANTI_ICE_SET_ENG3",       "Engine 3 Anti Ice", "Off", 0)]
     [TouchPortalActionMapping("ANTI_ICE_SET_ENG4",       "Engine 4 Anti Ice", "Off", 0)]
     [TouchPortalActionMapping("PITOT_HEAT_OFF",          "Pitot Heat",        "Off")]
+#if !FSX
+    [TouchPortalActionMapping("WINDSHIELD_DEICE_TOGGLE", "Windshield De Ice", "Toggle")]
+    [TouchPortalActionMapping("WINDSHIELD_DEICE_ON",     "Windshield De Ice", "On")]
     [TouchPortalActionMapping("WINDSHIELD_DEICE_OFF",    "Windshield De Ice", "Off")]
+#endif
     public static readonly object ANTI_ICE_ADJUST;
 
     [TouchPortalAction("AntiIceSet", "Anti Ice System Set", true,
@@ -67,13 +69,15 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalActionMapping("ANTI_ICE_SET_ENG2",         "Engine 2 Anti Ice (0/1)")]
     [TouchPortalActionMapping("ANTI_ICE_SET_ENG3",         "Engine 3 Anti Ice (0/1)")]
     [TouchPortalActionMapping("ANTI_ICE_SET_ENG4",         "Engine 4 Anti Ice (0/1)")]
+    [TouchPortalActionMapping("PITOT_HEAT_SET",            "Pitot Heat (0/1)")]
+#if !FSX
+    [TouchPortalActionMapping("WINDSHIELD_DEICE_SET",      "Windshield De Ice (0/1)")]
     [TouchPortalActionMapping("ANTI_ICE_GRADUAL_SET",      "All Engines Anti Ice (0 - 16384)")]
     [TouchPortalActionMapping("ANTI_ICE_GRADUAL_SET_ENG1", "Engine 1 Anti Ice (0 - 16384)")]
     [TouchPortalActionMapping("ANTI_ICE_GRADUAL_SET_ENG2", "Engine 2 Anti Ice (0 - 16384)")]
     [TouchPortalActionMapping("ANTI_ICE_GRADUAL_SET_ENG3", "Engine 3 Anti Ice (0 - 16384)")]
     [TouchPortalActionMapping("ANTI_ICE_GRADUAL_SET_ENG4", "Engine 4 Anti Ice (0 - 16384)")]
-    [TouchPortalActionMapping("PITOT_HEAT_SET",            "Pitot Heat (0/1)")]
-    [TouchPortalActionMapping("WINDSHIELD_DEICE_SET",      "Windshield De Ice (0/1)")]
+#endif
     public static readonly object ANTI_ICE_SET;
 
 
