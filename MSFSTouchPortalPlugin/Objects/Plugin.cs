@@ -156,9 +156,9 @@ namespace MSFSTouchPortalPlugin.Objects
 
 #if WASIM
     [TouchPortalAction(PluginActions.SetHubHopEvent, "Activate an Input Event From HubHop",
-      "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t** Requires WASimModule or MobiFlight. **\n" +
-        "Trigger a Simulator Event from loaded HubHop data.\t\t\t\t\t" +
-        "\"Potentiometer\" type events are only supported with WASimModule (using the provided value, which should evaluate to numeric).",
+      "\t\t\t\t\t\t\t\t\t\t\t\t\t** Requires WASimModule or MobiFlight. **\n" +
+        "Trigger a Simulator Event from loaded HubHop data.\t\t" +
+        "\"Potentiometer\" type events are indicated with (@) in the name and are only supported with WASimModule (using the provided numeric value).",
       format: "Aircraft/Device: {0} System: {1} Event Name: {2} with value {3} (if any)",
       connectorFormat: "Aircraft\nDevice:{0}System:{1}Event\nName:{2}Value\nRange:",
       holdable: true)]

@@ -868,7 +868,7 @@ namespace MSFSTouchPortalPlugin.Services
         vendor = _lastSelectedVendor;
         craft = _lastSelectedAircraft;
       }
-      UpdateActionDataList(PluginActions.SetHubHopEvent, "EvtId", _presets.Names(presetType, craft, system, vendor), instanceId, isConnector);
+      UpdateActionDataList(PluginActions.SetHubHopEvent, "EvtId", _presets.EventsForSelector(presetType, craft, system, vendor), instanceId, isConnector);
     }
 
     void UpdateHubHopData()
@@ -1381,7 +1381,7 @@ namespace MSFSTouchPortalPlugin.Services
           _logger.LogError("Could not find required action parameters for {actId} from data: {data}", actId, ActionDataToKVPairString(data));
           return false;
         }
-        HubHopPreset p = _presets?.PresetByName(eventName, HubHopType.AllInputs, sVa, sSystem);
+        HubHopPreset p = _presets?.PresetBySelectorName(eventName, sVa, sSystem);
         if (p == null) {
           _logger.LogError("Could not find Preset for action data: {data}", ActionDataToKVPairString(data));
           return false;

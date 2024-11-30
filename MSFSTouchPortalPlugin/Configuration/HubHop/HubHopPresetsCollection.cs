@@ -19,9 +19,11 @@ and is also available at <http://www.gnu.org/licenses/>.
 
 using Microsoft.Extensions.Logging;
 using MSFSTouchPortalPlugin.Configuration.HubHop;
+using MSFSTouchPortalPlugin.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SQLite;
+using static SQLitePCL.raw;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -74,6 +76,7 @@ namespace MSFSTouchPortalPlugin.Configuration
       try {
         // must open in ReadWrite otherwise it doesn't close properly if an async connection was used.... :-|
         _db = new SQLiteConnection(dbfile, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.SharedCache);
+        sqlite3_create_function(_db.Handle, "PresetNameForSelector", 3, SQLITE_DETERMINISTIC, null, Sql_PresetNameForSelector);
         Common.Logger?.LogDebug("HubHopPresetsCollection: opened database: {file}", dbfile);
         return true;
       }
@@ -124,7 +127,15 @@ namespace MSFSTouchPortalPlugin.Configuration
       var db = new SQLiteAsyncConnection(_db.DatabasePath, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.SharedCache);
       await
         db.RunInTransactionAsync((t) => { Load(presets, t); })
-        .ContinueWith((t) => { db.CloseAsync(); });
+        .ContinueWith(async (_) => {
+          try {
+            await db.ExecuteAsync("VACUUM;\nPRAGMA optimize;").ConfigureAwait(false);
+          }
+          catch (Exception e) {
+            Common.Logger?.LogError(e, "Error running VACCUM/optimize after import:");
+          }
+          await db.CloseAsync().ConfigureAwait(false);
+        }).ConfigureAwait(false);
       //Debug();
       return true;
     }
@@ -135,6 +146,12 @@ namespace MSFSTouchPortalPlugin.Configuration
     {
       if (_db != null && TryLoadJson(jsonFile == default ? Common.PresetsFile : jsonFile, out JToken presets)) {
         _db.RunInTransaction(() => { Load(presets, _db); });
+        try {
+          _db.Execute("VACUUM;\nPRAGMA optimize;");
+        }
+        catch (Exception e) {
+          Common.Logger?.LogError(e, "Error running VACCUM/optimize after import:");
+        }
         return true;
       }
       return false;
@@ -178,7 +195,11 @@ namespace MSFSTouchPortalPlugin.Configuration
       return Names(new HubHopPresetQuery(type, vendor, aircraft, system));
     }
     public List<string> Names(HubHopPresetQuery criteria) {
-      return QueryStringScalars("Label", criteria);
+      return QueryStringScalars("Label AS Name", criteria);
+    }
+
+    public List<string> EventsForSelector(HubHopType type = HubHopType.Any, string aircraft = null, string system = null, string vendor = null) {
+      return QueryStringScalars("PresetNameForSelector(Label, Description, PresetType) AS Name", new HubHopPresetQuery(type, vendor, aircraft, system, null, "Name"));
     }
 
     public List<HubHopPreset> Presets(HubHopType type = HubHopType.Any, string aircraft = null, string system = null, string vendor = null) {
@@ -207,8 +228,21 @@ namespace MSFSTouchPortalPlugin.Configuration
     }
 
     public HubHopPreset PresetByName(string name, HubHopType type = HubHopType.Any, string vendorAircraft = null, string system = null) {
+      if (string.IsNullOrWhiteSpace(name))
+        return null;
       var va = SplitVendorAircraft(vendorAircraft);
       return Preset(new HubHopPresetQuery(type, va.Item1, va.Item2, system, name));
+    }
+
+    public HubHopPreset PresetBySelectorName(string name, string vendorAircraft, string system, HubHopType type = HubHopType.AllInputs) {
+      if (string.IsNullOrWhiteSpace(name))
+        return null;
+      return PresetByName(
+        name.Split('\n', 2, StringSplitOptions.RemoveEmptyEntries)[0].Replace(" (@)", string.Empty).Trim(),
+        type,
+        vendorAircraft,
+        system
+      );
     }
 
     public static Tuple<string, string> SplitVendorAircraft(string vendorAircraft) {
@@ -262,8 +296,7 @@ namespace MSFSTouchPortalPlugin.Configuration
         cond.Add("Label = ?");
         args.Add(qry.Label);
       }
-      if (qry.OrderBy == null)
-        qry.OrderBy = fieldName;
+      qry.OrderBy ??= fieldName;
       if (cond.Count > 0)
         where = "WHERE " + string.Join(" AND ", cond);
       //Common.Logger?.LogTrace("\"{qry}\" ?= {{{args}}}", string.Format(_selectTemplate, fieldName, where, qry.OrderBy), string.Join(", ", args));
@@ -307,10 +340,19 @@ namespace MSFSTouchPortalPlugin.Configuration
         }
       }
       try {
-        db.Execute("VACUUM;\nPRAGMA optimize;");
+        // Fix-up the data... some Pot events don't have @ placeholder and vice-versa
+        db.Execute(@"
+          UPDATE HubHopPreset
+          SET PresetType = q.NewType
+          FROM (
+	          SELECT Id, iif(PresetType = 2, 4, 2) AS NewType FROM HubHopPreset
+	          WHERE (PresetType = 2 AND Code LIKE '%@%' OR PresetType = 4 AND Code NOT LIKE '%@%')
+          ) AS q
+          WHERE q.Id = HubHopPreset.Id
+        ");
       }
       catch (Exception e) {
-        Common.Logger?.LogError(e, "Error running VACCUM/optimize after import");
+        Common.Logger?.LogError(e, "Error running data update after import:");
       }
     }
 
@@ -335,6 +377,19 @@ namespace MSFSTouchPortalPlugin.Configuration
       catch (Exception e) {
         Common.Logger?.LogError(e, "Database error with {p}:", p.ToString());
       }
+    }
+
+    // PresetNameForSelector(Label, Description, PresetType)
+    private static void Sql_PresetNameForSelector(SQLitePCL.sqlite3_context ctx, object _, SQLitePCL.sqlite3_value[] args)
+    {
+      string name = sqlite3_value_text(args[0]).utf8_to_string();
+      string desc = sqlite3_value_text(args[1]).utf8_to_string();
+      HubHopType type = (HubHopType)sqlite3_value_int(args[2]);
+      if ((type & HubHopType.InputPotentiometer) > 0)
+        name += " (@)";
+      if (!string.IsNullOrEmpty(desc))
+        name += Utils.FormatDescriptionForSelector(desc);
+      sqlite3_result_text(ctx, name);
     }
 
 #if false
