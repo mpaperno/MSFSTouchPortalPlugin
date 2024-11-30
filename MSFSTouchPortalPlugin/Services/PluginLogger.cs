@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file is part of the MSFS Touch Portal Plugin project.
 https://github.com/mpaperno/MSFSTouchPortalPlugin
 
@@ -32,7 +32,7 @@ namespace MSFSTouchPortalPlugin.Services
     public static event MessageReadyHandler OnMessageReady;
     public delegate void MessageReadyHandler(string message, LogLevel logLevel, EventId eventId);
 
-    public static string LogFormat { get; set; } = "{0:mm:ss} [{1}] {2}";
+    public static string LogFormat { get; set; } = "{0:H:mm:ss} [{1}] {2}";
 
     public PluginLogger(string categoryName)
     {
