@@ -19,6 +19,8 @@ and is also available at <http://www.gnu.org/licenses/>.
 
 using Microsoft.Extensions.Logging;
 using MSFSTouchPortalPlugin.Types;
+using MSFSTouchPortalPlugin.Configuration;
+using MSFSTouchPortalPlugin.Helpers;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -81,7 +83,6 @@ namespace MSFSTouchPortalPlugin.Configuration
     public static string ImportsDbName { get; set; } = "MSFS_SDK_Doc_Import.sqlite3";
     public static string DataFolder { get => PluginConfig.AppConfigFolder; }
     public static string ImportsDb { get => Path.Combine(DataFolder, ImportsDbName); }
-    public static int SelectorsMaxLineLen { get; set; } = 75;  // maximum characters to show in event/SimVar description lines
 
     public static ILogger Logger { get; set; } = null;
 
@@ -315,22 +316,8 @@ namespace MSFSTouchPortalPlugin.Configuration
 
     SQLiteConnection _db = null;
 
-    static readonly Regex RxFindFirstSentence = new Regex(@"\.(?:\W|$)", RegexOptions.Multiline | RegexOptions.Compiled);
     static readonly Regex RxTabifyLines = new Regex(@"(?:\r?\n\s*)+", RegexOptions.Compiled);
-    static readonly Regex RxShortenLines = new Regex("^(.{0," + SelectorsMaxLineLen + "}).*$", RegexOptions.Multiline | RegexOptions.Compiled);
-
-    private static string FormatDescriptionForSelector(string desc)
-    {
-      var match = RxFindFirstSentence.Match(desc);
-      if (match.Success)
-        desc = desc[0..(Math.Min(match.Index + 1, SelectorsMaxLineLen))] + (match.Index > SelectorsMaxLineLen ? "..." : "");
-      else if (desc.Length > SelectorsMaxLineLen)
-        desc = desc[0..SelectorsMaxLineLen] + "...";
-      else
-        desc += '.';
-      return "\n " + desc.Replace('\n', ' ');
-    }
-
+    static readonly Regex RxShortenLines = new Regex("^(.{0," + Settings.SelectorsMaxLineLen.IntValue + "}).*$", RegexOptions.Multiline | RegexOptions.Compiled);
 
     void OpenDbIfNeeded()
     {
@@ -471,8 +458,8 @@ namespace MSFSTouchPortalPlugin.Configuration
       string para = sqlite3_value_text(args[2]).utf8_to_string();
       int simVer = sqlite3_value_int(args[3]);
       if (!string.IsNullOrEmpty(desc))
-        name += FormatDescriptionForSelector(desc);
-      if (!string.IsNullOrEmpty(para) && !para.Equals("N/A", StringComparison.InvariantCultureIgnoreCase))
+        name += Utils.FormatDescriptionForSelector(desc);
+      if (!string.IsNullOrEmpty(para) && Settings.SelectorsMaxLineLen.IntValue > 0 && !para.Equals("N/A", StringComparison.InvariantCultureIgnoreCase))
         name += "\n\t" + RxShortenLines.Replace(RxTabifyLines.Replace(para, "\n\t"), "$1");
       if (simVer == 2)
         name += '\n' + "(DEPRECATED)";
@@ -492,7 +479,7 @@ namespace MSFSTouchPortalPlugin.Configuration
       if (indx)
         name += ":N";
       if (!string.IsNullOrEmpty(desc))
-        name += FormatDescriptionForSelector(desc);
+        name += Utils.FormatDescriptionForSelector(desc);
       if (simVer == 2)
         name += '\n' + "(DEPRECATED)";
       //Logger.LogDebug("SQL: {name}\n{existing}", name, existing.Split(','));

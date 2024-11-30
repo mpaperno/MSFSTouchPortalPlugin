@@ -18,6 +18,8 @@ A copy of the GNU GPL is included with this project
 and is also available at <http://www.gnu.org/licenses/>.
 */
 
+using System.Text.RegularExpressions;
+
 namespace MSFSTouchPortalPlugin.Helpers
 {
   internal static class Utils
@@ -36,6 +38,25 @@ namespace MSFSTouchPortalPlugin.Helpers
       catch {
         return double.TryParse(value.ToString(), out dVal);
       }
+    }
+
+
+    static readonly Regex RxFindFirstSentence = new Regex(@"\.(?:\W|$)", RegexOptions.Multiline | RegexOptions.Compiled);
+
+    internal static string FormatDescriptionForSelector(string desc)
+    {
+      var maxLen = Configuration.Settings.SelectorsMaxLineLen.IntValue;
+      if (maxLen <= 0)
+        return string.Empty;
+
+      var match = RxFindFirstSentence.Match(desc);
+      if (match.Success)
+        desc = desc[0..(System.Math.Min(match.Index + 1, maxLen))] + (match.Index > maxLen ? "..." : "");
+      else if (desc.Length > maxLen)
+        desc = desc[0..maxLen] + "...";
+      else
+        desc += '.';
+      return "\n " + desc.Replace('\n', ' ');
     }
 
   }

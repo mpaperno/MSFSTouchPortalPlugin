@@ -131,6 +131,17 @@ namespace MSFSTouchPortalPlugin.Configuration
       MaxValue = uint.MaxValue
     };
 
+    public static readonly PluginSetting SelectorsMaxLineLen = new PluginSetting("SelectorsMaxLineLen", DataType.Number) {
+      Name = "Maximum Length of Descriptions in Action Lists",
+      Description =
+        "Some plugin actions and connectors allow selecting Variables and Events from lists. These may have some informative descriptions (imported from the FS documentation or HubHop data)." +
+        "This setting controls how much of that description will be shown in the selection lists along with the variable/event name. The longer they are, the more space they will need in the TP button editor.\n\n" +
+        "Enter zero (0) to disable showing descriptions entirely.",
+      Default = "75",
+      MinValue = 0,
+      MaxValue = 300
+    };
+
     // Internally tracked settings, not used via Touch Portal UI.
 
     // Version of the plugin with which the settings were last saved. Used for change tracking/notifications/etc.
