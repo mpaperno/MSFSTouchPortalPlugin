@@ -1671,6 +1671,10 @@ namespace MSFSTouchPortalPlugin.Services
           UpdateSimConnectState();
         }
       }
+
+      // do check for updates; this tracks last update time and won't spam
+      if (Settings.CheckVersionOnStartup.BoolValue)
+        NewVersionCheck();
     }
 
     #endregion Plugin Action/Event Handlers
@@ -1973,6 +1977,20 @@ namespace MSFSTouchPortalPlugin.Services
         UpdateTpStateValue("CurrentTouchPortalPage", message.PageName.Replace(".tml", string.Empty, true, CultureInfo.InvariantCulture));
     }
 
+    public void OnNotificationOptionClickedEvent(NotificationOptionClickedEvent message)
+    {
+      //_logger.LogDebug("{@Message}", message);
+      if (message.NotificationId.Contains("NewVersion") && !string.IsNullOrWhiteSpace(message.OptionId) && message.OptionId.StartsWith("http")) {
+        // Try launch default browser with URL
+        try {
+          System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo{ FileName = message.OptionId, UseShellExecute = true });
+        }
+        catch (Exception e) {
+          _logger.LogError(e, "Failed to launch system browser for URL {URL}", message.OptionId);
+        }
+      }
+    }
+
     #endregion TouchPortalSDK Events
 
     #region Utilities       ///////////////////////////////
@@ -2078,6 +2096,35 @@ namespace MSFSTouchPortalPlugin.Services
       float dlta = rangeMax - rangeMin;
       float scale = dlta == 0.0f ? 100.0f : 100.0f / dlta;
       return Math.Clamp((int)Math.Round((value - rangeMin) * scale), 0, 100);
+    }
+
+    async void NewVersionCheck()
+    {
+      if (DateTimeOffset.Now.ToUnixTimeSeconds() is var ts && (ts - Settings.LastVersionCheckTime.LongValue < 6 * 60 * 60)) {
+        _logger.LogDebug(
+          "Skipping update check because last one was less than 6 hours ago. {now} - {last} = {delta}s",
+          ts, Settings.LastVersionCheckTime.LongValue, (ts - Settings.LastVersionCheckTime.LongValue)
+        );
+        return;
+      }
+      Settings.LastVersionCheckTime.Value = ts;
+      VersionCheckResult result = await GitHubVersionCheck.CheckForUpdates(PluginConfig.PLUGIN_REPO_URL_PATH, VersionInfo.GetProductVersion()).ConfigureAwait(false);
+      if (result.ReleaseIsNewer) {
+        _client.ShowNotification(
+          $"{PluginId}.Notice.NewVersion-{result.ReleaseVersion}.5",
+          $"{PluginConfig.PLUGIN_NAME} Update Avalable!",
+          $"A new release has been published on {result.ReleaseDate.ToShortDateString()}:\n\n {result.ReleaseName}\n\n" +
+            "Click one of the links for release notes and download!",
+          new[] {
+            new NotificationOptions { Id = result.ReleaseUrl,                   Title = "Go To GitHub Release" },
+            new NotificationOptions { Id = PluginConfig.PLUGIN_URL_FLIGHTSIMIO, Title = "Go To Flightsim.io" },
+          }
+        );
+      }
+      if (!string.IsNullOrEmpty(result.ErrorMessage))
+        _logger.LogWarning("Version update check error: {Message}", result.ErrorMessage);
+      else
+        _logger.LogDebug("Version check completed with result: {Result}", result);
     }
 
     /*

@@ -206,6 +206,8 @@ namespace MSFSTouchPortalPlugin.Configuration
             Settings.WasimClientIdHighByte.Value = hiByte.ByteValue;
           if (plugin.TryGetSetting(Settings.ActionRepeatInterval.SettingID, out var interval))
             Settings.ActionRepeatInterval.Value = interval.UIntValue;
+          if (plugin.TryGetSetting(Settings.LastVersionCheckTime.SettingID, out var lastVersionCheck) && long.TryParse(lastVersionCheck.StringValue, out var lv))
+            Settings.LastVersionCheckTime.Value = lv;
         }
         _logger.LogDebug("Loaded settings from {cfgFile} with version {cfgVersion:X08}", cfgFile, Settings.PluginSettingsVersion.UIntValue);
       }
@@ -227,6 +229,7 @@ namespace MSFSTouchPortalPlugin.Configuration
       plugin[Settings.PluginSettingsVersion.SettingID].SetValue($"0x{VersionInfo.GetProductVersionNumber():X08}");
       plugin[Settings.WasimClientIdHighByte.SettingID].ByteValue = Settings.WasimClientIdHighByte.ByteValue;
       plugin[Settings.ActionRepeatInterval.SettingID].UIntValue = Settings.ActionRepeatInterval.UIntValue;
+      plugin[Settings.LastVersionCheckTime.SettingID].StringValue = Settings.LastVersionCheckTime.LongValue.ToString();
       return SaveToFile(cfg, Path.Combine(UserConfigFolder, SettingsConfigFile));
     }
 

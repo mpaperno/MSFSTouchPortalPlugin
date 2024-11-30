@@ -33,6 +33,15 @@ namespace MSFSTouchPortalPlugin.Configuration
       Default = "0",
     };
 
+    public static readonly PluginSetting CheckVersionOnStartup = new PluginSetting("CheckVersionOnStartup", DataType.Switch) {
+      Name = "Check For New Plugin Version on Startup (0/1)",
+      Description = "Set to 1 to check for new versions of this plugin when it starts, or 0 to disable update checks.\n" +
+        "A version check is also performed when this value is changed from 0 to 1 and the settings are saved.\n" +
+        "The minimum time between update checks is 6 hours, even if the plugin is restarted. It will never check more often than that.\n" +
+        "Update checks require an active Internet connection.",
+      Default = "0",
+    };
+
     public static readonly PluginSetting UserStateFiles = new PluginSetting("UserStateFiles", DataType.Text) {
       Name = "Sim Variable State Config File(s) (blank = Default)",
       Description = "Here you can specify one or more custom configuration files which define SimConnect variables to request as Touch Portal States. " +
@@ -161,5 +170,7 @@ namespace MSFSTouchPortalPlugin.Configuration
     public static readonly PluginSetting WasimClientIdHighByte = new("WasimClientIdHighByte", 0, 0xFF, "0");
     // Held action repeat interval; settable by user.
     public static readonly PluginSetting ActionRepeatInterval = new("ActionRepeatInterval", PluginConfig.ACTION_REPEAT_RATE_MIN_MS, uint.MaxValue, "450");
+    // Track the last time a new version update check was performed. This should persist between restarts.
+    public static readonly PluginSetting LastVersionCheckTime = new("LastVersionCheck", "0", DataType.Number);
   }
 }
