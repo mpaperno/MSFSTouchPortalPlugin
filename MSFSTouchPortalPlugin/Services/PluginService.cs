@@ -50,7 +50,6 @@ namespace MSFSTouchPortalPlugin.Services
     public string PluginId => PluginConfig.PLUGIN_ID;  // for ITouchPortalEventHandler
 
     const int SIM_RECONNECT_DELAY_SEC = 30;   // SimConnect connection attempts delay on failure
-    const int MAX_LOG_MSGS_FOR_STATE  = 12;   // maximum number of log lines to send in the LogMessages state
 
     private readonly IHostApplicationLifetime _hostApplicationLifetime;
     private readonly ILogger<PluginService> _logger;
@@ -74,7 +73,7 @@ namespace MSFSTouchPortalPlugin.Services
     private Dictionary<string, ActionEventType> actionsDictionary = new();
     private Dictionary<string, PluginSetting> pluginSettingsDictionary = new();
     private readonly ConcurrentDictionary<string, Timer> _repeatingActionTimers = new();  // storage for temporary repeating (held) action timers, index by action ID
-    private readonly ConcurrentQueue<string> _logMessages = new();  // stores the last MAX_LOG_MSGS_FOR_STATE log messages for the LogMessages state value, used in PluginLogger callback
+    private readonly ConcurrentQueue<string> _logMessages = new();  // stores the last log messages for the LogMessages state value, used in PluginLogger callback
     private static readonly System.Data.DataTable _expressionEvaluator = new();  // used to evaluate basic math in action data
     private CultureInfo _cultureInfo = CultureInfo.CurrentCulture;
     private readonly string _defaultCultureId = CultureInfo.CurrentCulture.Name;
@@ -328,15 +327,17 @@ namespace MSFSTouchPortalPlugin.Services
       var evId = (EventIds)eventId.Id;
       if (evId == EventIds.Ignore)
         return;
-      while (_logMessages.Count >= MAX_LOG_MSGS_FOR_STATE)
+      while (_logMessages.Count >= Settings.LogMessagesStateMaxLines.IntValue && _logMessages.Count > 0)
         _logMessages.TryDequeue(out _);
-      _logMessages.Enqueue(message);
+      if (Settings.LogMessagesStateMaxLines.IntValue > 0)
+        _logMessages.Enqueue(message);
       if (_client.IsConnected) {
         if (evId == EventIds.None && logLevel > LogLevel.Information)
           evId = EventIds.PluginError;
         if (evId != EventIds.None)
           UpdateSimSystemEventState(evId, message);
-        UpdateTpStateValue("LogMessages", string.Join('\n', _logMessages.ToArray()));
+        if (_logMessages.Count > 0)
+          UpdateTpStateValue("LogMessages", string.Join('\n', _logMessages.ToArray()));
       }
     }
 

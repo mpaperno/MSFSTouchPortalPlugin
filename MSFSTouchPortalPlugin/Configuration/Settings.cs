@@ -136,10 +136,20 @@ namespace MSFSTouchPortalPlugin.Configuration
       Description =
         "Some plugin actions and connectors allow selecting Variables and Events from lists. These may have some informative descriptions (imported from the FS documentation or HubHop data)." +
         "This setting controls how much of that description will be shown in the selection lists along with the variable/event name. The longer they are, the more space they will need in the TP button editor.\n\n" +
-        "Enter zero (0) to disable showing descriptions entirely.",
+        "Enter zero (0) to disable showing descriptions entirely. Maximum value is 300.",
       Default = "75",
       MinValue = 0,
       MaxValue = 300
+    };
+
+    public static readonly PluginSetting LogMessagesStateMaxLines = new PluginSetting("LogMessagesStateMaxLines", DataType.Number) {
+      Name = "Maximum Recent Log Messages to Send",
+      Description =
+        "Maximum number of log messages to include in the \"Most recent plugin log messages\" State value.\n" +
+        "Enter zero (0) to disable sending any log entries. Maximum value is 50.",
+      Default = "12",
+      MinValue = 0,
+      MaxValue = 50
     };
 
     // Internally tracked settings, not used via Touch Portal UI.
