@@ -380,7 +380,7 @@ namespace MSFSTouchPortalPlugin_Generator
       }
 
       var result = JsonConvert.SerializeObject(model, Formatting.Indented);
-      var dest = Path.Combine(_options.OutputPath, "entry.tp");
+      var dest = Path.Combine(_options.OutputPath, _options.JsonFile);
       File.WriteAllText(dest, result);
       _logger.LogInformation($"Generated '{dest}'.\n");
     }

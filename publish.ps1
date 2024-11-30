@@ -63,6 +63,12 @@ Write-Output "`nGenerating entry.tp JSON and Documentation...`n"
 & "$GenFilesPath\$BinName-Generator.exe" -o "$PluginFilesPath" --tpv3 $TPv3 --tpv4 $TPv4
 if ($LastExitCode -ne 0) { throw ("Error " + $LastExitCode) }
 
+if ($TPv4 -And $TPv3) {
+  Write-Output "`nGenerating entry.tp JSON for TP v3...`n"
+  & "$GenFilesPath\$BinName-Generator.exe" -o "$PluginFilesPath" --tpv3 true --tpv4 false -g entry -j TPv3-entry.tp
+  if ($LastExitCode -ne 0) { throw ("Error " + $LastExitCode) }
+}
+
 # Make a copy of docs in Wiki folder if we know where it is.
 if ($WikiPath -ne "" -And (Test-Path $WikiPath)) {
   copy "$PluginFilesPath\Documentation.md" "$WikiPath\Documentation-$Platform.md"
@@ -82,6 +88,7 @@ Copy-Item -Path ".\icons" -Destination "$PluginFilesPath" -Filter *.png -Recurse
 if (-not $NoTPP) {
   # Get version
   $FileVersion = (Get-Command $BinFilesPath\$BinName.dll).FileVersionInfo.ProductVersion
+  if ($LastExitCode -ne 0) { throw ("Error " + $LastExitCode) }
 
   $TppFile = "$DistFolderPath\$DistroName-$FileVersion$VersionSuffix.tpp"
   if (Test-Path $TppFile) {
