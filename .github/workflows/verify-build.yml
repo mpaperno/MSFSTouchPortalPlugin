@@ -28,9 +28,7 @@ jobs:
           6.0.x
           8.0.x
 
-    - name: Restore dependencies
-      run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore --configuration Release -p:Platform=${{ matrix.platform }}
+      run: dotnet build --configuration Release -p:Platform=${{ matrix.platform }}
     - name: Test
-      run: dotnet test --no-restore --verbosity normal --configuration Release -p:Platform=${{ matrix.platform }}
+      run: dotnet test --verbosity normal --configuration Release -p:Platform=${{ matrix.platform }}

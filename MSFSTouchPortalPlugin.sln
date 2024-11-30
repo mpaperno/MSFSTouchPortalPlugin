@@ -76,7 +76,9 @@ Global
 		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Publish|FSX.ActiveCfg = Release|FSX
 		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Publish|MSFS.ActiveCfg = Release|MSFS
 		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Release|FSX.ActiveCfg = Release|FSX
+		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Release|FSX.Build.0 = Release|FSX
 		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Release|MSFS.ActiveCfg = Release|MSFS
+		{562A58FF-DD9A-4839-B503-4520D3BE96DA}.Release|MSFS.Build.0 = Release|MSFS
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
