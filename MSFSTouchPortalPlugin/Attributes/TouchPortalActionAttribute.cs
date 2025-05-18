@@ -253,20 +253,17 @@ namespace MSFSTouchPortalPlugin.Attributes
         DefaultValue = choiceValues[0];
     }
 
+    public TouchPortalActionChoiceAttribute(string[] choiceValues, int defaultValue) : this(choiceValues) {
+      if (defaultValue > -1 && defaultValue < choiceValues.Length)
+        DefaultValue = choiceValues[defaultValue];
+    }
+
     public TouchPortalActionChoiceAttribute(string choiceValue, string defaultValue = default) : this(new [] { choiceValue }, defaultValue) { }
   }
 
-  public class TouchPortalActionSwitchAttribute : TouchPortalActionDataAttribute
+  public class TouchPortalActionSwitchAttribute : TouchPortalActionChoiceAttribute
   {
-    public bool DefaultValue
-    {
-      get { return (bool)GetDefaultValue(); }
-      set { _defaultValue = value; }
-    }
-
-    public TouchPortalActionSwitchAttribute(bool defaultValue = false) : base(DataType.Switch) {
-      DefaultValue = defaultValue;
-    }
+    public TouchPortalActionSwitchAttribute(bool defaultValue = false) : base(new [] { "On", "Off" }, defaultValue ? 0 : 1) { }
   }
 
   public class TouchPortalActionNumericAttribute : TouchPortalActionDataAttribute
