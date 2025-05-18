@@ -367,6 +367,7 @@ namespace MSFSTouchPortalPlugin.Services
       _simConnectionRequest.Reset();
       StartPluginEventsTask();
       UpdateSimConnectState();
+      UpdateTpStateValue("SimVersion", simInfo.AppVersionMaj.ToString(), Groups.SimSystem);
 
       if (DocImportsCollection.SetNewSimulatorVersion(simInfo.AppVersionMaj)) {
         UpdateSimVarCategories();
