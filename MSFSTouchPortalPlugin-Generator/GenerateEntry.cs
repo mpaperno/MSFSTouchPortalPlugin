@@ -297,7 +297,7 @@ namespace MSFSTouchPortalPlugin_Generator
             Type = ev.Type,
             ValueType = ev.ValueType,
             ValueChoices = ev.ValueChoices,
-            ValueStateId = $"{_options.PluginId}.{ev.ValueStateId}",
+            ValueStateId = ev.States == null ? $"{_options.PluginId}.{ev.ValueStateId}" : String.Empty,
             SubCategoryId = subCategoryId,
           };
           if (ev.States != null && ev.States.Count > 0) {
@@ -306,7 +306,6 @@ namespace MSFSTouchPortalPlugin_Generator
               tpEv.Localstates.Add(new TouchPortalLocalState() {
                 Id = $"{tpEv.Id}.{state.Key}",
                 Name = $"{fullCatName} - {state.Value}",
-                ParentCategory = fullCatName
               });
             }
           }
