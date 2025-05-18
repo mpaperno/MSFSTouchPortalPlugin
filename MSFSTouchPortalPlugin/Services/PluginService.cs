@@ -190,6 +190,7 @@ namespace MSFSTouchPortalPlugin.Services
       _simConnectService.OnEventReceived += SimConnectEvent_OnEventReceived;
       _simConnectService.OnInputEventsUpdated += SimConnect_OnInputEventsListUpdated;
 #if WASIM
+      _simConnectService.OnWasmStatusChanged += SimConnectEvent_OnWasmStatusChanged;
       _simConnectService.OnLVarsListUpdated += SimConnect_OnLVarsListUpdated;
 #endif
 
@@ -374,6 +375,17 @@ namespace MSFSTouchPortalPlugin.Services
         UpdateSimEventCategories();
         _logger.LogDebug("Reloaded doc imports for simulator version {SimVersionTag}", DocImportsCollection.SimulatorVersion);
       }
+    }
+
+    void SimConnectEvent_OnWasmStatusChanged(WasmModuleStatus status)
+    {
+      string state = status switch {
+        WasmModuleStatus.Unknown   => "unknown",
+        WasmModuleStatus.NotFound  => "undetected",
+        WasmModuleStatus.Found     => "disconnected",
+        WasmModuleStatus.Connected => "connected",
+      };
+      UpdateTpStateValue("WasmStatus", state);
     }
 
     void SimConnectEvent_OnDataUpdateEvent(Definition def, Definition _ /*dwRequestID*/, object data)

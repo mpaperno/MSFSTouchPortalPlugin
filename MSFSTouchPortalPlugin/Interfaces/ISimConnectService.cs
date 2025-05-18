@@ -43,6 +43,7 @@ namespace MSFSTouchPortalPlugin.Interfaces
   internal delegate void ExceptionEventHandler(RequestTrackingData data);
   internal delegate void LocalVarsListUpdatedHandler(System.Collections.Generic.IReadOnlyDictionary<int, string> list);
   internal delegate void InputEventsListUpdatedHandler();
+  internal delegate void WasmStatusChangeHandler(WasmModuleStatus status);
 #nullable enable
   internal delegate void SimVarErrorEventHandler(Definition def, SimVarErrorType errType, object? data = null);
 #nullable restore
@@ -56,6 +57,7 @@ namespace MSFSTouchPortalPlugin.Interfaces
     event SimVarErrorEventHandler OnSimVarError;
     event InputEventsListUpdatedHandler OnInputEventsUpdated;
 #if WASIM
+    event WasmStatusChangeHandler OnWasmStatusChanged;
     event LocalVarsListUpdatedHandler OnLVarsListUpdated;
 #endif
 

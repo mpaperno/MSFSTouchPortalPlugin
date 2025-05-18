@@ -66,6 +66,7 @@ namespace MSFSTouchPortalPlugin.Services
     public event SimVarErrorEventHandler OnSimVarError;
     public event InputEventsListUpdatedHandler OnInputEventsUpdated;
 #if WASIM
+    public event WasmStatusChangeHandler OnWasmStatusChanged;
     public event LocalVarsListUpdatedHandler OnLVarsListUpdated;
 #endif
 
@@ -82,7 +83,16 @@ namespace MSFSTouchPortalPlugin.Services
     public bool IsConnected => _connected;
     public bool WasmAvailable => WasmStatus != WasmModuleStatus.NotFound;
 #if WASIM
-    public WasmModuleStatus WasmStatus { get; private set; } = WasmModuleStatus.Unknown;
+    WasmModuleStatus _wasmStatus = WasmModuleStatus.Unknown;
+    public WasmModuleStatus WasmStatus {
+      get { return _wasmStatus; }
+      private set {
+        if (_wasmStatus != value) {
+          _wasmStatus = value;
+          OnWasmStatusChanged?.Invoke(value);
+        }
+      }
+    }
 #else
     public WasmModuleStatus WasmStatus => WasmModuleStatus.NotFound;
 #endif
@@ -816,7 +826,7 @@ namespace MSFSTouchPortalPlugin.Services
         return false;
       }
 
-      _logger.LogDebug("Sending {simVar} with value {value}", simVar.ToString(), simVar.Value);
+      _logger.LogTrace("Sending {simVar} with value {value}", simVar.ToString(), simVar.Value);
       return SetDataOnSimObject(simVar);
     }
 
