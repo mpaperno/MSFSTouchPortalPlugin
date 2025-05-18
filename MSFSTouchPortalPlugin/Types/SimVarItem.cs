@@ -510,8 +510,8 @@ namespace MSFSTouchPortalPlugin.Types
       // Check type-specific attributes and also that the type can be requested in the first place.
       switch (VariableType) {
         case 'A':
-          // SimVar names may have spaces but never underscores; may be followed by one or more of ":I" index value or ":'ComponentName'_n".
-          if (!Regex.IsMatch(SimVarName, @"^[a-zA-Z0-9][a-zA-Z0-9 ]+(?::\d{1,3}|:'[\w ]+'_n)*$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
+          // SimVar names may have spaces but never underscores; may start with "I:" or "'ComponentName'_n:" and may be followed by one or more of ":I" index value or ":'ComponentName'_n".
+          if (!Regex.IsMatch(SimVarName, @"^(?:\d{1,3}:|'[\w ]+'_n:)?[a-zA-Z0-9][a-zA-Z0-9 ]+(?::\d{1,3}|:'[\w ]+'_n)*$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
             return returnError($"SimVar Name '{SimVarName}' contains invalid character(s)", ref resultMsg);
           break;
 
@@ -535,7 +535,7 @@ namespace MSFSTouchPortalPlugin.Types
         case 'L':
         case 'T':
           // Local, Token, and Input Event variable types may only have alphanumerics, underscores, and colons; no spaces.
-          if (!Regex.IsMatch(SimVarName, @"^[a-zA-Z][a-zA-Z0-9_:]+$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
+          if (!Regex.IsMatch(SimVarName, @"^[\w:]+$", RegexOptions.Compiled | RegexOptions.CultureInvariant))
             return returnError($"Variable Name '{SimVarName}' contains invalid character(s)", ref resultMsg);
           break;
 
