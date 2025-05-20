@@ -151,8 +151,7 @@ namespace MSFSTouchPortalPlugin.Services
       // Shut down
       _quitting = true;
       _logger.LogDebug("Shutting down...");
-      if (_client.IsConnected)
-        UpdateTpStateValue("RunningState", "stopped");
+      UpdateTpStateValue("RunningState", "stopped");
       StopPluginEventsTask();
       DisconnectSimConnect();
       if (_pluginConfig.SaveSettings())
@@ -1022,14 +1021,16 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     void DisconnectSimConnect() {
-      _simAutoConnectDisable.Set();
+      bool wasConn = _simConnectService.IsConnected;
       bool wasSet = _simConnectionRequest.IsSet;
+      _simAutoConnectDisable.Set();
       _simConnectionRequest.Reset();
-      if (_simConnectService.IsConnected)
+      if (wasConn)
         _simConnectService.Disconnect();
       else if (wasSet)
         _logger.LogInformation((int)EventIds.PluginInfo, "Connection attempts to Simulator were canceled.");
-      UpdateSimConnectState();
+      if (wasConn || wasSet)
+        UpdateSimConnectState();
     }
 
     // Handles some basic actions like sim connection and repeat rate, with optional data value(s).
@@ -1731,13 +1732,13 @@ namespace MSFSTouchPortalPlugin.Services
         "Touch Portal Connected with: TP v{tpV}, SDK v{sdkV}, {pluginId} entry.tp v{plugV}, {plugName} running v{prodV} ({runV})",
         message.TpVersionString, message.SdkVersion, PluginId, message.PluginVersion, VersionInfo.AssemblyName, VersionInfo.GetProductVersionString(), runtimeVer
       );
+      UpdateTpStateValue("RunningState", "starting");
 
       ProcessPluginSettings(message.Settings);
       // convert the entry.tp version back to the actual decimal value
       if (!uint.TryParse($"{message.PluginVersion}", NumberStyles.HexNumber, null, out uint tpVer))
         tpVer = VersionInfo.GetProductVersionNumber();
-      // update status & version states
-      UpdateTpStateValue("RunningState", "starting");
+      // update version states
       UpdateTpStateValue("RunningVersion", runtimeVer);
       UpdateTpStateValue("EntryVersion", $"{tpVer:X}");
       // set a state for TP config home path (workaround for no env. var access in TP)
