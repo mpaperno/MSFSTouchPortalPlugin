@@ -1,5 +1,46 @@
 # MSFS/SimConnect Touch Portal Plugin Change Log
 
+## 1.6.1.0 (May-20-2024)
+Version number: `1060100`
+
+### Fixes
+* Fixed validation of L vars to allow leading `_` (fixes [#73]). Thanks to @Mushupm on GitHub for reporting and testing a fix.
+* Simulator ('A') type variables can now also have leading index/component name elements (eg. "3:VAR NAME:1").
+* Fixed an issue which apparently affected a very limited number of systems (only 1 known occurrence) which resulted in most of the plugin v1.6.0 actions not working at all,
+  except when used in a button's "On Hold" setup. This would only have affected actions added to buttons/flows since plugin v1.6.0, older versions of the same actions are unaffected.<br/>
+  **Note** For the fix to take effect, any existing plugin v1.6.0 actions need to be replaced with the new ones from this version.<br/>
+  Thanks to `@Raeas` on TP's Discord for reporting and troubleshooting a similar issue on another plugin, which led to the fix. (This turned out to be due to a silent Touch Portal error which prevented the action from being sent to the plugin.)
+* The "_Data from the most recent Simulator System Event_" State is now updated _before_ the "_Simulator System Event_" is triggered so that the data will be available in event handlers immediately.
+  Fixes possible issue with needing to add a delay before trying to use the data value, eg. in "AirplaneLoaded" event handler to read the model file name.
+
+### New States
+* Plugin
+  * _Plugin Running State_ (`stopped` / `starting` / `started`) - Changes based on plugin status. Can be used with Touch Portal's "Start/Stop Plug-in" action for a toggle effect, for example.
+  * _Status of WASM module_ (`unknown` / `undetected` / `disconnected` / `connected`) - (MSFS edition only) Reports connection status of the optional WASM module.
+    Starts as "unknown" before initial simulator connection is established. `undetected` means the module could not be connected to at all, due to it not being installed or a connection error.
+    Otherwise the status should match the main SimConnect connection status of either connected or disconnected.
+* Simulator System
+  * _Simulator Version_ (`0` / `10` / `11` / `12`) - Last connected simulator "major" version (default before any connection is `0`).  
+    These are the version numbers reported by SimConnect: 10 = FSX, 11 = FS20, 12 = FS24. (No idea what P3D reports, sorry!)
+
+### New Events
+Implemented new Touch Portal v4+ event types that can contain associated data values as "local states," which can be used like other "local values" in actions that are placed inside the event block.<br/>
+These events are alternatives to current options of listening for plugin state changes or the individual events in "_Simulator System Event_" choices.
+
+Further details about each event and their local states is available in the generated plugin documentation on the [Wiki] (expand the category details and then go to "Events" link).
+
+* Plugin
+  * _Plugin Message Event_ - emitted when the plugin logs an informative message. Local states contain the message source and severity plus the actual message text.
+  * _Simulator Connection Change_ - emitted when connection to the simulator changes. Alternative to watching the 'The status of SimConnect' State for changes, or using the individual event types in "_Simulator System Event_",
+  * _Touch Portal Device Page Change_ - emitted when the plugin detects a new page has been loaded on a Touch Portal device. The local states contain the new and previous page names and information about the device.
+* Simulator System
+  * _Simulator Pause State Change_ - emitted when the Pause State of the simulator changes (MSFS edition only). Local states contain new and previous pause states in numeric and text formats.
+  * _Simulator System Filename Event_ - emitted in response to any simulator system event which has an associated file name, such as when loading aircraft, flights, or flight plans.
+    It has two local states which describe the event and contain the file name.
+
+[#73]: https://github.com/mpaperno/MSFSTouchPortalPlugin/issues/73
+
+---
 ## 1.6.0.0 (Nov-30-2024)
 Version number: `1060000`
 
