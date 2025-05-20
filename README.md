@@ -183,6 +183,7 @@ beautiful multi-layered gauges animated in real-time based on Simulator data.
 * [SDK Environment Variables](https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm)
 * [SDK GPS Variables](https://docs.flightsimulator.com/html/Programming_Tools/GPSVars/GPS_Variables.htm)
 * [SDK Token Variables](https://docs.flightsimulator.com/html/Programming_Tools/WASM/Gauge_API/Token_Vars/Token_Variables.htm)
+* [SDK System Events](https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_SubscribeToSystemEvent.htm#parameters)
 * [RPN Reference & Variable Types Overview](https://docs.flightsimulator.com/html/Additional_Information/Reverse_Polish_Notation.htm)
 
 ### MSFS 2024
@@ -191,6 +192,7 @@ beautiful multi-layered gauges animated in real-time based on Simulator data.
 * [SDK Environment Variables](https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm)
 * [SDK GPS Variables](https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/GPS_Variables.htm) ("deprecated")
 * [SDK Token Variables](https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/WASM/Gauge_API/Token_Vars/Token_Variables.htm) ("deprecated")
+* [SDK System Events](https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/Events_And_Data/SimConnect_SubscribeToSystemEvent.htm#parameters)
 * [RPN Reference & Variable Types Overview](https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Reverse_Polish_Notation.htm)
 
 ### MSFS
