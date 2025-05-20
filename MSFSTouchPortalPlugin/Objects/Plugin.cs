@@ -300,23 +300,32 @@ namespace MSFSTouchPortalPlugin.Objects
     //
 
     public static readonly TouchPortalEvent MessageEvent = new (
-      "Info",
-      "Plugin Information Event",
-      "When the plugin sends important information...",
-      new EventDataStates() {
-        { "Type",    "Event Type (PluginInfo, PluginError, SimError)" },
-        { "Message", "Event Log Entry" },
-      }
-    );
+      "PluginMessageEvent",
+      "Plugin Message Event",
+      "When the plugin sends an important informational message",
+      [
+        [ "Type",    "Event Type (PluginInfo, PluginError, SimError)" ],
+        [ "Message", "Event Message" ],
+      ]
+    ) {
+      Description = "This event is emitted when the plugin logs an informative message. This could be an error, warning, or simply informational. " +
+        "These are the same messages as contained in the 'Most recent plugin log messages' State, but arrive individually.\n" +
+        "- `Type` - source and severity of the message; Can be one of `PluginInfo`, `PluginError`, or `SimError`.\n" +
+        "- `Message` - the message text."
+    };
 
     public static readonly TouchPortalEvent SimConnectionEvent = new(
-      "SimConnection",
-      "Simulator Connection Changed",
+      "SimConnectionEvent",
+      "Simulator Connection Change",
       "When simulator connection status changes",
-      new EventDataStates() {
-        { "Value",  "Status (true, false, connecting)" },
-      }
-    );
+      [
+        [ "Status",  "Status (disconnected/connecting/connected)" ],
+      ]
+    ) {
+      Description = "This event is emitted when connection to the simulator changes. " +
+        "Using this event is an alternative to watching the 'The status of SimConnect' State for changes, or using the individual event types in 'Simulator System Event'.\n" +
+        "- `Status` - the current simulator connection status, which can be one of `disconnected`, `connecting`, or `connected`."
+    };
 
   }  // PluginMapping
 

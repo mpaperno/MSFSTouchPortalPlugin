@@ -121,21 +121,30 @@ namespace MSFSTouchPortalPlugin.Objects
        EventIds.ViewExternal,
     });
 
-    public static readonly TouchPortalEvent SimulatorPauseEvent =
+#if !FSX
+    public static readonly TouchPortalEvent SimPauseEvent =
       new(
-        "SimulatorPauseEvent",
-        "Simulator Pause State Changed",
+        "SimPauseEvent",
+        "Simulator Pause State Change",
         "When the simulator's Pause State changes",
-        new EventDataStates() {
-          { "Value", "Pause State" },
-        }
+        [
+          [ "NewState",     "New Pause State (numeric)" ],
+          [ "NewStateStr",  "New Pause State (string)" ],
+          [ "PrevState",    "Previous Pause State (numeric)" ],
+          [ "PrevStateStr", "Previous Pause State (string)" ],
+        ]
       ) {
-      Description = "Describes the Pause State of the simulator, which is a 4-bit Flag type with the following values:\n" +
-         "0 = No Pause" +
-         "1 = Full Pause with time (sim + traffic + etc...)  (SET_PAUSE 1 / Dev -> Options -> Pause)" +
-         "2 = FSX Legacy Pause (not used anymore)" +
-         "4 = Pause was activated using the \"Active Pause\" Button (position/attitude freeze)" +
-         "8 = Pause the player sim but traffic, multi, etc... will still run (SET_PAUSE_ON / ESC menu pause)"
+      Description = "Describes the Pause State of the simulator.\n" +
+        "The numeric status is a 4-bit Flag (bit-field) type which may be OR'd together when multiple pause states are active (eg. 'active' and 'sim' = `12` (`0xC`), or `1100` in binary) .\n" +
+        "The string version contains text representations of the bit values, possibly joined with `|` character when there are multiple set flags (eg. `ACTIVE|SIM`).\n" +
+        "Possible values, numeric and text:\n" +
+         "* `0` (`OFF`): No Pause\n" +
+         "* `1` (`FULL`): Full Pause with time (sim + traffic + etc...)  (SET_PAUSE 1 / Dev -> Options -> Pause)\n" +
+         "* `2` (`FULL_WITH_SOUND`): FSX Legacy Pause (not used anymore)\n" +
+         "* `4` (`ACTIVE`): Pause was activated using the \"Active Pause\" Button (position/attitude freeze)\n" +
+         "* `8` (`SIM`): Pause the player sim but traffic, multi, etc., will still run (SET_PAUSE_ON / ESC menu pause)\n"
      };
+#endif
+
   }
 }

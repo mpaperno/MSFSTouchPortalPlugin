@@ -28,11 +28,13 @@ using System.Collections.Generic;
 namespace MSFSTouchPortalPlugin.Interfaces
 {
   internal interface IReflectionService {
+    string PluginId { get; set; }
     Dictionary<string, ActionEventType> GetActionEvents();
     Dictionary<string, PluginSetting> GetSettings();
     IEnumerable<TouchPortalActionAttribute> GetActionAttributes(Groups catId);
     IEnumerable<TouchPortalConnectorAttribute> GetConnectorAttributes(Groups catId);
     IEnumerable<TouchPortalCategoryAttribute> GetCategoryAttributes();
     IEnumerable<TouchPortalEvent> GetEvents(Groups catId);
+    void InitEvents();
   }
 }
