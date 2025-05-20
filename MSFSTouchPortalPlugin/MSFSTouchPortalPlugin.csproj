@@ -42,9 +42,9 @@
       Unhandled Exception: System.Runtime.InteropServices.SEHException: External component has thrown an exception.
         at System.EventHandler.Invoke(Object sender, EventArgs e)
         at <CrtImplementationDetails>.ModuleUninitializer.SingletonDomainUnload(Object source, EventArgs arguments)
-    It seems harmless, but since I don't know what causes this or if there is some other issues involved, keep this on .NET6 for now.
+    It seems mostly harmless... like Earth.
     -->
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>FSXTouchPortalPlugin</AssemblyName>
     <PlatformTarget>x86</PlatformTarget>
     <RuntimeIdentifier>win-x86</RuntimeIdentifier>
