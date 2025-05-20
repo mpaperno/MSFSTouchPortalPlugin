@@ -953,10 +953,10 @@ namespace MSFSTouchPortalPlugin.Services
     // update SimSystemEvent and (maybe) SimSystemEventData states in SimSystem group
     private void UpdateSimSystemEventState(EventIds eventId, object data = null) {
       if (SimSystemMapping.SimSystemEvent.ChoiceMappings.TryGetValue(eventId, out var eventName)) {
-        UpdateTpStateValue("SimSystemEvent", eventName, Groups.SimSystem);
-        _logger.LogTrace("Updated SimSystemEvent state value to '{eventName}'", eventName);
         if (data is string)
           UpdateTpStateValue("SimSystemEventData", data.ToString(), Groups.SimSystem);
+        UpdateTpStateValue("SimSystemEvent", eventName, Groups.SimSystem);
+        _logger.LogTrace("Updated SimSystemEvent state value to '{eventName}'", eventName);
       }
     }
 
