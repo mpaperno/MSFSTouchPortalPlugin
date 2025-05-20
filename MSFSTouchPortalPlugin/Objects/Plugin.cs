@@ -22,6 +22,7 @@ and is also available at <http://www.gnu.org/licenses/>.
 using MSFSTouchPortalPlugin.Attributes;
 using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Enums;
+using MSFSTouchPortalPlugin.Types;
 using SimVarItem = MSFSTouchPortalPlugin.Types.SimVarItem;
 
 namespace MSFSTouchPortalPlugin.Objects
@@ -293,7 +294,61 @@ namespace MSFSTouchPortalPlugin.Objects
     [TouchPortalConnectorMeta(decimals: true, feedback: false, RangeStartIndex = 3)]
     public static readonly object SetSimVar;
 
-  }
+
+    //
+    // Events
+    //
+
+    public static readonly TouchPortalEvent MessageEvent = new (
+      "PluginMessageEvent",
+      "Plugin Message Event",
+      "When the plugin sends an important informational message",
+      [
+        [ "Type",    "Event Type (PluginInfo, PluginError, SimError)" ],
+        [ "Message", "Event Message" ],
+      ]
+    ) {
+      Description = "This event is emitted when the plugin logs an informative message. This could be an error, warning, or simply informational. " +
+        "These are the same messages as contained in the 'Most recent plugin log messages' State, but arrive individually.\n" +
+        "- `Type` - source and severity of the message; Can be one of `PluginInfo`, `PluginError`, or `SimError`.\n" +
+        "- `Message` - the message text."
+    };
+
+    public static readonly TouchPortalEvent SimConnectionEvent = new(
+      "SimConnectionEvent",
+      "Simulator Connection Change",
+      "When simulator connection status changes",
+      [
+        [ "Status",  "Status (disconnected/connecting/connected)" ],
+      ]
+    ) {
+      Description = "This event is emitted when connection to the simulator changes. " +
+        "Using this event is an alternative to watching the 'The status of SimConnect' State for changes, or using the individual event types in 'Simulator System Event'.\n" +
+        "- `Status` - the current simulator connection status, which can be one of `disconnected`, `connecting`, or `connected`."
+    };
+
+    public static readonly TouchPortalEvent PageChange = new(
+      "PageChangeEvent",
+      "Touch Portal Device Page Change",
+      "When the current page on a Touch Portal device changes",
+      [
+        [ "PageName",     "New Page Name" ],
+        [ "PreviousPage", "Previous Page Name" ],
+        [ "DeviceName",   "Device Name" ],
+        [ "DeviceId",     "Device ID" ],
+        [ "DeviceIP",     "Device IP Address" ],
+      ]
+    ) {
+      Description = "This event is emitted when the plugin detects a new page has been loaded on a Touch Portal device. " +
+        "The local states contain the new and previous page names and information about the device, all forwarded from the original Touch Portal notification the plugin received.\n" +
+        "- `New Page Name` - Name of the page that was loaded, including the full folder path, if any.\n" +
+        "- `Previous Page Name` - Name of the page that was unloaded, including any folder path.\n" +
+        "- `Device Name` - Name of the TP device on which the page was loaded.\n" +
+        "- `Device ID` - ID of the TP device on which the page was loaded.\n" +
+        "- `Device IP Address` - IP Address of the TP device on which the page was loaded.\n"
+    };
+
+  }  // PluginMapping
 
   // Actions for editing variable requests has own category in TP UI, though actually these act as if they were in `Groups.Plugin`.
   [TouchPortalCategory(Groups.StatesEditor)]

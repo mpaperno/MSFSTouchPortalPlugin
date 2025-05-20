@@ -244,8 +244,8 @@ namespace MSFSTouchPortalPlugin_Generator.Model {
     [Required, MinLength(5)]
     public string Name;
     // The parent category the local state belongs to.
-    [Required, MinLength(5)]
-    public string ParentCategory;
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public string ParentCategory = null;
   }
 
   public class TouchPortalEvent

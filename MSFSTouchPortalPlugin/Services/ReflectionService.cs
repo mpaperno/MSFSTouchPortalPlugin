@@ -21,6 +21,7 @@ and is also available at <http://www.gnu.org/licenses/>.
 
 using Microsoft.Extensions.Logging;
 using MSFSTouchPortalPlugin.Attributes;
+using MSFSTouchPortalPlugin.Configuration;
 using MSFSTouchPortalPlugin.Constants;
 using MSFSTouchPortalPlugin.Enums;
 using MSFSTouchPortalPlugin.Interfaces;
@@ -37,6 +38,7 @@ namespace MSFSTouchPortalPlugin.Services
   {
 
     public static Assembly ExecutingAssembly { get; set; } = Assembly.GetExecutingAssembly();
+    public string PluginId { get; set; } = PluginConfig.PLUGIN_ID;
 
     private readonly Type[] _assemblyTypes = ExecutingAssembly.GetTypes();
     private readonly ILogger<ReflectionService> _logger;
@@ -175,14 +177,21 @@ namespace MSFSTouchPortalPlugin.Services
         var fields = c.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public).Where(f => f.FieldType == typeof(TouchPortalEvent));
         foreach (FieldInfo field in fields) {
           if ((TouchPortalEvent)field.GetValue(null) is var ev && ev != null) {
-            if (ev.ValueStateId?.IndexOf('.') < 0)
-              ev.ValueStateId = $"{catId}.State.{ev.ValueStateId}";  // qualify with category name, but not plugin name (which is assumed)
-
+            ev.CategoryId = catId;
+            ev.TpEventId = $"{PluginId}.{catId}.Event.{ev.Id}";
+            if (ev.States == null && ev.ValueStateId?.IndexOf('.') < 0)
+              ev.ValueStateId = $"{PluginId}.{catId}.State.{ev.ValueStateId}";
             ret.Add(ev);
           }
         }
       }
       return ret;
+    }
+
+    public void InitEvents()
+    {
+      foreach (Groups grp in Enum.GetValues<Groups>())
+        GetEvents(grp);
     }
 
     private Dictionary<string, ActionEventType> GetInternalActionEvents()

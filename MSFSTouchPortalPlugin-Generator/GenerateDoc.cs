@@ -62,6 +62,15 @@ namespace MSFSTouchPortalPlugin_Generator
       _logger.LogInformation($"Generated '{dest}'.");
     }
 
+    static string mdToHml(string md)
+    {
+      string html = md;
+      html = html.Replace("\n", "<br>\n");
+      html = new Regex(@"^[\*\-]\s+(.+)$", RegexOptions.Multiline).Replace(html, "<li>$1</li>\n");
+      html = new Regex(@"`([^`]+)`").Replace(html, "<tt>$1</tt>");
+      return html;
+    }
+
     void CreateActionDataMd(StringBuilder s, TouchPortalActionBaseAttribute act, bool withMappings)
     {
       var fieldStyle = "color:SelectedItemText; background-color:SelectedItem; padding: 0 5px;";
@@ -186,7 +195,7 @@ namespace MSFSTouchPortalPlugin_Generator
       foreach (var cat in categegoryAttribs) {
         var actList = cat.Actions.Where(a => !a.Deprecated);
         var connList = cat.Connectors.Where(a => !a.Deprecated);
-        var evList = _reflectionSvc.GetEvents(cat.Id).OrderBy(c => c.Name);
+        var evList = _reflectionSvc.GetEvents(cat.Id); //.OrderBy(c => c.Name);
         var stateList = simVars.Where(s => s.CategoryId == cat.Id).OrderBy(c => c.Name);
         if (!actList.Any() && !connList.Any() && !evList.Any() && !stateList.Any())
           continue;
@@ -324,30 +333,41 @@ namespace MSFSTouchPortalPlugin_Generator
           s.Append("<table>\n");   // use HTML table for row valign attribute
           s.Append("<tr valign='bottom'>" +
             "<th>Name</th>" +
-            "<th>Id</th>" +
-            "<th nowrap>Evaluated State Id</th>" +
-            "<th>Format</th>" +
+            //"<th>Id</th>" +
+            //"<th nowrap>Evaluated State Id</th>" +
+            "<th>Details</th>" +
             "</tr>\n");
           foreach (var ev in catEvents) {
-            string evVal =" ";
-
+            s.Append($"<tr valign='top'>" +
+              $"<td>{ev.Name}</td>"
+              //$"<td>{ev.TpEventId}</td>" +
+              //$"<td>{ev.ValueStateId}</td>"
+            );
+            string evDeets =" ";
             if (ev.ValueChoices != null & ev.ValueChoices.Length > 0) {
-              evVal += "&nbsp;<details style='display:inline;'><summary>[ select ]</summary>\n<ul>";
+              evDeets += "&nbsp;<details style='display:inline;'><summary>[ select ]</summary>\n<ul>";
               var choiceMappings = (Dictionary<string, string>)ev.GetEventDescriptions();
               if (choiceMappings == null || !choiceMappings.Any())
-                evVal += string.Join("\n", ev.ValueChoices.Select(v => $"<li>{v}</li>"));
+                evDeets += string.Join("\n", ev.ValueChoices.Select(v => $"<li>{v}</li>"));
               else
-                evVal += string.Join("\n", choiceMappings.Select(m => $"<li><b>{m.Key}</b> - {m.Value}</li>"));
-              evVal += "</ul></details>";
+                evDeets += string.Join("\n", choiceMappings.Select(m => $"<li><b>{m.Key}</b> - {m.Value}</li>"));
+              evDeets += "</ul></details>";
+              evDeets = ev.Format.Replace("$val", evDeets);
             }
-
-            s.Append($"<tr valign='top'>" +
-              $"<td>{ev.Name}</td>" +
-              $"<td>{cat.Id}.Event.{ev.Id}</td>" +
-              $"<td>{ev.ValueStateId}</td>" +
-              $"<td>{ev.Format.Replace("$val", evVal)}</td>"
-            );
-            s.Append("</tr>\n");
+            else if (ev.States != null && ev.States.Count > 0) {
+              evDeets += "<details style='display:inline;'><summary>Local States</summary>\n" +
+                "<table><thead><th>State ID</th><th>State Name</th></thead>\n";
+              evDeets += string.Join("\n", ev.States.Select(m => $"<tr><td>{m.Key}</td><td>{m.Value}</td></tr>"));
+              evDeets += "</table></details>";
+              evDeets = $"{ev.Format}<p>{evDeets}</p>";
+            }
+            else {
+              evDeets = ev.Format;
+            }
+            s.Append($"<td>{evDeets}");
+            if (!string.IsNullOrWhiteSpace(ev.Description))
+              s.Append($"\n<hr>\n<p>{mdToHml(ev.Description)}</p>\n");
+            s.Append("</td>\n</tr>\n");
           }
           s.Append("</table>\n\n\n");
         }

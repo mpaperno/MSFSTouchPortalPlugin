@@ -108,9 +108,9 @@ namespace MSFSTouchPortalPlugin.Objects
        EventIds.SimStart,
        EventIds.SimStop,
        EventIds.Sim,
-       EventIds.AircraftLoaded,
        EventIds.Crashed,
        EventIds.CrashReset,
+       EventIds.AircraftLoaded,
        EventIds.FlightLoaded,
        EventIds.FlightSaved,
        EventIds.FlightPlanActivated,
@@ -120,5 +120,48 @@ namespace MSFSTouchPortalPlugin.Objects
        EventIds.ViewCockpit,
        EventIds.ViewExternal,
     });
+
+#if !FSX
+    public static readonly TouchPortalEvent SimPauseEvent =
+      new(
+        "SimPauseEvent",
+        "Simulator Pause State Change",
+        "When the simulator's Pause State changes",
+        [
+          [ "NewState",     "New Pause State (numeric)" ],
+          [ "NewStateStr",  "New Pause State (string)" ],
+          [ "PrevState",    "Previous Pause State (numeric)" ],
+          [ "PrevStateStr", "Previous Pause State (string)" ],
+        ]
+      ) {
+      Description = "Describes the Pause State of the simulator.\n" +
+        "The numeric status is a 4-bit Flag (bit-field) type which may be OR'd together when multiple pause states are active (eg. 'active' and 'sim' = `12` (`0xC`), or `1100` in binary) .\n" +
+        "The string version contains text representations of the bit values, possibly joined with `|` character when there are multiple set flags (eg. `ACTIVE|SIM`).\n" +
+        "Possible values, numeric and text:\n" +
+         "* `0` (`OFF`): No Pause\n" +
+         "* `1` (`FULL`): Full Pause with time (sim + traffic + etc...)  (SET_PAUSE 1 / Dev -> Options -> Pause)\n" +
+         "* `2` (`FULL_WITH_SOUND`): FSX Legacy Pause (not used anymore)\n" +
+         "* `4` (`ACTIVE`): Pause was activated using the \"Active Pause\" Button (position/attitude freeze)\n" +
+         "* `8` (`SIM`): Pause the player sim but traffic, multi, etc., will still run (SET_PAUSE_ON / ESC menu pause)\n"
+     };
+#endif
+
+    public static readonly TouchPortalEvent FilenameEvent = new (
+      "SimFilenameEvent",
+      "Simulator System Filename Event",
+      "When the simulator sends a system event containing a file name",
+      [
+        [ "Type",     "Event Type (AircraftLoaded/FlightLoaded/FlightSaved/FlightPlanActivated)" ],
+        [ "Filename", "File Name" ],
+      ]
+    ) {
+      Description =
+        "This event is emitted in response to any simulator system event which has an associated file name, such as when loading aircraft, flights, or flight plans." +
+        "It has two local states which describe the event and contain the file name.\n" +
+        "Using this event is an alternative to the \"Simulator System Event\" where the file name is delivered as a separate state value (with possible timing issues).\n" +
+        "- `Event Type` - Type of simulator system event; Can be one of: `AircraftLoaded`, `FlightLoaded`, `FlightSaved`, or `FlightPlanActivated`.\n" +
+        "- `File Name` - The name of the file being loaded/saved/activated."
+    };
+
   }
 }

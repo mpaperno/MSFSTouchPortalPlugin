@@ -93,6 +93,12 @@ namespace MSFSTouchPortalPlugin_Generator.Configuration
       HelpText = "\nThe Plugin Name for TP entry.tp base name attribute.")]
     public string PluginName { get; set; }
 
+    [Option("PluginShortName",
+      Default = PluginConfig.PLUGIN_NAME_PREFIX,
+      MetaValue = "<STRING>", Required = false,
+      HelpText = "\nThe Plugin Short Name prefix, eg. 'MSFS' or 'FSX'.")]
+    public string PluginShortName { get; set; }
+
     [Option("PluginFolder",
       Default = PluginConfig.PLUGIN_PATH_NAME,
       MetaValue = "<STRING>", Required = false,

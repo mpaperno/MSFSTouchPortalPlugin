@@ -40,6 +40,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Reflection;
+using DataType = MSFSTouchPortalPlugin.Enums.DataType;
 
 namespace MSFSTouchPortalPlugin_Generator
 {
@@ -52,8 +53,9 @@ namespace MSFSTouchPortalPlugin_Generator
     public GenerateEntry(ILogger<GenerateEntry> logger, GeneratorOptions options, IReflectionService reflectionSvc, PluginConfig pluginConfig) {
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
       _options = options ?? throw new ArgumentNullException(nameof(options));
-      _reflectionSvc = reflectionSvc ?? throw new ArgumentNullException(nameof(reflectionSvc));
       _pluginConfig = pluginConfig ?? throw new ArgumentNullException(nameof(pluginConfig));
+      _reflectionSvc = reflectionSvc ?? throw new ArgumentNullException(nameof(reflectionSvc));
+      _reflectionSvc.PluginId = _options.PluginId;
 
       JsonConvert.DefaultSettings = () => new JsonSerializerSettings {
         ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -109,7 +111,7 @@ namespace MSFSTouchPortalPlugin_Generator
       bool tpv3 = (bool)_options.TPv3;
       bool tpv4 = (bool)_options.TPv4;
 
-      _logger.LogInformation($"\nGenerating {PluginConfig.PLUGIN_NAME_PREFIX} edition entry.tp v{vNum:X} [for TPv3 ({tpv3}) | TPv4 ({tpv4})] to '{_options.OutputPath}'");
+      _logger.LogInformation($"\nGenerating {_options.PluginShortName} edition entry.tp v{vNum:X} [for TPv3 ({tpv3}) | TPv4 ({tpv4})] to '{_options.OutputPath}'");
 
       // read the internal plugin states config
       IEnumerable<SimVarItem> simVars = _pluginConfig.LoadPluginStates();
@@ -142,7 +144,7 @@ namespace MSFSTouchPortalPlugin_Generator
         // Add the main plugin category
         category = new TouchPortalCategory {
           Id = _options.PluginId + ".Main",
-          Name = PluginConfig.PLUGIN_NAME_PREFIX,
+          Name = _options.PluginShortName,
           Imagepath = baseIconPath + Categories.CategoryImage(Groups.None)
         };
         model.Categories.Add(category);
@@ -288,18 +290,30 @@ namespace MSFSTouchPortalPlugin_Generator
         }  // connectors
 
         // Events
-        var catEvents = _reflectionSvc.GetEvents(catAttrib.Id).OrderBy(c => c.Name);
+        var catEvents = _reflectionSvc.GetEvents(catAttrib.Id); //.OrderBy(c => c.Name);
         foreach (var ev in catEvents) {
+          // TP v3 doesn't support local state events
+          if (ev.States != null && !tpv4)
+            continue;
           var tpEv = new Model.TouchPortalEvent {
-            Id = $"{_options.PluginId}.{catAttrib.Id}.Event.{ev.Id}",   // these come unqualified
-            Name = ev.Name,
-            Format = ev.Format,
+            Id = ev.TpEventId,
+            Name = $"{_options.PluginShortName}: {ev.Name}",
+            Format = $"{_options.PluginShortName}: {ev.Format}",
             Type = ev.Type,
             ValueType = ev.ValueType,
-            ValueChoices = ev.ValueChoices,
-            ValueStateId = $"{_options.PluginId}.{ev.ValueStateId}",
+            ValueChoices = ev.DataType == DataType.Choice ? ev.ValueChoices : null,
+            ValueStateId = ev.States == null ? ev.ValueStateId : String.Empty,
             SubCategoryId = subCategoryId,
           };
+          if (ev.States != null && ev.States.Count > 0) {
+            tpEv.Localstates = new();
+            foreach (var state in ev.States) {
+              tpEv.Localstates.Add(new TouchPortalLocalState() {
+                Id = state.Key,
+                Name = state.Value
+              });
+            }
+          }
           // validate unique ID
           if (category.Events.FirstOrDefault(s => s.Id == tpEv.Id) == null)
             category.Events.Add(tpEv);
