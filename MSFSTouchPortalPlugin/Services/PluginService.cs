@@ -951,13 +951,22 @@ namespace MSFSTouchPortalPlugin.Services
     }
 
     // update SimSystemEvent and (maybe) SimSystemEventData states in SimSystem group
-    private void UpdateSimSystemEventState(EventIds eventId, object data = null) {
-      if (SimSystemMapping.SimSystemEvent.ChoiceMappings.TryGetValue(eventId, out var eventName)) {
-        if (data is string)
-          UpdateTpStateValue("SimSystemEventData", data.ToString(), Groups.SimSystem);
-        UpdateTpStateValue("SimSystemEvent", eventName, Groups.SimSystem);
-        _logger.LogTrace("Updated SimSystemEvent state value to '{eventName}'", eventName);
+    private void UpdateSimSystemEventState(EventIds eventId, object data = null)
+    {
+      if (!SimSystemMapping.SimSystemEvent.ChoiceMappings.TryGetValue(eventId, out var eventName))
+        return;
+
+      if (data is string)
+        UpdateTpStateValue("SimSystemEventData", data.ToString(), Groups.SimSystem);
+      UpdateTpStateValue("SimSystemEvent", eventName, Groups.SimSystem);
+
+      if (eventId > EventIds.SimEventNone && eventId < EventIds.SimEventLast && data is string) {
+        TriggerTpEvent(SimSystemMapping.FilenameEvent, [
+          [ "Type",     eventId.ToString() ],
+          [ "Filename", data.ToString() ]
+        ]);
       }
+      _logger.LogTrace("Updated SimSystemEvent state value to '{eventName}'", eventName);
     }
 
     // update Connected state and trigger corresponding UpdateSimSystemEventState update
@@ -2005,8 +2014,20 @@ namespace MSFSTouchPortalPlugin.Services
 
     public void OnBroadcastEvent(BroadcastEvent message)
     {
-      if (message.Event == "pageChange")
-        UpdateTpStateValue("CurrentTouchPortalPage", cleanPageName(message.PageName));
+      if (message.Event != "pageChange")
+        return;
+
+      string pgName = cleanPageName(message.PageName);
+      UpdateTpStateValue("CurrentTouchPortalPage", pgName);
+      if (message.DeviceName != default) {
+        TriggerTpEvent(PluginMapping.PageChange, [
+          [ "PageName",     pgName ],
+          [ "PreviousPage", cleanPageName(message.PreviousPageName) ],
+          [ "DeviceName",   message.DeviceName ],
+          [ "DeviceId",     message.DeviceId ],
+          [ "DeviceIP",     message.DeviceIP ],
+        ]);
+      }
     }
 
     public void OnNotificationOptionClickedEvent(NotificationOptionClickedEvent message)

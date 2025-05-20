@@ -146,5 +146,22 @@ namespace MSFSTouchPortalPlugin.Objects
      };
 #endif
 
+    public static readonly TouchPortalEvent FilenameEvent = new (
+      "SimFilenameEvent",
+      "Simulator System Filename Event",
+      "When the simulator sends a system event containing a file name",
+      [
+        [ "Type",     "Event Type (AircraftLoaded/FlightLoaded/FlightSaved/FlightPlanActivated)" ],
+        [ "Filename", "File Name" ],
+      ]
+    ) {
+      Description =
+        "This event is emitted in response to any simulator system event which has an associated file name, such as when loading aircraft, flights, or flight plans." +
+        "It has two local states which describe the event and contain the file name.\n" +
+        "Using this event is an alternative to the \"Simulator System Event\" where the file name is delivered as a separate state value (with possible timing issues).\n" +
+        "- `Event Type` - Type of simulator system event; Can be one of: `AircraftLoaded`, `FlightLoaded`, `FlightSaved`, or `FlightPlanActivated`.\n" +
+        "- `File Name` - The name of the file being loaded/saved/activated."
+    };
+
   }
 }

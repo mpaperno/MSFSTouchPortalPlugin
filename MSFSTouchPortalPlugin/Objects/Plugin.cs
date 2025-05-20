@@ -327,6 +327,27 @@ namespace MSFSTouchPortalPlugin.Objects
         "- `Status` - the current simulator connection status, which can be one of `disconnected`, `connecting`, or `connected`."
     };
 
+    public static readonly TouchPortalEvent PageChange = new(
+      "PageChangeEvent",
+      "Touch Portal Device Page Change",
+      "When the current page on a Touch Portal device changes",
+      [
+        [ "PageName",     "New Page Name" ],
+        [ "PreviousPage", "Previous Page Name" ],
+        [ "DeviceName",   "Device Name" ],
+        [ "DeviceId",     "Device ID" ],
+        [ "DeviceIP",     "Device IP Address" ],
+      ]
+    ) {
+      Description = "This event is emitted when the plugin detects a new page has been loaded on a Touch Portal device. " +
+        "The local states contain the new and previous page names and information about the device, all forwarded from the original Touch Portal notification the plugin received.\n" +
+        "- `New Page Name` - Name of the page that was loaded, including the full folder path, if any.\n" +
+        "- `Previous Page Name` - Name of the page that was unloaded, including any folder path.\n" +
+        "- `Device Name` - Name of the TP device on which the page was loaded.\n" +
+        "- `Device ID` - ID of the TP device on which the page was loaded.\n" +
+        "- `Device IP Address` - IP Address of the TP device on which the page was loaded.\n"
+    };
+
   }  // PluginMapping
 
   // Actions for editing variable requests has own category in TP UI, though actually these act as if they were in `Groups.Plugin`.
