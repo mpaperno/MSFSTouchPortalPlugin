@@ -72,14 +72,20 @@ namespace MSFSTouchPortalPlugin_Generator
           Id = $"{action.Id}.Data.{dataId}",
           Type = attrib.Type,
           DefaultValue = attrib.GetDefaultValue(),
-          ValueChoices = attrib.ChoiceValues,
-          MinValue = attrib.MinValue,
-          MaxValue = attrib.MaxValue,
-          AllowDecimals = attrib.AllowDecimals,
           Label = (bool)_options.TPv3 ? attrib.Label : null,  // deprecated in TPv4 so force to null if excluding v3 support
           FieldLabel = attrib.Label,         // may be used later for formatting lines, not for TP
           FieldSuffix = attrib.LabelSuffix,  //  "
         };
+        switch (attrib.ValueType) {
+          case DataType.Number:
+            data.MinValue = attrib.MinValue;
+            data.MaxValue = attrib.MaxValue;
+            data.AllowDecimals = attrib.AllowDecimals;
+            break;
+          case DataType.Choice:
+            data.ValueChoices = attrib.ChoiceValues;
+            break;
+        }
         ++i;
         action.Data.Add(data);
       }
