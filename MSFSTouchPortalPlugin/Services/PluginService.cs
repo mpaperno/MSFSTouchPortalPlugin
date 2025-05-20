@@ -2006,7 +2006,7 @@ namespace MSFSTouchPortalPlugin.Services
     public void OnBroadcastEvent(BroadcastEvent message)
     {
       if (message.Event == "pageChange")
-        UpdateTpStateValue("CurrentTouchPortalPage", message.PageName.Replace(".tml", string.Empty, true, CultureInfo.InvariantCulture));
+        UpdateTpStateValue("CurrentTouchPortalPage", cleanPageName(message.PageName));
     }
 
     public void OnNotificationOptionClickedEvent(NotificationOptionClickedEvent message)
@@ -2128,6 +2128,16 @@ namespace MSFSTouchPortalPlugin.Services
       float dlta = rangeMax - rangeMin;
       float scale = dlta == 0.0f ? 100.0f : 100.0f / dlta;
       return Math.Clamp((int)Math.Round((value - rangeMin) * scale), 0, 100);
+    }
+
+    static string cleanPageName(string name)
+    {
+      if (string.IsNullOrWhiteSpace(name))
+        return name;
+      return name
+        .TrimStart(['/','\\'])
+        .Replace(".tml", string.Empty, true, CultureInfo.InvariantCulture)
+        .Replace('\\', '/');
     }
 
     async void NewVersionCheck()
