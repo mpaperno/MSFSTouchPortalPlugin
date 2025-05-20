@@ -254,12 +254,13 @@ namespace MSFSTouchPortalPlugin_Generator
 
             if (!tpv3) {
               // remove some deprecated properties
-              action.Description = null;
               action.Format = null;
               action.Prefix = null;
               // keep these for BC with initial TP v4 releases
-              //action.FormatOnHold = null;
-              //action.HasHoldFunctionality = false;
+              if (!action.HasHoldFunctionality) {
+                action.Description = null;
+                action.FormatOnHold = null;
+              }
             }
           }
 
