@@ -133,6 +133,7 @@ namespace MSFSTouchPortalPlugin.Services
         _hostApplicationLifetime.StopApplication();
         return Task.CompletedTask;
       }
+      Task.Delay(500).ContinueWith(t => UpdateTpStateValue("RunningState", "started"));
 
       //StartPluginEventsTask();  // useful for testing repeating actions w/out a sim connection
       return SimConnectionMonitor();
@@ -150,11 +151,13 @@ namespace MSFSTouchPortalPlugin.Services
       // Shut down
       _quitting = true;
       _logger.LogDebug("Shutting down...");
+      if (_client.IsConnected)
+        UpdateTpStateValue("RunningState", "stopped");
       StopPluginEventsTask();
       DisconnectSimConnect();
       if (_pluginConfig.SaveSettings())
         _logger.LogInformation("Saved Settings to file {file}", PluginConfig.SettingsConfigFile);
-      if (_client?.IsConnected ?? false) {
+      if (_client.IsConnected) {
         try { _client.Close(); }
         catch (Exception ex) {
           _logger.LogWarning((int)EventIds.Ignore, ex, "TouchPortalClient exception");
@@ -385,10 +388,10 @@ namespace MSFSTouchPortalPlugin.Services
     void SimConnectEvent_OnWasmStatusChanged(WasmModuleStatus status)
     {
       string state = status switch {
-        WasmModuleStatus.Unknown   => "unknown",
         WasmModuleStatus.NotFound  => "undetected",
         WasmModuleStatus.Found     => "disconnected",
         WasmModuleStatus.Connected => "connected",
+        _                          => "unknown",
       };
       UpdateTpStateValue("WasmStatus", state);
     }
@@ -1733,7 +1736,8 @@ namespace MSFSTouchPortalPlugin.Services
       // convert the entry.tp version back to the actual decimal value
       if (!uint.TryParse($"{message.PluginVersion}", NumberStyles.HexNumber, null, out uint tpVer))
         tpVer = VersionInfo.GetProductVersionNumber();
-      // update version states
+      // update status & version states
+      UpdateTpStateValue("RunningState", "starting");
       UpdateTpStateValue("RunningVersion", runtimeVer);
       UpdateTpStateValue("EntryVersion", $"{tpVer:X}");
       // set a state for TP config home path (workaround for no env. var access in TP)
@@ -1755,7 +1759,7 @@ namespace MSFSTouchPortalPlugin.Services
       }
 #endif
       // schedule update of connector values once TP has reported any of our Connectors with shortConnectorIdNotification events
-      Task.Delay(800).ContinueWith(t => UpdateAllRelatedConnectors());
+      Task.Delay(1000).ContinueWith(t => UpdateAllRelatedConnectors());
     }
 
     public void OnClosedEvent(string message)
