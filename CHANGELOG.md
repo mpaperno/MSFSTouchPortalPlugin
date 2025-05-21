@@ -1,5 +1,11 @@
 # MSFS/SimConnect Touch Portal Plugin Change Log
 
+## 1.6.2.0 (May-21-2024)
+Version number: `1060200`
+
+* Fixed that many of the basic plugin actions were broken in v1.6.1. The errors were logged as "Could not parse required action parameters for [action name] from data: ..."
+
+---
 ## 1.6.1.0 (May-20-2024)
 Version number: `1060100`
 
