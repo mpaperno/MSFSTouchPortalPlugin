@@ -263,7 +263,9 @@ namespace MSFSTouchPortalPlugin.Attributes
 
   public class TouchPortalActionSwitchAttribute : TouchPortalActionChoiceAttribute
   {
-    public TouchPortalActionSwitchAttribute(bool defaultValue = false) : base(new [] { "On", "Off" }, defaultValue ? 0 : 1) { }
+    public TouchPortalActionSwitchAttribute(bool defaultValue = false) : base(new [] { "On", "Off" }, defaultValue ? 0 : 1) {
+      UsedInMapping = false;
+    }
   }
 
   public class TouchPortalActionNumericAttribute : TouchPortalActionDataAttribute
